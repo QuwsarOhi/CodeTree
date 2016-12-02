@@ -1,5 +1,4 @@
-//UVa
-//579 - Clock Hands
+
 #include <bits/stdc++.h>
 #define pb push_back
 #define mp make_pair
@@ -21,24 +20,3 @@
 #define ll long long
 #define N 27;
 
-/*Equations:
- * Number of minutes since 12 o'clock = 60 * H + M
- * Equation for the angle of hour hand = 0.5(degree) * (60 * H + M)
- * Equation for the angle of minute = 6(degree) * M
-*/
-
-int main()
-{
-	unsigned int h, m, ma;
-	double ha, dis;
-	wh(sf("%d:%d", &h, &m) && (h || m)) {
-		//pf("%d %d\n", h, m);
-		ha = ((60 * h) + m)/2.0;
-		ma = 6 * m;
-		dis = ha - ma;
-		if(dis < 0) dis *= -1;
-		if(360 - dis < dis) dis = 360- dis;
-		pf("%.3lf\n", dis);
-	}
-	return 0;
-}
