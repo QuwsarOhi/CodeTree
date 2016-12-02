@@ -1,0 +1,105 @@
+Overloading are of two types:
+							i.Function overloading
+							ii.Operator overloaging
+
+Function Overloading:
+--------------------------------
+#include <bits/stdc++.h>
+
+using namespace std;
+
+class test
+{
+	public:
+		int print(int i)
+		{
+				return i;
+		}
+		float print(float i)
+		{
+			return i;
+		}
+};
+
+int main()
+{
+	test x;
+	cout << x.print(12) << endl;	// Returns int type
+	cout << x.print(2.65) << endl;	// Returns float type
+	return 0;
+}
+
+Operator overloading:
+----------------------------------------
+#include <bits/stdc++.h>
+
+using namespace std;
+
+class Box
+{
+	private:		//Not accessible outside the class
+		int wid;
+		int brdth;
+	public:			//Accessible outside the class
+		void set(int x, int y)
+		{
+			wid = x;
+			brdth = y;
+		}
+		
+		Box operator + (const Box &b)
+		{
+			Box box;
+			box.wid = this->wid + b.wid;
+			box.brdth = this->brdth + b.brdth;
+			return box;
+		}
+		void print()
+		{
+			cout << "wid : " << wid << endl;
+			cout << "brdth : " << brdth << endl;
+		}
+};
+
+int main()
+{
+	Box b1, b2, b3;
+	b1.set(1, 10);
+	b2.set(2, 20);
+	b3 = b1 + b2;
+	b3.print();
+	return 0;
+}
+
+Function call operator():
+The function call operator () can be overloaded for objects of class type. When you overload ( ), you are not creating a new way to call a function. Rather, you are creating an operator function that can be passed an arbitrary number of parameters.
+-------------------------------------
+
+#include <bits/stdc++.h>
+using namespace std;
+
+class test
+{
+	public:
+	
+	int operator() (int a, int b)
+	{
+		if(a > b)
+		{
+			cout << a << endl;
+			return a;
+		}
+		else
+		{
+			cout << b << endl;
+			return b;
+		}
+	}
+};
+
+int main()
+{
+	test one;
+	one(1, 2);
+	return 0;
+}

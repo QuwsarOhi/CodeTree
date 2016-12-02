@@ -1,0 +1,258 @@
+Url: http://www.augustcouncil.com/~tgibson/tutorial/iotips.html
+Return to tutorial index
+Tips and tricks for using C++ I/O (input/output)
+Table of Contents
+
+    There are three header files to include when using C++ I/O
+    How to set the width of a printing field
+    By default, leading whitespace (carriage returns, tabs, spaces) is ignored by cin.
+    cin.getline() can run into problems when used with cin >> var.
+    Reading in numbers directly is problematic
+    Using getline to input numbers is a more robust alternate to reading numbers directly
+    Once a file is opened, it may be used exactly as cin is used.
+    When reading an entire file, embed the file input inside of the loop condition
+    Getline can be told to stop grabbing input at any designated character
+    Delimited files can easily be read using a while loop and getline.
+    Using C++-style strings
+    How to prepare the output stream to print fixed precision numbers (3.40 instead of 3.4)
+
+There are three header files to include when using C++ I/O
+
+#include<iostream>
+    Include this file whenever using C++ I/O
+#include<iomanip>
+    This file must be included for most C++ manipulators. If you don't know what a manipulator is, don't worry. Just include this file along with iostream and you can't go wrong
+#include<fstream>
+    Include this file whenever working with files.
+
+By default, leading whitespace (carriage returns, tabs, spaces) is ignored by cin.
+Given:
+
+int i;
+float fl;
+std::cin >> fl;
+std::cin >> i;
+
+    And you type: 3.14<return>42<return>
+    3.14 is read into fl . The carriage return (newline) following the 3.14 is still sitting on the input buffer.
+    Since std::cin ignores whitespace, the first return is "eaten" by std::cin >> i . Then the integer 42 is read into i and the second return is left on the input buffer.
+
+std::cin.getline() can run into problems when used with std::cin >> var.
+
+    getline can be provided a third argument--a "stop" character. This character ends getline's input. The character is eaten and the string is terminated. Example:
+    std::cin.getline(str, 100, '|')
+    If std::cin.getline() is not provided a "stop" character as a third argument, it will stop when it reaches a newline.
+
+Given:
+
+  float fl;
+  std::cin >> fl;
+  char str[101]
+  std::cin.getline(str, 101);
+
+    And you type: 3.14<return>
+    3.14 is read into fl . The newline following the 3.14 is still sitting on the input buffer.
+    std::cin.getline(str, 101) immediately processes the newline that is still on the input buffer. str becomes an empty string.
+    The illusion is that the application "skipped" the std::cin.getline() statement.
+
+The solution is to add std::cin.ignore(); immediately after the first std::cin statement. This will grab a character off of the input buffer (in this case, newline) and discard it.
+
+std::cin.ignore() can be called three different ways:
+
+    No arguments: A single character is taken from the input buffer and discarded:
+    std::cin.ignore(); //discard 1 character
+    One argument: The number of characters specified are taken from the input buffer and discarded:
+    std::cin.ignore(33); //discard 33 characters
+    Two arguments: discard the number of characters specified, or discard characters up to and including the specified delimiter (whichever comes first):
+    std::cin.ignore(26, '\n'); //ignore 26 characters or to a newline, whichever comes first
+
+Reading in numbers directly is problematic
+
+    If std::cin is presented with input it cannot process, std::cin goes into a "fail" state
+    The input it cannot process is left on the input stream.
+    All input will be ignored by std::cin until the "fail" state is cleared: std::cin.clear()
+    A routine that reads a number directly should:
+        Read in the number
+        Check to see that the input stream is still valid
+        If the input stream is not good (!std::cin)
+            Call std::cin.clear() to take the stream out of the "fail" state.
+            Remove from the stream the input that caused the problem: std::cin.ignore(...)
+            Get the input again if appropriate or otherwise handle the error
+
+Inputing numbers directly, version 1:
+
+  #include<limits> //for numeric_limits
+  float fl;
+  int bad_input;
+  do{
+    bad_input=0;
+    std::cin >> fl;
+    if(!std::cin)
+    {
+      bad_input=1;
+      std::cin.clear();
+      std::cin.ignore(std::numeric_limits<streamsize>::max(),'\n');
+    }
+
+  }while(bad_input);
+
+Inputing numbers directly, version 2:
+
+  #include<limits> //for numeric_limits
+  float fl;
+  while(!(std::cin >> fl))
+  {
+    std::cin.clear();
+    std::cin.ignore(std::numeric_limits<streamsize>::max(),'\n');
+  }
+
+A note on limits. If your compiler doesn't support std::numeric_limits<streamsize>::max(), an alternative is to use the c-style method for determining the maximum integer allowed:
+
+#include<climits>
+...
+std::cin.ignore(INT_MAX, '\n');
+
+Using getline to input numbers is a more robust alternate to reading numbers directly
+
+#include <cstdlib>
+...
+int i;
+float fl;
+char temp[100];
+
+std::cin.getline(temp, 100);
+fl=strtof(temp,0);
+std::cin.getline(temp, 100);
+i=strtol(temp,0,10);
+
+    getline will read both strings and numbers without going into a "fail" state.
+    Include cstdlib to use the converter functions: string-to-long-integer (strtol), string-to-double (strtod), string-to-float (strtof), and string-to-long-double (strtold). Refer to a reference for more information on the second (and third for strtol) arguments to these converter functions.
+
+Once a file is opened, it may be used exactly as std::cin is used.
+
+std::ifstream someVarName("data.txt");
+float fl;
+char temp[100];
+someVarName.getline(temp, 100);
+fl=strtof(temp);
+int i;
+someVarName >> i;
+
+When reading an entire file, embed the file input inside of the loop condition
+
+std::ifstream inf("data.txt");
+char temp[100];
+while(!inf.getline(temp, 100).eof())
+{
+  //process the line
+}
+
+    the loop will exit once the end of the file is reached
+
+If the expression in the while() loop above is confusing, I've provided an explanation: UnderstandingComplexExpressions.pdf.
+Getline can be told to stop grabbing input at any designated character
+
+char temp[100];
+std::cin.getline(temp, 100, '|');
+
+    If only two arguments are supplied to getline, getline will stop at the end of the line (at the newline character).
+    If three arguments are supplied to getline, getline will stop at the character designated by the third argument.
+    The stop character is not copied to the string.
+    The stop character is "eaten" (removed from the input stream).
+
+Delimited files can easily be read using a while loop and getline.
+Given data file:
+
+  John|83|52.2
+  swimming|Jefferson
+  Jane|26|10.09
+  sprinting|San Marin
+
+Process using:
+
+std::ifstream inf("data.txt");
+char name[30];
+while(!inf.getline(name, 30, '|').eof())
+{
+  Athlete* ap;
+  char jersey_number[10];
+  char best_time[10];
+  char sport[40];
+  char high_school[40];
+  inf.getline(jersey_number, 10, '|'); #read thru pipe
+  inf.getline(best_time, 10);          #read thru newline
+  inf.getline(sport, 40, '|');         #read thru pipe
+  inf.getline(high_school, 40);        #read thru newline
+  ap = new Athlete(name, strtod(number), strtof(best_time), sport, high_school);
+  //do something with ap
+
+}
+
+    In a delimited file, only the first field should be in the while loop
+    For each field: If the field is the last field in the line or the only field in the line, be sure that getline stops at a newline and not some other delimiter
+
+Using C++-style strings
+
+All of the previous examples have assumed that C-style strings (null-terminated character arrays) were being used. C++ provides a string class that, when combined with a particular "getline" function, can dynamically resize to accommodate user input. In general, C++ strings are preferred over C strings.
+Given data file:
+
+  John|83|52.2
+  swimming|Jefferson
+  Jane|26|10.09
+  sprinting|San Marin
+
+Here is the same code shown above, this time using C++ strings:
+
+#include <string>
+std::ifstream inf("data.txt");
+string name;
+while(!std::getline(inf, name, '|').eof())
+{
+  Athlete* ap;
+  std::string jersey_number;
+  std::string best_time;
+  std::string sport;
+  string high_school;
+  std::getline(inf, jersey_number, '|'); #read thru pipe
+  std::getline(inf, best_time);          #read thru newline
+  std::getline(inf, sport, '|');         #read thru pipe
+  std::getline(inf, high_school);        #read thru newline
+  ap = new Athlete(name, strtod(number.c_str()), 
+       strtof(best_time.c_str()), sport, high_school);
+  //do something with ap
+
+}
+
+How to prepare the output stream to print fixed precision numbers (3.40 instead of 3.4)
+
+  std::cout.setf(std::ios::fixed, std::ios::floatfield);
+  std::cout.setf(std::ios::showpoint);
+  std::cout.precision(2);
+
+How to set the width of a printing field
+Given: int one=4, two=44;
+
+  std::cout << one << std::endl.; 
+  //output:  "4"
+
+  std::cout << setw(2) << one << std::endl.;
+  //output:  " 4"
+
+  std::cout.fill('X');
+  std::cout << setw(2) << one << std::endl.;
+  //output:  "X4"
+
+  std::cout.fill('X');
+  std::cout << setw(2) << two << std::endl.;
+  //output:  "44"
+
+    The default fill character is a space.
+    A common fill character when printing numbers is zero "0".
+
+Return to tutorial index
+Revision History
+2012 May 02 	Added a link to a 2-page PDF document: "Understanding Complex Expressions".
+2012 April 18 	Added std:: to ios flags
+2007 March 1 	Corrected spelling error
+2010 February 18 	Corrected HTML error
+

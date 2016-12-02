@@ -1,0 +1,56 @@
+according to speed:
+
+cin < scanf < getchar(POSIX) < gerchar_unlocked(POSIX)
+cout < printf < putchar(POSIX) < putchar_unlocked(POSIX)
+
+-----------------cin / cout----------------
+
+URL: http://www.geeksforgeeks.org/fast-io-for-competitive-programming/
+
+cout is slow if used "endl"
+so use "\n"instead
+
+cin can be as fast as printf by applying/adding this methods/codes
+
+#inlcude<bits/stdc++.h> //imports all stl
+using namespace std;
+int main()
+{
+	ios_base::sync_with_stdio(false); //sync in stdio is turned off
+	cin.tie(NULL); //flush gurantee of cout before cin
+	return 0;
+}
+
+--------------------------fast input (int)----------------
+
+#include <bits/stdc++.h>
+using namespace std;
+
+void fastscan(int &number)
+{
+	bool negative = false;
+	register int c;
+	
+	number = 0;
+	
+	c = getchar(); // or getchar_unlocked()
+	
+	if(c == '-')
+	{
+		negative = true;
+		c = getchar(); // or getchar_unlocked()
+	}
+	
+	for(; c>=48 && c<58; c = getchar()) // int starts from ASCII 48
+		number = number * 10 + c - 48;
+	if(negative)
+		number *= -1;
+}
+int main()
+{
+	int number;
+	fastscan(number);
+	cout << number << "\n";
+	return 0;
+}
+

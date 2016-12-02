@@ -1,0 +1,58 @@
+
+
+-----------Difference between %s and %c-------------
+%s prints out chars until it reaches a 0 (or '\0', same thing).
+but %c terminates printing a single charecter
+here %c must be used like this
+printf("%c", array[i]);
+
+Also %c is used to input a single char (with scanf)
+and %s is used to multiple input without space
+
+-----------Using fgets() with caution--------------
+the usage of fgets is fgets(array, int, stdin/file)
+here int and array must be increased by one
+
+------------To Measure Code Time-------------------
+#include <ctime>
+
+clock_t begin = clock()
+
+clock_t end = clock()
+
+double time_spent = (double)(end - begin)
+
+---------------Char to Int------------------------
+with an array arr[x]
+
+if(arr[i] >= '0' && arr[i] < '9')
+//do something..
+
+----------------Array Memory Reset----------------
+
+#using memset
+#it is under string.h library
+
+#include <string.h>
+
+#HERE 0 can be replaced with any type of ASCII value
+
+memset(myarray, 0, sizeof(myarray)/sizeof(int)); // for automatically-allocated arrays
+
+memset(myarray, 0, N*sizeof(*myarray)); 
+// for heap-allocated arrays, where N is the number of elements
+
+#but in c++ another function can be used instead
+fill(myarray, myarray+N, 0);
+
+------------------String Hacks---------------------
+
+strlen(char_array) = returns len(2 extra) of char array
+strcpy(copy_here(array), tobecopied(array/quote char))
+
+compare:
+strcmp(str1, str2) #str1 and str2 is seperate arrays
+	returns < 0 if str1 is less than str2
+	returns > 0 if str1 is more than str2
+	returns = 0 if str1 is equal to str2
+strncmp()

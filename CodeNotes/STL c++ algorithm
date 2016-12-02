@@ -1,0 +1,40 @@
+algorithm stl contains many easy terms to do most common works
+
+#include <algorithm>
+
+min(x, y) //Returns min value
+max(x, y) //Returns max value
+
+--------------------SORT/FIND/COUNT---------------
+
+sort(x, x+n) //Sorts x array/vector(x.begin(), x.begin()+n) of first n elements
+//sort is mainly Merge Sort of complexity N*log2(N)
+
+find(x, x+n, y) //Finds and returns y value from x array from 1st to nth element
+find(x.begin(), x.end(), y) //Finds y value from x vector
+//Complexity Linier(N)
+
+count(x, x+n, num) //Returns the number of how many times the num is found in int array
+
+----------------PERMUTE---------------
+
+next_permutation(x, x+n) //Permute x array of n element
+
+---------------HEAP--------------------
+
+make_heap(x.begin(), x.end()) //Makes a heap
+//If vector is sorted min to max, then the result will be accurate(max_heap), otherwise only the top value would be accurate
+
+pop_heap(x.begin(), x.end()) //Takes the front value to the last
+//Need to pop the last value to delete from the x vector
+
+push_heap(x.begin(), x.end()) //Takes the last inserted(last vector) and places in the correct place
+//Need to push the value in the vector first, before using push_heap
+
+sort_heap(x.begin(), x.end()) //Sorts heap as accurate max_heap
+
+-------------------REVERSE-----------------------
+
+reverse(x, x+n) //Reverse the array
+reverse(x.begin(), x.end()) //Reverse the vector
+

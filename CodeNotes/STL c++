@@ -1,0 +1,163 @@
+
+//---------------------------------vector--------------------------------
+//Vector can be used instead array or struct
+//It's slow than array or struct
+//No need to define its space
+//Can't add values by vec[x] = y, it can be done after vec.push_back() in x-th
+//position OR need to be initialized first (vector<int>vec(10) (10 space)
+
+#include <vector>
+
+//------define
+vector<int> vec; //Defining an int vector named vec
+vector<int> vec(4, 100) //Defining an int vector named vec with 4 of 100 values
+vector<int> vec(x, x+8) //Here x is an int array, 1st to 8th values are assigned
+
+//------size
+vec.size() //Vector size
+vec.empty() //Returns "True" if empty
+
+//------insert/add/delete
+vec.push_back(x) //Adding value(x) at the end of the vector
+vec[x] = y //Adding the y value in the x-th position
+vec.pop_back()
+vec.erase(vec.begin()) //Erasing 1st element
+vec.erase(vec.begin(), vec.end()) //Erasing all elements
+
+//------element access
+vec.front() //Access the front
+vec.back() //Access the back
+vec[x] //Access the x-th position
+
+//------iterator
+vector<int>::iterator iter //Defining an iterator
+iter = vector.begin() //Iterator(iter) at begin
+iter = vector.end() //Iterator(iter) at end
+
+//------multidimentional
+
+//Multidimentional vector need to be initialized first
+
+vector<int>vec[x] //x vectors with infinite subroots
+vector<int>vec(no_of_row, vector<int>(no_of_cols, initial_value))
+
+
+
+//---------------------------------stack--------------------------------
+
+#include <stack>
+
+stack <int> stk
+
+stk.push(x) //Adding x as the 1st element
+stk.pop() //Deleting last element
+stk.top() //Returns the first element
+stk.size() //Returns the size
+stk.empty() //Returns True if empty
+
+
+//--------------------------------queue--------------------------------
+
+#include <queue>
+
+queue <int> que
+
+que.push(x) //Adding x as the 1st/last element
+que.pop() //Deleting last element
+que.front() //Returns the front element
+que.back() //Returns the back element
+que.empty() //Returns true if empty
+que.size() //Returns the size of queue
+
+//--------------------------------string--------------------------------
+//Can hold more than one charecters in one string value
+//getline(cin, str) can be used to get input before getting \n
+//str += "x" adds x in the str string
+
+#include <string>
+
+string str //Creating a string
+
+str += "x" //Adds x in the str string
+
+str.size() //Returns size
+str.empty() //Returns True if empty
+
+str.erase(10, 8) //Erasing 8 elements after 10th element
+str.erase(str.begin()+1) //Erasing the 1st element
+str.erase(2, 4) //Erasing 3rd to 4th element
+
+str.replace(9, 5, str1) //Methods same ase erase can be used iterator also
+str.replace(2, 4, "text")
+str.replace(str.begin()+11,str.end(),str4.begin(),str4.end())
+
+str.find("asd") //Returns the found elements position(int, size_t)
+
+str.compare(str2) //Compares str vs str2 if same returns 0, returns > 0 if str>str2 opposite otherwise
+
+----------------------------------Pair-----------------------------------
+
+//Used to save a pair of values, it can be same or different type of value
+//Can be used with vector
+
+#include <utility>
+
+pair <int, int> pair1; //A pair of two int values
+pair <string, int> pair2[50]; //50 pairs of one int and one string value
+
+//----inserting element
+
+pair1.make_pair(1, 2); //Inserting two integer
+pair2.make_pair("asd", 2); //Inserting a string and an int
+
+//-----increment, print
+
+pair1.first ++; //Increment value(int)
+cout << pair1.first << endl; //Printing first value
+cout << pair1.second << endl; //Printing second value
+
+//-----pair in vector
+
+typedef pair<int, int> pai; //Can be used without typedef(directly)
+vector<pai> vecpair; //making a vector pair(typedef)
+vector<pair<int, int> >pai //Without typedef
+
+vecpair.push_back(make_pair(1, 2)); // Making a pair(without typedef)
+vecpair.push_back(pai(1, 2)); //Making a pair(With typedef)
+
+cout << vecpair[0].first << endl; //Printing vector pair
+
+
+------------------------------priority_queue---------------------------------
+//making a priority queue
+//priority_queue<type of element to be inserted, type of container<type of element to be inserted>, how to arrange the queue>
+
+there are some local arrange methods for this:
+greater<int> == will arrange from max to min
+less<int> == will arrange from min to max
+
+//---let a priority_queue example be given:
+typedef pair<int, int> p pr;
+prioritq_queue<pr, vector<pr>, greater<int> > pq;
+pq.push(make_pair(1, 2));
+
+pq.top(); 	//returns top element
+pq.empty(); //returns true if empty
+pq.pop();	//pops up the top element
+
+pq.find((1, 2)) == pq.end(); //will return true if (1, 2) is not in pq;
+
+---------------------------------map----------------------------------------
+//map can be used to store keys with a values, the advantage is the keys can
+//be of any type
+//example map<key_type, value_type(this would be returned)> mp
+
+map<string, int>mp;
+
+mp["abc"] = 1;
+mp["jsd"] = 1;
+
+mp.count("asd")		//returns the value if present, else returns null(or 0)
+mp.find("asd") != mp.end() 	//returns true if the value is present;
+
+mp["asd"];		//returns the value;

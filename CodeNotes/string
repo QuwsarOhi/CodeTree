@@ -1,0 +1,24 @@
+-----------------Errors with string
+to avoid '\n' problems (with scanf, in a loop, with %c\%s)
+do something like this in every line
+scanf(" %c", &x);
+scanf(" %d", &i); //Even for int types
+
+
+
+char declare types:
+
+char str[12] = {'a', 'b'};
+char str[] = {'a', 'b'};
+char *str = "HELLO";
+
+----------char to string
+
+char str[] = "Hello"; //C string(normal char type)
+string s(a); //giving char to the string(s)
+
+----------string to char
+
+string s = "hello";
+char *a = &(s[0]);  /* Address of first character of std::string is 
+stored to char pointer a */

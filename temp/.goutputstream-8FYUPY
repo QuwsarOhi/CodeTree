@@ -1,0 +1,118 @@
+#include <bits/stdc++.h>
+#define pb push_back
+#define sp(b) if(!b)printf("\n"); b = false;
+#define mp make_pair
+#define fi first
+#define se second
+#define pi acos(-1)
+#define fr(i, a, b) for(register int i = a; i < b; i++)
+#define f1(i, b) for(register int i = 1; i <= b; i++)
+#define ss stringstream
+#define mimx(a, b) if(a > b)swap(a, b);
+#define msi map<string, int>
+#define mii map<int, int>
+#define vec vector<int>
+#define fio ios_base::sync_with_stdio(false); cin.tie(NULL);
+
+using namespace std;
+
+int profit[1000][1000];
+
+int main()
+{
+	stack<int>st;
+	
+scanf("%d %d",&knapsack_weight,&items);
+
+for(i=0;i<=items;i++){
+
+            profit[i][0] = 0;//no weight is taken, so no profit so far
+
+      }
+
+      for(w=0;w<=knapsack_weight;w++){
+
+            profit[0][w] = 0;//no item is taken, so no profit so far.
+
+      }
+
+ 
+
+      for(i=1;i<=items;i++){
+
+            for(w=1;w<=knapsack_weight;w++){
+
+                  if(weight[i]>w){
+
+                        profit[i][w] = profit[i-1][w];
+
+                  }
+
+                  else{
+
+                        if(profit[i-1][w]>=profit[i-1][w-weight[i]]+values[i]){
+
+                              profit[i][w] = profit[i-1][w];
+
+                             
+
+                        }
+
+                        else{
+
+                              profit[i][w] = profit[i-1][w-weight[i]]+values[i];
+
+                              track[profit[i][w]] = i;
+
+                        }
+
+                  }
+
+            }
+
+      }
+
+      //track the taken values
+
+     
+
+ 
+
+      i = profit[items][knapsack_weight];
+
+      j = track[i];
+
+      //for(j=track[knapsack_weight];j!=0;){
+
+     
+
+      while(j!=0){
+
+            //i = track[j];
+
+           
+
+           
+
+            st.push(values[j]);
+
+            i = i - values[j];
+
+            j=track[i];
+
+            //j = j-values[j];
+
+      }
+
+      while(!st.empty()){
+
+            printf("%d ",st.top());
+
+            st.pop();
+
+      }
+
+      printf("sum:%d\n",profit[items][knapsack_weight]);
+      
+      return 0;      
+}

@@ -1,0 +1,97 @@
+Function 		Description
+--------    	------------
+malloc----------allocates the specified number of bytes(takes a space from ram)
+realloc---------increases or decreases the size of the specified block of     					memory. Reallocates it if needed
+calloc----------allocates the specified number of bytes and initializes them to 				zero
+free------------releases the specified block of memory back to the system
+
+//weblink: https://en.wikipedia.org/wiki/C_dynamic_memory_allocation
+
+---------malloc
+#include <stdlib.h>
+
+int array[10]
+//this can be declared with malloc as
+int *array = malloc(10*sizeof(int));
+//difference is array[10] is stored in heap and destroyed while the code
+//is exited
+//but *array with malloc is stored in stack (dynamic) and not destroyed
+//it is only destroyed when the free() is used
+
+//note: malloc returns NULL if memory allocation fails
+//exmpl:
+int * array = malloc(10 * sizeof(int));
+if (NULL == array) {
+  fprintf(stderr, "malloc failed\n");
+  return(-1);
+}
+
+//malloc is used differently in c and c++
+
+int *ptr;
+ptr = malloc(10 * sizeof(int));		/* without a cast (used in c)*/
+ptr = (int *)malloc(10 * sizeof(int));	/* with a cast (used in c++)*/
+
+----------free
+#include <stdlib.h>
+
+free(array)
+
+
+---------calloc
+#include <stdlib.h>
+
+//calloc is same as malloc, but calloc can initialize a value in every memory
+//segment(if x is an array, then it will set 0 value all over the x, like 
+// memset() )
+
+int *array = calloc(10, sizeof(int));
+free(array);
+
+----------realloc
+
+//realloc mainly takes an old pointer array, and makes them usable in the new
+//pointer array
+//Exmpl:
+
+#include <stdio.h>
+#include <stdlib.h>
+int main()
+{
+   int *ptr = (int *)malloc(sizeof(int)*2);
+   int i;
+   int *ptr_new;
+    
+   *ptr = 10; 
+   *(ptr + 1) = 20;
+    
+   ptr_new = (int *)realloc(ptr, sizeof(int)*3);
+   *(ptr_new + 2) = 30;
+   for(i = 0; i < 3; i++)
+       printf("%d ", *(ptr_new + i));
+ 
+   getchar();
+   return 0;
+}
+
+//output
+// 10 20 30
+
+
+-----------------new and delete in c++
+
+//to assign a pointer with memory allocation
+int *x = new int;
+//to assign an array pointer with memory allocation
+
+int *x = new int[16]; //here an array of 16;
+
+//to acess the array
+cout << (x+1) << endl; //prints the second array
+
+//to delete a pointer (not array)
+delete x; //x is the pointer
+
+//to delete a pointer array
+delete [] x; // x is the pointer array;
+
