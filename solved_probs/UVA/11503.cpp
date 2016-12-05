@@ -1,9 +1,5 @@
 //UVa
-<<<<<<< HEAD
-//
-=======
 //11503 - Virtual Friends
->>>>>>> 5be65a6d7375a81736d27f07ce6753ac1a5038d7
 #include <bits/stdc++.h>
 #define pb push_back
 #define mp make_pair
@@ -24,14 +20,6 @@
 #define inf std::numeric_limits<int>::max()
 #define ll long long
 #define N 200000
-
-bool cmp(char x, char y)
-{
-    if(x > y)
-        return 1;
-    else
-        return 0;
-}
 
 using namespace std;
 
@@ -75,30 +63,6 @@ void union_init(ll l)  //initialising of set and list
 
 int main()
 {
-<<<<<<< HEAD
-    freopen("in", "r", stdin);
-    freopen("out", "w", stdout);
-    char a[1000000], en[] = "end";
-    int c = 1, l;
-    wh(sf(" %s", a)) {
-        map<char, int>m;
-        if(strcmp(a, en) == 0)
-            break;
-        l = strlen(a);
-        bool sorted = 0;
-        if(is_sorted(a, a+l, cmp))
-            sorted = 1;
-        else
-            for(int i = 0; i < l; i++)
-                m[a[i]]++;
-        if(sorted)
-            pf("Case %d: 1\n", c++);
-        else
-            pf("Case %d: %d\n", c++, m.size());
-        m.clear();
-    }
-    return 0;
-=======
 	ll x, p, t, k;
 	char n1[30], n2[30];
 	sf("%lld", &t);
@@ -119,5 +83,4 @@ int main()
 		}
 	}
 	return 0;
->>>>>>> 5be65a6d7375a81736d27f07ce6753ac1a5038d7
 }
