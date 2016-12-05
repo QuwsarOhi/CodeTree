@@ -1,5 +1,5 @@
 //UVa
-//514 - Rails
+//
 #include <bits/stdc++.h>
 #define pb push_back
 #define mp make_pair
@@ -21,67 +21,38 @@
 #define ll long long
 #define N 20000000
 
+bool cmp(char x, char y)
+{
+    if(x > y)
+        return 1;
+    else
+        return 0;
+}
+
 using namespace std;
 
 int main()
 {
-    //freopen("in", "r", stdin);
-    //freopen("out", "w", stdout);
-    int n, t, x, i;
-    char a[1000000];
-    int d[1010];
-    //bool first = 1;
-    wh(sf(" %d", &t) && t) {
-        bool skip = 0;
-        //if(!first) pf("\n");
-        //first = 0;
-        wh(1) {
-            sf( " %[^\n]", a);
-            ss s;
-            s << string(a);
-            i = -1;
-            wh(s >> x) {
-                if(x > 0) {
-                    d[++i]=x;
-                    //if(x == n) p = i-1;
-                }
-                else {
-                    //pf("zero\n");
-                    pf("\n");
-                    skip = 1;
-                    break;
-                }
-            }
-            if(skip) break;
-            n = t;
-            stack<int>st;
-            //pf("i is %d\n", i);
-            st.push(d[i--]);
-            wh(1) {
-                if(!st.empty() && st.top() == n) {
-                    //pf("popping %d\n", st.top());
-                    st.pop();
-                    n--;
-                }
-                else {
-                    if(i == -1) break;
-                    st.push(d[i--]);
-                    //pf("pushing %d\n", st.top());
-                }
-                //pf("i is %d\n", i);
-            }
-            if(st.empty())
-                pf("Yes\n");
-            else
-            {
-                pf("No\n");
-                /*pf("size : %d\n", st.size());
-                wh(!st.empty()) {
-                    pf("%d\n", st.top());
-                    st.pop();
-                }*/
-            }
-        }
+    freopen("in", "r", stdin);
+    freopen("out", "w", stdout);
+    char a[1000000], en[] = "end";
+    int c = 1, l;
+    wh(sf(" %s", a)) {
+        map<char, int>m;
+        if(strcmp(a, en) == 0)
+            break;
+        l = strlen(a);
+        bool sorted = 0;
+        if(is_sorted(a, a+l, cmp))
+            sorted = 1;
+        else
+            for(int i = 0; i < l; i++)
+                m[a[i]]++;
+        if(sorted)
+            pf("Case %d: 1\n", c++);
+        else
+            pf("Case %d: %d\n", c++, m.size());
+        m.clear();
     }
     return 0;
 }
