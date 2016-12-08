@@ -1,4 +1,5 @@
-
+//UVa
+//11059 - Maximum Product
 #include <bits/stdc++.h>
 #define pb push_back
 #define mp make_pair
@@ -24,3 +25,29 @@
 
 using namespace std;
 
+int main()
+{
+    //frein;
+    //freout;
+    ll a[30], t = 1, x, mx, n;
+    wh(sf("%lld", &n) != EOF) {
+        for(int i = 0; i < n; i++) {
+            sf("%lld", &a[i]);
+        }
+        mx = -inf;
+        for(int i = 0; i < n; i++) {
+            if(a[i] == 0) continue;
+            x = a[i];
+            mx = max(x, mx);
+            for(int j = i+1; j < n; j++) {
+                if(x == 0) break;
+                x*=a[j];
+                mx = max(x, mx);
+            }
+            //if(n == 1) mx = a[0];
+        }
+        if(mx < 0) mx = 0;
+        pf("Case #%lld: The maximum product is %lld.\n\n", t++, mx);
+    }
+    return 0;
+}
