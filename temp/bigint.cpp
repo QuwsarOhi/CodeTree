@@ -22,32 +22,3 @@
 #define frein freopen("in", "r", stdin);
 #define freout freopen("out", "w", stdout);
 
-using namespace std;
-
-int main()
-{
-    int lim = 7, cnt = 0, roll = 0;
-    fr(i, 1, lim)
-        fr(j, 1, lim) {
-            if(j == i) continue; //pf("i: %d j: %d\n", i, j);
-            fr(k, 1, lim) {
-                if(k ==i || k == j) continue; //pf("k: %d\n", k);
-                fr(l, 1, lim) {
-                    if(l == i || l ==j || l == k) continue; //pf("l: %d\n", l);
-                    fr(m, 1, lim) {
-                        if(m == i || m == j || m ==k || m == l) continue; //pf("i: %d j: %d k: %d l: %d m: %d\n", i, j, k, l, m);
-                        fr(n, 1, lim) {
-                            if(n == i || n ==j || n == k || n ==l || n == m) continue;
-                            if(i+n == 7 && j+m == 7 && k+l ==7) {
-                            pf("%d %d %d %d %d %d\n", i, j, k, l, m, n);
-                            roll++;
-                            }
-                            cnt++;
-                        }
-                    }
-                }
-            }
-        }
-    pf("%d iterations, %d dice rolls\n", cnt, roll);
-    return 0;
-}

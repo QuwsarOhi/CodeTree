@@ -22,56 +22,21 @@
 #define frein freopen("in", "r", stdin);
 #define freout freopen("out", "w", stdout);
 
-int c[510][510];
-ll x,  y;
-
-inline void mark(int n, int m)
-{
-	if(m+2 < x && n+1 < y) //{
-		c[m+2][n+1] = -1; //pf("1 %d %d, set: %d %d\n", m, n, m+2, n+1); }
-	if(m+1 < x && n+2 < y) //{
-		c[m+1][n+2] = -1; //pf("2 %d %d, set: %d %d\n", m, n, m+1, n+2); }
-	if(m-1 >= 0 && n+2 < y) //{
-		c[m-1][n+2] = -1; //pf("3 %d %d, set: %d %d\n", m, n, m-1, n+2); }
-	if(m-2 >= 0 && n+1 < y) //{
-		c[m-2][n+1] = -1; //pf("4 %d %d, set: %d %d\n", m, n, m-2, n+1); }
-	if(m-2 >= 0 && n-1 >= 0) //{
-		c[m-2][n-1] = -1; //pf("5 %d %d, set: %d %d\n",m ,n, m-2, n-1); }
-	if(m-1 >= 0 && n-2 >= 0)// {
-		c[m-1][n-2] = -1; //pf("6 %d %d, set: %d %d\n", m, n, m-1, n-2); }
-	if(m+1 < x && n-2 >= 0) //{
-		c[m+1][n-2] = -1; //pf("7 %d %d, set: %d %d\n", m, n, m+1, n-2); }
-	if(m+2 < x && n-1 >= 0) //{
-		c[m+2][n-1] = -1; //pf("8 %d %d, set: %d %d\n", m, n, m+2, n-2); }
-}
-
 int main()
 {
-    ll t, cnt;
-    //register int x, y;
-    sf("%lld", &t);
-    for(ll k = 1; k <= t; k++) {
-        sf("%lld %lld", &x, &y);
-        if(x >= 3 && y >= 3) {
-			pf("Case %lld: %lld\n", k,  (ll)ceil((x*y)/2.0));
-			continue;
-		}
-		else {
-			cnt = 0;
-			memset(c, 0, sizeof(c));
-			//if(x < y) swap(x, y);
-			//if(x > y) swap(x, y);
-			fr(i, 0, y)
-				fr(j, 0, x)
-					if(c[j][i] == 0) {
-						mark(i, j);
-						//pf("i: %d, j: %d\n", j, i);
-						cnt++;
-					}
-					//else
-						//pf("i: %d, j: %d is %d\n", i, j, c[j][i]);
-		}
-		pf("Case %lld: %lld\n", k,  cnt);
-    }
-    return 0;
+	register int i, k, cnt = 0, tmp;
+	register int d[6][6] = { {0, 1, 2, 3, 4, 5}, {1, 2, 0, 5, 3, 4}, {2, 0, 1, 4, 5, 3}, {5, 4, 3, 1, 2, 0}, {4, 3, 0, 2, 5, 1}, {3, 5, 1, 0, 4, 2}};
+	for(i = 0; i < 6; i++) {
+			for(k = 0; k < 4; k++) {
+				tmp = d[i][1];
+				d[i][1] = d[i][2];
+				d[i][2] = d[i][4];
+				d[i][4] = d[i][3];
+				d[i][3] = tmp;
+				pf("%d %d %d %d %d %d\n", d[i][0]+1, d[i][1]+1, d[i][2]+1, d[i][3]+1, d[i][4]+1, d[i][5]+1);
+				cnt++;
+			}
+	}
+	pf("%d iterations done.\n", cnt);
+	return 0;
 }

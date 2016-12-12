@@ -62,8 +62,8 @@ int main()
 	//	Solution for producing amount with coins. With co-occurance and 
 	//	coins can be used more than once
 	//  Top Down solution
-	
-	memset(test, inf, sizeof(test));
+	fr(i, 0, 1000)test[i] = inf;
+	//memset(test, inf, sizeof(test));
 	test[0] = 0;	// Base case
 	
 	for(register int i = 0; i < coin_amount; i++)				// this will produce co-occurance
@@ -78,9 +78,10 @@ int main()
 	//  Top Down solution
 	
 	
-	memset(test, inf, sizeof(test));
+	fr(i, 0, 1000)test[i] = inf;
+	//memset(test, inf, sizeof(test));
 	test[0] = 0; // Base case
-	
+	printf("%d\n", test[20]);
 	for(register int i = n; i > 0; i--)							// this will NOT produce co-occurance
 		for(register int j = 0; j < coin_amount; j++)			// solution for 4 if there is present 1, 2 & 3 coins would be 1
 			if(i >= coin[j] && (test[i - coin[j]] + 1) < inf)	// 1+3 only
