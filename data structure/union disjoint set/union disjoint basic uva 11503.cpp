@@ -40,7 +40,7 @@ inline ll make_union(ll a, ll b) //make union of set, returns the value of
 	ll x = root(a);
 	ll y = root(b);
 	if(x == y)                   //returns the same value if the input two
-		return x;				 //value is same
+		return x;				 //value is same or the root is same
 	else if(u_list[x] > u_list[y]) {
 		u_set[y] = x;
 		u_list[x] += u_list[y];

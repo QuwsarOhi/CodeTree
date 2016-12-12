@@ -1,7 +1,7 @@
-
+//Light OJ
+//1010 	Knights in Chessboard
 #include <bits/stdc++.h>
 #define pb push_back
-#define mp make_pair
 #define fi first
 #define se second
 #define pi acos(-1)
@@ -18,6 +18,7 @@
 #define wh while
 #define inf std::numeric_limits<int>::max()
 #define ll long long
-#define ull unsigned long long
-#define N 50000
+
+using namespace std;
+
 
