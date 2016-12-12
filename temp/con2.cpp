@@ -26,19 +26,12 @@ using namespace std;
 
 int main()
 {
-	register int i, k, cnt = 0, tmp;
-	register int d[6][6] = { {0, 1, 2, 3, 4, 5}, {1, 2, 0, 5, 3, 4}, {2, 0, 1, 4, 5, 3}, {5, 4, 3, 1, 2, 0}, {4, 3, 0, 2, 5, 1}, {3, 5, 1, 0, 4, 2}};
-	for(i = 0; i < 6; i++) {
-			for(k = 0; k < 4; k++) {
-				tmp = d[i][1];
-				d[i][1] = d[i][2];
-				d[i][2] = d[i][4];
-				d[i][4] = d[i][3];
-				d[i][3] = tmp;
-				pf("%d %d %d %d %d %d\n", d[i][0], d[i][1], d[i][2], d[i][3], d[i][4], d[i][5]);
-				cnt++;
-			}
-	}
-	pf("%d iterations done.\n", cnt);
-	return 0;
+    ll t;
+    register int x, y;
+    sf("%lld", &t);
+    for(ll i = 1; i <= t; i++) {
+        sf("%d %d", &x, &y);
+        pf("Case %lld: %d\n", i,  (int)ceil((x*y)/2.0));
+    }
+    return 0;
 }
