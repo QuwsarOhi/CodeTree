@@ -1,0 +1,76 @@
+
+#include <bits/stdc++.h>
+#define pb push_back
+#define mp make_pair
+#define fi first
+#define se second
+#define pi acos(-1)
+#define fr(i, a, b) for(register int i = a; i < b; i++)
+#define f1(i, b) for(register int i = 1; i <= b; i++)
+#define ss stringstream
+#define mimx(a, b) if(a > b)swap(a, b)
+#define msi map<string, int>
+#define mii map<int, int>
+#define vec vector<int>
+#define fio ios_base::sync_with_stdio(false); cin.tie(NULL);
+#define sf scanf
+#define pf printf
+#define wh while
+#define inf std::numeric_limits<int>::max()
+#define ll long long
+#define N 9876543210
+#define frein freopen("in", "r", stdin);
+#define freout freopen("out", "w", stdout);
+
+using namespace std;
+
+int main()
+{
+    frein;
+    freout;
+    bitset<7>bit;
+    register int i, j, k, l, m, n;
+    bool found;
+    char d[10], t[10];
+    wh(sf(" %c%c%c%c%c%c%c%c%c%c%c%c", &d[1], &d[2], &d[3], &d[4], &d[5], &d[6], &t[1], &t[2], &t[3], &t[4], &t[5], &t[6]) != EOF) {
+        found = 0;
+        map<int, int>dcheck;
+    for(i = 1; i <= 6; i++) {
+        for(j= 1; j <= 6; j++) {
+            for(k= 1; k <= 6; k++) {
+                for(l = 1; l <=6; l++) {
+                    for(m = 1; m <=6;  m++) {
+                        for(n = 1; n<=6; n++) {
+                            //cnt++;
+                            bit.set();
+                            bit[0] = 0;
+                            bit[i].flip();
+                            bit[j].flip();
+                            bit[k].flip();
+                            bit[l].flip();
+                            bit[m].flip();
+                            bit[n].flip();
+                            if(bit.none())
+                                if(i+n == 7 && j+m == 7 && k+l == 7 && (i != 1 && j != 2 && k != 3 && l != 4 &&m != 5 && n != 6))
+                                    if(t[i] == d[1] && t[j] == d[2] && t[k] == d[3] && t[l] == d[4] && t[m] == d[5] && t[n] == d[6] && m[ijklmn]==0) {
+                                        m[nmlkji]++;
+                                        found = 1;
+                                        break;
+                                }
+                        }
+                        if(found) break;
+                    }
+                    if(found) break;
+                }
+                if(found) break;
+            }
+            if(found) break;
+        }
+        if(found) break;
+    }
+    if(found) pf("TRUE\n");
+    else pf("FALSE\n");
+    //pf("loop ended after %d iterations,%d dice rolls possible\n", cnt, rolls);
+    }
+    return 0;
+}
