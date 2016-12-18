@@ -1,5 +1,4 @@
-//Light OJ
-//1010 	Knights in Chessboard
+
 #include <bits/stdc++.h>
 #define pb push_back
 #define fi first
@@ -21,4 +20,26 @@
 
 using namespace std;
 
+//(a+b)%m = ((a%m) + (b%m))%m
+//(a*b)%m = ((a%m) * (b%m))%m
+
+inline ull odd(ull n)
+{
+	return (n & 1);
+}
+
+inline ull powmod(ull n, ull p, ull m)
+{
+	if(p == 0) return 1;
+	if(!odd(p)) {
+		ull tmp = powmod(n, p/2, m)%m;
+		return (tmp*tmp)%m;
+	}
+	else return ((n%m)*(powmod(n, p-1, m)%m))%m;
+}
+
+inline ull plusmod(ull x, ull y, ull m)
+{
+	return ((x%m)+(y%m))%m;
+}
 
