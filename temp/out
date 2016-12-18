@@ -1,128 +1,200 @@
-Case 1: 452
-Case 2: 4692
-Case 3: 2941
-Case 4: 4224
-Case 5: 18046
-Case 6: 9398
-Case 7: 1978
-Case 8: 4193
-Case 9: 7289
-Case 10: 8136
-Case 11: 429
-Case 12: 9287
-Case 13: 728
-Case 14: 1935
-Case 15: 6600
-Case 16: 10472
-Case 17: 2842
-Case 18: 3120
-Case 19: 1043
-Case 20: 12776
-Case 21: 7533
-Case 22: 2604
-Case 23: 5320
-Case 24: 8880
-Case 25: 7326
-Case 26: 4800
-Case 27: 172
-Case 28: 6639
-Case 29: 2486
-Case 30: 1652
-Case 31: 120
-Case 32: 3179
-Case 33: 648
-Case 34: 58
-Case 35: 2188
-Case 36: 4361
-Case 37: 12719
-Case 38: 4425
-Case 39: 1044
-Case 40: 6696
-Case 41: 1040
-Case 42: 14803
-Case 43: 117
-Case 44: 917
-Case 45: 6552
-Case 46: 4485
-Case 47: 10005
-Case 48: 640
-Case 49: 4908
-Case 50: 4312
-Case 51: 2848
-Case 52: 11904
-Case 53: 6039
-Case 54: 16020
-Case 55: 10973
-Case 56: 2842
-Case 57: 3620
-Case 58: 5250
-Case 59: 324
-Case 60: 2673
-Case 61: 3731
-Case 62: 189
-Case 63: 4789
-Case 64: 4897
-Case 65: 1813
-Case 66: 7221
-Case 67: 7912
-Case 68: 2952
-Case 69: 1216
-Case 70: 13940
-Case 71: 380
-Case 72: 2768
-Case 73: 265
-Case 74: 793
-Case 75: 7014
-Case 76: 4752
-Case 77: 3213
-Case 78: 105
-Case 79: 5387
-Case 80: 4208
-Case 81: 13134
-Case 82: 2184
-Case 83: 10300
-Case 84: 2278
-Case 85: 113
-Case 86: 1650
-Case 87: 347
-Case 88: 570
-Case 89: 6800
-Case 90: 293
-Case 91: 14040
-Case 92: 72
-Case 93: 679
-Case 94: 2968
-Case 95: 9740
-Case 96: 7663
-Case 97: 4018
-Case 98: 11040
-Case 99: 2573
-Case 100: 4244
-Case 101: 59
-Case 102: 117
-Case 103: 187
-Case 104: 31
-Case 105: 149
-Case 106: 177
-Case 107: 13
-Case 108: 186
-Case 109: 136
-Case 110: 159
-Case 111: 188
-Case 112: 82
-Case 113: 102
-Case 114: 192
-Case 115: 154
-Case 116: 96
-Case 117: 148
-Case 118: 12
-Case 119: 104
-Case 120: 78
-Case 121: 114
-Case 122: 96
-Case 123: 156
-Case 124: 148
-Case 125: 144
-Case 126: 28
-Case 127: 1
-Case 128: 4
+Peter should buy books whose prices are 278 and 721.
+
+Peter should buy books whose prices are 184 and 609.
+
+Peter should buy books whose prices are 72 and 209.
+
+Peter should buy books whose prices are 191 and 384.
+
+Peter should buy books whose prices are 287 and 592.
+
+Peter should buy books whose prices are 120 and 755.
+
+Peter should buy books whose prices are 127 and 346.
+
+Peter should buy books whose prices are 63 and 354.
+
+Peter should buy books whose prices are 23 and 23.
+
+Peter should buy books whose prices are 234 and 505.
+
+Peter should buy books whose prices are 395 and 489.
+
+Peter should buy books whose prices are 243 and 530.
+
+Peter should buy books whose prices are 30 and 950.
+
+Peter should buy books whose prices are 30 and 111.
+
+Peter should buy books whose prices are 410 and 475.
+
+Peter should buy books whose prices are 70 and 206.
+
+Peter should buy books whose prices are 246 and 407.
+
+Peter should buy books whose prices are 298 and 317.
+
+Peter should buy books whose prices are 5 and 80.
+
+Peter should buy books whose prices are 3 and 26.
+
+Peter should buy books whose prices are 99 and 143.
+
+Peter should buy books whose prices are 226 and 348.
+
+Peter should buy books whose prices are 4 and 5.
+
+Peter should buy books whose prices are 1 and 90.
+
+Peter should buy books whose prices are 22 and 38.
+
+Peter should buy books whose prices are 103 and 219.
+
+Peter should buy books whose prices are 151 and 664.
+
+Peter should buy books whose prices are 23 and 58.
+
+Peter should buy books whose prices are 315 and 335.
+
+Peter should buy books whose prices are 12 and 126.
+
+Peter should buy books whose prices are 62 and 644.
+
+Peter should buy books whose prices are 266 and 553.
+
+Peter should buy books whose prices are 169 and 244.
+
+Peter should buy books whose prices are 34 and 250.
+
+Peter should buy books whose prices are 134 and 223.
+
+Peter should buy books whose prices are 12 and 591.
+
+Peter should buy books whose prices are 156 and 252.
+
+Peter should buy books whose prices are 69 and 758.
+
+Peter should buy books whose prices are 232 and 429.
+
+Peter should buy books whose prices are 15 and 57.
+
+Peter should buy books whose prices are 71 and 118.
+
+Peter should buy books whose prices are 146 and 346.
+
+Peter should buy books whose prices are 71 and 190.
+
+Peter should buy books whose prices are 163 and 394.
+
+Peter should buy books whose prices are 19 and 490.
+
+Peter should buy books whose prices are 23 and 857.
+
+Peter should buy books whose prices are 433 and 480.
+
+Peter should buy books whose prices are 302 and 305.
+
+Peter should buy books whose prices are 39 and 760.
+
+Peter should buy books whose prices are 374 and 492.
+
+Peter should buy books whose prices are 27 and 547.
+
+Peter should buy books whose prices are 25 and 45.
+
+Peter should buy books whose prices are 5 and 9.
+
+Peter should buy books whose prices are 20 and 853.
+
+Peter should buy books whose prices are 102 and 479.
+
+Peter should buy books whose prices are 67 and 93.
+
+Peter should buy books whose prices are 5 and 6.
+
+Peter should buy books whose prices are 296 and 480.
+
+Peter should buy books whose prices are 92 and 838.
+
+Peter should buy books whose prices are 63 and 375.
+
+Peter should buy books whose prices are 253 and 492.
+
+Peter should buy books whose prices are 142 and 745.
+
+Peter should buy books whose prices are 12 and 491.
+
+Peter should buy books whose prices are 116 and 668.
+
+Peter should buy books whose prices are 10 and 832.
+
+Peter should buy books whose prices are 275 and 581.
+
+Peter should buy books whose prices are 299 and 305.
+
+Peter should buy books whose prices are 103 and 538.
+
+Peter should buy books whose prices are 276 and 457.
+
+Peter should buy books whose prices are 40 and 87.
+
+Peter should buy books whose prices are 16 and 425.
+
+Peter should buy books whose prices are 97 and 689.
+
+Peter should buy books whose prices are 129 and 216.
+
+Peter should buy books whose prices are 25 and 41.
+
+Peter should buy books whose prices are 42 and 89.
+
+Peter should buy books whose prices are 12 and 270.
+
+Peter should buy books whose prices are 31 and 35.
+
+Peter should buy books whose prices are 100 and 118.
+
+Peter should buy books whose prices are 115 and 821.
+
+Peter should buy books whose prices are 40 and 49.
+
+Peter should buy books whose prices are 147 and 366.
+
+Peter should buy books whose prices are 16 and 334.
+
+Peter should buy books whose prices are 106 and 142.
+
+Peter should buy books whose prices are 110 and 118.
+
+Peter should buy books whose prices are 78 and 467.
+
+Peter should buy books whose prices are 49 and 110.
+
+Peter should buy books whose prices are 13 and 475.
+
+Peter should buy books whose prices are 177 and 688.
+
+Peter should buy books whose prices are 238 and 264.
+
+Peter should buy books whose prices are 152 and 225.
+
+Peter should buy books whose prices are 319 and 395.
+
+Peter should buy books whose prices are 102 and 759.
+
+Peter should buy books whose prices are 194 and 375.
+
+Peter should buy books whose prices are 157 and 181.
+
+Peter should buy books whose prices are 252 and 515.
+
+Peter should buy books whose prices are 80 and 104.
+
+Peter should buy books whose prices are 191 and 630.
+
+Peter should buy books whose prices are 22 and 138.
+
+Peter should buy books whose prices are 125 and 180.
+
+Peter should buy books whose prices are 24 and 138.
+
