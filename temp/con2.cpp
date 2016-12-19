@@ -1,4 +1,5 @@
-
+//unsolved
+//11094 - Continents
 #include <bits/stdc++.h>
 #define pb push_back
 #define mp make_pair
@@ -18,75 +19,83 @@
 #define wh while
 #define inf std::numeric_limits<int>::max()
 #define ll long long
+#define ui unsigned int
+#define ull unsigned long long
 #define N 500000
 #define frein freopen("in", "r", stdin);
 #define freout freopen("out", "w", stdout);
 
 using namespace std;
 
-bitset<N>bit;
-vector<ll> factors, prime;
-ll power[N];
-void sieve() {
-	bit.set();
-	bit[0] = bit[1] = 0;
-	for(ll i = 0; i <= N; i++) {					//it can be limited to sqrt(N)
-		if(bit[i]) {								//here it is not used as we want to0
-			for(ll j = i * i; j <= N; j += i)		//save the primes in prime vector
-				bit[j] = 0;
-			prime.pb(i);
-} } }
+bool g[25][25], vis[25][25], skip, first;
+int p, q, mx, cnt, r1, r2, l, w;
+char c, x;
 
-void primeFactor_of_factorial(ll n) {
-	memset(power, 0, sizeof(power));
-	for(size_t i = 0; prime[i] <= n && i < prime.size(); i++) {
-		int tmp = n;
-		wh(tmp) {
-			power[prime[i]] += tmp / prime[i];		//if we want to generate powers and numbers
-			//factors.pb(prime[i]);					//if we only to genetare all the numbers
-			tmp /= prime[i];
-} } }
+void dfs(int x, int y)
+{
+	cnt++;
+	vis[x][y] = 1;
+	//if(cnt > 1) pf("%d %d : %d\n", x, y, cnt);
+	if(x == r1 && y == r2)
+		skip = 1;
+	if(x-1 >= 0 && y-1 >= 0 && g[x-1][y-1] && !vis[x-1][y-1])
+		dfs(x-1, y-1);
+	if(x-1 >= 0 && g[x-1][y] && g[x-1][y] && !vis[x-1][y])
+		dfs(x-1, y);
+	if(x-1 >= 0 && y+1 < q && g[x-1][y+1] && !vis[x-1][y+1])
+		dfs(x-1, y+1);
+	if(y-1 >= 0 && g[x][y-1] && !vis[x][y-1])
+		dfs(x, y-1);
+	if(y+1 < q && g[x][y+1] && !vis[x][y+1])
+		dfs(x, y+1);
+	if(x+1 < p && y-1 >= 0 && g[x+1][y-1] && !vis[x+1][y-1])
+		dfs(x+1, y-1);
+	if(x+1 < p &&  g[x+1][y] && !vis[x+1][y])
+		dfs(x+1, y);
+	if(x+1 < p && y+1 < q && g[x+1][y+1] && !vis[x+1][y+1])
+		dfs(x+1, y+1);
+}
 
-void primeFactor(ll n) {
-	memset(power, 0, sizeof(power));
-	if(prime[n]) {									//First determine if n is a prime number
-		power[n]++;
-		//factors.pb(n);
-	}
-	else {
-	for(size_t i = 0; prime[i]*prime[i] <= n && i < prime.size(); i++) {
-		wh(n % prime[i] == 0) {
-			power[prime[i]]++;
-			//factors.pb(prime[i]);
-			n/=prime[i];
-	} }
-	if(n > 1) {									//Must be a prime number which is not in prime[i]
-		power[n]++;								//it would happen if n is a large number
-		//factors.pb(n);
-} } }
 
 int main()
 {
-	sieve();
-	//primeFactor(12);
-	primeFactor(13);
-	//for(size_t i = 0; i < factors.size(); i++)
-		//pf("%lld ", factors[i]);
-	//factors.clear();
-	//pf("\n");
-	ll p = 1;
-	//primeFactor_of_factorial(12);
-	/*for(size_t i = 0; i < power.size(); i++) {
-		if(i == power.size()-1) pf("%lld ^ %lld\n", factors[i], power[i]);
-		else pf("%lld ^ %lld * ", factors[i], power[i]);
-	}*/
-		for(size_t i = 0; prime[i] <= 13; i++) {
-		if(power[prime[i]] > 0) {
-			pf("%lld ^ %lld * ", prime[i], power[prime[i]]);
-			p*= pow(prime[i], power[prime[i]]);
+	wh(sf("%d %d", &p, &q) != EOF) {
+		memset(g, 0, sizeof(g));
+		memset(vis, 0, sizeof(vis));
+		l = w = 0;
+		first = 1;
+		fr(i, 0, p)
+			fr(j, 0, q) {
+				sf(" %c", &c);
+				if(first) { 
+					x = c;
+					first = 0;
+				}
+				if(c == x) {
+					g[i][j] = 1;
+					l++;
+				}
+				else
+					w++;
+			}
+		if(l > w) {
+			fr(i, 0, p)
+				fr(j, 0, q)
+					g[i][j] = !g[i][j];
 		}
+		sf(" %d %d", &r1, &r2);
+		mx = 0;
+		//fr(i, 0, p) { fr(j, 0, q) pf("%d", g[i][j]); pf("\n"); }
+		fr(i, 0, p)
+			fr(j, 0, q) {
+				cnt = 0;
+				skip = 0;
+				if(!vis[i][j] && g[i][j])
+					dfs(i, j);
+				if(!skip)
+					mx = max(mx, cnt);
+			}
+		pf("%d\n", mx);
 	}
-	pf("\n%lld\n", p);
-
 	return 0;
-}				
+}
