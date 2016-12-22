@@ -1,5 +1,4 @@
-//UVa
-//10653 - Bombs! NO they are Mines!!
+
 #include <bits/stdc++.h>
 #define pb push_back
 #define mp make_pair
@@ -22,78 +21,64 @@
 
 using namespace std;
 
-bool g[1010][1010], vis[1010][1010];
-int level[1010][1010], n, m, b, r, c, q, s1, s2, e1, e2;
+int dfs_num[110], dfsNumberCounter, dfs_low[110], dfs_parent[110], dfsRoot, rootChildren, V = 0;
+bool articulation_vertex[110], visited[110];
+vi AdjList[110];
 
-/*void dfs(int x, int y, int dis)
+void AandB(int u)
 {
-	//vis[x][y] = 1;
-	++dis;
-	//pf("%d %d : %d\n", x, y, dis+1);
-	//if(dis < level[x][y])
-		level[x][y] = dis;
-		if(x-1 >= 0 && g[x-1][y] && level[x][y]+1 < level[x-1][y])
-			dfs(x-1, y, level[x][y]);
-		if(y-1 >= 0 && g[x][y-1] && level[x][y]+1 < level[x][y-1])
-			dfs(x, y-1, level[x][y]);
-		if(y+1 < m && g[x][y+1] && level[x][y]+1 < level[x][y+1])
-			dfs(x, y+1, level[x][y]);
-		if(x+1 < n && g[x+1][y] && level[x][y]+1 < level[x+1][y])
-			dfs(x+1, y, level[x][y]);
-}*/
-
-void bfs(int _x, int _y)
-{
-	queue<pair<int, int> >que;
-	register int x, y;
-	vis[_x][_y] = 1;
-	level[_x][_y] = 0;
-	que.push(mp(_x, _y));
-	wh(!que.empty()) {
-		x = que.front().first;
-		y = que.front().second;
-		//pf("%d %d : %d %d\n", x, y, level[x][y], (int)que.size());
-		que.pop();
-		if(x-1 >= 0 && g[x-1][y] && vis[x-1][y] == 0) {
-			level[x-1][y] = level[x][y]+1;
-			vis[x-1][y] = 1;
-			que.push(mp(x-1, y));
+	dfs_low[u] = dfs_num[u] = dfsNumberCounter++;
+	for(size_t i = 0; i < AdjList[u].size(); i++) {
+		int v = AdjList[u][i];
+		if(visited[u] == 0) {
+			dfs_parent[v] = u;
+			visited[u] = 1;
+			if(u == dfsRoot) rootChildren++;
+			AandB(v);
+			
+			if(dfs_low[v] >= dfs_num[u])
+				articulation_vertex[u] = true;
+			if(dfs_low[v] > dfs_num[u])
+				pf("Edge (%d, %d) is a bridge\n", u, v);
+			dfs_low[u] = min(dfs_low[u], dfs_low[v]);
 		}
-		if(y-1 >= 0 && g[x][y-1] && vis[x][y-1] == 0) {
-			level[x][y-1] = level[x][y]+1;
-			vis[x][y-1] = 1;
-			que.push(mp(x, y-1));
-		}
-		if(y+1 < m && g[x][y+1] && vis[x][y+1] == 0) {
-			level[x][y+1] = level[x][y]+1;
-			vis[x][y+1] = 1;
-			que.push(mp(x, y+1));
-		}
-		if(x+1 < n && g[x+1][y] && vis[x+1][y] == 0) {
-			level[x+1][y] = level[x][y]+1;
-			vis[x+1][y] = 1;
-			que.push(mp(x+1, y));
-		}
+		else if(v != dfs_parent[u])
+			dfs_low[u] = min(dfs_low[u], dfs_num[v]);
+		//pf("dfs : %d : %d : %d\n", u, dfs_num[u], dfs_low[u]);
 	}
+}
+
+void mset(int x, int y)
+{
+	AdjList[x].pb(y);
+	V = max(V, max(x, y));
 }
 
 int main()
 {
-	wh(sf("%d %d", &n, &m) && n && m) {
-		memset(g, 1, sizeof(g));
-		memset(vis, 0, sizeof(vis));
-		sf("%d", &b);
-		wh(b--) {
-			sf("%d %d", &r, &q);
-			wh(q--) {
-				sf("%d", &c);
-				g[r][c] = 0;
-			}
+	memset(dfs_num, 0, sizeof(dfs_num));
+	memset(dfs_low, 0, sizeof(dfs_low));
+	memset(visited, 0, sizeof(visited));
+	memset(dfs_parent, 0, sizeof(dfs_parent));
+	dfsNumberCounter = 1;
+	mset(1, 2);
+	mset(1, 3);
+	mset(3, 4);
+	mset(4, 5);
+	mset(4, 6);
+	mset(6, 7);
+	mset(7, 3);
+	pf("Bridges: \n");
+	for(int i = 1; i <= V; i++)
+		if(dfs_num[i] == 0) {
+			dfsRoot = i;
+			rootChildren = 0;
+			AandB(i);
+			articulation_vertex[dfsRoot] = (rootChildren > 1);
 		}
-		sf("%d %d %d %d", &s1, &s2, &e1, &e2);
-		bfs(s1, s2);
-		pf("%d\n", level[e1][e2]);
-	}
-	return 0;
+	for(int i = 1; i <= V; i++)
+		if(articulation_vertex[i])
+			pf(" Vertex %d\n", i);
+	for(int i = 1; i <= V; i++)
+		pf("dfs : %d : %d : %d\n", i, dfs_num[i], dfs_low[i]);
 }
-

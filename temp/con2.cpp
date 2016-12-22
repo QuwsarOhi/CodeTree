@@ -1,5 +1,4 @@
-//UVa
-//11094 - Continents
+
 #include <bits/stdc++.h>
 #define pb push_back
 #define mp make_pair
@@ -22,59 +21,63 @@
 #define ui unsigned int
 #define ull unsigned long long
 #define N 500000
+#define vi std::vector<int>
 #define frein freopen("in", "r", stdin);
 #define freout freopen("out", "w", stdout);
 
 using namespace std;
+//UNVISITED -> 0
+//EXPLORED -> 1
+//VISITED -> 2
 
-bool g[110][110], tag, visited[110][110], skip, first;
-int dr[] = {-1, 0, 0, 1}, dc[] = {0, -1, 1, 0}, p, q, dis, x, y, mx;
-char t, c;
+int dfs_num[110], dfs_parent[110];
+vi AdjList[110];
 
-void dfs(int i, int j)
+void graphCheck(int u)
 {
-	visited[i][j] = 1;
-	dis++;
-	if(i == y && j == x)
-		skip = 1;
-	for(int k = 0; k < 4; k++) {
-		if(i + dr[k] >= 0 && i + dr[k] < p && j + dc[k] >= 0 && j + dc[k] < q && g[i + dr[k]][j + dc[k]] == tag && !visited[i + dr[k]][j + dc[k]])
-			dfs(i + dr[k], j + dc[k]);
-		else if(i + dr[k] >= 0 && i + dr[k] < p && j + dc[k] == q && !visited[i+dr[k]][0] && g[i+dr[k]][0] == tag)
-			dfs(i + dr[k], 0);
-		else if(i + dr[k] >= 0 && i + dr[k] < p && j + dc[k] == -1 && !visited[i+dr[k]][q-1] && g[i+dr[k]][q-1] == tag)
-			dfs(i + dr[k], q-1);
+	dfs_num[u] = 1;
+	for(size_t i = 0; i < AdjList[u].size(); i++) {
+		int v = AdjList[u][i];
+		if(dfs_num[v] == 0) {
+			dfs_parent[v] = u;
+			graphCheck(v);
+		}
+		else if(dfs_num[v] == 1) {
+			if(dfs_parent[u] == v)
+				pf("Two ways (%d %d)-(%d %d)\n", u, v, v, u);
+			else
+				pf("Back Edge (%d %d) (Cycle)\n", u, v);
+		}
+		else if(dfs_num[v] == 2)
+			pf("Forward/Cross Edge (%d %d)\n", u, v);
 	}
+	dfs_num[u] = 2;
+}
+
+void gset(int x, int y)
+{
+	AdjList[x].pb(y);
+	AdjList[y].pb(x);
 }
 
 
 int main()
 {
-	wh(sf("%d %d", &p, &q) != EOF) {
-		first = 1;
-		fr(i, 0, p)
-			fr(j, 0, q) {
-				sf(" %c", &c);
-				if(first) {
-					t = c;
-					first = 0;
-				}
-				if(c == t) g[i][j] = 1;
-				else g[i][j] = 0;
-			}
-		memset(visited, 0, sizeof(visited));
-		sf("%d %d", &y, &x);
-		tag = g[y][x];
-		mx = 0;
-		fr(i, 0, p)
-			fr(j, 0, q) {
-				dis = 0;
-				skip = 0;
-				if(!visited[i][j] && g[i][j] == tag)
-					dfs(i, j);
-				if(!skip)
-					mx = max(dis, mx);
+	int V = 9, cmp = 1;
+	memset(dfs_num, 0, sizeof(dfs_num));
+	memset(dfs_parent, 0, sizeof(dfs_parent));
+	gset(0, 1);
+	gset(1, 2);
+	gset(1, 3);
+	gset(2, 3);
+	gset(3, 4);
+	gset(7, 6);
+	gset(6, 8);
+	for(int i = 0; i < V; i++) {
+		if(dfs_num[i] == 0) {
+			pf("Component %d:\n", cmp++);
+			graphCheck(i);
 		}
-		pf("%d\n", mx);
 	}
+	return 0;
 }
