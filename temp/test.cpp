@@ -30,7 +30,7 @@ void AandB(int u)
 	dfs_low[u] = dfs_num[u] = dfsNumberCounter++;
 	for(size_t i = 0; i < AdjList[u].size(); i++) {
 		int v = AdjList[u][i];
-		if(visited[u] == 0) {
+		if(dfs_num[v] == 0) {
 			dfs_parent[v] = u;
 			visited[u] = 1;
 			if(u == dfsRoot) rootChildren++;
@@ -51,6 +51,7 @@ void AandB(int u)
 void mset(int x, int y)
 {
 	AdjList[x].pb(y);
+	//AdjList[y].pb(x);
 	V = max(V, max(x, y));
 }
 
@@ -60,7 +61,7 @@ int main()
 	memset(dfs_low, 0, sizeof(dfs_low));
 	memset(visited, 0, sizeof(visited));
 	memset(dfs_parent, 0, sizeof(dfs_parent));
-	dfsNumberCounter = 1;
+	dfsNumberCounter = 0;
 	mset(1, 2);
 	mset(1, 3);
 	mset(3, 4);

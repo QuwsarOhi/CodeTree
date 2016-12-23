@@ -71,6 +71,7 @@ int main()
 			printf("BICOLORABLE.\n");
 		else
 			printf("NOT BICOLORABLE.\n");
+		fr(i, 1, edge+1) printf("%d : %d\n", i, visited[i]);
 	}
 	return 0;
 }

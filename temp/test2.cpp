@@ -20,26 +20,61 @@
 
 using namespace std;
 
-//(a+b)%m = ((a%m) + (b%m))%m
-//(a*b)%m = ((a%m) * (b%m))%m
+int dfs_low[110], dfs_num[110], dfsNumberCounter, numSCC, V;
+bool visited[110];
+vector<int>AdjList[110], S;
 
-inline ull odd(ull n)
+void tarjanSCC(int u)
 {
-	return (n & 1);
-}
-
-inline ull powmod(ull n, ull p, ull m)
-{
-	if(p == 0) return 1;
-	if(!odd(p)) {
-		ull tmp = powmod(n, p/2, m)%m;
-		return (tmp*tmp)%m;
+	dfs_low[u] = dfs_num[u] = dfsNumberCounter++;
+	S.push_back(u);
+	visited[u] = 1;
+	for(size_t i = 0; i < AdjList[u].size(); i++) {
+		int v = AdjList[u][i];
+		if(dfs_num[v] == 0)
+			tarjanSCC(v);
+		if(visited[v])
+			dfs_low[u] = min(dfs_low[u], dfs_low[v]);
 	}
-	else return ((n%m)*(powmod(n, p-1, m)%m))%m;
+	
+	if(dfs_low[u] == dfs_num[u]) {
+		printf("SCC %d: ", ++numSCC);
+		while(1) {
+			int v = S.back();
+			S.pop_back();
+			visited[v] = 0;
+			printf(" %d", v);
+			if(u == v)
+				break;
+		}
+		printf("\n");
+	}
 }
 
-inline ull plusmod(ull x, ull y, ull m)
+void mset(int x, int y)
 {
-	return ((x%m)+(y%m))%m;
+	AdjList[x].pb(y);
+	V = max(V, max(x, y));
 }
 
+int main()
+{
+	memset(dfs_num, 0, sizeof(dfs_num));
+	memset(dfs_low, 0, sizeof(dfs_low));
+	memset(visited, 0, sizeof(visited));
+	dfsNumberCounter = numSCC = 0;
+	
+	mset(0, 1);
+	mset(1, 3);
+	mset(2, 1);
+	mset(3, 2);
+	mset(3, 4);
+	mset(4, 5);
+	mset(5, 7);
+	mset(7, 6);
+	mset(6, 4);
+	
+	for(int i = 0; i < V; i++)
+		if(dfs_num[i] == 0)
+			tarjanSCC(i);
+}
