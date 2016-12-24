@@ -24,29 +24,27 @@ using namespace std;
 int dfs_num[110], dfsNumberCounter, dfs_low[110], dfs_parent[110], dfsRoot, rootChildren, V = 0;
 bool articulation_vertex[110], visited[110];
 vi AdjList[110];
-
-void AandB(int u)
+//Bridge : An edge is a bridge if and only if it is not contained in any cycle
+//Articulation Point: A node is articulation point if disconnecting it creates
+//more connected component (cc)
+void ArticulationPointandBrdge(int u)
 {
 	dfs_low[u] = dfs_num[u] = dfsNumberCounter++;
 	for(size_t i = 0; i < AdjList[u].size(); i++) {
 		int v = AdjList[u][i];
-		if(dfs_num[v] == 0) {
-			dfs_parent[v] = u;
-			visited[u] = 1;
-			if(u == dfsRoot) rootChildren++;
-			AandB(v);
-			
-			if(dfs_low[v] >= dfs_num[u])
-				articulation_vertex[u] = true;
-			if(dfs_low[v] > dfs_num[u])
-				pf("Edge (%d, %d) is a bridge\n", u, v);
-			dfs_low[u] = min(dfs_low[u], dfs_low[v]);
-		}
-		else if(v != dfs_parent[u])
-			dfs_low[u] = min(dfs_low[u], dfs_num[v]);
-		//pf("dfs : %d : %d : %d\n", u, dfs_num[u], dfs_low[u]);
-	}
-}
+		if(dfs_num[v] == 0) {				//tree edge (subtree) unvisited condition
+			dfs_parent[v] = u;				//memorising the parent node
+			if(u == dfsRoot) rootChildren++;//special case if u is root
+			ArticulationPointandBrdge(v);	//visiting the next node before checking
+			if(dfs_low[v] >= dfs_num[u])	//this denotes that it has sub tree or back-edge
+				articulation_vertex[u] = true;	//articulation vertex found
+			if(dfs_low[v] > dfs_num[u])		//this denotes that it has no back-edge
+				pf("Edge (%d, %d) is a bridge\n", u, v); //bridge found
+			dfs_low[u] = min(dfs_low[u], dfs_low[v]); //dfs_low is the minimum dfs_num
+		}									//of its sub tree
+		else if(v != dfs_parent[u])			//a back edge (not a direct cycle)
+			dfs_low[u] = min(dfs_low[u], dfs_num[v]);	//checking the back edge dfs_num
+}}
 
 void mset(int x, int y)
 {
