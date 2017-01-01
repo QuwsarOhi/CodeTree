@@ -29,8 +29,7 @@ using namespace std;
 
 int main()
 {
-    vector<vector<int> >g;
-    g.pb
-    pf("%d\n", g.size());
+    char a[] = "abc", b[] = "alk";
+    pf("%d", strcmp(a, b));
     return 0;
 }
