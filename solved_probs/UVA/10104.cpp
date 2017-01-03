@@ -1,4 +1,5 @@
-
+//UVa
+//10104 - Euclid Problem
 #include <bits/stdc++.h>
 #define pb push_back
 #define mp make_pair
@@ -24,7 +25,7 @@
 #define pii pair<int, int>
 #define vii vector<pair<int, int> >
 #define vvi vector<vector<int> >
-#define N 1000000000
+#define N 50000
 #define ri register int
 #define arrsize(x) sizeof(x)/(sizeof(x[0]))
 #define ull unsigned long long
@@ -33,29 +34,25 @@
 
 using namespace std;
 
-unsigned int divs[10010];
-vi div_store;
+ll x, y, d;
 
-void divisors(ull n)
-{
-    for(ull i = 1; i <= n; i++)
-        for(ull j = i; j <= n; j+=i) {
-            divs[j]++;
-            if(divs[j] > mx_div) {
-                mx_div = divs[j];
-                div_store.clear();
-                div_store.push(j);
-            }
-            else if(mx_div == divs[j])
-                div_store.push(j);
-        }
+//declare x, y, z globally
+void extendedEuclid(ll a, ll b) {
+    if(b == 0) {x = 1; y = 0; d = a; return;}
+    extendedEuclid(b, a%b);
+    int x1 = y;
+    int y1 = x - (a/b) * y;
+    x = x1;
+    y = y1;
 }
+
 
 int main()
 {
-    ri t;
-    sf("%d", &t);
-    wh(t--) {
-        sf("%lld %lld", &u, &l);
-
+    register ll a, b;
+    wh(sf("%lld %lld", &a, &b) != EOF) {
+        extendedEuclid(a, b);
+        pf("%lld %lld %lld\n", x, y, d);
+    }
+    return 0;
 }
