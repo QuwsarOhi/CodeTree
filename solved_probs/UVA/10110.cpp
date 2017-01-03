@@ -1,5 +1,5 @@
 //UVa
-//12004 - Bubble Sort
+//10110 Light, more light
 #include <bits/stdc++.h>
 #define pb push_back
 #define mp make_pair
@@ -19,7 +19,6 @@
 #define wh while
 #define inf std::numeric_limits<int>::max()
 #define ll long long
-#define lld long long double
 #define ui unsigned int
 #define vi vector<int>
 #define pii pair<int, int>
@@ -37,16 +36,13 @@ using namespace std;
 
 int main()
 {
-    ri t, n;
-    long double sum;
-    sf("%lld", &t);
-    fr(c, 1, t+1) {
-        sf("%d", &n);
-        --n;
-        if(n == 0) {pf("Case %d: 0\n", c); continue;}
-        sum = n*(0.5+(n-1)*0.25);
-        if(ceil(sum) == floor(sum)) pf("Case %d: %lld\n", c, (long long int)sum);
-        else pf("Case %d: %lld/2\n", c, ((long long int)sum*2)+1);
-    }
+    //frein;
+    //freout;
+    ull n, lim;
+    wh(sf("%lld", &n) && n) {
+        lim = sqrt(n);                      //the sqrt(n) generates same number twice if n is a full square number
+        if(lim * lim == n) pf("yes\n");     //as every division generates a pair of distinct number, full square of a number dose not generate
+        else pf("no\n");                    //a pair of number (as the last number is same)
+    }                                       //so every full square number has an odd number of divisors!
     return 0;
 }
