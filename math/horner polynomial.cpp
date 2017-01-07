@@ -7,9 +7,11 @@
 #define pi acos(-1)
 #define fr(i, a, b) for(register int i = a; i < b; i++)
 #define f1(i, b) for(register int i = 1; i <= b; i++)
+#define ss stringstream
 #define mimx(a, b) if(a > b)swap(a, b)
 #define msi map<string, int>
 #define mii map<int, int>
+#define vec vector<int>
 #define fio ios_base::sync_with_stdio(false); cin.tie(NULL);
 #define sf scanf
 #define pf printf
@@ -29,3 +31,29 @@
 #define frein freopen("in", "r", stdin);
 #define freout freopen("out", "w", stdout);
 
+using namespace std;
+
+int co_efficient[1000];
+
+int horner(int x, int n)
+{
+    int ans = co_efficient[0];
+    for(int i = 1; i < n; i++) {
+        //printf("%d * %d + %d = ", ans, x, co_efficient[i]);
+        ans = ans*x + co_efficient[i];
+        //printf("%d\n", ans);
+    }
+    return ans;
+}
+
+int main()
+{
+    int n, x;
+    while(scanf("%d", &x) && x) {
+        for(int i = 0; i <= x; i++)
+            scanf("%d", &co_efficient[i]);
+        n = x+1;
+        printf("%d\n", horner(x, n));
+    }
+    return 0;
+}
