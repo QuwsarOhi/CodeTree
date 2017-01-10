@@ -1,34 +1,52 @@
-#include<bits/stdc++.h>
+//UVa
+//10878 - Decode the tape
 
+#include<bits/stdc++.h>
 using namespace std;
+
+char a[100000];
+
+inline void printer(int n)
+{
+    int num = 0;
+    register int i = 0;
+    while(n) {
+        num += n%10 * 1<<i++;
+        n/=10;
+    }
+    printf("%c", num);
+}
 
 int main()
 {
-    freopen("in", "r", stdin);
-    freopen("out", "w", stdout);
-    //regex r("(\\+|-)?[[:digit:]]+(\\.([[:digit:]]+)?)?");
-    regex r1("(\\+|-)?[[:digit:]]+\\.([[:digit:]]+)(([e|E])(\\+|-)?[[:digit:]]++)?");
-    regex r2("(\\+|-)?[[:digit:]]+(([e|E])(\\+|-)?[[:digit:]]++)");
-    regex parse("(\\s)?[^]+(\\s)?");
-    char x[1000010];
-    while(fgets(x, 1000000 ,stdin)) {
-        int len = strlen(x);
-        string y;
-        /*bool start = 0;
-        for(register int i = 0; i < len; i++) {
-            if(isalpha(x[i])) start = 1;
-            if(start) y+=x[i];
-            if(start && isspace(x[i])) break;
-        }*/
-        //y = x;
-        //string y = regex_replace(x, regex("^ +"), "");
-        //y[y.size()-1] = '\0';
-        str.erase(std::remove(str.begin(), str.end(), '\n'), str.end());
-        if(x[0] == '*' && y.size() == 1) break;
-        //if(regex_match(y, parse)) printf("worked\n");
-        if(regex_match(y, r1) || regex_match(y, r2))
-           printf("%s is legal.\n", y.c_str());
-        else printf("%s is illegal.\n", y.c_str());
+    //freopen("in", "r", stdin);
+    //freopen("out", "w", stdout);
+    register int i = 0, bin;
+    bool start = 0, lstart;
+    while(scanf(" %[^\n]", a)) {
+        if(a[0] == '_' && start) {
+            //printf("worked");
+            break;
+        }
+        if(a[0] == '_' && !start) {
+            start = 1;
+            continue;
+        }
+        lstart = 0;
+        bin = 0;
+        for(i = 0; ; i++) {
+            if(a[i] == '|' && !lstart) {
+                lstart = 1;
+                bin = 0;
+                continue;
+            }
+            if(a[i] == '|' && lstart) {
+                printer(bin);
+                break;
+            }
+            if(a[i] == ' ') bin *= 10;
+            else if(a[i] == 'o') bin = bin*10 + 1;
+        }
     }
     return 0;
 }
