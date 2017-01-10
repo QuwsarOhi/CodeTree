@@ -1,1 +1,10 @@
-A quick brown fox jumps over the lazy dog.
+12.34e45E45 is illegal.
+1.2 is legal.
+ is illegal.
+100 is illegal.
+100.4e34.8 is illegal.
+1.2e+45 is legal.
+1.2e+4      5 is illegal.
+++56.90 is illegal.
++0.00 is legal.
+*45 is illegal.
