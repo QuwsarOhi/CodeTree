@@ -1,0 +1,26 @@
+Hidden function (not really hidden but not used often)
+
+one)
+__gcd(value1, value2)
+You don't need to code Euclidean Algorithm for a gcd function, from now on we can use. This function returns gcd of two numbers.
+e.g. __gcd(18, 27) = 9.
+
+two)
+__builtin_ffs(x)
+This function returns 1 + least significant 1-bit of x. If x == 0, returns 0. Here x is int, this function with suffix 'l' gets a long argument and with suffix 'll' gets a long long argument.
+e.g. __builtin_ffs(10) = 2 because 10 is '...10 1 0' in base 2 and first 1-bit from right is at index 1 (0-based) and function returns 1 + index.
+
+three)
+__builtin_clz(x)
+This function returns number of leading 0-bits of x which starts from most significant bit position. x is unsigned int and like previous function this function with suffix 'l gets a unsigned long argument and with suffix 'll' gets a unsigned long long argument. If x == 0, returns an undefined value.
+e.g. __builtin_clz(16) = 27 because 16 is ' ... 10000'. Number of bits in a unsigned int is 32. so function returns 32 — 5 = 27.
+
+four)
+__builtin_ctz(x)
+This function returns number of trailing 0-bits of x which starts from least significant bit position. x is unsigned int and like previous function this function with suffix 'l' gets a unsigned long argument and with suffix 'll' gets a unsigned long long argument. If x == 0, returns an undefined value.
+e.g. __builtin_ctz(16) = 4 because 16 is '...1 0000 '. Number of trailing 0-bits is 4.
+
+five)
+__builtin_popcount(x)
+This function returns number of 1-bits of x. x is unsigned int and like previous function this function with suffix 'l' gets a unsigned long argument and with suffix 'll' gets a unsigned long long argument. If x == 0, returns an undefined value.
+e.g. __builtin_popcount(14) = 3 because 14 is '... 111 0' and has three 1-bits.
