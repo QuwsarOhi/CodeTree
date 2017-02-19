@@ -19,6 +19,8 @@ int cut(int left, int right) {
 }
 
 int main() {
+    freopen("in", "r", stdin);
+    freopen("out", "w", stdout);
   while (scanf("%d", &l), l) {
     A[0] = 0;
     scanf("%d", &n);
