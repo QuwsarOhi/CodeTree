@@ -1,0 +1,9 @@
+try {
+	Scanner sc = new Scanner(new File("in"));
+	PrintStream o = new PrintStream(new File("out"));
+	System.setOut(o);
+	//other input works should be done here!
+}
+catch(FileNotFoundException ex) {
+	System.out.println("file not found");
+}

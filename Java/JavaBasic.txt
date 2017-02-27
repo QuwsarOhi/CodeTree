@@ -1,0 +1,71 @@
+//java starting syntax
+
+public class JavaBasic	//this is the main class of java code
+{
+	public static void main(String args[]){		//Every java code starts from this main function, String args[] are compiler arguments
+		//code goes here			//here the main function returns nothing(void) and it must be a public object
+	}
+}
+
+//Java I/O
+//there are many types of classes that can be used as I/O
+
+//Output in java
+//System.out.println()
+//System.out.print()
+//System.out.printf()      equivalent to printf in c
+
+//Input in java
+//need to create a scanner object with scanner class is in java.util.Scanner
+
+//Example code
+
+pubic class JavaBasicIO
+{
+	public static main(String args[]) {
+		Scanner sc = new Scanner(System.in);
+		//This is how scanner object is created
+		//the parameter System.in is default parameter if input is obtained from console
+		//else, here can be used any object of a file, or string or any variable
+		
+		//scanner input methods
+		int integer = sc.nextInt();
+		long long_int = sc.nextLong();
+		float floating = sc.nextFloat();
+		double double_float = sc.nextDouble();
+		String s = sc.nextLine();	//nextLine takes a line till it gets a line break('\n') & cuts it off
+		char c = sc.next().charAt(0);
+
+		//EOF usage
+
+		while(sc.hasNextLine()) {
+			//also usage are sc.hasNextInt(), sc.hasNextDouble()....
+			String s1 = sc.nextLine();
+			System.out.println(s1);
+		}
+
+		//output methods
+		System.out.printf("this is as same as C %s\n", s);
+		System.out.print("i gave a line break manually" + "\n");
+		System.out.println("this line includes" + " a new line automatically");
+
+		
+
+	}
+}
+
+
+//Recursion example in java
+
+public class Recur
+{
+	static int fib(int n) {			//everything same as c except add "static at start"
+		if(n == 1 || n == 0)
+			return 1;
+		return fib(n * n-1);
+	}
+	public static void main(String args[]) {
+		System.out.printf("%d\n", fib(5));
+	}
+}
+

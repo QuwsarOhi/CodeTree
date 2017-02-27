@@ -1,0 +1,83 @@
+//Java array declaration
+
+int arr = new int[5];		//array of 5 integers
+int arr[] = {1, 2, 3, 4};	//pre-defined array
+char arr[] = {'a', 'b', 'c'};
+
+//array iteration
+int arr[] = {1, 2, 3, 4, 5}
+
+//array normal iteration
+for(int i = 0; i < arr.length; i++)
+	Syste.out.println(arr[i]);
+
+//for each iteration
+for(int element:arr)
+	System.out.println(element);
+
+
+//ArrayList in java (like vector in c++)
+
+//parameters
+//ArrayList<type/used_defined_dataclass> obj = new ArrayList<type/used_defined_dataclass>();
+//iteration in ArrayList is as same as array iteration showed above
+
+ArrayList<String> obj = new ArrayList<String>();
+
+obj.add("string1");	//add element in ArrayList obj, like push_back
+obj.add("string2");
+
+obj.add(0, "string0");	//add element in given index
+
+obj.remove("string1");	//remove string like this if exists
+obj.remove(1);		//remove the 1st element
+
+int index = obj.indexOf("string2");	//returns the index of "string2"
+String str = obj.get(2); 		//returns the element in 2nd index
+
+int size = obj.size();			//returns the size of array list
+
+obj.contains("String x");		//returns true if array list contains certain element
+obj.clear();				//clears the array list
+
+
+//Usage of String----------------------------------------------
+
+String s1 = new String("");	//Empty String
+String s2 = new String("");
+
+s1.lenght();			//length of a string
+s1.concat(s2);			//concatination of string
+//OR
+s1 = s1 + s2;			//same as C++ string
+
+//i'th element
+s1.charAt(3);
+
+//comparison of two string
+s1.compare(s2);			//returns 0 if s1 & s2 are same
+
+//to lower case
+s1.toLowerCase();
+
+//to upper case
+s1.toUpperCase();
+
+//string substring
+s1.substring(3);		//takes from 3rd index to last
+s1.substring(3, 5);		//takes from 3rd index to 4th
+
+//string replace
+s1.replace('X', 'Y');		//replace x by y
+
+//String to array
+char arr[] = s1.toCharArray();
+
+//Array to string
+String str = String.valueOf(arr);
+
+//int to string
+String int_str = String.valueOf(integer_value);
+
+//charecter at ith element
+char x = s1.charAt(1);
