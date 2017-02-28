@@ -1,25 +1,8 @@
-// Working program with FastIO
-import java.io.*;
+//UVa
+//11287 - Pseudoprime Numbers
 import java.util.*;
- 
-public class Main
-{
-    public static void main(String[] args) throws IOException {
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        while(true) {
-        String str = br.readLine();
-        //int a=Integer.parseInt(str);          //reads integer
-        if(str == null) {
-			System.out.println("breaking");
-			break;
-		}
-        System.out.println(str);
-		}
-	}
-}
-
-----------------------------------------------my generated code----------------------
-
+import java.io.*;
+import java.math.BigInteger;
 
 class Main {
 	static class FastReader {
@@ -49,10 +32,15 @@ class Main {
 	
 	public static void main(String args[]) throws IOException {
 		FastReader fr = new FastReader();
-		String x;
-		System.out.println(fr.nextLine());
-		while((x = fr.next()) != null) 
-				System.out.println(x);
+		while(true) {
+			BigInteger p = new BigInteger(fr.next());
+			BigInteger a = new BigInteger(fr.next());
+			if((a.compareTo(BigInteger.ZERO) == 0) && (p.compareTo(BigInteger.ZERO) == 0))
+				break;
+			if(!p.isProbablePrime(10) && (a.modPow(p, p).compareTo(a) == 0))
+				System.out.println("yes");
+			else
+				System.out.println("no");
+		}
 	}
 }
-

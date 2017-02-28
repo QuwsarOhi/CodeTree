@@ -1,20 +1,20 @@
-    #include <iostream>
-    #include <cstdio>
-    using namespace std;
-    #define pi 3.14159265359
-    int main()
-    {
-        int i,j,r1,r2,h,p;
-        double r,v;
-        scanf("%d",&j);
-        for(i=1;i<=j;i++)
-        {
-                  scanf("%d%d%d%d",&r1,&r2,&h,&p);
-                  r=r2+(r1-r2)*p/h;
-                  printf("%f\n", r);
-                  v = 1/3.0 * pi * p *( r*r + r*r2 + r2*r2 );
-                  printf("Case %d: %lf\n",i,v);
-        }
-        return 0;
-    }
+#include<bits/stdc++.h>
+using namespace std;
 
+bool cmp(pair<int, int>, pair<int, int>)
+{
+
+}
+
+int main()
+{
+    int n;
+    while(scanf("%d", &n) && n) {
+        vector<pair<int, int> >v;
+        for(int i = 0; i < n; i++) {
+            scanf("%d", &x);
+            v.push_back(make_pair(x, i));
+        }
+
+    }
+}

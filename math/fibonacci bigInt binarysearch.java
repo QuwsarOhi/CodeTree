@@ -1,12 +1,13 @@
+//UVa
+//763 - Fibinary Numbers
+
 import java.util.*;
 import java.io.*;
 import java.math.BigInteger;
 
 class Main {
-	public static void main(String args[]) //throws FileNotFoundException {
-		{
-		//BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-		Scanner sc = new Scanner(System.in);
+	public static void main(String args[]) throws IOException {
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		//Scanner sc = new Scanner(new File("in"));
 		//PrintStream o = new PrintStream(new File("out"));
 		//System.setOut(o);
@@ -16,27 +17,21 @@ class Main {
 		f[1] = new BigInteger("2");
 		for(int i = 2; i < 102; i++)
 			f[i] = (f[i-1]).add(f[i-2]);
-			
-		//BigInteger b = new BigInteger("3");
-		//System.out.println(Arrays.binarySearch(f, b));
-		//b = new BigInteger("6");
-		//System.out.println(Arrays.binarySearch(f, b));
+
 		//Start having Input
 		
 		boolean first = true;
-		//System.out.println("starting");
-		while(sc.hasNext()) {
-		//while(true) {
-			//System.out.println("looping");
-			String a = sc.next();
-			String b = sc.next();
+
+		while(br.ready()) {
+			String a = br.readLine();
+			String b = br.readLine();
 			
 			if(!first)
 				System.out.println();
 			first = false;
 			
-			//if(sc.next())
-				//br.readLine();		//eating up extra space
+			if(br.ready())
+				br.readLine();		//eating up extra space
 				
 			BigInteger x = BigInteger.ZERO;
 			
@@ -50,17 +45,13 @@ class Main {
 			String ans = "";
 			if(pos < 0)
 				pos = (pos*-1) - 2;
-			//System.out.println("value : " + x);
 			for(int i = pos; i >= 0; i--) {
 				if(x.compareTo(f[i]) >= 0) {
 					ans += "1";
-					//System.out.println("add " + f[i]);
 					x = x.subtract(f[i]);
 				}
-				else {
-					//System.out.println("skip " + f[i]);
+				else
 					ans += "0";
-				}
 			}
 			if(ans.length() == 0)
 				System.out.println("0");
@@ -69,4 +60,3 @@ class Main {
 		}
 	}
 }
-
