@@ -1,72 +1,31 @@
 import java.util.*;
-import java.io.*;
 import java.math.BigInteger;
+import java.io.*;
 
-class Main {
-	public static void main(String args[]) //throws FileNotFoundException {
-		{
-		//BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-		Scanner sc = new Scanner(System.in);
-		//Scanner sc = new Scanner(new File("in"));
-		//PrintStream o = new PrintStream(new File("out"));
-		//System.setOut(o);
-		//Genereting Fib numbers
-		BigInteger f[] = new BigInteger[102];
-		f[0] = new BigInteger("1"); 
-		f[1] = new BigInteger("2");
-		for(int i = 2; i < 102; i++)
-			f[i] = (f[i-1]).add(f[i-2]);
-			
-		//BigInteger b = new BigInteger("3");
-		//System.out.println(Arrays.binarySearch(f, b));
-		//b = new BigInteger("6");
-		//System.out.println(Arrays.binarySearch(f, b));
-		//Start having Input
+class Main1 {
+	public static void main(String args[]) throws FileNotFoundException {
+		Scanner sc = new Scanner(new File("in"));
 		
-		boolean first = true;
-		//System.out.println("starting");
-		while(sc.hasNext()) {
-		//while(true) {
-			//System.out.println("looping");
-			String a = sc.next();
-			String b = sc.next();
-			
-			if(!first)
-				System.out.println();
-			first = false;
-			
-			//if(sc.next())
-				//br.readLine();		//eating up extra space
-				
-			BigInteger x = BigInteger.ZERO;
-			
-			for(int i = a.length(); i > 0; i--)
-				if(a.charAt(i-1) == '1')
-					x = x.add(f[a.length() - i]);
-			for(int i = b.length(); i > 0; i--)
-				if(b.charAt(i-1) == '1')
-					x = x.add(f[b.length() - i]);
-			int pos = Arrays.binarySearch(f, x);
-			String ans = "";
-			if(pos < 0)
-				pos = (pos*-1) - 2;
-			//System.out.println("value : " + x);
-			for(int i = pos; i >= 0; i--) {
-				if(x.compareTo(f[i]) >= 0) {
-					ans += "1";
-					//System.out.println("add " + f[i]);
-					x = x.subtract(f[i]);
-				}
-				else {
-					//System.out.println("skip " + f[i]);
-					ans += "0";
-				}
-			}
-			if(ans.length() == 0)
-				System.out.println("0");
-			else
-				System.out.println(ans);
+		while(true) {
+			int a, b, c, d, e;
+			a = sc.nextInt();
+			b = sc.nextInt();
+			c = sc.nextInt();
+			d = sc.nextInt();
+			e = sc.nextInt();
+			if(a == 0 && b == 0 && c == 0 && d == 0 && e == 0)
+				break;
+			//BigInteger A = BigInteger.valueOf(a);
+			//BigInteger B = BigInteger.valueOf(b);
+			//BigInteger C = BigInteger.valueOf(c);
+			BigInteger D = BigInteger.valueOf(d);
+			BigInteger E = BigInteger.valueOf(e);
+			BigInteger ans = A.multiply(B);
+			ans = ans.multiply(C);
+			ans = ans.multiply(D);
+			ans = ans.multiply(D);
+			ans = ans.multiply(E);
+			System.out.println(ans.multiply(E));
 		}
 	}
 }
-
