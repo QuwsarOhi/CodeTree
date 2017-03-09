@@ -38,6 +38,16 @@ void segment_sieve(long long a, long long b)
         }
         //printf("\n");
     }
+    unsigned long long x[5] = {-1};
+    priority_queue<unsigned long long>pq;
+    for(int i = 0, j = a; j <=b; j++, i++) {
+        if(segment_prime[i]) {
+                if(x[0] == -1)
+                    x[]]
+            }
+        }
+
+    }
     printf("\n\nsegment prime : %d\n", segment_prime.size());
     //for(int i = 0; i < b-a+1; i++)
         //if(segment_prime[i])
