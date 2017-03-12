@@ -1,58 +1,33 @@
-//UVa
-// 11475 - Extend to Palindrome
-//Also solvable with hashing
-
 #include<bits/stdc++.h>
 using namespace std;
 
-char S[1000010], P[1000010];
-int T[1000010], len;
-
-void BuildTable()
-{
-    int i = 0, j = -1;
-    T[0] = -1;
-    while(i < len) {
-        while(j >= 0 && P[i] != P[j])
-            j = T[j];
-        i++, j++;
-        T[i] = j;
+struct node {
+    int visited;
+    node *next[4];
+    node() {
+        visited = 0;
+        for(int i = 0; i < 4; i++)
+            next[i] = NULL;
     }
+};
+
+void del(node * current)
+{
+    for(int i = 0; i < 4; i++)
+        if(current->next[i] != NULL)
+            del(current->next[i]);
+    delete current;
 }
 
-int KmpSegment()
+void build(int str[], int len, node *current)
 {
-    int i = 0, j = 0;
-    while(i < len) {
-        while(j >= 0 && S[i] != P[j])
-            j = T[j];
-        //printf("j  %d\n", j);
-        i++, j++;
-        if(j == len) {
-            if(i-j == 0)            //Found match in i-j'th index
-                return -1;          //if it is zero then the string is fully matched
-            j = T[j];
-        }
+    for(int i = 0; i < len; i++) {
+        int pos = mp[str[i]];
+        if(current->next[])
     }
-    return j;
 }
 
 int main()
 {
-    //freopen("in", "r", stdin);
-    //freopen("out", "w", stdout);
-    while(scanf(" %s", S) != EOF) {
-        len = strlen(S);
-        for(int i = 0, j = len-1; i < len; i++, j--)
-            P[i] = S[j];
-        P[len] = '\0';
-        BuildTable();
-        int segment_match = KmpSegment();
-        printf("%s", S);
-        if(segment_match != -1)
-        for(int i = segment_match; i < len; i++)
-            printf("%c", P[i]);
-        printf("\n");
-    }
-    return 0;
+
 }

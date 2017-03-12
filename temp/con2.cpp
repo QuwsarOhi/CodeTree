@@ -1,46 +1,77 @@
-#include<stdio.h>
-#include<string.h>
-#define MaxL 100005
-char A[MaxL], B[MaxL];
-int P[MaxL];
-void KMPTable(char *A) {
-	int i, j;
-	P[0] = -1, i = 1, j = -1;
-	while(A[i]) {
-		while(j >= 0 && A[j+1] != A[i])
-			j = P[j];
-		if(A[j+1] == A[i])
-			j++;
-		P[i++] = j;
-	}
-}
-int KMPMatching(char A[], char B[]) {
-	KMPTable(B);
-	int i, j, Alen, Blen;
-	Alen = strlen(A), Blen = strlen(B);
-	for(i = 0, j = -1; i < Alen; i++) {
-		while(j >= 0 && B[j+1] != A[i])
-			j = P[j];
-		if(B[j+1] == A[i])	j++;
-	}
-	return j;
-}
-void Solve(char A[]) {
+#include<bits/stdc++.h>
+using namespace std;
 
-	int Alen = strlen(A), Blen = Alen;
-	int i, j;
-	for(i = 0, j = Blen-1; i < Alen; i++, j--)
-		B[j] = A[i];
-	B[Blen] = '\0';
-	int tail = KMPMatching(A, B);
-	printf("%d\n", tail);
-	for(i = Blen-1; i > tail; i--)
-		printf("%c.", B[i]);
-	printf("%s\n", B);
+struct node {
+    bool endmark;
+    node *next[26 + 1];
+    node()
+    {
+        printf("constructor called\n");
+        endmark = false;
+        for (int i = 0; i < 26; i++)
+            next[i] = NULL;
+    }
+} *root;
 
+void insert(char* str, int len)
+{
+    node *curr = root;
+    for(int i = 0; i < 10; i++) {
+        if(curr->next[i] != NULL)
+            printf("not null\n");
+        else
+            printf("null\n");
+    }
+    for (int i = 0; i < len; i++) {
+        int id = str[i] - 'a';
+        if (curr->next[id] == NULL)
+            curr->next[id] = new node();
+        curr = curr->next[id];
+    }
+    curr->endmark = true;
 }
-int main() {
-	while(scanf("%s", A) == 1)
-		Solve(A);
+
+bool search(char* str, int len)
+{
+    node* curr = root;
+    for (int i = 0; i < len; i++) {
+        int id = str[i] - 'a';
+        if (curr->next[id] == NULL)
+            return false;
+        curr = curr->next[id];
+    }
+    return curr->endmark;
+}
+void del(node* cur)
+{
+    for (int i = 0; i < 26; i++)
+        if (cur->next[i])
+            del(cur->next[i]);
+
+    delete (cur);
+}
+int main()
+{
+    puts("ENTER NUMBER OF WORDS");
+    root = new node();
+    int num_word;
+    cin >> num_word;
+    for (int i = 1; i <= num_word; i++) {
+        char str[50];
+        scanf("%s", str);
+        insert(str, strlen(str));
+    }
+    puts("ENTER NUMBER OF QUERY");
+    int query;
+    cin >> query;
+    for (int i = 1; i <= query; i++) {
+        char str[50];
+        scanf("%s", str);
+        if (search(str, strlen(str)))
+            puts("FOUND");
+        else
+            puts("NOT FOUND");
+    }
+    del(root);
     return 0;
 }
