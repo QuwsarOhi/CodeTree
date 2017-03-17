@@ -1,67 +1,38 @@
-#include<bits/stdc++.h>
+#include <algorithm>
+#include <cstdio>
+#include <cstring>
 using namespace std;
 
-//const int lim = ;
+int main() {
+  char A[20] = "ACAATCC", B[20] = "AGCATGC";
+  string x, y;
+  int n = (int)strlen(A), m = (int)strlen(B);
+  int i, j, table[20][20]; // Needleman Wunsnch's algorithm
 
-bitset<46350>isPrime;
-vector<int>prime;
-bitset<1000001>segment_prime;
+  memset(table, 0, sizeof table);
+  // insert/delete = -1 point
+  for (i = 1; i <= n; i++)
+    table[i][0] = i * -1;
+  for (j = 1; j <= m; j++)
+    table[0][j] = j * -1;
 
-void sieve()
-{
-    isPrime.set();
-    isPrime[0] = isPrime[1] = 0;
-    //printf("%lld\n", lim);
-    prime.push_back(2);
-    for(int i = 4; i < 46350; i+=2)
-        isPrime[i] = 0;
-    for(unsigned int i = 3; i <= 46350; i += 2)
-        if(isPrime[i]) {
-            prime.push_back(i);
-            unsigned inc = i+i;
-            for(unsigned int j = i*i; j < 46350; j+= inc)
-                isPrime[j] = 0;
-        }
-}
-
-void segment_sieve(long long a, long long b)
-{
-    int lim = sqrt(b) + 1;
-    segment_prime.set();
-    for(int i = 0; i < prime.size() && prime[i] < lim; i++) {
-        long long j = (long long)ceil(a/(double)prime[i]);
-        //printf("\nstarting from %d * %lld : %d -> ", prime[i], j , prime[i]*j);
-        j = prime[i] * j;
-        for(long long k = j - a; j <= b; j+= prime[i], k += prime[i]) {
-            segment_prime[k] = 0;
-            //printf("%lld (%lld) ", j, k);
-        }
-        //printf("\n");
+  for (i = 1; i <= n; i++)
+    for (j = 1; j <= m; j++) {
+      // match = 2 points, mismatch = -1 point
+      table[i][j] = table[i - 1][j - 1] + (A[i - 1] == B[j - 1] ? 2 : -1); // cost for match or mismatches
+      // insert/delete = -1 point
+      int tmp  = max(table[i][j], table[i-1][j])
+      //table[i][j] = max(table[i][j], table[i - 1][j] - 1); // delete [delete from 2nd]
+      //table[i][j] = max(table[i][j], table[i][j - 1] - 1); // insert [delete from first]
     }
-    unsigned long long x[5] = {-1};
-    priority_queue<unsigned long long>pq;
-    for(int i = 0, j = a; j <=b; j++, i++) {
-        if(segment_prime[i]) {
-                if(x[0] == -1)
-                    x[]]
-            }
-        }
 
-    }
-    printf("\n\nsegment prime : %d\n", segment_prime.size());
-    //for(int i = 0; i < b-a+1; i++)
-        //if(segment_prime[i])
-            //printf("%d ", a+i);
-}
+  printf("DP table:\n");
+  for (i = 0; i <= n; i++) {
+    for (j = 0; j <= m; j++)
+      printf("%3d", table[i][j]);
+    printf("\n");
+  }
+  printf("Maximum Alignment Score: %d\n", table[n][m]);
 
-int main()
-{
-    unsigned z;
-    sieve();
-    printf("sieve done\n");
-    for(int i = 0; i < 100; i++)
-        if(isPrime[i])
-            printf("%d ", i);
-    segment_sieve(1000, 2e29);
-    return 0;
+  return 0;
 }

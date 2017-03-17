@@ -24,9 +24,10 @@ void reconstruct_print(int end, int a[], int p[]) {
 }
 
 int main() {
-  int A[] = {0, 8, 4, 12, 2, 10, 6, 14, 1, 9, 5, 13, 3, 11, 7, 15};
+  //int A[] = {0, 8, 4, 12, 2, 10, 6, 14, 1, 9, 5, 13, 3, 11, 7, 15};
+  int A[MAX_N];
   int L[MAX_N], L_id[MAX_N], P[MAX_N], n;
-  freop
+  freopen("out", "w", stdout);
   n = sizeof(A)/sizeof(int);
   int lis = 0, lis_end = 0;
   for (int i = 0; i < n; ++i) {
@@ -34,6 +35,7 @@ int main() {
     L[pos] = A[i];
     L_id[pos] = i;
     P[i] = pos ? L_id[pos - 1] : -1;
+    printf("L[%d] : %d,  L_id[%d] : %d, P[%d] : %d\n", pos, L[pos], pos, L_id[pos], i, P[i]);
     if (pos + 1 > lis) {
       lis = pos + 1;
       lis_end = i;
@@ -45,7 +47,10 @@ int main() {
     print_array("L is now", L, lis);
     printf("\n");
   }
-
+  printf("LIS END : %d\n", lis_end);
+  for(int i = 0; i <= lis_end; i++)
+    printf("%d ", P[i]);
+  printf("\n");
   printf("Final LIS is of length %d: ", lis);
   reconstruct_print(lis_end, A, P);
   return 0;
