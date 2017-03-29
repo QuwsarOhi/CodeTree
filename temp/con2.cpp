@@ -1,82 +1,88 @@
-//TLE
-#include<bits/stdc++.h>
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <map>
+#include <string>
+#include <cstring>
+
 using namespace std;
 
-bool visited[110], found;
-vector<int>G[110], ans;
-vector<string>name;
-map<string, int>to_int;
-map<int, string>to_str;
+#define UNVISITED -1
+#define MAX 10010
 
+vector<int> graph[MAX], scc;
+int qt_vertex, dfs_num[MAX], dfs_low[MAX], numSCC, dfsCount, qt_edges;
+bool visited[MAX], has_edge[30][30];
+map<string, int> namess;
+map<int, string> namesInt;
 
-bool can_be_used(int node)
-{
-    for(int i = 0; i < G[node].size(); i++) {
-        if(visited[G[node][i]])
-            return 0;
-    }
-    return 1;
+void clear(){
+	for (int i = 0; i <= qt_vertex; i++){
+		graph[i].clear();
+		dfs_num[i] = UNVISITED;
+		visited[i] = 0;
+	}
+	dfsCount = 0;
+	numSCC = 0;
+    scc.clear();
+    memset(has_edge, 0, sizeof has_edge);
+    namess.clear(); namesInt.clear();
 }
 
+void tarjanSCC(int vertex){
+	dfs_num[vertex] = dfs_low[vertex] = dfsCount++;
+	scc.push_back(vertex);
+	visited[vertex] = 1;
+    for (int i = 0; i < graph[vertex].size(); i++){
+    	int new_vertex = graph[vertex][i];
+    	if (dfs_num[new_vertex] == UNVISITED)
+    		tarjanSCC(new_vertex);
+    	if (visited[new_vertex])
+    		dfs_low[vertex] = min(dfs_low[vertex], dfs_low[new_vertex]);
+    }
 
-void dfs()
-{
-    //printf("started\n");
-    for(int i = 0; i < name.size() && !found; i++) {
-        if(ans.size() == name.size()) {
-            found = 1;
-            for(int j = 0; j < ans.size(); j++)
-                printf(" %s", to_str[ans[j]].c_str());
-            printf(".\n");
-            return;
-        }
-        int node = to_int[name[i]];
-        if(!visited[node] && can_be_used(node)) {
-            ans.push_back(node);
-            visited[node] = 1;
-            dfs();
-            visited[node] = 0;
-            ans.pop_back();
-        }
+    //get SCC
+    if (dfs_low[vertex] == dfs_num[vertex]){
+      numSCC++;
+      while(1){
+       int vcc = scc.back(); scc.pop_back();
+       visited[vcc] = 0;
+
+       if (vcc == vertex){
+       	cout<<namesInt[vcc]<<endl;
+        break;
+       }else
+        cout<<namesInt[vcc]<<", ";
+      }
     }
 }
 
-int main()
-{
+int main(){
     freopen("in", "r", stdin);
     freopen("out", "w", stdout);
-    int n, r, indx, Case = 1;
-    bool first = 1;
-    char S1[60], S2[60];
-    while(scanf("%d", &n) != EOF) {
-        indx = 0;
-        for(int i = 0; i < n; i++) {
-            scanf(" %s ", S1);
-            //printf("%s\n", S1);
-            to_int[S1] = indx;
-            to_str[indx++] = S1;
-            name.push_back(S1);
-        }
-        scanf("%d", &r);
-        for(int i = 0; i < r; i++) {
-            scanf("%s %s", S1, S2);
-            //printf("%s  %s\n",S1, S2);
-            G[to_int[S1]].push_back(to_int[S2]);
-        }
-        //if(!first)
-        //    printf("\n");
-        first = 0;
-        found = 0;
-        printf("Case #%d: Dilbert should drink beverages in this order:", Case++);
-        memset(visited, 0, sizeof(visited));
-        dfs();
-        ans.clear();
-        name.clear();
-        to_int.clear();
-        to_str.clear();
-        for(int i = 0; i < 101; i++)
-            G[i].clear();
-        printf("\n");
-    }
-    return 0;
+	int cases = 1;
+	string u, v;
+	while( (cin >>qt_vertex>>qt_edges) && qt_vertex){
+           clear();
+           int count = 1;
+           if (cases>1) cout<<endl;
+           for (int i = 0; i < qt_edges; i++){
+        	cin >> u >> v;
+        	if (namess[u]==NULL) {namess[u] = count; namesInt[count++] = u;}
+        	if (namess[v]==NULL) {
+        		namess[v] = count;
+        		namesInt[count++] = v;
+        	}
+        	int iu = namess[u], iv = namess[v];
+        	if (!has_edge[iu][iv]){
+        	 graph[iu].push_back(iv);
+        	 has_edge[iu][iv] = 1;
+        	}
+            }
+            cout<<"Calling circles for data set "<<cases++<<":\n";
+            for (int i = 1; i <= qt_vertex; i++)
+            if (dfs_num[i] == UNVISITED)
+              tarjanSCC(i);
+	}
+	return 0;
 }
