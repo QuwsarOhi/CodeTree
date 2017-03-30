@@ -6,8 +6,7 @@
 using namespace std;
 
 vector<int>G[101];
-int dfs_num[101], dfs_low[101], parent[101], dfsCounter, rootChildren, dfsRoot;
-bitset<101>isArticulationPoint;
+int dfs_num[101], dfs_low[101], parent[101], isAtriculationPoint[101], dfsCounter, rootChildren, dfsRoot;
 
 void articulationPoint(int u)
 {
@@ -27,7 +26,8 @@ void articulationPoint(int u)
             //so, if u is not root node, then we can chose u for Articulation Point
 
             if(dfs_num[u] <= dfs_low[v] && u != dfsRoot)    //Avoiding root node
-                isArticulationPoint[u] = 1;
+                isArticulationPoint[u]++;
+
 
             //if there is any child node of u that is a back edge of a previous node
             //then the value of dfs_low[v] might be less than the present dfs_low[u]
@@ -56,9 +56,10 @@ int main()
             dfsCounter = rootChildren = 0;
             dfsRoot = i;
             articulationPoint(i);
-            if(rootChildren > 1)
-                isArticulationPoint[i] = 1;
+            isArticulationPoint[i] = (rootChildren > 1);
         }
+        //Important
+        isAtriculationPoint + 1 = number of nodes that is disconnected
     }
 
     //Printing Articulation Points
