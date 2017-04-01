@@ -64,15 +64,17 @@ int main()
 	}
 	sort(Edge.begin(), Edge.end());
 	
-	int mst_cost = 0;
+	int mst_cost = 0, selected_edge = 0;
 	unionInit(V);
-	
-	for(int i = 0; i < E; i++) {
+	//while loop method is faster than for
+	for(int i = 0; i < E && selected_edge < V; i++) {
+	//for(int i = 0; i < E; i++) {
 		u = Edge[i].second.first;
 		v = Edge[i].second.second;
 		w = Edge[i].first;
 		
 		if(!isSameSet(u, v)) {
+			selected_edge++;
 			mst_cost += w;
 			makeUnion(u, v);
 		}
