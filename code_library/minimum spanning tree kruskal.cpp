@@ -56,7 +56,7 @@ bool isSameSet(int a, int b)
 int main()
 {
 	int V, E, u, v, w;
-	//freopen("in", "r", stdin);
+
 	scanf("%d %d", &V, &E);
 	for(int i = 0; i < E; i++) {
 		scanf("%d %d %d", &u, &v, &w);
@@ -66,9 +66,8 @@ int main()
 	
 	int mst_cost = 0, selected_edge = 0;
 	unionInit(V);
-	//while loop method is faster than for
+
 	for(int i = 0; i < E && selected_edge < V; i++) {
-	//for(int i = 0; i < E; i++) {
 		u = Edge[i].second.first;
 		v = Edge[i].second.second;
 		w = Edge[i].first;
@@ -81,18 +80,6 @@ int main()
 	}
 	
 	printf("MST in Kruskal : %d\n", mst_cost);
+	Edge.clear();
 	return 0;
 }
-
-
-/*test input
-	5 7
-    0 1 4
-    0 2 4
-    0 3 6
-    0 4 6
-    1 2 2
-    2 3 8
-    3 4 9
- output : 18
- */
