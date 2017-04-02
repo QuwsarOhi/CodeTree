@@ -1,80 +1,116 @@
-
-#include <bits/stdc++.h>
-#define pb push_back
-#define fi first
-#define se second
-#define pi acos(-1)
-#define fr(i, a, b) for(register int i = a; i < b; i++)
-#define f1(i, b) for(register int i = 1; i <= b; i++)
-#define ss stringstream
-#define mimx(a, b) if(a > b)swap(a, b)
-#define msi map<string, int>
-#define mii map<int, int>
-#define vec vector<int>
-#define fio ios_base::sync_with_stdio(false); cin.tie(NULL);
-#define sf scanf
-#define pf printf
-#define wh while
-#define inf std::numeric_limits<int>::max()
-#define ll long long
+/*
+  Problem: 314 - Robot (UVa)
+  Author: Andrés Mejía-Posada
+  (http://blogaritmo.factorcomun.org)
+*/
 
 using namespace std;
+#include <algorithm>
+#include <iostream>
+#include <iterator>
+#include <sstream>
+#include <fstream>
+#include <cassert>
+#include <climits>
+#include <cstdlib>
+#include <cstring>
+#include <string>
+#include <cstdio>
+#include <vector>
+#include <cmath>
+#include <queue>
+#include <deque>
+#include <stack>
+#include <map>
+#include <set>
 
-int dfs_low[110], dfs_num[110], dfsNumberCounter, numSCC, V;
-bool visited[110];
-vector<int>AdjList[110], S;
+#define D(x) cout << #x " is " << x << endl
 
-void tarjanSCC(int u)
-{
-	dfs_low[u] = dfs_num[u] = dfsNumberCounter++;
-	S.push_back(u);
-	visited[u] = 1;
-	for(size_t i = 0; i < AdjList[u].size(); i++) {
-		int v = AdjList[u][i];
-		if(dfs_num[v] == 0)
-			tarjanSCC(v);
-		if(visited[v])
-			dfs_low[u] = min(dfs_low[u], dfs_low[v]);
-	}
-	
-	if(dfs_low[u] == dfs_num[u]) {
-		printf("SCC %d: ", ++numSCC);
-		while(1) {
-			int v = S.back();
-			S.pop_back();
-			visited[v] = 0;
-			printf(" %d", v);
-			if(u == v)
-				break;
-		}
-		printf("\n");
-	}
+
+struct state{
+  short i, j, d, w;
+  state(){} state(short i, short j, short d, short w) : i(i), j(j), d(d), w(w) {}
+};
+
+int di[] = {-1, +0, +1, +0}, dj[] = {+0, +1, +0, -1};
+
+const int N = 51;
+
+int g[N+1][N+1], t[N+2][N+2], n, m;
+bool v[N+1][N+1][4];
+
+void bfs(){
+  short si, sj, fi, fj; string dir;
+  cin >> si >> sj >> fi >> fj >> dir;
+  short sd;
+  switch (dir[0]){
+  case 'n': sd = 0; break;
+  case 'e': sd = 1; break;
+  case 's': sd = 2; break;
+  case 'w': sd = 3; break;
+  }
+
+  assert(t[si][sj]);
+  if (t[fi][fj]){
+    queue<state> q;
+    memset(v, 0, sizeof v);
+    q.push(state(si, sj, sd, 0));
+    while (q.size()){
+
+#define f q.front()
+      short i = f.i, j = f.j, d = f.d, w = f.w;
+#undef f
+
+      q.pop();
+
+      if (i < 0 || i > n || j < 0 || j > m || !t[i][j] || v[i][j][d]) continue;
+
+      if (i == fi && j == fj){
+	//printf("popped %d %d %d %d\n",i,j,d,w);
+	cout << w << endl;
+	return;
+      }
+
+      //printf("popped %d %d %d %d\n",i,j,d,w);
+      v[i][j][d] = true;
+
+      q.push(state(i, j, (d+1)%4, w+1));
+      q.push(state(i, j, (d+3)%4, w+1));
+      for (int k=1; k<=3; ++k){
+	int ni = i+k*di[d], nj = j+k*dj[d];
+	if (ni < 0 || ni > n || nj < 0 || nj > m || !t[ni][nj]) break;
+	q.push(state(ni, nj, d, w+1));
+      }
+
+    }
+  }
+  cout << "-1\n";
 }
 
-void mset(int x, int y)
-{
-	AdjList[x].pb(y);
-	V = max(V, max(x, y));
-}
+int main(){
+    freopen("in", "r", stdin);
+    freopen("out", "w", stdout);
 
-int main()
-{
-	memset(dfs_num, 0, sizeof(dfs_num));
-	memset(dfs_low, 0, sizeof(dfs_low));
-	memset(visited, 0, sizeof(visited));
-	dfsNumberCounter = numSCC = 0;
-	
-	mset(0, 1);
-	mset(1, 3);
-	mset(2, 1);
-	mset(3, 2);
-	mset(3, 4);
-	mset(4, 5);
-	mset(5, 7);
-	mset(7, 6);
-	mset(6, 4);
-	
-	for(int i = 0; i < V; i++)
-		if(dfs_num[i] == 0)
-			tarjanSCC(i);
+  while (cin >> n >> m && (n+m)){
+    for (int i=0; i<n; ++i){
+      for (int j=0; j<m; ++j){
+	cin >> g[i][j];
+      }
+    }
+
+    //Crear matriz t(ransformada)
+    for (int i=0; i<=n; ++i){
+      for (int j=0; j<=m; ++j){
+	if (i == 0 || j == 0 || i == n || j == m) t[i][j] = 0;
+	else t[i][j] = !g[i-1][j-1] && !g[i-1][j] && !g[i][j-1] && !g[i][j];
+	//cout << t[i][j] << " ";
+      }
+      //cout << endl;
+
+    }
+
+    //Hacer BFS sobre t
+    bfs();
+  }
+  return 0;
 }
