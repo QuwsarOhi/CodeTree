@@ -43,17 +43,17 @@ void sieve()
 }
 
 
-void primefactorgen(int n)
+void primefactorgen(long long n)
 {
-	memset(primefactor, 0, sizeof(primefactor));
-	register int tmp;
-	for(size_t i = 0; i < prime.size() && prime[i] <= n; i++)
+	memset(primeFactor, 0, sizeof(primeFactor));
+	long long tmp;
+	for(long long i = 0; i < prime.size() && prime[i] <= n; i++)
 	{
 		tmp = n;
-		wh(tmp)
+		while(tmp)
 		{
-			primefactor[prime[i]] += tmp/prime[i];
-			tmp/=prime[i];
+			primeFactor[prime[i]] += tmp/prime[i];
+			tmp/=primes[i];
 		}
 	}
 }

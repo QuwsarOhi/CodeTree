@@ -27,35 +27,10 @@ unsigned long long Pow(unsigned long long N, unsigned long long P)
 	}
 	else
 		return N * Pow(N, P-1);
-	
+
 }
 
 int main()
 {
-	//problem : 100!%7 comlexity: O(log(base)2n)
-	int fact = 1;
-	
-	for(int i = 1; i <= 100; i++)
-	{
-		printf("fact before %d for i = %d\n", fact, i);
-		fact = ((fact%7)*(i%7))%7;
-		printf("fact after %d\n", fact);
-	}
-	
-	printf("%d\n", fact);
-	printf("second problem\n\n\n\n");
-	
-	//problem : (a^b), complexity: O(log(base)2n)
-	long long y = Pow(2, 50);
-	printf("2^50 = %lld\n", y);
-
-	//problem : (N^P)%M, comlexity: O(log(base)2n)
-	
-	M = 7;
-	long long x = F(2, 100);
-	
-	printf("(2^100)mod7 = %lld\n", x);
-	
-	return 0;
-	
+    return 0;
 }

@@ -1,77 +1,58 @@
-#include<bits/stdc++.h>
+#include <bits/stdc++.h>
+#define MAX 100
 #define INF 1e7
 using namespace std;
 
-vector<int> G[205];
-int W[205], dist[205], V;
+int G[MAX][MAX];
 
-void bellmanFord()
+void graphINIT()
 {
-    for(int i = 0; i <= V; i++)
-        dist[i] = INF;
-
-    dist[1] = 0;
-
-    for(int i = 0; i < V-1; i++) {
-        for(int u = 1; u <=V; u++)
-            for(int j = 0; j < G[u].size(); j++) {
-                int v = G[u][j];
-
-                if(dist[u] != INF)
-                    dist[v] = min(dist[v], dist[u]+(W[v] - W[u])*(W[v] - W[u])*(W[v] - W[u]));
-            }
-        /*for(int u = 1; u <= V; u++)
-            for(int i = 0; i < G[u].size(); i++)
-                printf("%d : %d\n", u, dist[u]);
-        printf("\n");*/
-    }
+    for(int i = 0; i < MAX; i++)
+        for(int j = 0; j < MAX; j++)
+            G[i][j] = INF;
+    for(int i = 0; i < MAX; i++)
+        G[i][i] = 0;
 }
 
-bool hasNegativeCycle()
+void floydWarshall(int V)
 {
-    for(int u = 0; u < V; u++)
-        for(int i = 0; i < G[u].size(); i++) {
-            int v = G[u][i];
-
-            //if bellmanFord is run for max values, then this code will return true for positive cycle by adding this line
-            //if(dist[v] < dist[u] + w)
-            if(dist[v] > dist[u] + (W[v] - W[u])*(W[v] - W[u])*(W[v] - W[u]))
-                dist[u] = INF;
-        }
-    return 0;
+    for(int k = 0; k < V; k++)      //Selecting a middle point as k
+        for(int i = 0; i < V; i++)  //Selecting all combination of source (i) and destination (j)
+            for(int j = 0; j < V; j++)
+                if(G[i][k] != INF && G[k][j] != INF)       //if the graph contains negative edges, then min(INF, INF+ negative edge) = +-INF!
+                    G[i][j] = min(G[i][j], G[i][k]+G[k][j]);    //if G[i][i] = negative, then node i is in negative circle
 }
 
 int main()
 {
-    freopen("in", "r", stdin);
-    freopen("out", "w", stdout);
+    int V = 5;
+    graphINIT();
+    G[0][1] = 1;
+    G[1][2] = 1;
+    G[2][4] = 5;
+    G[4][3] = -6;
+    G[3][2] = -1;
 
-    int u, v, x, E, q, cnt = 1;
-    while(scanf("%d", &V) != EOF) {
-        for(int i = 1; i <= V; i++)
-            scanf("%d", &W[i]);
-        scanf(" %d ", &E);
-        while(E--) {
-            scanf("%d %d", &u, &v);
-            G[u].push_back(v);
-            G[v].push_back(u);
-        }
-
-        bellmanFord();
-        //bool hasNEG = hasNegativeCycle();
-        hasNegativeCycle();
-        scanf("%d", &q);
-        printf("Set #%d\n", cnt++);
-        while(q--) {
-            scanf("%d", &x);
-            if(dist[x] >= 3 && dist[x] != INF)
-                printf("%d\n", dist[x]);
+    for(int i = 0; i < V; i++) {
+        for(int j = 0; j < V; j++) {
+            if(G[i][j] != INF)
+            printf("%4d", G[i][j]);
             else
-                printf("?\n");
+                printf(" INF");
         }
-
-        for(int i = 0; i <= V; i++)
-            G[i].clear();
+        printf("\n");
     }
+    floydWarshall(5);
+
+        for(int i = 0; i < V; i++) {
+        for(int j = 0; j < V; j++) {
+            if(G[i][j] != INF)
+            printf("%4d ", G[i][j]);
+            else
+                printf(" INF ");
+        }
+        printf("\n");
+    }
+
     return 0;
 }
