@@ -29,7 +29,7 @@ int arr[N], tree[4*N];
 
 void segment_build(int pos, int L, int R)
 {
-    tree[pos] = 0;
+    tree[pos] = 0;		//init is here, no need to manual init
     if(L==R) {
         tree[pos] = arr[L];
         return;
@@ -37,7 +37,7 @@ void segment_build(int pos, int L, int R)
     int mid = (L+R)/2;
     segment_build(pos*2, L, mid);
     segment_build(pos*2+1, mid+1, R);
-    tree[pos] = tree[pos*2] * tree[pos*2+1];
+    tree[pos] = tree[pos*2] * tree[pos*2+1];	//depends on usage
 }
 
 void segment_update(int pos, int L, int R, int i, int val)
@@ -49,18 +49,19 @@ void segment_update(int pos, int L, int R, int i, int val)
     int mid = (L+R)/2;
     if(i <= mid) segment_update(pos*2, L, mid, i, val);
     else segment_update(pos*2+1, mid+1, R, i, val);
-    tree[pos] = tree[pos*2] * tree[pos*2+1];
+    tree[pos] = tree[pos*2] * tree[pos*2+1];		//depends on usage
 }
 
 int segment_query(int pos, int L, int R, int l, int r)
 {
-    if(R < l || r < L) return 1;
-    if(l <= L && R <= r) return tree[pos];
+    if(R < l || r < L)
+		return 1;	//depends on usage (return 0)
+    if(l <= L && R <= r) 
+		return tree[pos];	//depends on usage
     int mid = (L+R)/2;
     int x = segment_query(pos*2, L, mid, l, r);
     int y = segment_query(pos*2+1, mid+1, R, l, r);
-    //pf("pos %d x: %d y: %d\n", pos, x, y);
-    return x*y;
+    return x*y;			//depends on usage
 }
 
 void printer(int x)

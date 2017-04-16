@@ -25,7 +25,7 @@ void dikjstra(int u, int destination, int nodes)
     dist[u] = 0;
     //pq is sorted in ascending order according to weight and edge
     priority_queue<pair<int, int> > pq;
-    pq.push({0, -u)};
+    pq.push({0, -u});
 
     while(!pq.empty()) {
         int u = -pq.top().second;

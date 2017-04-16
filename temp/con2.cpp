@@ -1,99 +1,117 @@
-/*
-    Rezwan_4029
-    AUST , CSE-25
-*/
 #include <bits/stdc++.h>
-#define pb push_back
-#define all(x) x.begin(),x.end()
-#define ms(a,v) memset(a,v,sizeof a)
-#define II ({int a; scanf("%d", &a); a;})
-#define LL  ({ll  a; scanf("%lld", &a); a;})
-#define EPS 1e-10
-#define pi 3.1415926535897932384626433832795
 using namespace std;
 
-typedef long long ll;
-typedef unsigned long long ull;
-typedef vector<int> vi ;
-typedef vector<ll>vl;
-typedef pair<int,int>pii;
-typedef pair<ll,ll>pll;
-typedef pair<double,double>pdd;
 
-#define forab(i, a, b)        for (__typeof (b) i = (a) ; i <= b ; ++i)
-#define rep(i, n)                forab (i, 0, (n) - 1)
-#define For(i, n)                forab (i, 1, n)
-#define rofba(i, a, b)        for (__typeof (b)i = (b) ; i >= a ; --i)
-#define per(i, n)                rofba (i, 0, (n) - 1)
-#define rof(i, n)                rofba (i, 1, n)
-#define forstl(i, s)        for (__typeof ((s).end ()) i = (s).begin (); i != (s).end (); ++i)
+bitset<10000010>isPrime;
+vector<long long>primes;
 
-#define SZ 4007
+//Generates a number is prime or not, and also makes an array of prime numbers
 
-int N , M , d[SZ] , Cost[SZ];
-const int INF = 1e8 + 7;
-
-struct Edge {
-    int u, v, w;
-    Edge(){}
-    Edge(int _u , int _v, int _w) : u(_u) , v(_v), w(_w) {}
-};
-
-Edge edges[SZ];
-
-void Init(int s) {
-    rep(i,N+1){
-        d[i] = INF;
-    }
-    d[s] = 0;
-}
-
-
-bool Bellman(int s)
+void sieveGen(unsigned long long N)
 {
-    Init(s);
-    bool used  ;
-    For(k,N-1)
-    {
-        used = true ;
-        rep(i,M)
-        {
-            if (d[ edges[i].v ] > d[ edges[i].u ] + edges[i].w && d[ edges[i].u ] != INF )
-            {
-                d[ edges[i].v ] =  d[ edges[i].u ] + edges[i].w  ;
-                used = false ;
-            }
-        }
-        if( used ) break ;
-    }
-    rep(i,M) if (d[edges[i].v] > d[edges[i].u] + edges[i].w && d[edges[i].u] != INF ) d[ edges[i].v ] = -INF ;
+    isPrime.set();
+    //0 and 1 are not prime
+	isPrime[0] = isPrime[1] = 0;
+	//Note, N isn't square rooted!
+	for(unsigned long long i = 2; i <= N; i++) {
+		if(isPrime[i]) {
+            unsigned long long skip = 2*i;
+			for(unsigned long long j = i*i; j <= N; j+= skip)
+                isPrime[j] = 0;
+			primes.push_back(i);
+		}
+	}
 }
 
-void Input(){
-    For(i,N) Cost[i] = II ;
-    M = II ;
-    rep(i,M){
-        int u = II , v  = II ;
-        int w = ( Cost[v] - Cost[u] ) * ( Cost[v] - Cost[u] ) * ( Cost[v] - Cost[u] ) ;
-        edges[i] =  Edge(u, v, w) ;
-    }
+vector<int> primeFactor(unsigned long long n)    //returns vector of co-efficient of prime factor
+{
+    /*if(isPrime[n]) {
+        vector<int>factor(n+1, 0);
+        factor[n] = factor[1] = 1;
+        return factor;
+    }*/
+    printf("started\n");
+    vector<int>factor(n+1, 0);
+
+	for(unsigned long long i = 0; i < primes.size() && primes[i] <= n; i++) {
+		while(n%primes[i] == 0) {       //divide 1 - n with primes 1 - n
+			factor[primes[i]]++;        //counts how many prime in the number
+			n/=primes[i];               //cuts out the prime
+		}
+	}
+	if(n > 1)
+        factor[n]++;
+    for(int i = 0; i < factor.size(); i++)
+        if(factor[i])
+            printf("%d^%d ", i, factor[i]);
+    printf("\n");
+	return factor;
 }
 
+/*unsigned long long numberOfDivisors(unsigned long long n)
+{
+    printf("input taken\n");
+    if(isPrime[n])          //if the number is prime, there is two divisors: 1, n
+        return 2;
 
-int main(){
-    //#ifdef LOCAL
-      freopen ("in", "r", stdin);
-    //#endif
-    int cs = 1 ;
-    while( scanf("%d",&N) == 1 ){
-        Input();
-        printf("Set #%d\n",cs++);
-        Bellman(1);
-        int Q = II ;
-        while(Q--){
-            int x = II ;
-            if( d[x] < 3 || d[x] == INF ) puts("?");
-            else printf("%d\n",d[x]);
+    vector<int>primefactor = primeFactor(n);            //first factorize the number
+    unsigned long long numDiv = 1;                               //the number itself is a divisor
+    printf("done\n");
+    for(unsigned long long i = 0; i < primefactor.size(); i++) {
+        if(primefactor[i] != 0)
+            numDiv *= (primefactor[i] + 1);
+    }
+    return numDiv;
+} */
+
+
+unsigned long long cal(unsigned long long n)
+{
+    vector<int>factor = primeFactor(n);
+    printf("factor done\n");
+    unsigned long long mul = 1;
+    priority_queue<pair<unsigned long long, unsigned long long> >pq;
+    for(unsigned long long i = 0; i < factor.size(); i++) {
+        if(factor[i] != 0) {
+            pq.push({factor[i]+1, factor[i]+1});
+            printf("pb %d %d\n", factor[i]+1, factor[i]+1);
+            mul *= (factor[i]+1);
         }
     }
+    printf("mul %llu\n", mul);
+    unsigned long long ans = mul-1;
+    while(!pq.empty()) {
+        unsigned long long div = pq.top().second;
+        unsigned long long sub = pq.top().first-1;
+        pq.pop();
+        printf("%llu %llu\n", sub, div);
+        if(sub < 1)
+            continue;
+        if(pq.size() == 1 && sub == 1)
+            continue;
+        ans += (mul/div) * sub;
+        printf("adding %llu\n", (mul/div) * sub);
+        pq.push({sub, div});
+    }
+    printf("ans : %llu\n", ans);
+    return ans;
+}
+
+int main()
+{
+    freopen("in", "r", stdin);
+
+    sieveGen(1000000);
+    unsigned long long a, b, ans;
+    scanf("%llu %llu", &a, &b);
+    if(a == b) {
+        ans = cal(a);
+        printf("%llu\n", ans+ans);
+    }
+    else {
+        unsigned long long ans = cal(a);
+        ans += cal(b);
+        printf("%llu\n", ans);
+    }
+    return 0;
 }
