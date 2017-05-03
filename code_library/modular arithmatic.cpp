@@ -8,8 +8,8 @@ long long powMod(long long N, long long P, long long M)
 	if(P==0)
 		return 1;
 	if(P%2==0) {
-		long long ret = powMod(N, P/2, M);
-		return ((ret%M) * (ret%M))%M;
+		long long ret = powMod(N, P/2, M)%M;
+		return (ret * ret)%M;
 	}
 	else
 		return ((N%M) * (powMod(N, P-1, M)%M))%M;

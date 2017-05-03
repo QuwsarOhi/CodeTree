@@ -16,8 +16,7 @@ void sieve(unsigned long long N)
 
     for(unsigned long long i = 2; i <= lim; i++) {
         if(isPrime[i]) {
-            unsigned long long skip = 2*i;
-            for(unsigned long long j = i*i; j <= N; j+= skip)
+            for(unsigned long long j = i*i; j <= N; j+= i)
                 isPrime[j] = 0;
         }
     }
@@ -33,8 +32,7 @@ void sieveGen(unsigned long long N)
 	//Note, N isn't square rooted!
 	for(unsigned long long i = 2; i <= N; i++) {
 		if(isPrime[i]) {
-            unsigned long long skip = 2*i;
-			for(unsigned long long j = i*i; j <= N; j+= skip)
+			for(unsigned long long j = i*i; j <= N; j+= i)
                 isPrime[j] = 0;
 			primes.push_back(i);
 		}
@@ -50,7 +48,7 @@ vector<int> primeFactor(long long n)    //returns vector of co-efficient of prim
     }
 
     vector<int>factor(sqrt(n)+1, 0);    //the size of vector must be at most sqrt(n)+1
-	for(long long i = 0; i < primes.size() && primes[i] <= n; i++) {
+	for(long long i = 0; i < (int)primes.size() && primes[i] <= n; i++) {
 		while(n%primes[i] == 0) {       //divide 1 - n with primes 1 - n
 			factor[primes[i]]++;        //counts how many prime in the number
 			n/=primes[i];               //cuts out the prime
@@ -75,6 +73,27 @@ vector<int> primeFactors(long long N) //returns a vector of primeFactors of n
 	if(N != 1)
 		factors.push_back(N);
 	return factors;
+}
+
+
+//prime factorization of factorials (n!)
+vector<pair<long long, long long> > factorialFactorization(long long n)
+{
+	vector<pair<long long, long long> >V;
+	
+	for(long long i = 0; i < (int)primes.size() && primes[i] <= n; i++) {
+		long long tmp = n, power = 0;
+		
+		while(tmp/primes[i]) {
+			power += tmp/primes[i];
+			tmp /= primes[i];
+		}
+		
+		if(power != 0)
+			V.push_back(make_pair(primes[i], power));
+	}
+	
+	return V;
 }
 
 long long numPF(long long n) //returns number of prime factors
