@@ -31,7 +31,8 @@ int BFS(int source_node, int finish_node, int vertices)
     while(!Q.empty()) {
         int u = Q.front();
         Q.pop();
-
+        
+        //remove this line if shortest path to all nodes are needed
         if(u == finish_node)
             return dist[u];
 

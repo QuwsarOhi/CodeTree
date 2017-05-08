@@ -16,7 +16,7 @@ struct node {
     }
 };
 
-//trie of a string abc, az
+//trie of a string abc, ax
 // [start] --> [a] --> [b] --> [c] --> endMark
 //				|
 //			   [x] --> endMark

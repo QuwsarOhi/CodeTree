@@ -58,41 +58,39 @@ vector<int> primeFactor(long long n)    //returns vector of co-efficient of prim
 	return factor;
 }
 
-vector<int> primeFactors(long long N) //returns a vector of primeFactors of n
-{
-	vector<int>factors;
-	long long PF_idx = 0, PF = primes[PF_idx];
+// Returns the divisors
+vector<unsigned long long>divisor;
+void divisors(unsigned long long n) {
+    unsigned long long lim = sqrt(n);
 
-	while(PF*PF <= N) {
-		while(N % PF == 0) {
-			N /= PF;
-			factors.push_back(PF);
-		}
-		PF = primes[++PF_idx];
-	}
-	if(N != 1)
-		factors.push_back(N);
-	return factors;
+    //deal with 1 and n manually
+    for(unsigned long long i = 2; i <= lim; i++) {
+        if(n % i == 0) {
+            unsigned long long tmp = n/i;
+            divisor.push_back(tmp);
+            if(i != tmp)
+                divisor.push_back(i);
+        }
+    }
 }
-
 
 //prime factorization of factorials (n!)
 vector<pair<long long, long long> > factorialFactorization(long long n)
 {
 	vector<pair<long long, long long> >V;
-	
+
 	for(long long i = 0; i < (int)primes.size() && primes[i] <= n; i++) {
 		long long tmp = n, power = 0;
-		
+
 		while(tmp/primes[i]) {
 			power += tmp/primes[i];
 			tmp /= primes[i];
 		}
-		
+
 		if(power != 0)
 			V.push_back(make_pair(primes[i], power));
 	}
-	
+
 	return V;
 }
 
