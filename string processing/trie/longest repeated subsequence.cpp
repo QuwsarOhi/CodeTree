@@ -33,7 +33,7 @@ void build(char str[], int len, node *current)
     current->isEnd = true;
 }
 
-string LRS(node *current, string past, int *cnt)
+string LRS(node *current, string past)
 {
     int pos;
     string y;
@@ -44,8 +44,9 @@ string LRS(node *current, string past, int *cnt)
                 string tmp;
                 tmp += rev[i];
                 //*cnt =  min(current->next[i]->visited, *cnt);
-                int cnt_next = 1e4;
-                tmp += LRS(current->next[i], "", &cnt_next);
+                
+                //int cnt_next = 1e4;
+                tmp += LRS(current->next[i], "");
                 if(tmp.size() > y.size()) {
                     y = tmp;
                     //*cnt = min(*cnt, cnt_next);
@@ -92,7 +93,8 @@ int main()
             build(S+i, S_len-i, root);
         }
         int cnt = 1e4;
-        string y = LRS(root, "", &cnt);
+        //string y = LRS(root, "", &cnt);
+        string y = LRS(root, "");
         if(y.size() == 0)
             printf("No repetitions found!\n");
         else {

@@ -1,24 +1,40 @@
+# UVa
+# 105 - the skyline problem
+# Height map
+
 import sys
 
-x, y = map(int, sys.stdin.readline().split())
+#sys.stdin = open('in', 'r')
+#sys.stdout = open('out', 'w')
 
-x = str(x-y)
+def main():
+	h = [0]*10005
+	
+	for line in sys.stdin:
+		L, H, R = map(int, line.strip().split())
+		for i in range(L, R):
+			if H > h[i]:
+				h[i] = H
+	
+	pastHeight = 0
+	firstOutput = True
+	for i in range(10000):
+		if pastHeight != h[i]:
+			if firstOutput == False:
+				Out(' ')
+			firstOutput = False
+			print('%d %d' %(i, h[i]), end='')
+			pastHeight = h[i]
+	print()
 
-if x[0] != '1':
-	print('1' + x[1:])
-elif x[0] != '2':
-	print('2' + x[1:])
-elif x[0] != '3':
-	print('3' + x[1:])
-elif x[0] != '4':
-	print('4' + x[1:])
-elif x[0] != '5':
-	print('5' + x[1:])
-elif x[0] != '6':
-	print('6' + x[1:])
-elif x[0] != '7':
-	print('7' + x[1:])
-elif x[0] != '8':
-	print('8' + x[1:])
-elif x[0] != '9':
-	print('9' + x[1:])
+
+
+
+def Out(x):
+	sys.stdout.write(str(x))
+
+def In(x):
+	return map(x, sys.stdin.readline().strip().split())
+
+if __name__ == '__main__':
+	main()

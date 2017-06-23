@@ -9,8 +9,7 @@ using namespace std;
 int cost[1005][105], V, E, price[1005];
 vector<int>G[1005], W[1005];
 
-int dikjstra(int start_node, int end_node, int gas_capacity)
-{
+int dikjstra(int start_node, int end_node, int gas_capacity) {
     for(int i = 0; i <= V; i++)
         for(int j = 0; j <= 100; j++)
             cost[i][j] = INF;

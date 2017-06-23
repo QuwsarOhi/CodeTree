@@ -18,10 +18,13 @@ void PrefixTable()
     register int i = 0, j = -1;
     Table[0] = -1;
     while(i < T_Size) {
-        while(j >= 0 && T[i] != T[j])
+        while(j >= 0 && T[i] != T[j]) {
+			printf("jump to %d = Table[%d] (%d)\n", j, j, Table[j]);
             j = Table[j];
+		}
         i++, j++;
         Table[i] = j;
+        printf("Table[%d] = %d\n", i, j);
     }
 }
 
@@ -49,6 +52,10 @@ int main()
 {
     //freopen("in", "r", stdin);
     //freopen("out", "w", stdout);
-    
+    strcpy(T, "SEVENTY SEVEN\0");
+    T_Size = strlen(T);
+    PrefixTable();
+    for(int i = 0; i < T_Size; i++)
+		printf("%d ", Table[i]);
     return 0;
 }

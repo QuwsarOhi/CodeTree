@@ -11,4 +11,6 @@ for num in numbers:
 	if int(num) % k == 0:
 		cnt += 1
 
+# use stdin.write(string) to fast output
+
 print(cnt)
