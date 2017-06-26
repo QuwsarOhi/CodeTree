@@ -41,7 +41,7 @@ int main()
     for(int Case = 1; Case <= t; Case++) {
         char a[100], b[100], n[20];
         int pw;
-        //%8 is used for skipping
+        //%* is used for skipping
         scanf(" %*[(] %[^+] %*[+] %[^)] %s", a, b, n);
         //%*[(] skipping (
         //%[^+] take input until +

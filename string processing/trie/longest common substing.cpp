@@ -40,16 +40,16 @@ void build(char str[], int len, int on, node *current)
     }
 }
 
-void LCS(string past, node *current)
+void LCS(string past, node *current, int totalStr)
 {
     for(int i = 0; i < 4; i++) {
         if(current->next[i] != NULL) {
-            if(current->next[i]->visited.count() == 2) {
+            if(current->next[i]->visited.count() == totalStr) {
                 string x;
                 x+= past;
                 x+= rev[i];
                 mx_len = max(mx_len, (int)x.size());
-                LCS(x, current->next[i]);
+                LCS(x, current->next[i], totalStr);
                 if(x.size() == mx_len)
                     vec.push_back(x);
             }
@@ -84,7 +84,7 @@ int main()
         for(int i = 0; i < len; i++)
             build(S+i, len-i, 1, root);
         mx_len = -1;
-        LCS("", root);
+        LCS("", root, 2);
         del(root);
         if(vec.size() == 0)
             printf("No common sequence.\n");

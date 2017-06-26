@@ -34,10 +34,18 @@
 
 using namespace std;
 
-ll x, y, d;
+long long x, y, d;
 
+// a*x + b*y = c
+// Given a and b calculate x and y so that a * x + b * y = d   (where d | c)
+// x_ans = x + (b/d)n   
+// y_ans = y − (a/d)n
+// where n is an integer
+
+
+// Solution only exists if d | c (i.e : c is divisable by d)
 //declare x, y, z globally
-void extendedEuclid(ll a, ll b) {
+void extendedEuclid(long long a, long long b) {
     if(b == 0) {x = 1; y = 0; d = a; return;}
     extendedEuclid(b, a%b);
     int x1 = y;
@@ -50,9 +58,12 @@ void extendedEuclid(ll a, ll b) {
 int main()
 {
     register ll a, b;
-    wh(sf("%lld %lld", &a, &b) != EOF) {
+    wh(sf("%lld %lld %lld", &a, &b, &c) != EOF) {
         extendedEuclid(a, b);
         pf("%lld %lld %lld\n", x, y, d);
+        if(c % d == 0) {	// Solution exists
+			
     }
+    
     return 0;
 }

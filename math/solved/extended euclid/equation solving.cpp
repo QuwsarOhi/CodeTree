@@ -56,7 +56,7 @@ int main()
     {
         bool found = 1;
         scanf("%lld %lld %lld %lld", &c1, &a, &c2, &b);
-        extendedEuclid(a, b);
+        extendedEuclid(a, b);							//
         //printf("D : %lld x: %lld y: %lld\n", d, x, y);
         if(total % d == 0) {
             x1 = x * (total/d);

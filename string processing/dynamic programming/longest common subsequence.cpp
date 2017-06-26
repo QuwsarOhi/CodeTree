@@ -6,11 +6,10 @@
 #include<bits/stdc++.h>
 using namespace std;
 
-char a[210], b[210];
-int dp[210][210], len_a, len_b;
 
-int LCS()       //longest common subsequence
-{
+
+int LCS(char a, char b, int len_a, int len_b) {      //longest common subsequence
+	int dp[210][210];
     for(register int i = 1; i <= len_a; i++)
         for(register int j = 1; j <= len_b; j++) {
             if(i == 0 || j == 0)                    //base case
