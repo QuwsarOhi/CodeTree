@@ -1,30 +1,304 @@
-0
-1
-3
-6
-1
-3
-6
-2
-5
-3
-10737418158
-10713077499
-13
-7
-8489158466
-8489158466
-1
-11
-9446748140
-5252500596
-6945832429
-3167380180
-1903673541
-1352140396
-3213057997
-3935721558
-2538207103
-2842882808
-2696039024
-6263292902
+Case 1: Not possible
+Case 2: Not possible
+Case 3: Not possible
+Case 4: Not possible
+Case 5: Not possible
+Case 6: Not possible
+Case 7: Not possible
+Case 8: Not possible
+Case 9: Possible from station 1
+Case 10: Possible from station 1
+Case 11: Possible from station 1
+Case 12: Possible from station 1
+Case 13: Possible from station 1
+Case 14: Possible from station 1
+Case 15: Possible from station 1
+Case 16: Possible from station 1
+Case 17: Not possible
+Case 18: Not possible
+Case 19: Not possible
+Case 20: Not possible
+Case 21: Not possible
+Case 22: Not possible
+Case 23: Not possible
+Case 24: Not possible
+Case 25: Possible from station 1
+Case 26: Possible from station 1
+Case 27: Possible from station 1
+Case 28: Possible from station 1
+Case 29: Possible from station 1
+Case 30: Possible from station 1
+Case 31: Possible from station 1
+Case 32: Possible from station 1
+Case 33: Not possible
+Case 34: Not possible
+Case 35: Not possible
+Case 36: Not possible
+Case 37: Not possible
+Case 38: Not possible
+Case 39: Not possible
+Case 40: Not possible
+Case 41: Possible from station 2
+Case 42: Possible from station 1
+Case 43: Possible from station 1
+Case 44: Possible from station 1
+Case 45: Possible from station 1
+Case 46: Possible from station 1
+Case 47: Possible from station 1
+Case 48: Possible from station 1
+Case 49: Not possible
+Case 50: Not possible
+Case 51: Not possible
+Case 52: Not possible
+Case 53: Not possible
+Case 54: Not possible
+Case 55: Not possible
+Case 56: Not possible
+Case 57: Possible from station 2
+Case 58: Possible from station 1
+Case 59: Possible from station 1
+Case 60: Possible from station 1
+Case 61: Possible from station 1
+Case 62: Possible from station 1
+Case 63: Possible from station 4
+Case 64: Possible from station 3
+Case 65: Not possible
+Case 66: Not possible
+Case 67: Not possible
+Case 68: Not possible
+Case 69: Not possible
+Case 70: Not possible
+Case 71: Not possible
+Case 72: Not possible
+Case 73: Possible from station 2
+Case 74: Possible from station 1
+Case 75: Possible from station 1
+Case 76: Possible from station 1
+Case 77: Possible from station 6
+Case 78: Possible from station 5
+Case 79: Possible from station 4
+Case 80: Possible from station 3
+Case 81: Possible from station 1
+Case 82: Possible from station 8
+Case 83: Possible from station 7
+Case 84: Possible from station 6
+Case 85: Possible from station 5
+Case 86: Possible from station 4
+Case 87: Possible from station 3
+Case 88: Possible from station 2
+Case 89: Possible from station 2
+Case 90: Possible from station 1
+Case 91: Possible from station 8
+Case 92: Possible from station 7
+Case 93: Possible from station 6
+Case 94: Possible from station 5
+Case 95: Possible from station 4
+Case 96: Possible from station 3
+Case 97: Possible from station 1
+Case 98: Possible from station 8
+Case 99: Possible from station 7
+Case 100: Possible from station 6
+Case 101: Possible from station 5
+Case 102: Possible from station 4
+Case 103: Possible from station 3
+Case 104: Possible from station 2
+Case 105: Not possible
+Case 106: Not possible
+Case 107: Not possible
+Case 108: Not possible
+Case 109: Not possible
+Case 110: Not possible
+Case 111: Not possible
+Case 112: Not possible
+Case 113: Possible from station 1
+Case 114: Possible from station 8
+Case 115: Possible from station 7
+Case 116: Possible from station 6
+Case 117: Possible from station 5
+Case 118: Possible from station 4
+Case 119: Possible from station 3
+Case 120: Possible from station 2
+Case 121: Not possible
+Case 122: Not possible
+Case 123: Not possible
+Case 124: Not possible
+Case 125: Not possible
+Case 126: Not possible
+Case 127: Not possible
+Case 128: Not possible
+Case 129: Possible from station 1
+Case 130: Possible from station 8
+Case 131: Possible from station 7
+Case 132: Possible from station 6
+Case 133: Possible from station 5
+Case 134: Possible from station 4
+Case 135: Possible from station 3
+Case 136: Possible from station 2
+Case 137: Not possible
+Case 138: Not possible
+Case 139: Not possible
+Case 140: Not possible
+Case 141: Not possible
+Case 142: Not possible
+Case 143: Not possible
+Case 144: Not possible
+Case 145: Possible from station 1
+Case 146: Possible from station 8
+Case 147: Possible from station 7
+Case 148: Possible from station 6
+Case 149: Possible from station 5
+Case 150: Possible from station 4
+Case 151: Possible from station 3
+Case 152: Possible from station 2
+Case 153: Not possible
+Case 154: Not possible
+Case 155: Not possible
+Case 156: Not possible
+Case 157: Not possible
+Case 158: Not possible
+Case 159: Not possible
+Case 160: Not possible
+Case 161: Possible from station 1
+Case 162: Possible from station 8
+Case 163: Possible from station 7
+Case 164: Possible from station 6
+Case 165: Possible from station 5
+Case 166: Possible from station 4
+Case 167: Possible from station 3
+Case 168: Possible from station 2
+Case 169: Not possible
+Case 170: Not possible
+Case 171: Not possible
+Case 172: Not possible
+Case 173: Not possible
+Case 174: Not possible
+Case 175: Not possible
+Case 176: Not possible
+Case 177: Possible from station 1
+Case 178: Possible from station 8
+Case 179: Possible from station 7
+Case 180: Possible from station 6
+Case 181: Possible from station 5
+Case 182: Possible from station 4
+Case 183: Possible from station 3
+Case 184: Possible from station 2
+Case 185: Not possible
+Case 186: Not possible
+Case 187: Not possible
+Case 188: Not possible
+Case 189: Not possible
+Case 190: Not possible
+Case 191: Not possible
+Case 192: Not possible
+Case 193: Possible from station 1
+Case 194: Possible from station 8
+Case 195: Possible from station 7
+Case 196: Possible from station 6
+Case 197: Possible from station 5
+Case 198: Possible from station 4
+Case 199: Possible from station 3
+Case 200: Possible from station 2
+Case 201: Not possible
+Case 202: Not possible
+Case 203: Not possible
+Case 204: Not possible
+Case 205: Not possible
+Case 206: Not possible
+Case 207: Not possible
+Case 208: Not possible
+Case 209: Possible from station 1
+Case 210: Possible from station 8
+Case 211: Possible from station 7
+Case 212: Possible from station 6
+Case 213: Possible from station 5
+Case 214: Possible from station 4
+Case 215: Possible from station 3
+Case 216: Possible from station 2
+Case 217: Not possible
+Case 218: Not possible
+Case 219: Not possible
+Case 220: Not possible
+Case 221: Not possible
+Case 222: Not possible
+Case 223: Not possible
+Case 224: Not possible
+Case 225: Possible from station 1
+Case 226: Possible from station 8
+Case 227: Possible from station 7
+Case 228: Possible from station 6
+Case 229: Possible from station 5
+Case 230: Possible from station 4
+Case 231: Possible from station 3
+Case 232: Possible from station 2
+Case 233: Not possible
+Case 234: Not possible
+Case 235: Not possible
+Case 236: Not possible
+Case 237: Not possible
+Case 238: Not possible
+Case 239: Not possible
+Case 240: Not possible
+Case 241: Possible from station 1
+Case 242: Possible from station 8
+Case 243: Possible from station 7
+Case 244: Possible from station 6
+Case 245: Possible from station 5
+Case 246: Possible from station 4
+Case 247: Possible from station 3
+Case 248: Possible from station 2
+Case 249: Not possible
+Case 250: Not possible
+Case 251: Not possible
+Case 252: Not possible
+Case 253: Not possible
+Case 254: Not possible
+Case 255: Not possible
+Case 256: Not possible
+Case 257: Not possible
+Case 258: Not possible
+Case 259: Not possible
+Case 260: Not possible
+Case 261: Not possible
+Case 262: Not possible
+Case 263: Not possible
+Case 264: Not possible
+Case 265: Possible from station 2
+Case 266: Possible from station 1
+Case 267: Possible from station 1
+Case 268: Possible from station 7
+Case 269: Possible from station 6
+Case 270: Possible from station 5
+Case 271: Possible from station 4
+Case 272: Possible from station 3
+Case 273: Possible from station 1
+Case 274: Possible from station 8
+Case 275: Possible from station 7
+Case 276: Possible from station 6
+Case 277: Possible from station 5
+Case 278: Possible from station 4
+Case 279: Possible from station 3
+Case 280: Possible from station 2
+Case 281: Possible from station 2
+Case 282: Possible from station 1
+Case 283: Possible from station 8
+Case 284: Possible from station 7
+Case 285: Possible from station 6
+Case 286: Possible from station 5
+Case 287: Possible from station 4
+Case 288: Possible from station 3
+Case 289: Possible from station 1
+Case 290: Possible from station 8
+Case 291: Possible from station 7
+Case 292: Possible from station 6
+Case 293: Possible from station 5
+Case 294: Possible from station 4
+Case 295: Possible from station 3
+Case 296: Possible from station 2
+Case 297: Not possible
+Case 298: Not possible
+Case 299: Not possible
+Case 300: Not possible
+Case 301: Not possible
+Case 302: Not possible
+Case 303: Not possible
+Case 304: Not possible
