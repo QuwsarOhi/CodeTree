@@ -1,4 +1,4 @@
-//UVa
+// UVa
 // 11219 - How old are you?
 #include <bits/stdc++.h>
 #define pb push_back
@@ -19,29 +19,31 @@
 #define inf std::numeric_limits<int>::max()
 #define ll long long
 
+ll age(ll y1, ll m1, ll d1, ll y2, ll m2, ll d2) {		// Today, Birthday
+	ll t1 = y1*10000+m1*100+d1;
+	ll t2 = y2*10000+m2*100+d2;
+	ll age = t1 - t2;
+	if(age < 0) return -1;
+	return age/10000;
+}
+
 int main()
 {
     //freopen("in", "r", stdin);
     //freopen("out", "w", stdout);
     int d1, d2, m1, m2, y1, y2, t;
-    ll t1, t2;
+    ll t1;
     sf(" %d", &t);
     for(int c = 1; c<=t; c++){
-        sf(" %d/%d/%d", &d1, &m1, &y1);
-        sf(" %d/%d/%d", &d2, &m2, &y2);
-        //if(y1 >= y2)
-          //  if(m1 >= m2)
-        t1 = y1*10000+m1*100+d1;
-        t2 = y2*10000+m2*100+d2;
-        //pf("%lld\n%lld\n", t1, t2);
-        t1 = t1 - t2;
-        t2 = t1 / 10000;
+        scanf(" %d/%d/%d", &d1, &m1, &y1);
+        scanf(" %d/%d/%d", &d2, &m2, &y2);
+        t1 = age(y1, m1, d1, y2, m2, d2);
         if(t1 < 0)
             pf("Case #%d: Invalid birth date\n", c);
-        else if(t2 > 130)
+        else if(t1 > 130)
             pf("Case #%d: Check birth date\n", c);
         else
-            pf("Case #%d: %lld\n", c, t2);
+            pf("Case #%d: %lld\n", c, t1);
     }
     return 0;
 }
