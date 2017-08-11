@@ -1,5 +1,95 @@
-Case 1: 127
-Case 2: 112
-Case 3: 124
-Case 4: 120
-Case 5: 92
+linear bridge 2
+linear bridge 3
+linear bridge 0
+Linear Bridge : 3
+Case 1: 2
+linear bridge 2
+linear bridge 1
+Linear Bridge : 2
+Case 2: 1
+linear bridge 0
+linear bridge 2
+linear bridge 3
+linear bridge 4
+Linear Bridge : 4
+Case 3: 2
+linear bridge 2
+linear bridge 4
+linear bridge 5
+linear bridge 7
+Linear Bridge : 4
+Case 4: 2
+linear bridge 2
+linear bridge 4
+linear bridge 5
+linear bridge 7
+Linear Bridge : 4
+Case 5: 2
+linear bridge 0
+linear bridge 4
+Linear Bridge : 2
+Case 6: 1
+Linear Bridge : 0
+Case 7: 0
+linear bridge 0
+linear bridge 2
+linear bridge 3
+linear bridge 4
+linear bridge 5
+linear bridge 6
+Linear Bridge : 6
+Case 8: 3
+linear bridge 2
+linear bridge 3
+linear bridge 0
+Linear Bridge : 3
+Case 9: 2
+Linear Bridge : 0
+Case 10: 0
+linear bridge 6
+linear bridge 3
+Linear Bridge : 2
+Case 11: 1
+linear bridge 1
+linear bridge 2
+Linear Bridge : 2
+Case 12: 1
+linear bridge 2
+Linear Bridge : 1
+Case 13: 1
+linear bridge 0
+linear bridge 2
+linear bridge 3
+linear bridge 4
+linear bridge 6
+Linear Bridge : 5
+Case 14: 3
+linear bridge 1
+linear bridge 2
+linear bridge 3
+Linear Bridge : 3
+Case 15: 2
+linear bridge 1
+linear bridge 3
+linear bridge 7
+linear bridge 2
+linear bridge 4
+linear bridge 9
+Linear Bridge : 6
+Case 16: 3
+linear bridge 3
+linear bridge 5
+linear bridge 1
+Linear Bridge : 3
+Case 17: 2
+linear bridge 0
+linear bridge 4
+Linear Bridge : 2
+Case 18: 1
+linear bridge 8
+linear bridge 7
+linear bridge 6
+linear bridge 4
+linear bridge 0
+Linear Bridge : 5
+Case 19: 3
