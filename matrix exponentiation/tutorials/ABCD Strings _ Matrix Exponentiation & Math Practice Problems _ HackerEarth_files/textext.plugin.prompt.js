@@ -1,0 +1,8 @@
+/**
+ * jQuery TextExt Plugin
+ * http://textextjs.com
+ *
+ * @version 1.3.1
+ * @copyright Copyright (C) 2011 Alex Gorbatchev. All rights reserved.
+ * @license MIT License
+ */(function(a){function b(){}a.fn.textext.TextExtPrompt=b,a.fn.textext.addPlugin("prompt",b);var c=b.prototype,d="text-hide-prompt",e="prompt",f="html.prompt",g={prompt:"Awaiting input...",html:{prompt:'<div class="text-prompt"/>'}};c.init=function(b){var c=this,d="placeholder",h,i;c.baseInit(b,g),h=a(c.opts(f)),a(c).data("container",h),c.core().wrapElement().append(h),c.setPrompt(c.opts(e)),i=b.input().attr(d),i||(i=c.opts(e)),b.input().attr(d,""),i&&c.setPrompt(i),a.trim(c.val()).length>0&&c.hidePrompt(),c.on({blur:c.onBlur,focus:c.onFocus,postInvalidate:c.onPostInvalidate,postInit:c.onPostInit})},c.onPostInit=function(a){this.invalidateBounds()},c.onPostInvalidate=function(a){this.invalidateBounds()},c.invalidateBounds=function(){var a=this,b=a.input();a.containerElement().css({paddingLeft:b.css("paddingLeft"),paddingTop:b.css("paddingTop")})},c.onBlur=function(a){var b=this;b.startTimer("prompt",.1,function(){b.showPrompt()})},c.showPrompt=function(){var b=this,c=b.input();a.trim(b.val()).length===0&&!c.is(":focus")&&b.containerElement().removeClass(d)},c.hidePrompt=function(){this.stopTimer("prompt"),this.containerElement().addClass(d)},c.onFocus=function(a){this.hidePrompt()},c.setPrompt=function(a){this.containerElement().text(a)},c.containerElement=function(){return a(this).data("container")}})(jQuery);

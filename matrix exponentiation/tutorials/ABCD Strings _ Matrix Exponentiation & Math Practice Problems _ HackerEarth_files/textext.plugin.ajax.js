@@ -1,0 +1,8 @@
+/**
+ * jQuery TextExt Plugin
+ * http://textextjs.com
+ *
+ * @version 1.3.1
+ * @copyright Copyright (C) 2011 Alex Gorbatchev. All rights reserved.
+ * @license MIT License
+ */(function(a){function b(){}a.fn.textext.TextExtAjax=b,a.fn.textext.addPlugin("ajax",b);var c=b.prototype,d="ajax.data.callback",e="ajax.cache.results",f="ajax.loading.delay",g="ajax.loading.message",h="ajax.type.delay",i="setSuggestions",j="showDropdown",k="loading",l={ajax:{typeDelay:.5,loadingMessage:"Loading...",loadingDelay:.5,cacheResults:!1,dataCallback:null}};c.init=function(a){var b=this;b.baseInit(a,l),b.on({getSuggestions:b.onGetSuggestions}),b._suggestions=null},c.load=function(b){var c=this,e=c.opts(d)||function(a){return{q:a}},f;f=a.extend(!0,{data:e(b),success:function(a){c.onComplete(a,b)},error:function(a,c){console.error(c,b)}},c.opts("ajax")),a.ajax(f)},c.onComplete=function(a,b){var c=this,d=a;c.dontShowLoading(),c.opts(e)==1&&(c._suggestions=a,d=c.itemManager().filter(a,b)),c.trigger(i,{result:d})},c.dontShowLoading=function(){this.stopTimer(k)},c.showLoading=function(){var a=this;a.dontShowLoading(),a.startTimer(k,a.opts(f),function(){a.trigger(j,function(b){b.clearItems();var c=b.addDropdownItem(a.opts(g));c.addClass("text-loading")})})},c.onGetSuggestions=function(a,b){var c=this,d=c._suggestions,f=(b||{}).query||"";if(d&&c.opts(e)===!0)return c.onComplete(d,f);c.startTimer("ajax",c.opts(h),function(){c.showLoading(),c.load(f)})}})(jQuery);
