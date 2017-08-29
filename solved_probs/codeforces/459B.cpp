@@ -1,3 +1,7 @@
+// Codeforces
+// B. Pashmak and Flowers
+// http://codeforces.com/problemset/problem/459/B
+
 #include <bits/stdc++.h>
 using namespace std;
 #define EPS 1e-9
@@ -20,4 +24,26 @@ using namespace std;
 #define vii vector<pair<int, int> >
 #define FIO ios_base::sync_with_stdio(false); cin.tie(NULL);
 
-
+int main() {
+	ll n, x, mn = INF, mx = -1;
+	sf("%lld", &n);
+	
+	unordered_map<int, ll>mp;
+	
+	fr(i, 0, n) {
+		sf("%lld", &x);
+		mx = max(mx, x);
+		mn = min(x, mn);
+		mp[x]++;
+	}
+	
+	if(mn == mx) {
+		ll x = mp[mn];
+		pf("%lld %lld\n", mx-mn, (x*(x-1))/2);
+	}
+	else {
+		pf("%lld %lld\n", mx-mn, mp[mn]*mp[mx]);
+	}
+	return 0;
+}
+	

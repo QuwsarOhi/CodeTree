@@ -20,19 +20,3 @@ using namespace std;
 #define vii vector<pair<int, int> >
 #define FIO ios_base::sync_with_stdio(false); cin.tie(NULL);
 
-
-int main() {
-	ll l, r, x, y, k;
-	sf("%lld%lld%lld%lld%lld", &l, &r, &x, &y, &k);
-	
-	for(ll i = x; i <= y; ++i) {
-		ll t = k*i;
-		if(t >= l && t <= r) {
-			printf("YES\n");
-			return 0;
-		}
-	}
-	
-	printf("NO\n");
-	return 0;
-}

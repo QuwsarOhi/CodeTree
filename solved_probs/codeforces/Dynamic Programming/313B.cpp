@@ -1,3 +1,7 @@
+// Codeforces
+// B. Ilya and Queries
+// http://codeforces.com/problemset/problem/313/B
+
 #include <bits/stdc++.h>
 using namespace std;
 #define EPS 1e-9
@@ -21,3 +25,28 @@ using namespace std;
 #define FIO ios_base::sync_with_stdio(false); cin.tie(NULL);
 
 
+int main() {
+	FIO
+	int x, y, m, n, v[200100];
+	string s;
+	
+	cin >> s;
+	n = s.size();
+	
+	fr(i, 0, n) {
+		if(i != 0)
+			v[i] = v[i-1];
+		if(s[i] == s[i+1])
+			++v[i];
+	}
+	
+	cin >> m;
+	
+	fr(i, 0, m) {
+		cin >> x >> y;
+		cout << v[y-2] - (x-2 < 0 ? 0:v[x-2]) << endl;
+	}
+	
+	
+	return 0;
+}
