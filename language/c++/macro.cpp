@@ -7,8 +7,11 @@ using namespace std;
 #define fi first
 #define se second
 #define pi acos(-1)
+#define sf scanf
+#define pf printf
 #define fr(i, a, b) for(register int i = a; i < b; i++)
 #define msi map<string, int>
+#define pii pair<int, int>
 #define mii map<int, int>
 #define vi vector<int>
 #define vii vector<pair<int, int> >
