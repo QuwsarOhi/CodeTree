@@ -1,3 +1,8 @@
+// Codeforces
+// B. Cormen — The Best Friend Of a Man
+// http://codeforces.com/problemset/problem/732/B
+// Greedy
+
 #include <bits/stdc++.h>
 using namespace std;
 #define EPS 1e-9
@@ -21,3 +26,28 @@ using namespace std;
 #define FIO ios_base::sync_with_stdio(false); cin.tie(NULL);
 
 
+int main() {
+	int n, k, cnt = 0, v[550];
+	sf("%d%d", &n, &k);
+	fr(i, 0, n) {
+		sf("%d", &v[i]);
+	}
+	
+	fr(i, 1, n) {
+		int t = v[i-1] + v[i];
+		if(t < k) {
+			cnt += k-t;
+			v[i] += k-t;
+		}
+	}
+	
+	pf("%d\n", cnt);
+	
+	fr(i, 0, n-1)
+		pf("%d ", v[i]);
+	
+	pf("%d\n", v[n-1]);
+	
+	return 0;
+}
+	

@@ -1,3 +1,8 @@
+// Codeforces
+// B. Lovely Palindromes
+// http://codeforces.com/problemset/problem/688/B
+// Math, Pattern
+
 #include <bits/stdc++.h>
 using namespace std;
 #define EPS 1e-9
@@ -20,4 +25,12 @@ using namespace std;
 #define vii vector<pair<int, int> >
 #define FIO ios_base::sync_with_stdio(false); cin.tie(NULL);
 
-
+int main() {
+	FIO
+	string x;
+	cin >> x;
+	cout << x;
+	reverse(x.begin(), x.end());
+	cout << x << endl;
+	return 0;
+}
