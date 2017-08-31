@@ -1,3 +1,7 @@
+// Codeforces
+// C. A and B and Team Training
+// http://codeforces.com/problemset/problem/519/C
+
 #include <bits/stdc++.h>
 using namespace std;
 #define EPS 1e-9
@@ -20,16 +24,20 @@ using namespace std;
 typedef long long ll;
 typedef unsigned long long ull;
 
-// float tests
-// test for equality: DON'T use "a==b"
-// abs(a-b) < EPS; 
-// test for >=: Don't use "a >= b"
-// a > b-EPS;
-// test for >: Don't use "a > b"
-// a >= b+EPS;
+ll cnt = 0;
 
+void recur(int mn, int mx) {
+	if(mn >= 1 && mx >= 2) {
+		++cnt;
+		recur(min(mn-1, mx-2), max(mn-1, mx-2));
+	}
+	return;
+}
 
-int main()
-{
+int main() {
+	int n, m;
+	sf("%d%d", &n, &m);
+	recur(min(n, m), max(n, m));
+	pf("%lld\n", cnt);
 	return 0;
 }
