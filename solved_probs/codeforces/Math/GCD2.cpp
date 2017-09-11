@@ -1,3 +1,8 @@
+// Codeforces
+// A. Fox and Number Game
+// http://codeforces.com/problemset/problem/389/A
+// Application of GCD
+
 #include <bits/stdc++.h>
 using namespace std;
 #define EPS 1e-9
@@ -32,28 +37,15 @@ typedef pair<ll, ll> pll;
 typedef vector<pair<int, int> > vii;
 
 
-// Extra Macros : 
-
-#define modulo(S, N) ((S) & (N - 1))   // returns S % N, where N is a power of 2
-#define isPowerOfTwo(S) (!(S & (S - 1)))
-#define nearestPowerOfTwo(S) ((int)pow(2.0, (int)((log((double)S) / log(2.0)) + 0.5)))
-#define turnOffLastBit(S) ((S) & (S - 1))
-#define turnOnLastZero(S) ((S) | (S + 1))
-#define turnOffLastConsecutiveBits(S) ((S) & (S + 1))
-#define turnOnLastConsecutiveZeroes(S) ((S) | (S - 1))
-
-
-
-// float tests
-// test for equality: DON'T use "a==b"
-// abs(a-b) < EPS; 
-// test for >=: Don't use "a >= b"
-// a > b-EPS;
-// test for >: Don't use "a > b"
-// a >= b+EPS;
-
-
-int main()
-{
+int main() {
+	int n, ans, x;
+	sf("%d", &n);
+	sf("%d", &ans);
+	fr(i, 0, n-1) {
+		sf("%d", &x);
+		ans = __gcd(ans, x);
+	}
+	
+	pf("%d\n", ans*n);
 	return 0;
 }

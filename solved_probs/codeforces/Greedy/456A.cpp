@@ -1,3 +1,7 @@
+// Codeforces
+// A. Laptops
+// http://codeforces.com/problemset/problem/456/A
+// Greedy, Sorting
 #include <bits/stdc++.h>
 using namespace std;
 #define EPS 1e-9
@@ -10,18 +14,8 @@ using namespace std;
 #define pi acos(-1)
 #define sf scanf
 #define pf printf
-#define Equal(a, b) (abs(a-b) < EPS)
-#define Greater(a, b) (a >= (b+EPS))
-#define GreaterEqual(a, b) (a > (b-EPS)) 
-#define fr(i, a, b) for(register int i = (a); i < (int)(b); i++)
+#define fr(i, a, b) for(register int i = a; i < (int)b; i++)
 #define FIO ios_base::sync_with_stdio(false); cin.tie(NULL);
-#define dbug(vari) cerr << #vari << " = " << (vari) <<endl
-#define isOn(S, j) (S & (1 << j))
-#define setBit(S, j) (S |= (1 << j))
-#define clearBit(S, j) (S &= ~(1 << j))
-#define toggleBit(S, j) (S ^= (1 << j))
-#define lowBit(S) (S & (-S))
-#define setAll(S, n) (S = (1 << n) - 1)
 typedef unsigned long long ull;
 typedef long long ll;
 typedef map<int, int> mii;
@@ -31,4 +25,28 @@ typedef pair<int, int> pii;
 typedef pair<ll, ll> pll;
 typedef vector<pair<int, int> > vii;
 
-
+int main() {
+	int n, p, q;
+	vii v;
+	sf("%d", &n);
+	
+	fr(i, 0, n) {
+		sf("%d %d", &p, &q);
+		v.pb({p, q});
+	}
+	
+	sort(v.begin(), v.end());
+	
+	int past_q = v[0].se;
+	fr(i, 1, v.size()) {
+		if(v[i].se < past_q) {
+			pf("Happy Alex\n");
+			return 0;
+		}
+		past_q = v[i].se;
+	}
+	
+	pf("Poor Alex\n");
+	
+	return 0;
+}

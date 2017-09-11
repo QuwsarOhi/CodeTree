@@ -1,3 +1,8 @@
+// Codeforces
+// A. DZY Loves Chessboard
+// http://codeforces.com/problemset/problem/445/A
+// Graph, BFS
+
 #include <bits/stdc++.h>
 using namespace std;
 #define EPS 1e-9
@@ -31,29 +36,55 @@ typedef pair<int, int> pii;
 typedef pair<ll, ll> pll;
 typedef vector<pair<int, int> > vii;
 
-
-// Extra Macros : 
-
-#define modulo(S, N) ((S) & (N - 1))   // returns S % N, where N is a power of 2
-#define isPowerOfTwo(S) (!(S & (S - 1)))
-#define nearestPowerOfTwo(S) ((int)pow(2.0, (int)((log((double)S) / log(2.0)) + 0.5)))
-#define turnOffLastBit(S) ((S) & (S - 1))
-#define turnOnLastZero(S) ((S) | (S + 1))
-#define turnOffLastConsecutiveBits(S) ((S) & (S + 1))
-#define turnOnLastConsecutiveZeroes(S) ((S) | (S - 1))
+int n, m, r[] = {-1, 0, 0, 1}, c[] = {0, -1, 1, 0};
+char g[110][110];
 
 
+void fill(int X, int Y) {
+	queue<pii>q;
+	q.push({X, Y});
+    g[X][Y] = 'B';
+	while(!q.empty()) {
+		int _x = q.front().fi;
+		int _y = q.front().se;
+		
+        q.pop();
+        
+		fr(i, 0, 4) {
+			int x = _x+r[i];
+			int y = _y+c[i];
+			
+			if(x < 0 || x >= n || y < 0 || y >= m)
+				continue;
+			
+			if(g[x][y] != '.') continue;
+			
+			if(g[_x][_y] == 'B') g[x][y] = 'W';
+			else g[x][y] = 'B';
+            
+			q.push({x, y});
+		}
+	}
+}
 
-// float tests
-// test for equality: DON'T use "a==b"
-// abs(a-b) < EPS; 
-// test for >=: Don't use "a >= b"
-// a > b-EPS;
-// test for >: Don't use "a > b"
-// a >= b+EPS;
 
+int main() {
+	sf("%d %d", &n, &m);
+	
+	fr(i, 0, n)
+		fr(j, 0, m)
+			sf(" %c", &g[i][j]);
 
-int main()
-{
+	fr(i, 0, n)
+		fr(j, 0, m)
+			if(g[i][j] == '.')
+				fill(i, j);
+	
+	fr(i, 0, n) {
+		fr(j, 0, m) 
+			pf("%c", g[i][j]);
+		pf("\n");
+	}
+	
 	return 0;
 }
