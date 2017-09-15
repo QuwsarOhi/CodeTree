@@ -1,3 +1,7 @@
+// Codeforces
+// A. Curriculum Vitae
+// http://codeforces.com/contest/846/problem/A
+
 #include <bits/stdc++.h>
 using namespace std;
 #define EPS 1e-9
@@ -30,3 +34,25 @@ typedef vector<int> vi;
 typedef pair<int, int> pii;
 typedef pair<ll, ll> pll;
 typedef vector<pair<int, int> > vii;
+
+int main() {
+	int n, mx = 0, one[110] = {0}, zero[110] = {0}, v[110];
+	sf("%d", &n);
+	fr(i, 0, n)
+		sf("%d", &v[i]);
+	
+	one[n-1] = v[n-1];
+	for(int i = n-2; i >= 0; --i)
+		one[i] = one[i+1] + v[i];
+		
+	zero[0] = (v[0] == 0);
+	
+	for(int i = 1; i < n; ++i)
+		zero[i] = zero[i-1] + (v[i] == 0);
+	
+	for(int i = 0; i < n; ++i)
+		mx = max(mx, zero[i]+one[i+1]);
+	
+	pf("%d\n", max(mx, one[0]));
+	return 0;
+}

@@ -1,3 +1,7 @@
+// Codeforces
+// A. Two Bags of Potatoes
+// http://codeforces.com/problemset/problem/239/A
+
 #include <bits/stdc++.h>
 using namespace std;
 #define EPS 1e-9
@@ -31,4 +35,27 @@ typedef pair<int, int> pii;
 typedef pair<ll, ll> pll;
 typedef vector<pair<int, int> > vii;
 
-
+int main() {
+	ll y, k, n, st;
+	sf("%lld %lld %lld", &y, &k, &n);
+	bool ok = 0;
+	if(y < k)
+		st = k-y;
+	else
+		st = ceil(y/(double)k)*k - y;
+	if(st == 0) st = k;
+	for(ll x = st; x+y <= n; x += k) {
+		if(!ok) {
+			pf("%lld", x);
+			ok = 1;
+		}
+		else
+			pf(" %lld", x);
+	}
+	
+	if(!ok)
+		pf("-1\n");
+	else
+		pf("\n");
+	return 0;
+}
