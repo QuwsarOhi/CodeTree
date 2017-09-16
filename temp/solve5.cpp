@@ -30,27 +30,3 @@ typedef vector<int> vi;
 typedef pair<int, int> pii;
 typedef pair<ll, ll> pll;
 typedef vector<pair<int, int> > vii;
-
-
-int main() {
-	int n, mx = -1, x;
-	bool used[3500];
-	memset(used, 0, sizeof used);
-	sf("%d", &n);
-	fr(i, 0, n) {
-		sf("%d", &x);
-		used[x] = 1;
-		mx = max(mx, x);
-	}
-	
-	fr(i, 1, mx) {
-		if(!used[i]) {
-			pf("%d\n", i);
-			return 0;
-		}
-	}
-	
-	pf("%d\n", mx+1);
-	
-	return 0;
-}

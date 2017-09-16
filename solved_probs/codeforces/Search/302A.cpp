@@ -1,3 +1,7 @@
+// Codeforces
+// A. Eugeny and Array
+// http://codeforces.com/problemset/problem/302/A
+
 #include <bits/stdc++.h>
 using namespace std;
 #define EPS 1e-9
@@ -32,3 +36,29 @@ typedef pair<int, int> pii;
 typedef pair<ll, ll> pll;
 typedef vector<pair<int, int> > vii;
 
+int v[200010] = {0};
+
+int main() {
+	int n, q, c[3]={0}, x;
+	sf("%d %d", &n, &q);
+	fr(i, 0, n) {
+		sf("%d", &x);
+		x+=1;
+		c[x]++;
+		int t = min(c[0], c[2]);
+		//cout << " c " << c[0] << " " << c[2] << " " << t+t << endl;
+		if(t != 0)
+			v[t+t] = 1;
+	}
+	
+	int l, r;
+	fr(i, 0, q) {
+		sf("%d %d", &l, &r);
+		if(v[r-l+1] != 0)
+			pf("1\n");
+		else
+			pf("0\n");
+	}
+	
+	return 0;
+}
