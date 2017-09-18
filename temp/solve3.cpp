@@ -13,10 +13,9 @@ using namespace std;
 #define Equal(a, b) (abs(a-b) < EPS)
 #define Greater(a, b) (a >= (b+EPS))
 #define GreaterEqual(a, b) (a > (b-EPS)) 
-#define All(x) x.begin(), x.end()
 #define fr(i, a, b) for(register int i = (a); i < (int)(b); i++)
 #define FIO ios_base::sync_with_stdio(false); cin.tie(NULL);
-#define dbg(vari) cerr << #vari << " = " << (vari) <<endl
+#define dbug(vari) cerr << #vari << " = " << (vari) <<endl
 #define isOn(S, j) (S & (1 << j))
 #define setBit(S, j) (S |= (1 << j))
 #define clearBit(S, j) (S &= ~(1 << j))

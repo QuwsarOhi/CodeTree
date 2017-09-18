@@ -1,3 +1,7 @@
+// Codeforces
+// B. Godsend
+// http://codeforces.com/contest/841/problem/B
+
 #include <bits/stdc++.h>
 using namespace std;
 #define EPS 1e-9
@@ -14,7 +18,7 @@ using namespace std;
 #define Greater(a, b) (a >= (b+EPS))
 #define GreaterEqual(a, b) (a > (b-EPS)) 
 #define fr(i, a, b) for(register int i = (a); i < (int)(b); i++)
-#define FIO ios_base::sync_with_stdio(false); cin.tie(NULL)
+#define FIO ios_base::sync_with_stdio(false); cin.tie(NULL);
 #define dbug(vari) cerr << #vari << " = " << (vari) <<endl
 #define isOn(S, j) (S & (1 << j))
 #define setBit(S, j) (S |= (1 << j))
@@ -31,3 +35,20 @@ typedef pair<int, int> pii;
 typedef pair<ll, ll> pll;
 typedef vector<pair<int, int> > vii;
 
+int main() {
+	int n, odd = 0, x;
+	scanf("%d", &n);
+	for(int i = 0; i < n; ++i) {
+		scanf("%d", &x);
+		if(x & 1) {
+			odd++;
+		}
+	}
+	
+	if(odd == 0)
+		printf("Second\n");
+	else
+		printf("First\n");
+	
+	return 0;
+}

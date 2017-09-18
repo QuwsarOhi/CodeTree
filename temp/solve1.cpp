@@ -1,7 +1,3 @@
-// Codeforces
-// A. Plate Game
-// http://codeforces.com/problemset/problem/197/A
-
 #include <bits/stdc++.h>
 using namespace std;
 #define EPS 1e-9
@@ -16,7 +12,7 @@ using namespace std;
 #define pf printf
 #define Equal(a, b) (abs(a-b) < EPS)
 #define Greater(a, b) (a >= (b+EPS))
-#define GreaterEqual(a, b) (a > (b-EPS)) 
+#define GreaterEqual(a, b) (a > (b-EPS))
 #define fr(i, a, b) for(register int i = (a); i < (int)(b); i++)
 #define FIO ios_base::sync_with_stdio(false); cin.tie(NULL);
 #define dbug(vari) cerr << #vari << " = " << (vari) <<endl
@@ -35,12 +31,3 @@ typedef pair<int, int> pii;
 typedef pair<ll, ll> pll;
 typedef vector<pair<int, int> > vii;
 
-int main() {
-	int a, b, r;
-	sf("%d %d %d", &a, &b, &r);
-	if(min(a, b) < 2*r)
-		pf("Second\n");
-	else
-		pf("First\n");
-	return 0;
-}
