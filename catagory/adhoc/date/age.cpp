@@ -23,6 +23,7 @@ ll age(ll y1, ll m1, ll d1, ll y2, ll m2, ll d2) {		// Today, Birthday
 	ll t1 = y1*10000+m1*100+d1;
 	ll t2 = y2*10000+m2*100+d2;
 	ll age = t1 - t2;
+	pf("%lld\n", age);
 	if(age < 0) return -1;
 	return age/10000;
 }

@@ -1,3 +1,8 @@
+// Codeforces
+// A. Inna and Pink Pony
+// http://codeforces.com/contest/374/problem/A
+// Math
+
 #include <bits/stdc++.h>
 using namespace std;
 #define EPS 1e-9
@@ -31,3 +36,26 @@ typedef pair<int, int> pii;
 typedef pair<ll, ll> pll;
 typedef vector<pair<int, int> > vii;
 
+int main() {
+	int n, m, mn = INF, i, j, a, b;
+	sf("%d %d %d %d %d %d", &n, &m, &i, &j, &a, &b);
+	int X[] = {1, 1, n, n}, Y[] = {1, m, 1, m};
+	int dx = i%a, dy = j%b;
+	fr(p, 0, 4) {
+		if(X[p]%a == dx && Y[p]%b == dy) {
+			int x = abs(X[p]-i), y = abs(Y[p]-j);
+			if(x%a != 0 || y%b != 0)
+				continue;
+			if((x/a)%2 != (y/b)%2)
+				continue;
+			mn = min(max(x/a, y/b), mn);
+		}
+	}
+	
+	if(mn == INF || ((a >= n || b >= m) && mn != 0))
+		pf("Poor Inna and pony!\n");
+	else
+		pf("%d\n", mn);
+		
+	return 0;
+}
