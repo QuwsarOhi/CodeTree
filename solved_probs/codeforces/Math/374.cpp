@@ -1,7 +1,7 @@
 // Codeforces
-// A.Boredom
-// http://codeforces.com/problemset/problem/455/A
-// Dynamic Programming
+// A. Inna and Pink Pony
+// http://codeforces.com/contest/374/problem/A
+// Math
 
 #include <bits/stdc++.h>
 using namespace std;
@@ -36,20 +36,26 @@ typedef pair<int, int> pii;
 typedef pair<ll, ll> pll;
 typedef vector<pair<int, int> > vii;
 
-ll v[100010] = {0}, dp[100010] = {0}, mx = -1, x, n;
-
 int main() {
-	sf("%lld", &n);
-	
-	fr(i, 0, n) {
-		sf("%lld", &x);
-		v[x]++;
-		mx = max(mx, x);
+	int n, m, mn = INF, i, j, a, b;
+	sf("%d %d %d %d %d %d", &n, &m, &i, &j, &a, &b);
+	int X[] = {1, 1, n, n}, Y[] = {1, m, 1, m};
+	int dx = i%a, dy = j%b;
+	fr(p, 0, 4) {
+		if(X[p]%a == dx && Y[p]%b == dy) {
+			int x = abs(X[p]-i), y = abs(Y[p]-j);
+			if(x%a != 0 || y%b != 0)
+				continue;
+			if((x/a)%2 != (y/b)%2)
+				continue;
+			mn = min(max(x/a, y/b), mn);
+		}
 	}
 	
-	dp[1] = v[1];
-	fr(i, 2, mx+1)
-		dp[i] = max(v[i]*i+dp[i-2], dp[i-1]);
-	pf("%lld\n", dp[mx]);
+	if(mn == INF || ((a >= n || b >= m) && mn != 0))
+		pf("Poor Inna and pony!\n");
+	else
+		pf("%d\n", mn);
+		
 	return 0;
 }

@@ -1,3 +1,8 @@
+// Codeforces
+// C. Hacking Cypher
+// http://codeforces.com/problemset/problem/490/C
+// Math, Brute Force
+
 #include <bits/stdc++.h>
 using namespace std;
 #define EPS 1e-9
@@ -31,68 +36,28 @@ typedef pair<int, int> pii;
 typedef pair<ll, ll> pll;
 typedef vector<pair<int, int> > vii;
 
-struct node {
-	ll ans, prefix, suffix, sum;
-	
-	node(int val = 0) {
-		ans = prefix = suffix = sum = val;
-	}
-	
-	void merge(node left, node right) {
-		prefix = max(left.prefix, left.sum+right.prefix);
-		suffix = max(right.suffix, right.sum+left.suffix);
-		sum = left.sum + right.sum;
-		ans = max(left.ans, max(right.ans, left.suffix+right.prefix));
-	}
-};
-
-node tree[200100];
-ll val[50100];
-
-void init(int pos, int l, int r) {
-	if(l == r) {
-		tree[pos] = node(val[l]);
-		return;
-	}
-	
-	int mid = (l+r)/2;
-	
-	init(pos*2, l, mid);
-	init(pos*2+1, mid+1, r);
-	
-	tree[pos] = node(-INF);
-	tree[pos].merge(tree[pos*2], tree[pos*2+1]);
-}
-
-
-node query(int pos, int l, int r, int x, int y) {
-	if(y < l || x > r)
-		return node(-INF);
-	
-	if(x <= l && r <= y)
-		return tree[pos];
-	
-	int mid = (l+r)/2;
-	
-	node lft = query(pos*2, l, mid, x, y);
-	node rht = query(pos*2+1, mid+1, r, x, y);
-	
-	node parent = node(-INF);
-	parent.merge(lft, rht);
-	return parent;
-}
-
 int main() {
-	int n, q, x, y;
-	sf("%d", &n);
-	fr(i, 1, n+1)
-		sf("%lld", &val[i]);
-	init(1, 1, n);
-	//show(7);
-	sf("%d", &q);
-	while(q--) {
-		sf("%d %d", &x, &y);
-		pf("%lld\n", query(1, 1, n, x, y).ans);
+	string x;
+	ll a, b;
+	cin >> x;
+	cin >> a >> b;
+	ll remain[1000010] = {0}, p = 1;
+	for(int i = x.size()-1; i >= 0; --i) {
+		remain[i] = ((x[i]-'0')*p + remain[i+1])%b;
+		p = (p*10) %b;
 	}
+	
+	ll remain2 = 0;
+	for(int i = 1; i <= (int)x.size()-1; ++i) {
+		remain2 *= 10;
+		remain2 += (x[i-1] - '0');
+		remain2 %= a;
+		if(remain2 == 0 && remain[i] == 0 && x[i] != '0') {
+			cout << "YES\n";
+			cout << x.substr(0, i) << "\n" << x.substr(i) << endl;
+			return 0;
+		}
+	}
+	cout << "NO\n";
 	return 0;
 }

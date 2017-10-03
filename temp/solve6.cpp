@@ -1,3 +1,8 @@
+// Codeforces
+// C. k-Tree
+// http://codeforces.com/problemset/problem/431/C
+// Dynamic Programming
+
 #include <bits/stdc++.h>
 using namespace std;
 #define EPS 1e-9
@@ -31,3 +36,36 @@ typedef pair<int, int> pii;
 typedef pair<ll, ll> pll;
 typedef vector<pair<int, int> > vii;
 
+int d, k;
+ll dp[110][3] = {0};
+
+ll recur(int n, bool ok) {
+	if(n == 0 && ok == 1)
+		return 1;
+	
+	if(dp[n][ok] != -1)
+		return dp[n][ok];
+	
+	ll ans = 0;
+	for(int i = 1; i <= k; ++i) {
+		if(n-i >= 0) {
+			if(i >= d)
+				ans += recur(n-i, 1);
+			else
+				ans += recur(n-i, ok);
+			ans%=MOD;
+		}
+	}
+	
+	return dp[n][ok] = ans;
+}
+
+int main() {
+	int n;
+	fr(i, 0, 105)
+		dp[i][0] = dp[i][1] = -1;
+	sf("%d %d %d", &n, &k, &d);
+	pf("%lld\n", recur(n, 0));
+	
+	return 0;
+}

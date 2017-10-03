@@ -30,3 +30,28 @@ typedef vector<int> vi;
 typedef pair<int, int> pii;
 typedef pair<ll, ll> pll;
 typedef vector<pair<int, int> > vii;
+
+int n, m, cnt[110] = {0};
+
+int main() {
+	vector<string>v;
+	unordered_map<char, bool>used[110];
+	cin >> n >> m;
+	string x;
+	fr(i, 0, n) {
+		cin >> x;
+		fr(i, 0, x.size())
+			if(used[i].find(x[i]) == used[i].end()) {
+				used[i][x[i]] = 1;
+				cnt[i]++;
+			}
+	}
+	
+	ll ans = 1;
+	fr(i, 0, m)
+		ans = (ans * cnt[i])%MOD;
+		
+	cout << ans << endl;
+	
+	return 0;
+}

@@ -1,3 +1,8 @@
+// Codeforces
+// C. Palindrome Transformation
+// http://codeforces.com/problemset/problem/486/C
+// Greedy
+
 #include <bits/stdc++.h>
 using namespace std;
 #define EPS 1e-9
@@ -31,40 +36,38 @@ typedef pair<int, int> pii;
 typedef pair<ll, ll> pll;
 typedef vector<pair<int, int> > vii;
 
+int n, p, ans;
+
+int cal(int start, vector<int> &v) {
+	int ans1 = 0, ans2 = 0, lst = start;
+	for(int i = 0; i < (int)v.size(); ++i) {
+		ans1 += abs(lst-v[i]);
+		lst = v[i];
+	}
+	lst = start;
+	for(int i = v.size()-1; i >= 0; --i) {
+		ans2 += abs(lst-v[i]);
+		lst = v[i];
+	}
+	return min(ans1, ans2);
+}
+
 int main() {
-	int n,x,l=-1,r=-1,mid=-1,cnt = 0;
-	sf("%d", &n);
-	vii v;
-	fr(i, 0, n) {
-		sf("%d", &x);
-		v.pb({x, i});
-	}
-	sort(v.begin(), v.end());
-	bool ok = 1;
-	fr(i, 0, n) {
-		//pf("i : %d l : %d r : %d mid : %d fi : %d se : %d ok : %d : %d\n", i, l, r, mid, v[i].fi, v[i].se, ok, r-v[i].se);
-		if(v[i].se == i) {
-			++cnt;
-			continue;
+	char s[100010];
+	vi v1, v2;
+	sf("%d %d", &n, &p);
+	--p;
+	fr(i, 0, n)
+		sf(" %c", &s[i]);
+	for(int i = 0, j = n-1; i < j; ++i, --j)
+		if(s[i] != s[j]) {
+			ans += min(abs(s[i]-s[j]+26)%26, abs(s[j]-s[i]+26)%26);
+			v1.pb(i), v2.pb(j);
 		}
-		else if(v[i].se != i && l == -1)
-			r = l = v[i].se;
-		else {
-			if(r-v[i].se == 1)
-				r = v[i].se;
-			else if(r-v[i].se == 2)
-				r = v[i].se, mid = v[i-1].se;
-			else
-				ok = 0;
-		}
-	}
 	
-	if(cnt == n)
-		pf("yes\n1 1\n");
-	else if(l == -1 || ok == 0 || (mid!= -1 && mid != (l+r)/2))
-		pf("no\n");
-	else
-		pf("yes\n%d %d\n", r+1, l+1);
-		
+	sort(v1.begin(), v1.end());
+	sort(v2.begin(), v2.end());
+	
+	pf("%d\n", ans+min(cal(p, v1), cal(p, v2)));
 	return 0;
 }
