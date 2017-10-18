@@ -1,55 +1,51 @@
-// LightOJ
-// 1072 - Calm Down
-
 #include <bits/stdc++.h>
-#define PI acos(-1.0)
-#define EPS 1e-9
 using namespace std;
 
-inline bool isEqual(double a, double b) {
-	if(abs(a - b) <= EPS)
-		return 1;
-	return 0;
-}
 
-inline bool isGreater(double a, double b) {
-	if(a >= b+EPS)
-		return 1;
-	return 0;
-}
-
-int n;
-double R;
-
-double BinarySearch(double lo, double hi) {
-	double ans = -1, r;
+bool CanBuildTable(int rows, int columns, int max_len) {
+	int row_no = 0;
 	
-	for(int i = 0; i < 200; ++i) {
-		r = (lo+hi)/2;
-		double a = R-r;
-		double b = r+r;
-		double theta = acos((2*a*a - b*b) / (2*a*a));
-		if(isEqual(theta*n, 2*PI)) {
-			ans = r;
-			lo = r;
-		}
-		else if(isGreater(theta*n, 2*PI))
-			hi = r;
-		else
-			lo = r;
+	for(auto it : v) {
+		string x(it);
+		int len = max_len - (int)x.size();
+		while(len--) x += ' ';
+		if(row_no == rows)
+			row_no = 0;
+		if(ans[row_no].size() != 0) x += string("  ");
+		ans[row_no].push_back(x);
+		++row_no;
 	}
-	return ans;
+	
+	for(int i = 0; i < rows; ++i) {
+		int len = 0;
+		for(auto it : ans[i])
+			len += it.size();
+		if(len > 60)
+			return 0;
+	}
+	return 1;
 }
+	
 
 int main() {
-	//freopen("in", "r", stdin);
-	//freopen("out", "w", stdout);
 	
-	int t;
-	scanf("%d", &t);
-	for(int Case = 1; Case <= t; ++Case) {
-		scanf("%lf %d", &R, &n);
-		printf("Case %d: %.6lf\n", Case, BinarySearch(0, R));
+	string x;
+	int n;
+	
+	while(cin >> n) {
+		int mx_len = 0;
+		for(int i = 0; i < n; ++i) {
+			cin >> x;
+			v.push_back(x);
+			mx_len = max(mx_len, (int)x.size());
+		}
+		
+		
+		int column = 60/mx_len;
+		int row = ceil(n/(double)column);		// Upper bound taken, so there may exist some empty row in rightmost column
+		
+		
+		
 	}
-	return 0;
-}
+		
+		
