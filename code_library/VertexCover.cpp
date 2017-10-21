@@ -5,7 +5,7 @@ using namespace std;
 
 bitset<210>vis;
 int lft[210], rht[210];
-vector<int>G[210], v1, v2;
+vector<int>G[210];
 
 bool VertexCover(int u) {
 	vis[u] = 1;
