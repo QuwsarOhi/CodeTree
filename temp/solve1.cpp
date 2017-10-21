@@ -1,14 +1,59 @@
 #include <bits/stdc++.h>
+#define mp make_pair
 using namespace std;
 
-int dy[] = {-1, 0, 0, 1}, dx[] = {0, -1, 1, 0};
+int dx[] = {0, -1, 1, 0}, dy[] = {-1, 0, 0, 1}, lft[700], rht[700];
 
+char mat[30][30];
+vector<int> G[700], W[700], GostNode;
+bitset<700>vis;
 
-bitset<410>vis, Node;
-bool scan[25][25];
-int lft[410], rht[410], visited[410];
-vector<int>G[410];
-char mat[25][25];
+int NodeNumber(int i, int j, int n) {
+	return i*n + j + 1;
+}
+
+void BFS(int i, int j, int n) {
+	queue<pair<int, pair<int, int> > >q;
+	map<pair<int, int>, bool> visited;
+	int u = NodeNumber(i, j, n);
+	
+	q.push(mp(0, mp(i, j)));
+
+	visited[mp(i, j)] = 1;
+	
+	while(!q.empty()) {
+		int d = q.front().first;
+		int _x = q.front().second.first;
+		int _y = q.front().second.second;
+		q.pop();
+		
+		if(mat[_x][_y] == 'H') {
+			int v = NodeNumber(_x, _y, n);
+			cout << "Adding " << u << " -- " << v << endl;
+			G[u].push_back(v);
+			G[v].push_back(u);
+			W[u].push_back(d);
+			W[v].push_back(d);
+			cout << "done" << endl;
+			//continue;
+		}
+		
+		for(int k = 0; k < 4; ++k) {
+			int x = _x + dx[k];
+			int y = _y + dy[k];
+			
+			if(x < 0 || y < 0 || x >= n || y >= n)
+				continue;
+			
+			if(!visited[make_pair(x, y)]) {
+				if(mat[x][y] != '#') {
+					visited[mp(x, y)] = 1;
+					q.push(mp(d+1, mp(x, y)));
+				}
+			}
+		}
+	}
+}
 
 bool VertexCover(int u) {
 	vis[u] = 1;
@@ -33,89 +78,70 @@ bool VertexCover(int u) {
 	return 0;
 }
 
-void Bipartite(int u) {
-	queue<int>q;
-	q.push(u);
-	visited[u] = 1;
+bool VertexCoverCount(int MaxWeight) {
+	memset(lft, -1, sizeof lft);
+	memset(rht, -1, sizeof rht);
 	
-	while(!q.empty()) {
-		u = q.front();
-		q.pop();
+	int cnt = 0;
+	
+	for(int i = 0; i < (int)GostNode.size(); ++i) {
+		vis.reset();		
+		cnt += VertexCover(GostNode[i]);	
+	}
+	
+	if(cnt == (int)GostNode.size())
+		return 1;
+	return 0;
+}
+
+int BinarySearch(int lo, int hi) {
+	int ans = -1, mid;
+	
+	while(lo < hi) {
+		mid = (lo+hi)/2;
 		
-		for(auto v : G[u]) {
-			if(visited[v] == -1) {
-				if(visited[v] == 1)
-					visited[v] = 2;
-				else
-					visited[v] = 1;
-				q.push(v);
-			}
+		if(VertexCoverCount(mid)) {
+			lo = mid + 1;
+			ans = mid;
 		}
+		else
+			hi = mid;
 	}
-}
-
-void GridToList(int r, int c) {
 	
-	for(int i = 0; i < r; ++i) {
-		for(int j = 0; j < c; ++j) {
-			for(int k = 0; k < 4; ++k) {
-				int x = i + dx[k];
-				int y = j + dy[k];
-				
-				if(x < 0 || y < 0 || x >= r || y >= c || scan[i][j] || scan[x][y])
-					continue;
-				
-				scan[i][j] = scan[x][y] = 1;
-				if(mat[i][j] == '*' && mat[x][y] == '*') {
-					G[i+j+1].push_back(x+y+1);
-					G[x+y+1].push_back(i+j+1);
-					Node[x+y+1] = Node[i+j+1] = 1;
-					cout << i+j+1 << " -- " << x+y+1 << endl;
-				}
-				else if(mat[i][j] == '*')		// Only Single Point
-					Node[i+j+1] = 1;
-				else if(mat[x][y] == '*')
-					Node[x+y+1] = 1;
-			}
-		}
-	}
+	return ans;
 }
-
 
 int main() {
-	int t, n, m;
+	int t, n;
+	
 	scanf("%d", &t);
 	
 	for(int Case = 1; Case <= t; ++Case) {
-		scanf("%d %d", &n, &m);
+		scanf("%d", &n);
 		
 		for(int i = 0; i < n; ++i)
-			for(int j = 0; j < m; ++j)
+			for(int j = 0; j < n; ++j)
 				scanf(" %c", &mat[i][j]);
+				
 		
+		cout << "Input Taken\n";
+				
+		for(int i = 0; i < n; ++i)
+			for(int j = 0; j < n; ++j)
+				if(mat[i][j] == 'G') {
+					BFS(i, j, n);
+					GostNode.push_back(NodeNumber(i, j, n));
+				}
 		
-		//NodeCount = 0;
-		Node.reset();
-		memset(scan, 0, sizeof scan);
-		GridToList(n, m);
+		cout << "BFS Done\n";
 		
-		memset(visited, -1, sizeof visited);
-		int totalNode = n*m, MinVertexCover = 0;
-		
-		for(int i = 1; i <= totalNode; ++i) {
-			if(visited[i] == -1)
-				Bipartite(i);
-		}
-		
-		for(int i = 1; i <= totalNode; ++i) {
-			vis.reset();
-			MinVertexCover += VertexCover(i);
-		}
-		
-		cout << Node.count() << endl;
-		printf("Case %d: %d\n", Case, (int)Node.count() - MinVertexCover);		// Min Edge Cover
-		
+		int ans = BinarySearch(0, 700);
+					
+		printf("Case %d: %d\n", Case, ans);
 	}
 	
 	return 0;
-} 
+}
+		
+		
+		
