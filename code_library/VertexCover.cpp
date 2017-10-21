@@ -35,7 +35,9 @@ int main() {
 	
 	memset(lft, -1, sizeof lft);
 	memset(rht, -1, sizeof rht);
-		
+	
+	// Min Edge Cover = TotalNodes - MinVertexCover
+	
 	for(int i = 1; i <= n; ++i) { 	// n is the number of left-side nodes
 		vis.reset();				// if left-side nodes are unspecified then do bicoloring
 		cnt += VertexCover(i); 		// Cnt is the answer
