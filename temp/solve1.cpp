@@ -8,19 +8,30 @@ using namespace std;
 multiset<int>Tlevel[150], Jlevel[150];
 vector<int>T[150], J[150];
 int TmaxLevel, JmaxLevel;
+bitset<150>visited;
 
 void Tdfs(int u, int level) {
-	Tlevel[level].insert((int)T[u].size());
+	if((int)T[u].size() != 0)
+		Tlevel[level].insert((int)T[u].size());
 	TmaxLevel = max(TmaxLevel, level);
-	for(int i = 0; i < (int)T[u].size(); ++i)
-		Tdfs(T[u][i], level+1);
+	visited[u] = 1;
+	for(int i = 0; i < (int)T[u].size(); ++i) {
+		int v = T[u][i];
+		if(!visited[v])
+			Tdfs(v, level+1);
+	}
 }
 
 void Jdfs(int u, int level) {
-	Jlevel[level].insert((int)J[u].size());
+	if((int)J[u].size() != 0)
+		Jlevel[level].insert((int)J[u].size());
 	JmaxLevel = max(JmaxLevel, level);
-	for(int i = 0; i < (int)J[u].size(); ++i)
-		Jdfs(J[u][i], level+1);
+	visited[u] = 1;
+	for(int i = 0; i < (int)J[u].size(); ++i) {
+		int v = J[u][i];
+		if(!visited[v])
+			Jdfs(v, level+1);
+	}
 }
 
 
@@ -38,6 +49,7 @@ int main() {
 		for(int i = 1; i < Jnode; ++i) {
 			scanf("%d %d", &u, &v);
 			J[u].push_back(v);
+			J[v].push_back(u);
 		}
 		
 		scanf("%d", &Tnode);
@@ -45,23 +57,32 @@ int main() {
 		for(int i = 1; i < Tnode; ++i) {
 			scanf("%d %d", &u, &v);
 			T[u].push_back(v);
+			T[v].push_back(u);
 		}
 		
-		Tdfs(1, 0);
-		Jdfs(1, 0);
-		//cout << "JLevel " << JmaxLevel << endl;
-		//for(int i = 0; i <= JmaxLevel; ++i) {
-			//for(auto it: Jlevel[i])
-			//	cout << it << " ";
-			//cout << endl;
-		//}
+		for(int i = 1; i <= Jnode; ++i) {
+			for(auto it : J[i])
+				cout << it <<  " ";
+			cout << endl;
+		}
 		
-		//cout << "TLevel " << TmaxLevel << endl;
-		//for(int i = 0; i <= TmaxLevel; ++i) {
-			//for(auto it: Tlevel[i])
-			//	cout << it << " ";
-			//cout << endl;
-		//}
+		visited.reset();
+		Tdfs(1, 0);
+		visited.reset();
+		Jdfs(1, 0);
+		cout << "JLevel " << JmaxLevel << endl;
+		for(int i = 0; i <= JmaxLevel; ++i) {
+			for(auto it: Jlevel[i])
+				cout << it << " ";
+			cout << endl;
+		}
+		
+		cout << "TLevel " << TmaxLevel << endl;
+		for(int i = 0; i <= TmaxLevel; ++i) {
+			for(auto it: Tlevel[i])
+				cout << it << " ";
+			cout << endl;
+		}
 		
 		
 		bool ok = 1;
@@ -87,8 +108,8 @@ int main() {
 			
 		for(int i = 0; i < 140; ++i)
 			Tlevel[i].clear();
-		for(int j = 0; j < 140; ++j)
-			Jlevel[j].clear();
+		for(int i = 0; i < 140; ++i)
+			Jlevel[i].clear();
 		for(int i = 0; i < 140; ++i)
 			J[i].clear();
 		for(int i = 0; i < 140; ++i)
@@ -97,3 +118,22 @@ int main() {
 
 	return 0;
 }
+
+/*
+2
+7
+1 2
+1 3
+2 4
+3 5
+3 6
+3
+1 3
+3 2
+
+3
+3 1
+2 1
+3
+1 2
+1 3*/

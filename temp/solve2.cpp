@@ -1,65 +1,127 @@
-// LightOJ
-// 1118 - Incredible Molecules
-
 #include <bits/stdc++.h>
-#define PI acos(-1)
 using namespace std;
 
-struct circle {
-	int x, y, r;
-	circle(int _x, int _y, int _r) {
-		x = _x;
-		y = _y;
-		r = _r;
+bitset<250>visited;
+int lft[250], rht[250], TMaxlevel, JMaxlevel, Jnodes, Tnodes;
+vector<int>G[250], T[250], J[250], Tlevel[250], Jlevel[250];
+
+bool VertexCover(int u) {
+	visited[u] = 1;
+	for(int i = 0; i < (int)G[u].size(); ++i) {
+		int v = G[u][i];
+		if(visited[v])
+			continue;
+		visited[v] = 1;
+		
+		if(lft[v] == -1) {
+			lft[v] = u;
+			rht[u] = v;
+			return 1;
+		}
+		
+		else if(VertexCover(lft[v])) {
+			lft[v] = u;
+			rht[u] = v;
+			return 1;
+		}
 	}
-	double Area() {
-		return PI*r*r;
-	}
-};
-
-int Distance(int x1, int y1, int x2, int y2) {			// Without Sqrt
-	int x = x1-x2;
-	int y = y1-y2;
-	return x*x + y*y;
-}
-
-// Reference: https://www.mathsisfun.com/geometry/circle-sector-segment.html
-double CircleSegmentArea(double r, double angle) {		// Circle Radius, Center Angle(Rad)
-	return r * r * 0.5 * (angle - sin(angle));
-}
-
-double getAngle(double AB, double BC, double CA) {		// Returns Angle(Rad)
-	return acos((AB*AB + BC*BC - CA*CA)/(2*AB*BC));
-}
-
-bool doIntersectCircle(circle c1, circle c2) {
-	int dis = Distance(c1.x, c1.y, c2.x, c2.y);
-	if(sqrt(dis) < c1.r+c2.r)
-		return 1;
 	return 0;
 }
 
+void Tdfs(int u, int level) {
+	TMaxlevel = max(TMaxlevel, level);
+	visited[u] = 1;
+	Tlevel[level].push_back(u);
+	
+	for(int i = 0; i < (int)T[u].size(); ++i) {
+		int v = T[u][i];
+		if(!visited[v])
+			Tdfs(v, level+1);
+	}
+}
+
+
+void Jdfs(int u, int level) {
+	JMaxlevel = max(JMaxlevel, level);
+	visited[u] = 1;
+	Jlevel[level].push_back(u);
+	
+	for(int i = 0; i < (int)J[u].size(); ++i) {
+		int v = J[u][i];
+		if(!visited[v])
+			Jdfs(v, level+1);
+	}
+}
+
+
 int main() {
-	int t, x1, y1, x2, y2, r1, r2;
+	//freopen("in", "r", stdin);
+	//freopen("out", "w", stdout);
+	
+	int t, u, v;
 	scanf("%d", &t);
+	
+	
 	for(int Case = 1; Case <= t; ++Case) {
-		scanf("%d %d %d %d %d %d", &x1, &y1, &r1, &x2, &y2, &r2);
-		printf("Case %d: ", Case);
-		circle c1(x1, y1, r1), c2(x2, y2, r2);
-		if(doIntersectCircle(c1, c2)) {
-			double d = sqrt(Distance(c1.x, c1.y, c2.x, c2.y));
-			if(d + c1.r <= c2.r)
-				printf("%.10lf\n", c1.Area());
-			else if(d + c2.r <= c1.r)
-				printf("%.10lf\n", c2.Area());
-			else {
-				double intersection = CircleSegmentArea(c1.r, 2*getAngle(d, c1.r, c2.r));
-				intersection += CircleSegmentArea(c2.r, 2*getAngle(d, c2.r, c1.r));
-				printf("%.10lf\n", intersection);
+		TMaxlevel = JMaxlevel = 0;
+		
+		scanf("%d", &Jnodes);
+		for(int i = 1; i < Jnodes; ++i) {
+			scanf("%d %d", &u, &v);
+			J[u].push_back(v);
+			J[v].push_back(u);
+		}
+		
+		scanf("%d", &Tnodes);
+		for(int i = 1; i < Tnodes; ++i) {
+			scanf("%d %d", &u, &v);
+			T[u].push_back(v);
+			T[v].push_back(u);
+		}
+		
+		visited.reset();
+		Tdfs(1, 0);
+		visited.reset();
+		Jdfs(1, 0);
+		
+		for(int level = 0; level <= TMaxlevel; ++level) {
+			for(int i = 0; i < (int)Tlevel[level].size(); ++i) {
+				int u = Tlevel[level][i];
+				for(int j = 0; j < (int)Jlevel[level].size(); ++j) {
+					int v = Jlevel[level][j];		
+					if(J[v].size() >= T[u].size()) {	// Numbering starts after tom's node numbers
+						G[u].push_back(v+Tnodes);
+						G[v+Tnodes].push_back(u);
+						//cout << "Connecting " << u << " ----- " << v << endl;
+					}
+				}
 			}
 		}
+		
+		memset(lft, -1, sizeof lft);
+		memset(rht, -1, sizeof rht);
+	
+		int cnt = 0;
+		for(int i = 1; i <= Tnodes; ++i) { 	// n is the number of left-side nodes
+			visited.reset();				// if left-side nodes are unspecified then do bicoloring
+			cnt += VertexCover(i); 		// Cnt is the answer
+		}
+		
+		printf("Case %d: ", Case);
+		
+		if(cnt == Tnodes)
+			printf("Yes\n");
 		else
-			printf("0\n");
+			printf("No\n");
+		
+		for(int i = 0; i < 240; ++i) {
+			G[i].clear();
+			T[i].clear();
+			J[i].clear();
+			Tlevel[i].clear();
+			Jlevel[i].clear();
+		}
 	}
+	
 	return 0;
 }
