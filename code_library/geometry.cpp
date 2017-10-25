@@ -28,6 +28,9 @@ double getAngle(double AB, double BC, double CA) {		// Returns Angle(Rad)
 	return acos((AB*AB + BC*BC - CA*CA)/(2*AB*BC));
 }
 
+int PointToArea(int x1, int y1, int x2, int y2, int x3, int y3) {	// Returns Positive Area in if the points are clockwise, Negative for Anti-Clockwise
+	return (x1*(y2-y3) + x2*(y3-y1) + x3*(y1-y2));			// Divide by 2 if Triangle area is needed
+}
 
 // -------------------------------Triangle-----------------------------
 
