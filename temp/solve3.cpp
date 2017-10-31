@@ -1,129 +1,82 @@
-#include<cstdio>
-#include<cstring>
-#include<algorithm>
+#include <bits/stdc++.h>
 using namespace std;
-#define N 205
-#define M 80005
-int u[M],v[M],First[N],Next[M];
-int out[N],r[N],pre[N];
-int my[N],e;
-bool Get[N];
-void init()
-{
-    memset(First,-1,sizeof(First));
-    memset(Get,false,sizeof(Get));
-    e=0;
-}
-void insert(int f,int t)
-{
-    u[e]=f;
-    v[e]=t;
-    Next[e]=First[u[e]];
-    First[u[e]]=e++;
-}
-bool dfs(int x)
-{
-    for(int i=First[x];i+1;i=Next[i])
-    {
-        int y=v[i];
-        if(!Get[y])
-        {
-            Get[y]=true;
-            if(my[y]==-1||dfs(my[y]))
-            {
-                my[y]=x;
-                return true;
-            }
-        }
+typedef long long ll;
+
+// Digit DP
+// Complexity : O(10*idx*sum*tight)
+// Tight contains if there is any restriction to number
+
+ll dp[100][100][2], Pow[20];
+
+ll digitSum(int idx, int sum, int value, bool tight, int K, vector<int>&MaxDigit) {
+    //
+    if (idx == -1) {
+        cout << "K " << K << endl;
+        cout << idx << " " << sum << " " << value << endl;
+        cout << "return " << ((value%K == 0) && (sum%K == 0)) << endl;
+        return ((value%K == 0) && (sum%K == 0));
     }
-    return false;
-}
-int hk(int n)
-{
-    memset(my,-1,sizeof(my));
-    int ans=0;
-    for(int i=1;i<=n;i++)
-    {
-        memset(Get,false,sizeof(Get));
-        if(dfs(i)) ans++;
+    
+    
+    if (dp[idx][sum][tight] != -1 && tight != 1)
+        return dp[idx][sum][tight];
+
+    ll ret = 0;
+    int lim = (tight)? MaxDigit[idx] : 9;
+    
+    //cout << "Range " << idx << " " << MinDigit[idx] << " " << lim << endl;
+    for (int i = 0; i <= lim; i++) {
+        bool newTight = (MaxDigit[idx] == i)? tight : 0;       // caclulating newTight value for next state
+        int newValue = value ? value*10+i : i;
+        cout << "new " <<idx << " " << sum+i << " " << newValue << endl;
+        ret += digitSum(idx-1, (sum+i), newValue, newTight, K, MaxDigit);
+        
     }
-    return ans;
+
+    if (!tight)
+      dp[idx][sum][tight] = ret;
+
+    return ret;
 }
-void dfs2(int x,int le)
-{
-   if(Get[x]) return;
-   Get[x]=true;
-   r[x]=le;
-   for(int i=First[x];i+1;i=Next[i])
-   {
-       if(!Get[v[i]])
-       {
-            out[x]++;
-            pre[v[i]]=x;
-            dfs2(v[i],le+1);
 
-       }
 
-   }
-}
-int main()
-{
-    freopen("in","r", stdin);
-
-    int T,n,m,i,j,k,cas=1;
-    scanf("%d",&T);
-    while(T--)
-    {
-        printf("Case %d: ",cas++);
-        init();
-        memset(out,0,sizeof(out));
-        memset(r,0,sizeof(r));
-        memset(pre,0,sizeof(pre));
-
-        scanf("%d",&n);
-        for(i=1;i<n;i++)
-        {
-            scanf("%d %d",&j,&k);
-            insert(j,k);
-            insert(k,j);
+int main() {
+    vector<int>mn, mx;
+    int t, a, b, K;
+    scanf("%d", &t);
+    
+    for(int Case = 1; Case <= t; ++Case) {
+        scanf("%d %d %d", &a, &b, &K);
+        cout << K << endl;
+        while(b) {
+            mx.push_back(b%10);
+            b /= 10;
         }
-        dfs2(1,1);
+        //reverse(mx.begin(), mx.end());
+        
 
-        init();
-        scanf("%d",&m);
-        for(i=1;i<m;i++)
-        {
-            scanf("%d %d",&j,&k);
-            insert(j+n,k+n);
-            insert(k+n,j+n);
+        while(a) {
+            mn.push_back(a%10);
+            a/=10;
         }
-        dfs2(n+1,1);
-
-        int top=0;
-        for(i=1;i<=n;i++)
-        top=max(top,r[i]);
-
-        for(k=1;k<=top;k++)
-        {
-
-         init();
-         for(i=1;i<=n;i++)
-         for(j=n+1;j<=n+m;j++)
-         {
-             if(r[i]-k+1==r[j]&&out[j]<=out[i])		// r == level
-             {
-                 if(r[pre[i]]-k+1==r[pre[j]]&&out[pre[j]]<=out[pre[i]])
-                 insert(i,j);
-                 insert(pre[i],pre[j]);
-             }
-
-          }
-
-         if(hk(n)==m) break;
-         }
-        if(k<=top) puts("Yes");
-        else puts("No");
-
+        
+        Pow[0] = 1;
+        for(int i = 1; i <= 20; ++i)
+            Pow[i] = Pow[i-1]*10;
+        
+        for(auto it : mn)
+            cout << it << " ";
+        cout << endl;
+        
+        for(auto it : mx)
+            cout << it << " ";
+        cout << endl;
+        
+        
+        memset(dp, -1, sizeof dp);
+        
+        printf("Case %d: %lld\n", Case, digitSum((int)mx.size()-1, 0, 0, 1, K, mx));
     }
+    
     return 0;
 }

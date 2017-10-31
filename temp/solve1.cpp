@@ -1,6 +1,5 @@
 // LightOJ
-// 1032 - Fast Bit Calculations 
-// Unsolved
+// 1032 - Fast Bit Calculations
 
 #include <bits/stdc++.h>
 #define isOn(x, i) (x & (1LL<<i))
@@ -9,22 +8,27 @@
 using namespace std;
 
 int N, lastBit;
-long long dp[35][35][35];
+long long dp[33][33][2][2];
 bitset<5>B;
 
+// Bit DP (Almost same as Digit DP)
+// Complexity O(2*pos*total_bits*tights*number_of_bits)
 
-long long recur(int pos, long long mask, long long pairs, int lastOnSum) {
-    if(mask > N || pos > lastBit)
+long long bitDP(int pos, int mask, int pairs, bool prevOn, bool tight) {
+    if(pos < 0)
         return pairs;
-    
-    long long ans = 0;
 
-    ans += recur(pos+1, mask, pairs, 0);
-    if(On(mask, pos) <= N)
-        ans += recur(pos+1, mask|(1<<pos), pairs + (lastOnSum > 0), lastOnSum+1);
+    if(dp[pos][pairs][prevOn][tight] != -1)
+        return dp[pos][pairs][prevOn][tight];
     
-    return ans;
+    long long ans = bitDP(pos-1, mask & ~(1<<pos), pairs, 0, tight && !isOn(mask, pos));
+
+    if(On(mask, pos) <= N)
+        ans += bitDP(pos-1, mask | (1<<pos), pairs + prevOn, 1, tight && isOn(mask, pos));
+        
+    return dp[pos][pairs][prevOn][tight] = ans;
 }
+
 
 int main() {
     int t;
@@ -38,7 +42,8 @@ int main() {
                 lastBit = i;
         
         memset(dp, -1, sizeof dp);
-        printf("Case %d: %lld\n", Case, recur(0, 0, 0, 0));
+        cout << lastBit << endl;
+        printf("Case %d: %lld\n", Case, bitDP(lastBit, N, 0, 0, 1));
     }
     return 0;
 }

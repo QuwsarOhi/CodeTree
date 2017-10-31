@@ -25,8 +25,10 @@ int LCS(int p1, int p2, int i, int j) {
 	return dp[p1][p2] = ans;
 }
 
-
+/*
 void LCSprint(int p1, int p2, int i, int j) {
+	cout << p1 << " " << p2 << endl;
+	
 	if(p1 < 0 && p2 < 0)
 		return;
 	if(dp[p1-1][p2-1] > max(dp[p1-1][p2], dp[p1][p2-1])) {
@@ -45,18 +47,40 @@ void LCSprint(int p1, int p2, int i, int j) {
 		LCSprint(p1, p2-1, i, j);
 	}
 	else {
-		if(p1 != 0 && s[i][p1] < s[j][p2]) {
+		cout << "here " << p1 << " " << p2 << endl;
+		lcs.push_back(s[i][p1]);
+		lcs.push_back(s[i][p1-1]);
+		lcs.push_back(s[i][])
+		if(p1 != 0 && s[i][p1] > s[j][p2]) {
 			//lcs[l] = s[i][p1];
 			lcs.push_back(s[i][p1]);
 			LCSprint(p1-1, p2, i, j);
 		}
+		else if(p1 == 0 && p2 == 0)
+			return;
 		else {
 			//lcs[l] = s[j][p2];
 			lcs.push_back(s[j][p2]);
 			LCSprint(p1, p2-1, i, j);
 		}
+		LCSprint(p1-1, p2-1, i, j);
 	}
 	return;
+}*/
+
+void LCSprint(int len1, int len2, char s1[], char s2[]) {
+	int i = len1, j = len2;
+	
+	while(i > 0 && j > 0) {
+		if(s1[i] == s2[j]) {
+			lcs.push_back(s1[i]);
+			--i, --j;
+		}
+		else if(dp[i-1][j] > dp[i][j-1])
+			i--;
+		else
+			j--;
+	}
 }
 
 int main() {
@@ -81,7 +105,7 @@ int main() {
 			printf("\n");
 		}
 		
-		LCSprint(len[0]-1, len[1]-1, 0, 1);
+		LCSprint(len[0]-1, len[1]-1, s[0], s[1]);
 		
 		for(auto it : lcs)
 			cout << it;
