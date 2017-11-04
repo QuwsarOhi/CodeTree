@@ -70,6 +70,7 @@ int main()
     memset(dfs_num, 0, sizeof(dfs_num));
     dfsCounter = 0;
     visited.reset();
+    SCC_no = 0;
     for(int i = 1; i < indx; i++) {
         if(dfs_num[i] == 0)
             tarjanSSC(i);
