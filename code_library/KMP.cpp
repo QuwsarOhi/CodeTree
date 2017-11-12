@@ -59,3 +59,30 @@ int main()
 		printf("%d ", Table[i]);
     return 0;
 }
+
+
+//------------------------Genuine PrefixTable (Prefix-Suffix Length)------------
+
+// Some Tricky Cases:
+// aaaaaa : 0 1 2 3 4 5
+// aaaabaa : 0 1 2 3 0 1 2
+// abcdabcd : 0 0 0 0 1 2 3 4
+
+void prefixTable(int n, char pat[], int table[]) {
+    int len = 0, i = 1;                     // length of the previous longest prefix suffix
+    table[0] = 0;                           // table[0] is always 0
+ 
+    while (i < n) {
+        if (pat[i] == pat[len]) {
+            len++;
+            table[i] = len;
+            i++;
+        }
+        else {                              // pat[i] != pat[len]
+            if (len != 0)                   // find previous match
+                len = table[len-1];
+            else                            // if (len == 0) and mismatch
+                table[i] = 0, i++;          // set table[i] = 0, and go to next index
+        }
+    }
+}
