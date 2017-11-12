@@ -86,3 +86,22 @@ void prefixTable(int n, char pat[], int table[]) {
         }
     }
 }
+
+void KMP(int strLen, int patLen, char str[], char pat[], int table[]) { 
+    int i = 0, j = 0;		// i : string index, j : pattern index
+    while (i < N) {
+        if (str[i] == pat[j])
+            i++, j++;
+
+        if (j == M) {
+            printf("Found pattern at index %d n", i-j);
+            j = table[j-1];				// Match found, try for next match
+        }
+        else if (i < strLen && str[i] != pat[j]) {	// Match not found
+            if (j != 0)					// if j != 0, then go to the prev match index
+                j = table[j-1];
+            else					// if j == 0, then we need to go to next index of str
+                i = i+1;
+        }
+    }
+}
