@@ -192,3 +192,118 @@ int querySum(int L, int R, int l, int r, int pos) {
     return lft+rht;
 }
 
+
+
+// ----------------------------NOT tested 2D segment tree-----------------------
+
+// reference:
+// https://stackoverflow.com/questions/25121878/2d-segment-quad-tree-explanation-with-c/25122078#25122078
+
+#include <stdio.h>
+#include <string.h>
+//#include <bits/stdc++.h>
+//using namespace std;
+
+// x1, y1 is upper left point, x2, y2 lower point
+// 
+
+int tree[4100][4100];
+
+
+/*
+void init(int px, int py, int x1, int y1, int x2, int y2) {
+    if(x1 > x2 || y1 > y2)
+        return;
+    if(x1 == x2 && y1 == y2) {
+        tree[pos] = v[x1][y1];
+        return;
+    }
+    int midX = (x1+x2)>>1, midY = (y1+y2)>>1;
+    int Px = 2*px, Py = 2*py;    
+
+    init(Px, Py, x1, y1, midX, midY);          // lftUp
+    init(Px+1, Py, midX+1, y1, x2, midY);        // rhtUp
+    init(Px, Py+1, x1, midY+1, midX, y2);          // lftDown
+    init(Px+1, Py+1, midX+1, midY+1, x2, y2);      // rhtDown
+    
+    //tree[pos] = lftUp + rhtUp + lftDown + rhtDown;      // fix this
+    tree[px][py] = tree[Px][Py]+tree[Px+1][Py]+tree[Px][Py+1]+tree[Px+1][Py+1];
+}*/
+
+void update(int px, int py, int x1, int y1, int x2, int y2, int x, int y, int val) {
+    if(x1 > x2 || y1 > y2)
+        return;
+    if(x > x2 || y > y2 || x < x1 || y < y1)
+        return;
+    if(x1 == x2 && y1 == y2) {
+        //cout << "set at " << x1 << " " << y1 << " :: " << pos << endl;
+        tree[pos] += val;
+        return;
+    }
+    
+    int midX = (x1+x2)>>1, midY = (y1+y2)>>1;
+    int Px = 2*px, Py = 2*py;    
+
+    update(Px, Py, x1, y1, midX, midY, x, y, val);
+    update(Px+1, Py, midX+1, y1, x2, midY, x, y, val);
+    update(Px, Py+1, x1, midY+1, midX, y2, x, y, val);
+    update(Px+1, Py+1, midX+1, midY+1, x2, y2, x, y, val);
+
+    tree[px][py] = tree[Px][Py]+tree[Px+1][Py]+tree[Px][Py+1]+tree[Px+1][Py+1];
+}
+
+int query(int px, int py, int x1, int y1, int x2, int y2, int xq1, int yq1, int xq2, int yq2) {
+    printf("outQ : %d : %d %d %d %d :: %d\n", pos, x1, y1, x2, y2, tree[pos]);
+    if(x1 > x2 || y1 > y2)
+        return 0;
+    
+    if(xq1 > x2 || yq1 > y2 || xq2 < x1 || yq2 < y1)
+        return 0;
+
+    if(x1 >= xq1 && x2 <= xq2 && y1 >= yq1 && y2 <= yq2) {
+        printf("q : %d : %d %d %d %d :: %d\n", pos, x1, y1, x2, y2, tree[pos]);
+        return tree[pos];
+    }
+    
+    int midX = (x1+x2)>>1, midY = (y1+y2)>>1;
+    int Px = 2*px, Py = 2*py;    
+
+    int lftUp = query(Px, Py, x1, y1, midX, midY, xq1, yq1, xq2, yq2);
+    int rhtUp = query(Px+1, Py, midX+1, y1, x2, midY, xq1, yq1, xq2, yq2);
+    int lftDown = query(Px, Py+1 x1, midY+1, midX, y2, xq1, yq1, xq2, yq2);
+    int rhtDown = query(Px+1, Py+1, midX+1, midY+1, x2, y2, xq1, yq1, xq2, yq2);
+    
+    return (lftUp + rhtUp + lftDown + rhtDown);
+}
+
+int query(int px, int py, int x1, int x2, int y1, int y2)
+
+void printer(int pos, int x1, int y1, int x2, int y2) {
+    if(x1 > x2 || y1 > y2)
+        return;
+        
+    printf("pos %d: %d %d %d %d :: %d\n", pos, x1, y1, x2, y2, tree[pos]);
+    if(x1 == x2 && y1 == y2) {
+        return;
+    }
+    int midX = (x1+x2)>>1, midY = (y1+y2)>>1;
+    
+    printer(4*pos-2, x1, y1, midX, midY);          // lftUp
+    printer(4*pos-1, midX+1, y1, x2, midY);        // rhtUp
+    printer(4*pos, x1, midY+1, midX, y2);          // lftDown
+    printer(4*pos+1, midX+1, midY+1, x2, y2);      // rhtDown
+}
+
+int main() {
+    int t, q, n, x1, x2, y1, y2, val;
+    scanf("%d", &t);
+    
+    for(int Case = 1; Case <= t; ++Case) {
+        scanf("%d", &q);
+        while(q--) {
+            scanf("%d", &n);
+            if(n == 0) {
+                scanf("%d %d", &x1, &y1);
+                if(query(1, 1, 1000, 1000, x1, y1))    
+    }
+}
