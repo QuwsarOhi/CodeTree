@@ -74,6 +74,20 @@ int binarySearch(int lo, int hi, int cSum) {		// Returns the greater index if va
 
 // --------------------------- 2D Fenwick Tree -------------------------
 
+/*
+    /\
+ y  |
+    |   (x1,y2) -------- (x2,y2)
+    |          |       |
+    |          |       |
+    |          |       |
+    |          ---------
+    |   (x1,y1)			(x2, y1)
+    |
+    |___________________________
+   (0, 0)                   x-->
+*/
+
 long long tree[1010][1010];
 int xMax = 1001, yMax = 1001;
 
