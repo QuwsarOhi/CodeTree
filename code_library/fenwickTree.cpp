@@ -118,3 +118,7 @@ long long read(int x, int y) {
 	}
 	return sum;
 }
+
+ll readSingle(int x, int y) {
+    return read(x, y) + read(x-1, y-1) - read(x-1, y) - read(x, y-1);
+}
