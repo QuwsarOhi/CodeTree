@@ -1,55 +1,78 @@
 // UVa
-// 10533 - Digit Primes
+// 10309 - Turn the Lights Off
 
 #include <bits/stdc++.h>
 using namespace std;
 
-bitset<1000100>isPrime;
-int dp[1000100] = {0};
+bool g[12][12];
+int ans;
 
-//Only generates a number is prime or not
-void sieve(unsigned long long N) {
-    isPrime.set();
-    isPrime[0] = isPrime[1] = 0;
-
-    unsigned long long lim = sqrt(N) + 5;
-
-    for(unsigned long long i = 2; i <= lim; i++) {
-        if(isPrime[i]) {
-            for(unsigned long long j = i*i; j <= N; j+= i)
-                isPrime[j] = 0;
-        }
-    }
+void toggle(int x, int y) {
+	g[x][y] ^= 1;
+	if(x-1 >= 0)
+		g[x-1][y] ^= 1;
+	if(y-1 >= 0)
+		g[x][y-1] ^= 1;
+	if(x+1 < 10)
+		g[x+1][y] ^= 1;
+	if(y+1 < 10)
+		g[x][y+1] ^= 1;
 }
 
-bool sumPrime(int n) {
-	int sum = 0;
-	while(n) {
-		sum += n%10;
-		n/=10;
+void printer() {
+	for(int i = 0; i < 10; ++i) {
+		for(int j = 0; j < 10; ++j)
+			printf("%d", g[i][j]);
+		printf("\n");
 	}
-	return isPrime[sum];
+	printf("\n");
 }
 
-void generate() {
-	for(int i = 1; i <= 1000000; ++i) {
-		if(isPrime[i] && sumPrime(i))
-			dp[i]++;
-		dp[i] += dp[i-1];
+void recur(int x, int y, int press) {
+	if(y == 10)
+		x++, y = 0;
+	if(press > ans)
+		return;
+	if(x == 0) {
+		recur(x, y+1, press);
+		toggle(x, y);
+		recur(x, y+1, press+1);
+		toggle(x, y);
+	}
+	else if(x < 10) {
+		if(g[x-1][y]) {
+			toggle(x, y);
+			recur(x, y+1, press+1);
+			toggle(x, y);
+		}
+		else
+			recur(x, y+1, press);
+	}
+	else {
+		for(int i = 0; i < 10; ++i)
+			if(g[x-1][i]) return;
+			ans = min(ans, press);
 	}
 }
-
 
 int main() {
 	//freopen("in", "r", stdin);
+	//freopen("out", "w", stdout);
 	
-	int t, a, b;
-	scanf("%d", &t);
-	sieve(1000010);
-	generate();
-	while(t--) {
-		scanf("%d %d", &a, &b);
-		printf("%d\n", dp[b]-dp[a-1]);
+	char s[50], c[11][12];
+	while(gets(s)) {
+		if(strcmp(s, "end") == 0)
+			break;
+		for(int i = 0; i < 10; ++i)
+			gets(c[i]);
+		for(int i = 0; i < 10; ++i)
+			for(int j = 0; j < 10; ++j) {
+				if(c[i][j] == 'O') g[i][j] = 1;
+				else g[i][j] = 0;
+			}
+		ans = 1e7;
+		recur(0, 0, 0);
+		printf("%s %d\n", s, (ans == 1e7) ? -1:ans);
 	}
 	return 0;
 }
