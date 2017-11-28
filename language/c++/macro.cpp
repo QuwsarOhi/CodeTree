@@ -10,6 +10,7 @@ using namespace std;
 #define pi acos(-1)
 #define sf scanf
 #define pf printf
+#define SIZE(a) ((int)a.size())
 #define Equal(a, b) (abs(a-b) < EPS)
 #define Greater(a, b) (a >= (b+EPS))
 #define GreaterEqual(a, b) (a > (b-EPS)) 
