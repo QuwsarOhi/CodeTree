@@ -1,6 +1,6 @@
 #include <bits/stdc++.h>
 using namespace std;
-#define MAX	                1000000
+#define MAX                 1e6
 #define EPS                 1e-9
 #define INF                 1e9+10
 #define MOD                 1000000007
