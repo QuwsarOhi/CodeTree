@@ -35,7 +35,7 @@ typedef vector<ll>vl;
 typedef pair<int, int> pii;
 typedef pair<ll, ll> pll;
 typedef vector<pair<int, int> > vii;
-typedef vector<pair<ll, ll>>vll;
+typedef vector<pair<ll, ll> >vll;
 
 // Extra Macros : 
 
