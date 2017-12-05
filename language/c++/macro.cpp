@@ -31,11 +31,11 @@ typedef map<int, int> mii;
 typedef map<ll, ll>mll;
 typedef map<string, int> msi;
 typedef vector<int> vi;
+typedef vector<ll>vl;
 typedef pair<int, int> pii;
 typedef pair<ll, ll> pll;
 typedef vector<pair<int, int> > vii;
 typedef vector<pair<ll, ll>>vll;
-
 
 // Extra Macros : 
 
