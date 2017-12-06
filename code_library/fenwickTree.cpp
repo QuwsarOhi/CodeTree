@@ -124,12 +124,11 @@ int binarySearch(int lo, int hi, int cSum) {		// Returns the greater index if va
    (0, 0)                   x-->
 */
 
-long long tree[1010][1010];
-int xMax = 1001, yMax = 1001;
+ull tree[2510][2510];
+int xMax = 2505, yMax = 2505;
 
-// Updates from min point to maxpoint
-
-void update(int x, int y, int val) {
+// Updates from min point to MAX LIMIT
+void update(int x, int y, ll val) {
 	int y1;
 	while(x <= xMax) {
 		y1 =  y;
@@ -141,8 +140,9 @@ void update(int x, int y, int val) {
 	}
 }
 
-long long read(int x, int y) {
-	long long sum = 0;
+// Reads from (0, 0) to (x, y)
+ll read(int x, int y) {
+	ll sum = 0;
 	int y1;
 	while(x > 0) {
 		y1 = y;
@@ -157,4 +157,21 @@ long long read(int x, int y) {
 
 ll readSingle(int x, int y) {
     return read(x, y) + read(x-1, y-1) - read(x-1, y) - read(x, y-1);
+}
+
+void updateSquare(pii p1, pii p2, ll val) {     // p1 : lower left point, p2 : upper right point
+    update(p1.first, p1.second, val);
+    update(p1.first, p2.second+1, -val);
+    update(p2.first+1, p1.second, -val);
+    update(p2.first+1, p2.second+1, val);
+}
+
+// Not Checked!
+ull readSquare(pii p1, pii p2) {                // p1 : lower left point, p2 : upper right point
+    ull ans = 0;
+    ans += read(p2.first, p2.second);
+    ans -= read(p1.first-1, p2.second);
+    ans -= read(p2.first, p1.second-1);
+    ans += read(p1.first-1, p1.second-1);
+    return ans;
 }
