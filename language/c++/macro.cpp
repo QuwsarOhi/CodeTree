@@ -24,6 +24,9 @@ using namespace std;
 #define toggleBit(S, j)     (S ^= (1 << j))
 #define lowBit(S)           (S & (-S))
 #define setAll(S, n)        (S = (1 << n) - 1)
+#define fileRead(S)         freopen(S, "r", stdin);
+#define fileWrite(S)        freopen(S, "w", stdout);
+#define Unique(X)           X.erase(unique(X.begin(), X.end()), X.end())
 
 typedef unsigned long long ull;
 typedef long long ll;
@@ -36,6 +39,8 @@ typedef pair<int, int> pii;
 typedef pair<ll, ll> pll;
 typedef vector<pair<int, int> > vii;
 typedef vector<pair<ll, ll> >vll;
+
+
 
 // Extra Macros : 
 
