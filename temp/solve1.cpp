@@ -22,7 +22,7 @@ int main () {
         for(int j = 0; j<19; j++) {
             while(t % prime[j] == 0) {
                 t /= prime[j];
-                s[i] ^ = (1 << j);
+                s[i] ^= (1 << j);
             }
         }
     }
@@ -47,11 +47,13 @@ int main () {
             dp[i][j] = dp[i-1][j];
         }
         else {
-            for ( int j = 0 ; j <( 1 << 19 ); j ++) {
-                dp [i] [j ^ s [i]] = ((ll) dp [i] [j ^ s [i]] + (ll) _2p [cnt [i] -1 ] * dp [i- 1 ] J]) the MOD%; // from cnt [i] a number selected from an odd number, C (n-,. 1) + C (n-,. 3) ^ 2 + ... = (. 1-n-) 
-                DP [I] [ j] = ((11) dp [i] [j] + (ll) _2p [cnt [i] -1 ] * dp [i- 1 ] [j])% MOD; // from cnt [i] C (n, 0) + C (n, 2) * C (n, 4) + ... = 2 ^ (n-1) 
+            for(int j = 0; j<(1 <<19); j++) {
+                dp[i][j^s[i]] = ((ll) dp[i][j^s[i]] + (ll) _2p[cnt[i]-1] * dp[i-1][j])%MOD; // from cnt [i] a number selected from an odd number, C (n-,. 1) + C (n-,. 3) ^ 2 + ... = (. 1-n-) 
+                dp[i][j] = ((ll)dp[i][j] + (ll) _2p[cnt[i]-1] * dp[i-1][j])%MOD; // from cnt [i] C (n, 0) + C (n, 2) * C (n, 4) + ... = 2 ^ (n-1) 
             }
         }
     }
-    cout << (dp [ 70 ] [ 0 ] - 1 )% MOD << endl; // Subtract 0 from case
-return  0 ;}
+    
+    cout << (dp[70][0]- 1)%MOD << endl; // Subtract 0 from case
+    return 0;
+}
