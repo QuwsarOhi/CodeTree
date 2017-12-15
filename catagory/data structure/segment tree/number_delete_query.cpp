@@ -43,3 +43,60 @@ typedef pair<ll, ll> pll;
 typedef vector<pair<int, int> > vii;
 typedef vector<pair<ll, ll> >vll;
 
+int tree[500100], v[100100];
+
+void init(int pos, int L, int R) {
+    if(L == R) {
+        tree[pos] = 1;
+        return;
+    }
+    
+    int mid = (L+R)>>1;
+    init(pos<<1, L, mid);
+    init(pos<<1|1, mid+1, R);
+    
+    tree[pos] = tree[pos<<1]+tree[pos<<1|1];
+}
+
+int SearchVal(int pos, int L, int R, int val) {
+    if(L == R) {
+        tree[pos] = 0;
+        return L;
+    }
+    
+    int mid = (L+R)>>1;
+    
+    if(val <= tree[pos<<1]) {
+        int idx = SearchVal(pos<<1, L, mid, val);
+        tree[pos] = tree[pos<<1] + tree[pos<<1|1];
+        return idx;
+    }
+    else {
+        int idx = SearchVal(pos<<1|1, mid+1, R, val-tree[pos<<1]);
+        tree[pos] = tree[pos<<1] + tree[pos<<1|1];
+        return idx;
+    }
+}
+
+int main() {
+    //fileRead("in");
+    //fileWrite("out");
+    
+    int t, n, idx;
+    sf("%d", &t);
+    
+    for(int Case = 1; Case <= t; ++Case) {
+        sf("%d", &n);
+        pf("Case %d: ", Case);
+        init(1, 1, n);
+        for(int i = 1; i <= n; ++i)
+            sf("%d", &v[i]);
+        for(int i = n; i >= 1; --i) {
+            idx = SearchVal(1, 1, n, i-v[i]);
+            if(i == 1)
+                pf("%d\n", idx);
+        }
+    }
+    
+    return 0;
+}
