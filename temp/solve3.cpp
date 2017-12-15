@@ -1,82 +1,54 @@
 #include <bits/stdc++.h>
 using namespace std;
-typedef long long ll;
 
-// Digit DP
-// Complexity : O(10*idx*sum*tight)
-// Tight contains if there is any restriction to number
+vector<int>Set[100002];
+bitset<100002>isPresent;
 
-ll dp[100][100][2], Pow[20];
-
-ll digitSum(int idx, int sum, int value, bool tight, int K, vector<int>&MaxDigit) {
-    //
-    if (idx == -1) {
-        cout << "K " << K << endl;
-        cout << idx << " " << sum << " " << value << endl;
-        cout << "return " << ((value%K == 0) && (sum%K == 0)) << endl;
-        return ((value%K == 0) && (sum%K == 0));
+int UpperBound(int lo, int hi, int key, int x) {               // Returns lowest position where v[i] > key
+    int mid, ans = -1;                               // 10 10 10 20 20 20 30 30
+    while(lo <= hi) {                               //                   ^
+        mid = (lo + hi)>>1;
+        if(key >= Set[x][mid]) {
+            ans = mid;
+            lo = mid + 1;
+        }
+        else
+            hi = mid - 1;
     }
-    
-    
-    if (dp[idx][sum][tight] != -1 && tight != 1)
-        return dp[idx][sum][tight];
-
-    ll ret = 0;
-    int lim = (tight)? MaxDigit[idx] : 9;
-    
-    //cout << "Range " << idx << " " << MinDigit[idx] << " " << lim << endl;
-    for (int i = 0; i <= lim; i++) {
-        bool newTight = (MaxDigit[idx] == i)? tight : 0;       // caclulating newTight value for next state
-        int newValue = value ? value*10+i : i;
-        cout << "new " <<idx << " " << sum+i << " " << newValue << endl;
-        ret += digitSum(idx-1, (sum+i), newValue, newTight, K, MaxDigit);
-        
-    }
-
-    if (!tight)
-      dp[idx][sum][tight] = ret;
-
-    return ret;
+    return ans;                               // Tweaking this line will return the last position of key
 }
 
-
 int main() {
-    vector<int>mn, mx;
-    int t, a, b, K;
+    freopen("in", "r", stdin);
+    
+    int n, t, x, q, l, r, pos;
     scanf("%d", &t);
     
     for(int Case = 1; Case <= t; ++Case) {
-        scanf("%d %d %d", &a, &b, &K);
-        cout << K << endl;
-        while(b) {
-            mx.push_back(b%10);
-            b /= 10;
+        scanf("%d %d", &n, &q);
+        isPresent.reset();
+        for(int i = 1; i <= n; ++i) {
+            scanf("%d", &x);
+            Set[x].push_back(i);
+            isPresent[x] = 1;
         }
-        //reverse(mx.begin(), mx.end());
-        
-
-        while(a) {
-            mn.push_back(a%10);
-            a/=10;
-        }
-        
-        Pow[0] = 1;
-        for(int i = 1; i <= 20; ++i)
-            Pow[i] = Pow[i-1]*10;
-        
-        for(auto it : mn)
-            cout << it << " ";
-        cout << endl;
-        
-        for(auto it : mx)
-            cout << it << " ";
-        cout << endl;
-        
-        
-        memset(dp, -1, sizeof dp);
-        
-        printf("Case %d: %lld\n", Case, digitSum((int)mx.size()-1, 0, 0, 1, K, mx));
-    }
     
+        while(q--) {
+            pos = -1;
+            scanf("%d %d %d", &l, &r, &x);
+            if(isPresent[x])
+            pos = UpperBound(0, (int)Set[x].size()-1, r, x);
+            while(pos > 0 && pos < (int)Set[x].size() && Set[x][pos] > r) pos--;
+            cout << "pos " << pos  << "  " << Set[x][pos]<< endl;
+            if(pos > l)
+                printf("%d\n", Set[x][pos]);
+            else
+                printf("-1\n");
+        }
+        
+        for(int i = 0; i <= 100000; ++i)
+            Set[i].clear();
+    }
+        
     return 0;
 }
