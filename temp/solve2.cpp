@@ -1,6 +1,10 @@
+// Codeforces
+// E. Propagating tree
+// http://codeforces.com/contest/384/problem/E
+
 #include <bits/stdc++.h>
 using namespace std;
-#define MAX                 100010
+#define MAX                 200100
 #define EPS                 1e-9
 #define INF                 1e9+10
 #define MOD                 1000000007
@@ -40,3 +44,115 @@ typedef pair<ll, ll> pll;
 typedef vector<pair<int, int> > vii;
 typedef vector<pair<ll, ll> >vll;
 
+vi G[MAX];
+int sTime[MAX], eTime[MAX], level[MAX], cst[MAX], timer;
+ll treeE[MAX], treeO[MAX];
+int MaxVal = MAX-3;
+
+void updateE(int idx, int val) {
+	while(idx <= MaxVal) {
+		treeE[idx] += val;
+		idx += (idx & -idx);
+	}
+}
+
+void updateO(int idx, int val) {
+	while(idx <= MaxVal) {
+		treeO[idx] += val;
+		idx += (idx & -idx);
+	}
+}
+
+long long readE(int idx) {
+	long long sum = 0;
+	while(idx > 0) {
+		sum += treeE[idx];
+		idx -= (idx & -idx);
+	}
+	return sum;
+}
+
+long long readO(int idx) {
+	long long sum = 0;
+	while(idx > 0) {
+		sum += treeO[idx];
+		idx -= (idx & -idx);
+	}
+	return sum;
+}
+
+
+void dfs(int u, int lvl) {
+    sTime[u] = ++timer;
+    level[u] = lvl;
+    for(int i = 0; i < SIZE(G[u]); ++i) {
+        if(sTime[G[u][i]] == 0)
+            dfs(G[u][i], lvl+1);
+        eTime[u] = timer;
+    }
+}
+
+    
+int main() {
+    //fileRead("in");
+    
+    int n, q, u, v, x, t;
+    sf("%d %d", &n, &q);
+    
+    for(int i = 1; i <= n; ++i)
+        sf("%d", &cst[i]);
+    
+    for(int i = 1; i < n; ++i) {
+        sf("%d %d", &u, &v);
+        G[u].pb(v);
+        G[v].pb(u);
+    }
+    
+    memset(sTime, 0, sizeof sTime);
+    memset(treeE, 0, sizeof treeE);
+    memset(treeO, 0, sizeof treeO);
+    
+    timer = 0;
+    dfs(1, 1);
+    
+    if(n == 1) {
+        level[1] = 1;
+        sTime[1] = eTime[1] = 1;
+    }
+    
+    while(q--) {
+        sf("%d", &t);
+        
+        if(t == 1) {
+            sf("%d %d", &u, &x);
+            if(level[u]%2 == 0) {
+                //pf("Eve node %d : %d %d val %d\n", u, sTime[u], eTime[u], x);
+                updateE(sTime[u], x);
+                updateE(eTime[u]+1, -x);
+                updateO(sTime[u], -x);
+                updateO(eTime[u]+1, x);
+            }
+            else {
+                //pf("Odd node %d : %d %d val %d\n", u, sTime[u], eTime[u], x);
+                updateE(sTime[u], -x);
+                updateE(eTime[u]+1, x);
+                updateO(sTime[u], x);
+                updateO(eTime[u]+1, -x);
+            }
+        }
+        else {
+            sf("%d", &u);
+            //pf("sTime[%d] = %d\n", u, sTime[u]);
+            if(level[u]%2 == 0) {
+                //cout << "E* " << readSingleE(sTime[u]) << endl;
+                pf("%lld\n", cst[u]+readE(sTime[u]));
+            }
+            else {
+                //cout << "O* " << readSingleO(sTime[u]) << endl;
+                pf("%lld\n", cst[u]+readO(sTime[u]));
+            }
+        }
+    }
+
+    return 0;
+}
