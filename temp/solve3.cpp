@@ -1,6 +1,6 @@
 #include <bits/stdc++.h>
 using namespace std;
-#define MAX                 100010
+#define MAX                 1000
 #define EPS                 1e-9
 #define INF                 1e9+10
 #define MOD                 1000000007
@@ -41,7 +41,10 @@ typedef vector<pair<int, int> > vii;
 typedef vector<pair<ll, ll> >vll;
 
 
-int tree[]
+int tree[4*MAX], size[MAX], parent[MAX], level[MAX], nextNode[MAX], chain[MAX], num[MAX], top[MAX], ChainSize[MAX], mx[MAX];
+int ChainNo, all, n;
+vi G[MAX];
+
 
 // Segment tree operations
 
@@ -90,10 +93,12 @@ void dfs(int u, int Parent) {
         level[v] = level[u]+1;      // level of the child node is : level of parent node + 1
         dfs(v, u);
         size[u] += size[v];         // Increment the child numbers
-        if(next[u] == -1 || size[v] > size[next[u]])
-            next[u] = v;            // next selected node of u (select the node which has more child, (HEAVY))
+        if(nextNode[u] == -1 || size[v] > size[nextNode[u]])
+            nextNode[u] = v;            // next selected node of u (select the node which has more child, (HEAVY))
     }
 }
+
+// size is only used in dfs, this can be used as ChainSize ?
 
 void hld(int u, int Parent) {
     chain[u] = ChainNo;                 // Chain Number
@@ -104,12 +109,12 @@ void hld(int u, int Parent) {
         
     ChainSize[ChainNo]++;
     
-    if(next[u] != -1)               // if this node has a child, go to it
-        hld(next[u], u);            // the next node is included in the chain
+    if(nextNode[u] != -1)               // if this node has a child, go to it
+        hld(nextNode[u], u);            // the next node is included in the chain
     
     for(int i = 0; i < SIZE(G[u]); ++i) {
         int v = G[u][i];
-        if(v == Parent || v == next[u])     // if this node is parent node or, this node is already included in the chain, skip
+        if(v == Parent || v == nextNode[u])     // if this node is parent node or, this node is already included in the chain, skip
             continue;
         ChainNo++;                          // this is a new (light) chain, so increment the chain no. counter
         hld(v, u);
@@ -126,15 +131,19 @@ int GetMax(int u, int v) {
         int start = top[chain[u]];
         
         if(num[u] == num[start] + ChainSize[chain[u]] - 1)
-            res = max(res, mx[chain[a]]);
+            res = max(res, mx[chain[u]]);
         else
-            res = max(res, query(1, 1, n, num[start], num[u]);
+            res = max(res, query(1, 1, n, num[start], num[u]));
         u = parent[start];
     }
     
-    if(depth[u] > depth[v])
+    if(level[u] > level[v])
         swap(u, v);
     
     res = max(res, query(1, 1, n, num[u], num[v]));
     return res;
+}
+
+int main() {
+    return 0;
 }
