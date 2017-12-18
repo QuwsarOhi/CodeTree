@@ -42,7 +42,7 @@ typedef vector<pair<ll, ll> >vll;
 
 
 int tree[4*MAX], size[MAX], parent[MAX], level[MAX], nextNode[MAX], chain[MAX], num[MAX], top[MAX], ChainSize[MAX], mx[MAX];
-int ChainNo, all, n;
+int ChainNo = 1, all = 1, n;
 vi G[MAX];
 
 
@@ -130,7 +130,7 @@ int GetMax(int u, int v) {
             swap(u, v);
         int start = top[chain[u]];
         
-        if(num[u] == num[start] + ChainSize[chain[u]] - 1)
+        if(num[u] == num[start] + ChainSize[chain[u]] - 1)  // if this node is the last node of the chain
             res = max(res, mx[chain[u]]);
         else
             res = max(res, query(1, 1, n, num[start], num[u]));
@@ -144,6 +144,69 @@ int GetMax(int u, int v) {
     return res;
 }
 
+void updateNodeVal(int u, int val) {
+    update(1, 1, n, num[u], val);                   // Updating the value of chain
+    int Start = num[top[chain[u]]];                 // Start position of chain
+    int End = Start + ChainSize[chain[u]] - 1;      // End position of chain
+    mx[chain[u]] = query(1, 1, n, Start, End);      // Calculating RMQ of the modified chain
+}
+
+void infoPrint(int n) {
+    pf("Size ----------\n");
+    for(int i = 1; i <= n; ++i)
+        pf("%d = %d\n", i, size[i]);
+    
+    pf("parent ----------\n");
+    for(int i = 1; i <= n; ++i)
+        pf("%d : %d\n", i, parent[i]);
+    
+    pf("num -------------\n");
+    for(int i = 1; i <= n; ++i)
+        pf("%d : %d\n", i, num[i]);
+    
+    pf("total chains %d\nChain Size\n", ChainNo);
+    for(int i = 1; i <= ChainNo; ++i)
+        pf("%d : %d\n", i, ChainSize[i]);
+    
+    pf("next node -------------\n");
+    for(int i = 1; i <= n; ++i)
+        pf("%d -> %d\n", i, nextNode[i]);
+    
+    pf("Chain Top nodes -----------\n");
+    for(int i = 1; i <= ChainNo; ++i)
+        pf("%d : %d\n", i, top[i]);
+}
+
 int main() {
+    fileRead("in");
+    
+    int u, v, q, val, t;
+    sf("%d", &n);
+    
+    for(int i = 1; i < n; ++i) {
+        sf("%d %d", &u, &v);
+        G[u].pb(v);
+        G[v].pb(u);
+    }
+    
+    memset(nextNode, -1, sizeof nextNode);
+    dfs(1, 1);
+    hld(1, 1);
+    infoPrint(n);
+    
+    sf("%d", &q);
+    
+    while(q--) {
+        sf("%d", &t);        // 0 to query, 1 to update
+        if(t == 0) {
+            sf("%d %d", &u, &v);
+            pf("%d", GetMax(u, v));
+        }
+        else {
+            sf("%d %d", &u, &val);
+            updateNodeVal(u, val);
+        }
+    }
+    
     return 0;
 }
