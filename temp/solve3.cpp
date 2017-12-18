@@ -41,19 +41,32 @@ typedef vector<pair<int, int> > vii;
 typedef vector<pair<ll, ll> >vll;
 
 
-int tree[4*MAX], size[MAX], parent[MAX], level[MAX], nextNode[MAX], chain[MAX], num[MAX], top[MAX], ChainSize[MAX], mx[MAX];
+int tree[4*MAX], size[MAX], parent[MAX], level[MAX], nextNode[MAX], chain[MAX], num[MAX], val[MAX], numToNode[MAX], top[MAX], ChainSize[MAX], mx[MAX];
 int ChainNo = 1, all = 1, n;
 vi G[MAX];
 
 
 // Segment tree operations
 
+void init(int pos, int L, int R) {
+    if(L == R) {
+        tree[pos] = val[numToNode[L]];
+        return;
+    }
+    
+    int mid = (L+R)>>1;
+    init(pos<<1, L, mid);
+    init(pos<<1|1, mid+1, R);
+    
+    tree[pos] = tree[pos<<1] + tree[pos<<1|1];
+}
+
 void update(int pos, int L, int R, int idx, int val) {
     if(idx < L || R < idx)
         return;
     
     if(L == R) {
-        tree[pos] += val;
+        tree[pos] = val;
         return;
     }
     
@@ -130,9 +143,9 @@ int GetMax(int u, int v) {
             swap(u, v);
         int start = top[chain[u]];
         
-        if(num[u] == num[start] + ChainSize[chain[u]] - 1)  // if this node is the last node of the chain
-            res = max(res, mx[chain[u]]);
-        else
+        //if(num[u] == num[start] + ChainSize[chain[u]] - 1)  // if this node is the last node of the chain
+            //res = max(res, mx[chain[u]]);
+        //else
             res = max(res, query(1, 1, n, num[start], num[u]));
         u = parent[start];
     }
@@ -146,9 +159,14 @@ int GetMax(int u, int v) {
 
 void updateNodeVal(int u, int val) {
     update(1, 1, n, num[u], val);                   // Updating the value of chain
-    int Start = num[top[chain[u]]];                 // Start position of chain
-    int End = Start + ChainSize[chain[u]] - 1;      // End position of chain
-    mx[chain[u]] = query(1, 1, n, Start, End);      // Calculating RMQ of the modified chain
+    //int Start = num[top[chain[u]]];                 // Start position of chain
+    //int End = Start + ChainSize[chain[u]] - 1;      // End position of chain
+    //mx[chain[u]] = query(1, 1, n, Start, End);      // Calculating RMQ of the modified chain
+}
+
+void numToNodeConv(int n) {
+    for(int i = 1; i <= n; ++i)
+        numToNode[num[i]] = i;
 }
 
 void infoPrint(int n) {
@@ -180,16 +198,21 @@ void infoPrint(int n) {
 int main() {
     fileRead("in");
     
-    int u, v, q, val, t;
+    int u, v, q, Val, t;
     sf("%d", &n);
     
-    for(int i = 1; i < n; ++i) {
+    for(int i = 1; i <= n; ++i)     // value of each node
+        sf("%d", &val[i]);
+    
+    for(int i = 1; i < n; ++i) {    // tree edges
         sf("%d %d", &u, &v);
         G[u].pb(v);
         G[v].pb(u);
     }
     
     memset(nextNode, -1, sizeof nextNode);
+    memset(ChainSize, 0, sizeof ChainSize);
+    
     dfs(1, 1);
     hld(1, 1);
     infoPrint(n);
@@ -203,8 +226,8 @@ int main() {
             pf("%d", GetMax(u, v));
         }
         else {
-            sf("%d %d", &u, &val);
-            updateNodeVal(u, val);
+            sf("%d %d", &u, &Val);
+            updateNodeVal(u, Val);
         }
     }
     
