@@ -1,6 +1,6 @@
 #include <bits/stdc++.h>
 using namespace std;
-#define MAX                 1000
+#define MAX                 31000
 #define EPS                 1e-9
 #define INF                 1e9+10
 #define MOD                 1000000007
@@ -41,12 +41,12 @@ typedef vector<pair<int, int> > vii;
 typedef vector<pair<ll, ll> >vll;
 
 
-int tree[4*MAX], size[MAX], parent[MAX], level[MAX], nextNode[MAX], chain[MAX], num[MAX], val[MAX], numToNode[MAX], top[MAX], ChainSize[MAX], mx[MAX];
+int tree[4*MAX], parent[MAX], level[MAX], nextNode[MAX], chain[MAX], num[MAX], val[MAX], numToNode[MAX], top[MAX], ChainSize[MAX], mx[MAX];
 int ChainNo = 1, all = 1, n;
 vi G[MAX];
 
 
-// Segment tree operations
+// Segment tree operations start
 
 void init(int pos, int L, int R) {
     if(L == R) {
@@ -74,7 +74,7 @@ void update(int pos, int L, int R, int idx, int val) {
     update(pos<<1, L, mid, idx, val);
     update(pos<<1|1, mid+1, R, idx, val);
     
-    tree[pos] = max(tree[pos<<1], tree[pos<<1|1]);
+    tree[pos] = tree[pos<<1] + tree[pos<<1|1];
 }
 
 
@@ -89,15 +89,16 @@ int query(int pos, int L, int R, int l, int r) {
     int lft = query(pos<<1, L, mid, l, r);
     int rht = query(pos<<1|1, mid+1, R, l, r);
     
-    return max(lft, rht);
+    return lft+rht;
 }
 
-// Segment tree operations done
+// Segment tree operations end
 
+// Heavy Light Decomposition Start
 
 void dfs(int u, int Parent) {
     parent[u] = Parent;             // Parent of u
-    size[u] = 1;                    // Number of child (initially the size is 1, contains only 1 node. itself)
+    ChainSize[u] = 1;               // Number of child (initially the size is 1, contains only 1 node. itself) (resued array in hld)
     
     for(int i = 0; i < SIZE(G[u]); ++i) {
         int v = G[u][i];
@@ -105,13 +106,11 @@ void dfs(int u, int Parent) {
             continue;
         level[v] = level[u]+1;      // level of the child node is : level of parent node + 1
         dfs(v, u);
-        size[u] += size[v];         // Increment the child numbers
-        if(nextNode[u] == -1 || size[v] > size[nextNode[u]])
+        ChainSize[u] += ChainSize[v];         // Increment the child numbers
+        if(nextNode[u] == -1 || ChainSize[v] > ChainSize[nextNode[u]])
             nextNode[u] = v;            // next selected node of u (select the node which has more child, (HEAVY))
     }
 }
-
-// size is only used in dfs, this can be used as ChainSize ?
 
 void hld(int u, int Parent) {
     chain[u] = ChainNo;                 // Chain Number
@@ -138,30 +137,23 @@ void hld(int u, int Parent) {
 int GetMax(int u, int v) {
     int res = 0;
     
-    while(chain[u] != chain[v]) {           // While two nodes are not in same chain
+    while(chain[u] != chain[v]) {                           // While two nodes are not in same chain
         if(level[top[chain[u]]] < level[top[chain[v]]])     // u is the chain which's topmost node is deeper
             swap(u, v);
         int start = top[chain[u]];
-        
-        //if(num[u] == num[start] + ChainSize[chain[u]] - 1)  // if this node is the last node of the chain
-            //res = max(res, mx[chain[u]]);
-        //else
-            res = max(res, query(1, 1, n, num[start], num[u]));
-        u = parent[start];
+        res += query(1, 1, n, num[start], num[u]);          // Run query in u node's chain
+        u = parent[start];                                  // go to the upper chain of u
     }
     
-    if(level[u] > level[v])
+    if(num[u] > num[v])
         swap(u, v);
     
-    res = max(res, query(1, 1, n, num[u], num[v]));
+    res += query(1, 1, n, num[u], num[v]);
     return res;
 }
 
 void updateNodeVal(int u, int val) {
     update(1, 1, n, num[u], val);                   // Updating the value of chain
-    //int Start = num[top[chain[u]]];                 // Start position of chain
-    //int End = Start + ChainSize[chain[u]] - 1;      // End position of chain
-    //mx[chain[u]] = query(1, 1, n, Start, End);      // Calculating RMQ of the modified chain
 }
 
 void numToNodeConv(int n) {
@@ -169,11 +161,9 @@ void numToNodeConv(int n) {
         numToNode[num[i]] = i;
 }
 
-void infoPrint(int n) {
-    pf("Size ----------\n");
-    for(int i = 1; i <= n; ++i)
-        pf("%d = %d\n", i, size[i]);
-    
+// Heavy light Decomposition End
+
+void infoPrint(int n) {                 // Debugger
     pf("parent ----------\n");
     for(int i = 1; i <= n; ++i)
         pf("%d : %d\n", i, parent[i]);
@@ -196,39 +186,52 @@ void infoPrint(int n) {
 }
 
 int main() {
-    fileRead("in");
+    //fileRead("in");
+    //fileWrite("out");
     
-    int u, v, q, Val, t;
-    sf("%d", &n);
+    int u, v, q, Val, t, c;
+    sf("%d", &t);
     
-    for(int i = 1; i <= n; ++i)     // value of each node
-        sf("%d", &val[i]);
+    for(int Case = 1; Case <= t; ++Case) {
+        sf("%d", &n);
     
-    for(int i = 1; i < n; ++i) {    // tree edges
-        sf("%d %d", &u, &v);
-        G[u].pb(v);
-        G[v].pb(u);
-    }
+        for(int i = 1; i <= n; ++i)     // value of each node
+            sf("%d", &val[i]);
     
-    memset(nextNode, -1, sizeof nextNode);
-    memset(ChainSize, 0, sizeof ChainSize);
-    
-    dfs(1, 1);
-    hld(1, 1);
-    infoPrint(n);
-    
-    sf("%d", &q);
-    
-    while(q--) {
-        sf("%d", &t);        // 0 to query, 1 to update
-        if(t == 0) {
+        for(int i = 1; i < n; ++i) {    // tree edges
             sf("%d %d", &u, &v);
-            pf("%d", GetMax(u, v));
+            u++, v++;
+            G[u].pb(v);
+            G[v].pb(u);
         }
-        else {
-            sf("%d %d", &u, &Val);
-            updateNodeVal(u, Val);
+    
+        memset(nextNode, -1, sizeof nextNode);
+        ChainNo = 1, all = 1;
+        dfs(1, 1);
+        memset(ChainSize, 0, sizeof ChainSize);     // array reused in hld
+        hld(1, 1);
+        numToNodeConv(n);
+        init(1, 1, n);
+        //infoPrint(n);
+        pf("Case %d:\n", Case);
+        sf("%d", &q);
+    
+        while(q--) {
+            sf("%d", &c);        // 0 to query, 1 to update
+            if(c == 0) {
+                sf("%d %d", &u, &v);
+                u++, v++;
+                pf("%d\n", GetMax(u, v));
+            }
+            else {
+                sf("%d %d", &u, &Val);
+                u++;
+                updateNodeVal(u, Val);
+            }
         }
+        
+        for(int i = 1; i <= n; ++i)
+            G[i].clear();
     }
     
     return 0;
