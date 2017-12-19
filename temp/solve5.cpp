@@ -39,3 +39,49 @@ typedef pair<int, int> pii;
 typedef pair<ll, ll> pll;
 typedef vector<pair<int, int> > vii;
 typedef vector<pair<ll, ll> >vll;
+
+vi v, taken; //stk[110];
+
+int main() {
+    //fileRead("in");
+    
+    int n, x, sz, stacks = 0;
+    
+    cin >> n;
+    
+    while(n--) {
+        cin >> x;
+        v.pb(x);
+        taken.pb(0);
+    }
+    
+    sort(v.begin(), v.end());
+    
+    for(int i = 0; i < SIZE(v); ++i) {
+        if(taken[i])
+            continue;
+        stacks++;
+        sz = 1;
+        stk[stacks].pb(v[i]);
+        for(int j = i+1; j < SIZE(v); ++j) {
+            if(sz <= v[j] && !taken[j]) {
+                taken[j] = 1;
+                sz++;
+                stk[stacks].pb(v[j]);
+            }
+        }
+    }
+    
+    /*int sum = 0;
+    for(int i = 1; i <= stacks; ++i) {
+        for(auto it : stk[i])
+            cout << it << " ";
+        cout << endl;
+        sum += SIZE(stk[i]);
+    }
+    cout << "Total " << sum << endl; 
+    */
+    
+    cout << stacks << endl;
+    return 0;
+}
