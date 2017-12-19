@@ -41,39 +41,3 @@ typedef vector<pair<int, int> > vii;
 typedef vector<pair<ll, ll> >vll;
 
 
-int main() {
-    int n, cnt[100010] = {0}, x;
-    set<int>Set;
-    sf("%d", &n);
-    
-    for(int i = 0; i < n; ++i) {
-        sf("%d", &x);
-        auto it = Set.lower_bound(x);           // search for minumum value in past which is equal to x
-        if(it == Set.end())                     // value doesn't exist
-            cnt[x]--;
-        else {
-            //cout << "Greater than " << x << " exists : " << *it << endl;
-            auto tmp = it;
-            tmp++;
-            if(tmp == Set.end())                // 'it' is the only value for which x is invalid (x is not a record)
-                cnt[*it]++;
-        }
-        Set.insert(x);
-    }
-    
-    //for(int i = 1; i <= n; ++i)
-        //pf("%d : %d\n", i, cnt[i]);
-    
-    int mx = INT_MIN, val;
-    
-    for(int i = 1; i <= n; ++i) {
-        if(cnt[i] > mx) {
-            mx = cnt[i];
-            val = i;
-        }
-    }
-    
-    cout << val << endl;
-    
-    return 0;
-}
