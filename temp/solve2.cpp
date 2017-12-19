@@ -40,3 +40,23 @@ typedef pair<ll, ll> pll;
 typedef vector<pair<int, int> > vii;
 typedef vector<pair<ll, ll> >vll;
 
+string f0 = "What are you doing at the end of the world? Are you busy? Will you save us?";
+string str1 = "What are you doing while sending \"";
+string str2 = "\"? Are you busy? Will you send \"";
+string str3 = "\"?";
+
+ull sz[100010];
+
+int recur(int n, int k) {
+    
+
+int main() {
+    cout << str1 + f0 + str2 + f0 + str3 << endl;
+    sz[0] = f0.size();
+    for(int i = 1; i <= 60; ++i) {
+        sz[i] = str1.size() + sz[i-1] + str2.size() + sz[i-1] + str3.size();
+        cout << sz[i] << endl;
+    }
+    
+    return 0;
+}
