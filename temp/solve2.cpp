@@ -1,6 +1,6 @@
 #include <bits/stdc++.h>
 using namespace std;
-#define MAX                 1e6
+#define MAX                 200100
 #define EPS                 1e-9
 #define INF                 1e9+10
 #define MOD                 1000000007
@@ -24,6 +24,8 @@ using namespace std;
 #define toggleBit(S, j)     (S ^= (1 << j))
 #define lowBit(S)           (S & (-S))
 #define setAll(S, n)        (S = (1 << n) - 1)
+#define fileRead(S)         freopen(S, "r", stdin);
+#define fileWrite(S)        freopen(S, "w", stdout);
 #define Unique(X)           X.erase(unique(X.begin(), X.end()), X.end())
 
 typedef unsigned long long ull;
@@ -32,26 +34,71 @@ typedef map<int, int> mii;
 typedef map<ll, ll>mll;
 typedef map<string, int> msi;
 typedef vector<int> vi;
-typedef vector<ll>vl;
+typedef vector<long long>vl;
 typedef pair<int, int> pii;
 typedef pair<ll, ll> pll;
 typedef vector<pair<int, int> > vii;
 typedef vector<pair<ll, ll> >vll;
 
-vi v;
-
-void recur(int pos) {
-    if()
+vi v, s[100];
 
 int main() {
-    int n, x;
+    fileRead("in");
+    
+    int n, x, canTake = 0, stacks = 0;
+    map<int, int>Map;
     cin >> n;
     
     for(int i = 0; i < n; ++i) {
         cin >> x;
-        v.pb(x);
+        if(x)
+            v.pb(x);
+        Map[x]++;
     }
     
-    sort(v.begin(), v.end(), greater<int>);
+    sort(v.begin(), v.end());
+    reverse(v.begin(), v.end());
     
+    for(int i = 0; i < SIZE(v); ++i) {
+        if(Map[v[i]] == 0)
+            continue;
+        if(canTake != 0 && Map[canTake-1] > 0) {
+            Map[canTake-1]--;
+            canTake--;
+            --i;
+            s[stacks].pb(canTake-1);
+        }
+        else if(Map[0] && (canTake == 1 ||(canTake > 0 && i+1 == SIZE(v)))) {
+            canTake = 0;
+            Map[0]--;
+            s[stacks].pb(0);
+        }
+        else if(canTake == 0) {
+            //cout << "taking " << v[i] << endl;
+            canTake = v[i];
+            stacks++;
+            s[stacks].pb(v[i]);
+            Map[v[i]]--;
+        }
+        else {
+            canTake = min(canTake-1, v[i]);
+            Map[v[i]]--;
+            s[stacks].pb(v[i]);
+        }
+    }
     
+    if(canTake > 0 && Map[0])
+        Map[0];
+    
+    stacks += Map[0];
+    
+    for(int i = 1; i <= stacks; ++i) {
+        for(auto it : s[i])
+            cout << it << " ";
+        cout << endl;
+    }
+    
+    cout << stacks << endl;
+    
+    return 0;
+}
