@@ -43,48 +43,82 @@ typedef pair<ll, ll> pll;
 typedef vector<pair<int, int> > vii;
 typedef vector<pair<ll, ll> >vll;
 
-vi v, taken; //stk[110];
+string f0 = "What are you doing at the end of the world? Are you busy? Will you save us?";
+string str1 = "What are you doing while sending \"";
+string str2 = "\"? Are you busy? Will you send \"";
+string str3 = "\"?";
+
+ull sz[100010];
+
+char recur(ull n, ull k) {
+    //cout << n << " " << k << endl;
+    if(n == 0) {        // Base Case
+        if(k <= f0.size())
+            return f0[k-1];
+        return '.';
+    }
+    
+    if(k > str1.size())
+        k -= str1.size();
+    else
+        return str1[k-1];
+    //cout << "str1" << endl;
+    if(sz[n-1] >= k)        //recur
+        return recur(n-1, k);
+    else
+        k -= sz[n-1];
+    
+    //cout << "f0" << endl;
+
+    //if(k > f0.size())
+    //    k -= f0.size();
+    //else
+    //    return f0[k];
+    
+    if(k > str2.size())
+        k -= str2.size();
+    else
+        return str2[k-1];
+        
+    //cout << "str2" << endl;
+
+    if(sz[n-1] >= k)        //recur
+        return recur(n-1, k);
+    else
+        k -= sz[n-1];
+    
+    //cout << "f0" << endl;
+    
+    if(k > str3.size())
+        k -= str3.size();
+    else
+        return str3[k-1];
+    
+    return '.';
+}
+    
 
 int main() {
     //fileRead("in");
-    
-    int n, x, sz, stacks = 0;
-    
-    cin >> n;
-    
-    while(n--) {
-        cin >> x;
-        v.pb(x);
-        taken.pb(0);
+    //cout << str1 + f0 + str2 + f0 + str3 << endl;
+    sz[0] = f0.size();
+    //cout << f0.size() << " " << str1.size() << " " << str2.size() << " " << str3.size() << endl;
+    for(int i = 1; i <= 100000; ++i) {
+        sz[i] = str1.size() + sz[i-1] + str2.size() + sz[i-1] + str3.size();
+        //cout << i << " : " << sz[i] << " " << (int)log10(sz[i])+1 << endl;
     }
     
-    sort(v.begin(), v.end());
-    
-    for(int i = 0; i < SIZE(v); ++i) {
-        if(taken[i])
-            continue;
-        stacks++;
-        sz = 1;
-        stk[stacks].pb(v[i]);
-        for(int j = i+1; j < SIZE(v); ++j) {
-            if(sz <= v[j] && !taken[j]) {
-                taken[j] = 1;
-                sz++;
-                stk[stacks].pb(v[j]);
-            }
-        }
+    ull t, n, k;
+    cin >> t;
+    while(t--) {
+        cin >> n >> k;
+        //cout << "-------------------------------------- " << n << "  ====  " << k << endl;
+        //if(n <= 50)
+            cout << recur(n, k);
+        //else
+            //cout << recur(n%50, k);
     }
     
-    /*int sum = 0;
-    for(int i = 1; i <= stacks; ++i) {
-        for(auto it : stk[i])
-            cout << it << " ";
-        cout << endl;
-        sum += SIZE(stk[i]);
-    }
-    cout << "Total " << sum << endl; 
-    */
-    
-    cout << stacks << endl;
+    cout << endl;
     return 0;
 }
