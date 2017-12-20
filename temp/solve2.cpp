@@ -40,3 +40,30 @@ typedef pair<ll, ll> pll;
 typedef vector<pair<int, int> > vii;
 typedef vector<pair<ll, ll> >vll;
 
+long long powMod(long long N, long long P, long long M) {
+	if(P==0)
+		return 1;
+	if(P%2==0) {
+		long long ret = powMod(N, P/2, M)%M;
+		return (ret * ret)%M;
+	}
+	else
+		return ((N%M) * (powMod(N, P-1, M)%M))%M;
+}
+
+int main() {
+    map<int, int>Map;
+    int m, x;
+    
+    cin >> m;
+    for(int i = 0; i < m; ++i) {
+        cin >> x;
+        Map[x]++;
+    }
+    
+    for(auto it : Map) {
+        
+    }
+    
+    return 0;
+}
