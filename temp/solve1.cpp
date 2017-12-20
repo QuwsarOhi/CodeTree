@@ -40,39 +40,3 @@ typedef pair<ll, ll> pll;
 typedef vector<pair<int, int> > vii;
 typedef vector<pair<ll, ll> >vll;
 
-int cost[30][5], n;
-
-int recur(int pos, int past1, int past2) {
-    if(pos == n)
-        return 0;
-    
-    int ret = INF;
-    for(int i = 0; i < 3; ++i) {
-        if(i == past1 || i == past2)
-            continue;
-        ret = min(ret, recur(pos+1, past2, i)+cost[pos][i]);
-    }
-    
-    return ret;
-}
-
-
-int main() {
-    fileRead("in");
-    
-    int t;
-    sf("%d", &t);
-    
-    for(int Case = 1; Case <= t; ++Case) {
-        sf("%d", &n);
-        pf("Case %d: ", Case);
-        
-        for(int i = 0; i < 3; ++i)
-            for(int j = 0; j < n; ++j)
-                sf("%d", &cost[i][j]);
-        
-        pf("%d\n", recur(0, -1, -1));
-    }
-    
-    return 0;
-}
