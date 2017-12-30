@@ -1,3 +1,7 @@
+// Codeforces
+// B. Little Girl and Game
+// http://codeforces.com/problemset/problem/276/B
+
 #include <bits/stdc++.h>
 using namespace std;
 #define MAX                 200100
@@ -55,7 +59,7 @@ int main() {
             odd++;
     }
     
-    if(odd&1)
+    if(odd&1 || odd == 0)
         cout << "First" << endl;
     else
         cout << "Second" << endl;
