@@ -1,3 +1,7 @@
+// Codeforces
+// A. Maze
+// http://codeforces.com/problemset/problem/377/A
+
 #include <bits/stdc++.h>
 using namespace std;
 #define MAX                 200100
@@ -40,25 +44,57 @@ typedef pair<ll, ll> pll;
 typedef vector<pair<int, int> > vii;
 typedef vector<pair<ll, ll> >vll;
 
-int main() {
-    string s;
-    map<char, int>mp;
-    
-    cin >> s;
-    
-    for(int i = 0; i < SIZE(s); ++i) 
-        mp[s[i]]++;
-    
-    int odd = 0;
-    for(auto it : mp) {
-        if(it.se&1)
-            odd++;
+int dx[] = {-1, 0, 0, 1}, dy[] = {0, -1, 1, 0}, cnt = 0, n, m, k, s;
+char g[550][550], g2[550][550];
+
+
+void fill(int x, int y) {
+    if(cnt == s)
+        return;
+    g[x][y] = 'X';
+    ++cnt;
+    for(int i = 0; i < 4; ++i) {
+        int _x = x+dx[i];
+        int _y = y+dy[i];
+        
+        if(_x < 0 || _y < 0 || _x >= n || _y >= m)
+            continue;
+        if(g[_x][_y] == '#' || g[_x][_y] == 'X')
+            continue;
+        
+        fill(_x, _y);
     }
+}
+                
+
+
+int main() {
+    //fileRead("in");
     
-    if(odd&1)
-        cout << "First" << endl;
-    else
-        cout << "Second" << endl;
+    cin >> n >> m >> k;
+    for(int i = 0; i < n; ++i)
+        for(int j = 0; j < m; ++j) {
+            cin >> g[i][j];
+            g2[i][j] = g[i][j];
+            if(g[i][j] == '.')
+                ++s;
+        }
+    
+    s -= k;
+    for(int i = 0; i < n; ++i)
+        for(int j = 0; j < m; ++j)
+            if(g[i][j] == '.' && cnt < s)
+                fill(i, j);
+    
+    for(int i = 0; i < n; ++i)
+        for(int j = 0; j < m; ++j)
+            if(g[i][j] == '.')
+                g2[i][j] = 'X';
+            
+    for(int i = 0; i < n; ++i, cout << "\n")
+        for(int j = 0; j < m; ++j)
+            cout << g2[i][j];
     
     return 0;
 }
+

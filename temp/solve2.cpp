@@ -1,12 +1,8 @@
-// Codeforces
-// B. OR in Matrix
-// http://codeforces.com/problemset/problem/486/B
-
 #include <bits/stdc++.h>
 using namespace std;
 #define MAX                 200100
 #define EPS                 1e-9
-#define INF                 1e9+10
+#define INF                 1e7
 #define MOD                 1000000007
 #define pb                  push_back
 #define mp                  make_pair
@@ -44,70 +40,49 @@ typedef pair<ll, ll> pll;
 typedef vector<pair<int, int> > vii;
 typedef vector<pair<ll, ll> >vll;
 
-int v[110][110], a[110][110], mark[110][110], n, m;
+map<char, int>Map;
+string s;
 
-bool rowCheck(int r) {
-    for(int i = 0; i < m; ++i)
-        if(v[r][i] != 1)
+bool canPalin() {
+    int odd = 0;
+    for(auto it : Map) {
+        if(it.second == 1)
+            odd++;
+        else if(it.se%2 != 0)
             return 0;
-    return 1;
-}
-
-bool colCheck(int c) {
-    for(int i = 0; i < n; ++i)
-        if(v[i][c] != 1)
-            return 0;
-    return 1;
-}
-
-void makeZero(int r, int c) {
-    for(int i = 0; i < m; ++i)
-        mark[r][i] = 0;
-    for(int i = 0; i < n; ++i)
-        mark[i][c] = 0;
-}
-
-int main() {
-    //fileRead("in");
-    
-    cin >> n >> m;
-    
-    for(int i = 0; i < n; ++i)
-        for(int j = 0; j < m; ++j) {
-            cin >> v[i][j];
-            mark[i][j] = v[i][j];
-        }
-        
-    for(int i = 0; i < n; ++i)
-        for(int j = 0; j < m; ++j) {
-            if(v[i][j]) {
-                if(rowCheck(i) && colCheck(j)) {
-                    makeZero(i, j);
-                    a[i][j] = 1;
-                }
-            }
-        }
-    
-    bool ok = 1;
-    for(int i = 0; i < n; ++i)
-        for(int j = 0; j < m; ++j)
-            if(mark[i][j] != 0)
-                ok = 0;
-    
-
-    //for(int i = 0; i< n; ++i, cout << "\n")
-    //    for(int j = 0; j < m; ++j, cout << " ")
-    //        cout << mark[i][j];
-
-    
-    if(!ok)
-        cout << "NO\n";
-    else {
-        cout << "YES\n";
-        for(int i =0 ; i < n; ++i, cout << "\n")
-            for(int j = 0; j < m; ++j, cout << " ")
-                cout << a[i][j];
     }
     
+    return odd<=1;
+}
+
+bool play(bool player) {
+    if(canPalin())
+        return player;
+    
+    for(auto it : Map)
+        if(it.se > 0 && it.se%2 == 0) {
+            Map[it.fi]--;
+            //cout << "Deleted " << it.fi << " by " << player << endl;
+            return play(!player);
+        }
+    
+    for(auto it : Map)
+        if(it.se == 1) {
+            Map[it.fi]--;
+            //cout << "Deleted " << it.fi << " by " << player << endl;
+            return play(!player);
+        }
+        
+    return !player;
+}
+
+
+int main() {    
+    cin >> s;
+    
+    for(int i = 0; i < SIZE(s); ++i)
+        Map[s[i]]++;
+    
+    cout << (!play(0) ? "First":"Second") << endl;
     return 0;
 }

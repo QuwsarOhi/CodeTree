@@ -1,8 +1,12 @@
+// Codeforces
+// D. Multipliers
+// http://codeforces.com/contest/615/problem/D
+
 #include <bits/stdc++.h>
 using namespace std;
 #define MAX                 200100
 #define EPS                 1e-9
-#define INF                 1e7
+#define INF                 1e9+10
 #define MOD                 1000000007
 #define pb                  push_back
 #define mp                  make_pair
@@ -40,25 +44,53 @@ typedef pair<ll, ll> pll;
 typedef vector<pair<int, int> > vii;
 typedef vector<pair<ll, ll> >vll;
 
+ll powMod(ll N, ll P, ll M) {
+	if(P==0)
+		return 1;
+	if(!(P&1)) {
+		ull ret = powMod(N, P/2, M)%M;
+		return (ret * ret)%M;
+	}
+	else
+		return ((N%M) * (powMod(N, P-1, M)%M))%M;
+}
+
+
 int main() {
-    string s;
-    map<char, int>mp;
+    map<ll, ll>prime;
+    ll n, x, lftMul[200010], rhtMul[200010], idx, ans;
+    cin >> n;
     
-    cin >> s;
-    
-    for(int i = 0; i < SIZE(s); ++i) 
-        mp[s[i]]++;
-    
-    int odd = 0;
-    for(auto it : mp) {
-        if(it.se&1)
-            odd++;
+    while(n--) {
+        cin >> x;
+        prime[x]++;
     }
     
-    if(odd&1)
-        cout << "First" << endl;
-    else
-        cout << "Second" << endl;
+    for(int i = 0; i <= 200005; ++i)
+        lftMul[i] = rhtMul[i] = 1;
     
+    idx = 1;
+    for(auto it = prime.begin(); it != prime.end(); ++it, ++idx)
+        lftMul[idx] = (lftMul[idx-1] * (it->second+1)) % (MOD-1);
+    
+    idx = SIZE(prime);
+    for(auto it = prime.rbegin(); it != prime.rend(); ++it, --idx)
+        rhtMul[idx] = (rhtMul[idx+1] * (it->second+1)) % (MOD-1);
+    
+    ans = idx = 1;
+    for(auto it : prime) {
+        ll val = it.first;
+        ll power = it.second;
+        ll mul = (lftMul[idx-1] * rhtMul[idx+1]) % (MOD-1);
+        
+        power = ((power * (power+1))/2) % (MOD-1);
+        power = (power * mul) % (MOD-1);
+                
+        ll tmp = powMod(val, power, MOD);
+        ans = (ans * tmp) % MOD;
+        ++idx;
+    }
+    
+    cout << ans << endl;
     return 0;
 }
