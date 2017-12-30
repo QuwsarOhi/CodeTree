@@ -40,3 +40,46 @@ typedef pair<ll, ll> pll;
 typedef vector<pair<int, int> > vii;
 typedef vector<pair<ll, ll> >vll;
 
+int dx[] = {-1, 0, 0, 1}, dy[] = {0, -1, 1, 0}, cnt = 0, n, m, k;
+char g[550][550];
+
+
+void fill(int x, int y) {
+    if(cnt == k)
+        return;
+    g[x][y] = 'X';
+    ++cnt;
+    for(int i = 0; i < 4; ++i) {
+        int _x = x+dx[i];
+        int _y = y+dy[i];
+        
+        if(_x < 0 || _y < 0 || _x >= n || _y >= m)
+            continue;
+        if(g[_x][_y] == '#' || g[_x][_y] == 'X')
+            continue;
+        
+        fill(_x, _y);
+    }
+}
+
+
+int main() {
+    fileRead("in");
+    
+    cin >> n >> m >> k;
+    for(int i = 0; i < n; ++i)
+        for(int j = 0; j < m; ++j)
+            cin >> g[i][j];
+    
+    
+    for(int i = 0; i < n; ++i)
+        for(int j = 0; j < m; ++j)
+            if(g[i][j] == '.' && cnt < k)
+                fill(i, j);
+            
+    for(int i = 0; i < n; ++i, cout << "\n")
+        for(int j = 0; j < m; ++j)
+            cout << g[i][j];
+    
+    return 0;
+}
