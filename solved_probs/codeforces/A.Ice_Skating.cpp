@@ -1,3 +1,7 @@
+// Codeforces
+// http://codeforces.com/contest/217/problem/A
+// Ice Scating
+
 #include <bits/stdc++.h>
 using namespace std;
 #define MAX                 200100
@@ -40,3 +44,34 @@ typedef pair<ll, ll> pll;
 typedef vector<pair<int, int> > vii;
 typedef vector<pair<ll, ll> >vll;
 
+int uList[200];
+
+int UnionRoot(int x) {
+    if(uList[x] == x)
+        return x;
+    return x = UnionRoot(uList[x]);
+}
+
+int main() {
+    int n, x, y;
+    vii v;
+    
+    cin >> n;
+    for(int i = 0; i < n; ++i) {
+        cin >> x >> y;
+        v.pb({x, y});
+        uList[i] = i;
+    }
+    
+    for(int i = 0; i < n; ++i)
+        for(int j = i+1; j < n; ++j)
+            if(v[i].fi == v[j].fi || v[i].se == v[j].se)
+                uList[UnionRoot(i)] = UnionRoot(j);
+    
+    int Compo = 0;
+    for(int i = 0; i < n; ++i)
+        Compo += UnionRoot(i) == i;
+    
+    cout << Compo-1 << endl;
+    return 0;
+}

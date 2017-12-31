@@ -1,3 +1,7 @@
+// Codeforces
+// B. Little Girl and Game
+// http://codeforces.com/problemset/problem/276/B
+
 #include <bits/stdc++.h>
 using namespace std;
 #define MAX                 200100
@@ -40,3 +44,25 @@ typedef pair<ll, ll> pll;
 typedef vector<pair<int, int> > vii;
 typedef vector<pair<ll, ll> >vll;
 
+int main() {
+    string s;
+    map<char, int>mp;
+    
+    cin >> s;
+    
+    for(int i = 0; i < SIZE(s); ++i) 
+        mp[s[i]]++;
+    
+    int odd = 0;
+    for(auto it : mp) {
+        if(it.se&1)
+            odd++;
+    }
+    
+    if(odd&1 || odd == 0)
+        cout << "First" << endl;
+    else
+        cout << "Second" << endl;
+    
+    return 0;
+}
