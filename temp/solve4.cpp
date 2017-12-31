@@ -16,17 +16,23 @@ ll modexp(ll a, ll b){
 	return res%mod;
 }
 
-long long mo(string str, ll mode) {
+// calculate A mod B, where A : 0<A<(10^100000) (or greater)
+// take input as string and process with aftermod
+
+// calculate A^B mod M, where B : 0<A<(10^100000) (or greater)
+// take input as string and process with aftermod : afterMod(inputAsString, Mod-1)      due to fermat theorem
+
+long long afterMod(string str, ll mod) {
 	long long ans = 0;
 	string :: iterator it;
-	for(it = str.begin();it != str.end();it++){
-		ans = (ans*10 + (*it -'0'))%mode;
-	}
-//	cout << ans << endl;
-	return ans;
+    
+	for(it = str.begin(); it != str.end(); it++)        // mod from first to last
+		ans = (ans*10 + (*it -'0')) % mod;
+	
+    return ans;
 }
-int main()
-{
+
+int main() {
 	ll a;
 	string b;
 	cin >> a >> b;
