@@ -97,6 +97,7 @@ a ^ (p-1) ≡ 1 (mod p)                               (Can be written as a ^ p �
 
 From this theorem, it can be stated that:
 * a ^ (p-1) - 1 is divisable by p
+* (a ^ p) - a is divisable by p
 
 ##### Calculating Modular inverse from Fermat Theorem:
 If a and m is co-prime and m is prime (this conditions are stated in fermat theorem), then
@@ -108,3 +109,5 @@ or, a ^ (-1) ≡ ( a ^ (m-1) * a ^ (-1) (mod m) )       (Multiplicating a ^ (-1)
 Finally, a ^ (-1) ≡ ( a ^ (m-2) ) (mod m)
 ````
 So we can calculate modular inverse (a^(-1)) by finding ( a ^ (m-2) ) (mod m)
+
+We can also prove how modular arithmatic on exponents work, go through this [link](https://math.stackexchange.com/questions/113690/fermats-little-theorem-reducing-exponents)
