@@ -16,7 +16,7 @@ If a | b, then a | (b*c) for all integers c
 If a | b and b | c, then a | c
 ````
 
-Generally a mod m is the biggest multiple of m which is less than (or equal to) a. So,
+Generally 'a mod m' is the biggest multiple of m which is less than (or equal to) a. So,
 ````
 -13 mod 3 = ?
 as, -13 = 3*(-5) + 2
@@ -62,7 +62,7 @@ a / b = ( a * (1/b) ) (mod m)       (1/b is modular inverse of m, described belo
 ````
 Modular Operation on exponentiation
 ````
-(a ^ b) (mod m) = ( a ^ (b * (mod-1)) ) (mod m)           (According to Fermat Theorem)
+(a ^ b) (mod m) = ( a ^ (b (mod-1)) ) (mod m)           (According to Fermat Theorem)
 ````
 
 ## Modular Inverse:
