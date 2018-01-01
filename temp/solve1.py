@@ -12,7 +12,7 @@ def Out(x):
     sys.stdout.write(str(x) + '\n')
     
 def In():
-    return sys.stdin.readline().strip()
+    return sys.stdin.readline().strip().split()
 
 def inputGrab():
     for line in sys.stdin:
