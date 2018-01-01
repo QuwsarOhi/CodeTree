@@ -1,4 +1,4 @@
-# Modular Arithmatic for Competitive Programming
+# Modular Arithmetic for Competitive Programming
 
 If a is dividend, b is divisor, q is quoitent and r is remainder, then
 ````
@@ -46,7 +46,7 @@ a+c ≡ b+d (mod m)
 a*c ≡ b*d (mod m)
 ````
 
-## Sum, Multiplication and Division Rule in Modular Arithmatic
+## Sum, Multiplication and Division Rule in Modular Arithmetic
 
 Sum rule states that
 ````
