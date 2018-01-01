@@ -66,10 +66,16 @@ Modular Operation on exponentiation
 ````
 
 ## Modular Inverse:
-For any value, a and modulo m, if the modular inverse is b, then
+For any value, a and modulo m, where gcd(a, m) = 1 (This states that a and m is co-prime).
+If the modular inverse is b, then
+
 ````
 a * b ≡ 1 (mod m)
+or, 1 ≡ a*b (mod m)                       (Side Changing, as a % m ≡ b % m, is same as: b % m ≡ a % m)
+or, b ^ (-1) ≡ a (mod m)                  (Shifting a from right to left)
+Finally,   b ^ (-1) ≡ a (mod m)           ( b^(-1) is the modular inverse of a mod m)
 ````
+
 So, to find modular inverse of a mod b, we need to search for such a value, so that the mod of a * b is 1.
 To find modular inverse of any value a mod m, we may iterate through 1 to m-1 and check if the mod of their multiplication
 is equal to 1.
@@ -81,3 +87,24 @@ Example, a = 3, m = 8:
 To be noted that, modular inverse of a mod m depends on both value a and b, and they must be co-prime.
 Try for case a = 3, m = 7 (result : 5) and a = 3, m = 6 (no result exists!)
 
+
+## Fermat's Little Theorem:
+If p is prime, and a and p is co-prime (gcd(a, p) = 1), then
+
+````
+a ^ (p-1) ≡ 1 (mod p)                               (Can be written as a ^ p ≡ a (mod p))
+````
+
+From this theorem, it can be stated that:
+* a ^ (p-1) - 1 is divisable by p
+
+##### Calculating Modular inverse from Fermat Theorem:
+If a and m is co-prime and m is prime (this conditions are stated in fermat theorem), then
+
+````
+a ^ (m-1) ≡ 1 (mod m)
+or, 1 ≡ ( a ^ (m - 1) (mod m) )                       (Side Changing, as a % m ≡ b % m, is same as: b % m ≡ a % m)
+or, a ^ (-1) ≡ ( a ^ (m-1) * a ^ (-1) (mod m) )       (Multiplicating a ^ (-1) both sides)
+Finally, a ^ (-1) ≡ ( a ^ (m-2) ) (mod m)
+````
+So we can calculate modular inverse (a^(-1)) by finding ( a ^ (m-2) ) (mod m)
