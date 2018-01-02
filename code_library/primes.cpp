@@ -14,7 +14,7 @@ void sieve(unsigned long long N)
 
     unsigned long long lim = sqrt(N) + 5;
 
-    for(unsigned long long i = 2; i <= lim; i++) {
+    for(unsigned long long i = 2; i <= lim; i++) {      // change lim to N, if all primes in range N is needed
         if(isPrime[i]) {
             for(unsigned long long j = i*i; j <= N; j+= i)
                 isPrime[j] = 0;
@@ -141,6 +141,39 @@ unsigned long long sumPF(long long n) //returns sum of prime factors
 		sum+= n;
 	return sum;
 }
+
+
+//-------------------------------------------------------------
+// Fast Factorization using Sieve-Like algorithm
+bitset<10001000>isPrime;
+int divisor[10000100];
+
+void sieve(long long lim) {             // Prime numbers for the limit should be sieved, otherwise WA
+    isPrime.set();
+    isPrime[0] = isPrime[1] = 0;
+    for(ll i = 0; i <= lim; ++i) {
+        if(isPrime[i]) {
+            for(long long j = i; j <= lim; j += i) {
+                isPrime[j] = 0;
+                divisor[j] = i;
+            }
+        }
+    }
+}
+
+// factorize function for fast factorization
+vector<int> factorize(long long x) {    // This function only iterates over the prime numbers
+    int pastDiv = 0;                    // 0 : no divisor is present
+    vector<int>factor;
+    while(x > 1) {
+        if(divisor[x] != 0) {
+            factor.push_back(divisor[x]);
+            x /= divisor[x];            // now x would be reduced by factor of divisor[x]
+        }
+    }
+    return factor;
+}
+//-------------------------------------------------------------
 
 
 int main()

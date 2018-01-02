@@ -6,7 +6,7 @@ INF = 1e9
 Input = []
 MOD = 1000000007
 
-#stdin = open('in', 'r')
+stdin = open('in', 'r')
 #stdout = open('out', 'w')
 
 def Out(x):
@@ -21,8 +21,12 @@ def inputGrab():
 
 ############################################################
 
+
+
 def main():
+    
         
     
 if __name__ == '__main__':
     main()
+
