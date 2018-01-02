@@ -1,3 +1,7 @@
+// Codeforces
+// c. History
+// http://codeforces.com/problemset/problem/137/C
+
 #include <bits/stdc++.h>
 using namespace std;
 #define MAX                 200100
@@ -42,42 +46,25 @@ typedef vector<pair<ll, ll> >vll;
 
 
 int main() {
-    ll n, p1Sum = 0, p2Sum = 0, x;
-    bool lastMove = 0;
-    vl p1,p2;
-    
+    int n, l, r, cnt = 0;
+    vii v;    
     cin >> n;
+    
     for(int i = 0; i < n; ++i) {
-        cin >> x;
-        if(x>0) {
-            p1.pb(x);
-            p1Sum += x;
-        }
-        else {
-            p2.pb(-x);
-            p2Sum -= x;
-        }
-        lastMove = (x>0);
+        cin >> l >> r;
+        v.pb({l, r});
     }
     
-    if(p1Sum == p2Sum) {
-        bool isSame = 1, winner;
-        for(int i = 0; i < min(SIZE(p1), SIZE(p2)); ++i)
-            if(p1[i]!=p2[i]) {
-                winner = p1[i] > p2[i];
-                isSame = 0;
-                break;
-            }
-        isSame &= (SIZE(p1) == SIZE(p2));
+    sort(v.begin(), v.end());
+    int leftBound = -1;
+    
+    for(auto it : v) {
+        if(it.se < leftBound)
+            ++cnt;
         
-        if(isSame)
-            cout << (lastMove?"first":"second") << endl;
-        else
-            cout << (winner?"first":"second") << endl;
+        leftBound = max(leftBound, it.se);
     }
-    else 
-        cout << (p1Sum > p2Sum ? "first":"second") << endl;
     
+    cout << cnt << endl;
     return 0;
 }
-    
