@@ -8,8 +8,7 @@ vector<int>G[30], SCC;
 int dfs_num[30], dfs_low[30], dfsCounter, SCC_no = 0;
 bitset<30>visited;
 
-void tarjanSSC(int u)
-{
+void tarjanSSC(int u) {
     //Stack, here, it is implemented as vector instead
     SCC.push_back(u);
     //Marking node u as visited
@@ -21,10 +20,10 @@ void tarjanSSC(int u)
     for(int i = 0; i < G[u].size(); i++) {
         int v = G[u][i];
         //if it is not visited yet, backtrack it
-        if(dfs_num[v] == 0) {
+        if(dfs_num[v] == 0)
             tarjanSSC(v);
-        }
-        //if node v (visited[v]) is not visited, we can use it to minimize the dfs_low[u] value from dfs_low[v]
+
+        // visited[v] is used to check if this node is not in any other SCC
         if(visited[v])
             dfs_low[u] = min(dfs_low[u], dfs_low[v]);
     }
