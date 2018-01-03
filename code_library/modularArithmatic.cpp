@@ -40,6 +40,40 @@ long long afterMod(string str, ll mod) {        // input as string, as it is big
     return ans;
 }
 
+
+
+// Extended Euclud
+// a*x + b*y = gcd(a, b)
+// Given a and b calculate x and y so that a * x + b * y = d   (where gcd(a, b) | c)
+// x_ans = x + (b/d)n   
+// y_ans = y − (a/d)n
+// where n is an integer
+
+
+// Solution only exists if d | c (i.e : c is divisable by d)
+ll gcdExtended(ll a, ll b, ll *x, ll *y) {          // C function for extended Euclidean Algorithm
+    if (a == 0) {                                   // Base Case
+        *x = 0, *y = 1;
+        return b;
+    }
+ 
+    ll x1, y1;                                     // To store results of recursive call
+    ll gcd = gcdExtended(b%a, a, &x1, &y1);
+    *x = y1 - (b/a) * x1;
+    *y = x1;
+    return gcd;
+}
+ 
+ll modInverse(ll a, ll mod) {
+    ll x, y;
+    ll g = gcdExtended(a, mod, &x, &y);
+    if (g != 1)                             // ModInverse doesnt exist
+        return -1;
+    ll res = (x%mod + mod) % mod;           // m is added to handle negative x
+    return res;
+}
+
+
 int main() {
     return 0;
 }
