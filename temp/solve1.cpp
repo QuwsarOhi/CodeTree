@@ -40,58 +40,59 @@ typedef pair<ll, ll> pll;
 typedef vector<pair<int, int> > vii;
 typedef vector<pair<ll, ll> >vll;
 
-int dx[] = {-1, -1, -1, 0, 0, 1, 1, 1}, dy[] = {-1, 0, 1, -1, 1, -1, 0, 1}, n, m, lstX, lstY;
+//int dx[] = {-1, -1, -1, 0, 0, 1, 1, 1}, dy[] = {-1, 0, 1, -1, 1, -1, 0, 1}, n, m, lstX, lstY;
 char G[50][50];
-bool visited[50][50];
+vii v;
+int dp[20][(1<<17)+100];
 
-int dfs(int x, int y, int gold, int cst) {
-    if(gold == 0) {
-        lstX = x, lstY = y;
-        return cst;
-    }
-    
-    for(int i = 0; i < 8; ++i) {
-        int _x = x+dx[i];
-        int _y = y+dy[i];
-       
-        if(_x < 0 || _y < 0 || _x >=n || _y >= m)
-            continue;
-        
-        if(visited[_x][_y] == 2)
-            continue;
-        
-        visited[_x][_y]+=1;
-        dfs(_x, _y, gold-(G[_x][_y] == 'g' || G[_x][_y] == 'x'), cst+1);
-        visited[]
-    }
+int dist(int a, int b) {
+    return max(abs(v[a].fi-v[b].fi), abs(v[a].se-v[b].se));
 }
+
+int TSP(int u, int mask) {
+    if(mask == (1<<(SIZE(v)))-1)
+        return dist(u, 0);
+    
+    if(dp[u][mask] != -1)
+        return dp[u][mask];
+    
+    int ans = INF;
+    for(int i = 0; i < SIZE(v); ++i)
+        if(!isOn(mask, i)) {
+            pf("from %d to %d : %d\n", u, i, dist(i, u));
+            ans = min(TSP(i, mask|(1<<i))+dist(i, u), ans);
+            pf("ans : %d\n", ans);
+        }
         
-        
+    return dp[u][mask] = ans;
+}
+
 int main() {
     fileRead("in");
-    fileWrite("out");
+    //fileWrite("out");
     
-    int t, x, y, gold;
+    int t, n, m;
     sf("%d", &t);
     
     for(int Case = 1; Case <= t; ++Case) {
-        sf("%d %d", &n, &m);
-        gold = 0;
+        sf("%d%d", &n, &m);
+        v.clear();
         for(int i = 0; i < n; ++i)
             for(int j = 0; j < m; ++j) {
                 sf(" %c", &G[i][j]);
-                if(G[i][j] == 'g')
-                    ++gold;
                 if(G[i][j] == 'x')
-                    x = i, y = j;
+                    v.pb(mp(i, j));
             }
         
-        memset(visited, 0, sizeof visited);
-        int ans = bfs(x, y, gold);
-        ans = ans + abs(x-lstX) + abs(y-lstY);
-        pf("%d added %d\n", ans, abs(x-lstX) + abs(y-lstY));
-        pf("Case %d: %d\n", Case, ans);
+        for(int i = 0; i < n; ++i)
+            for(int j = 0; j < m; ++j)
+                if(G[i][j] == 'g')
+                    v.pb(mp(i, j));
+        
+        memset(dp, -1, sizeof dp);
+        pf("Case %d: %d\n", Case, TSP(0, 1));
     }
     
     return 0;
 }
+        

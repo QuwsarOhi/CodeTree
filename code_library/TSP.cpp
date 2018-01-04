@@ -8,7 +8,7 @@ int n, x[11], y[11], dist[11][11], memo[11][1 << 11], dp[11][1 << 11];
 //call with tsp(starting node, 1)
 
 int tsp(int u, int bitmask) {			//startin node and bitmask of taken nodes
-	if(bitmask == ((1 << (1+n)) - 1))	//when it steps in this node, if all nodes are visited
+	if(bitmask == ((1 << (n)) - 1))	    //when it steps in this node, if all nodes are visited
 		return dist[u][0];				//then return to 0'th (starting) node [as the path is hamiltonian]
 //or use return dist[u][start]	if starting node is not 0
 	if(dp[u][bitmask] != -1)			//if we have previous value set up
