@@ -40,3 +40,25 @@ typedef pair<ll, ll> pll;
 typedef vector<pair<int, int> > vii;
 typedef vector<pair<ll, ll> >vll;
 
+int main() {
+    // fileRead("in");
+    
+    ll n, m, y, g, b;
+    
+    cin >> n >> m;
+    cin >> y >> g >> b;
+    
+    ll Y = 0, B = 0;
+    
+    Y = y*2 + g;
+    B = g + b*3;
+    
+    Y -= n;
+    B -= m;
+    
+    Y = max(Y, 0LL);
+    B = max(B, 0LL);
+    
+    cout << max(Y+B, 0LL) << endl;
+    return 0;
+}

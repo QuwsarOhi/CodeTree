@@ -1,9 +1,8 @@
-
 #include <bits/stdc++.h>
 using namespace std;
 #define MAX                 200100
 #define EPS                 1e-9
-#define INF                 1e9+10
+#define INF                 1e7
 #define MOD                 1000000007
 #define pb                  push_back
 #define mp                  make_pair
@@ -40,5 +39,6 @@ typedef pair<int, int> pii;
 typedef pair<ll, ll> pll;
 typedef vector<pair<int, int> > vii;
 typedef vector<pair<ll, ll> >vll;
+
 
 
