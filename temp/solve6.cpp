@@ -132,8 +132,10 @@ struct FibHeap {
             A[i] = NULL;
         
         bool firstIter = 1;
-        for(node* w = H; (w != H->left) || firstIter; w = w->right, firstIter = 0) {
+        node* rightNode;
+        for(node* w = H; (w != H->left) || firstIter; w = rightNode, firstIter = 0) {
             node* x = w;
+            rightNode = x->right;
             int d = x->degree;
             pf("rootlist elem %d : deg : %d\n", x->key, d);
             while(A[d] != NULL) {
@@ -145,6 +147,7 @@ struct FibHeap {
                 d += 1;
             }
             A[d] = x;
+            pf("in consolidate   ");
             rootList();
         }
         
@@ -171,21 +174,32 @@ struct FibHeap {
             return 1e9;             // Just returning an INFINITE value
         
         bool firstIter = 1;
-        for(node* x = z->child; (x != NULL && x != (z->child)->left) || firstIter; x = x->right) {
-            pf("LOLA1 : %d\n");
+        node* pstRight = NULL;
+        rootList();
+        for(node* x = z->child; z->child != NULL && ((x != (z->child)->left) || firstIter); x = pstRight, firstIter = 0) {
+            pf("LOLA1\n");
+            pstRight = x->right;
+            if(x->right != NULL)
+                pf("ok\n");
             if(x != NULL)
                 addLeft(&H, &x);
             //x->parent = NULL;
-            firstIter = 0;
             pf("LOLA2\n");
         }
+        pf("LOLA3\n");
+        //rootList();
         if(z != NULL && z == z->right) {         // if there is only one node in root list
             pf("here1\n");
             H = NULL;
         }
         else {
             pf("or here\n");
-            H = z->right;
+            H = z->right; //commented line
+            // remove H.min from rootlist
+            //z = H;
+            (z->right)->left = z->left;
+            (z->left)->right = z->right;
+            //H = H->left;
             Consolidate();
         }
         nH -= 1;
@@ -233,9 +247,11 @@ struct FibHeap {
     // NEED to add Clear function!!
     
     void rootList() {
-        bool first = 1;
-        for(node* x = H; first || (x != H->left); x = x->right, first = 0)
+        for(node* x = H; ;x = x->right) {
             pf("-----%d", x->key);
+            if(x == H->left)
+                break;
+        }
         pf("\n");
     }
 };
@@ -243,17 +259,17 @@ struct FibHeap {
 
 
 int main() {
+    //fileWrite("out");
     FibHeap hp;
     
     for(int i = 10; i >= 0; --i) {
         pf("pushing %d\n", i);
         hp.push(i);
         pf("%d pushed size : %d isEmpty : %d\n", i, hp.size(), hp.empty());
+        hp.rootList();
     }
     
-    hp.rootList();
     pf("Extracted Min : %d", hp.pop());
-    pf(" Size: %d\n", hp.size());
     hp.rootList();
     pf("pushing %d\n", 50);
     hp.push(50);

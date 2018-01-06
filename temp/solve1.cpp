@@ -40,3 +40,33 @@ typedef pair<ll, ll> pll;
 typedef vector<pair<int, int> > vii;
 typedef vector<pair<ll, ll> >vll;
 
+
+vi ans;
+int day, sumTime, l[60], h[60], Low, Hi, lowSum;
+
+
+int main() {
+    cin >> day >> sumTime;
+    
+    for(int i = 0; i < day; ++i) {
+        cin >> l[i] >> h[i];
+        Low += l[i];
+        Hi += h[i];
+        lowSum += l[i];
+    }
+    
+    if(Low <= sumTime && sumTime <= Hi) {
+        cout << "YES\n";
+        int extra = sumTime - lowSum;
+        for(int i = 0; i < day; ++i) {
+            int add = min(extra, h[i]-l[i]);
+            if(extra >= add)
+                extra -= add;
+            cout << l[i] + add << " ";
+        }
+    }
+    else
+        cout << "NO\n";
+    
+    return 0;
+}
