@@ -26,6 +26,7 @@ using namespace std;
 #define setAll(S, n)        (S = (1 << n) - 1)
 #define fileRead(S)         freopen(S, "r", stdin);
 #define fileWrite(S)        freopen(S, "w", stdout);
+#define All(S)              S.begin(), S.end()
 #define Unique(X)           X.erase(unique(X.begin(), X.end()), X.end())
 
 typedef unsigned long long ull;

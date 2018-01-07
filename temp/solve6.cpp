@@ -78,12 +78,11 @@ struct FibHeap {
     
     // Checked, OK
     void addLeft(node** pstNode, node** newNode) {
-        pf("asd\n");
+        pf("Add left\n");
         if(*pstNode == NULL) {
             *pstNode = *newNode;
             return;
         }
-        
         ((*pstNode)->left)->right = *newNode;         // add to left
         (*newNode)->right = *pstNode;
         (*newNode)->left = (*pstNode)->left;
@@ -119,81 +118,84 @@ struct FibHeap {
         }
         else {
             addLeft(&((*x)->child), &(*y));
-            (*x)->degree += 1;
+            //(*x)->degree += 1;
         }
     }
             
     
     void Consolidate() {
-        pf("CAME\n");
+        pf("In Consolidate\n");
+        rootList();
         node* A[nH+2];
         
         for(int i = 0; i <= nH; ++i)
             A[i] = NULL;
         
-        bool firstIter = 1;
         node* rightNode;
-        for(node* w = H; (w != H->left) || firstIter; w = rightNode, firstIter = 0) {
+        node* w = H;
+        //for(node* w = H; (w != H->left) || firstIter; w = rightNode, firstIter = 0) {
+        for(int i = 0; i < nH; ++i, w = rightNode) {
             node* x = w;
             rightNode = x->right;
             int d = x->degree;
             pf("rootlist elem %d : deg : %d\n", x->key, d);
-            while(A[d] != NULL) {
+            while(A[d] != NULL && A[d] != x) {
                 node* y = A[d];         // another node same degree as x
+                pf("same degree value : %d and %d deg : %d\n", x->key, y->key, y->degree);
                 if(x->key > y->key)     // if x is bigger than y, swap x, y so that x is the smaller one
                     swap(x, y);
+                pf("parent %d, child %d\n", x->key, y->key);
                 FibHeapLink(&y, &x);
                 A[d] = NULL;
                 d += 1;
+                x->degree += 1;
             }
             A[d] = x;
             pf("in consolidate   ");
             rootList();
         }
-        
+        pf("After Consolidate ");
+        rootList();
         H = NULL;
         for(int i = 0; i <= nH; ++i) {
             if(A[i] != NULL) {
                 if(H == NULL) {
+                    A[i]->left = A[i]->right = A[i];
                     //pf("done1\n");
                     H = A[i];
+                    
                 }
                 else {
                     //pf("done2\n");
+                    A[i]->left = A[i]->right = A[i];
                     addLeft(&H, &A[i]);
                     if(A[i]->key < H->key)
                         H = A[i];
                 }
             }
         }
+        pf("Consolodate END ");
+        rootList();
     }
                     
     int pop() {
+        pf("IN POP\n");
         node* z = H;
         if(z == NULL)
             return 1e9;             // Just returning an INFINITE value
         
         bool firstIter = 1;
         node* pstRight = NULL;
-        rootList();
+        //rootList();
         for(node* x = z->child; z->child != NULL && ((x != (z->child)->left) || firstIter); x = pstRight, firstIter = 0) {
-            pf("LOLA1\n");
             pstRight = x->right;
-            if(x->right != NULL)
-                pf("ok\n");
             if(x != NULL)
                 addLeft(&H, &x);
-            //x->parent = NULL;
-            pf("LOLA2\n");
         }
-        pf("LOLA3\n");
         //rootList();
-        if(z != NULL && z == z->right) {         // if there is only one node in root list
-            pf("here1\n");
+        if(z != NULL && z == z->right)         // if there is only one node in root list
             H = NULL;
-        }
         else {
-            pf("or here\n");
             H = z->right; //commented line
             // remove H.min from rootlist
             //z = H;
@@ -245,12 +247,26 @@ struct FibHeap {
         Size = 0;
     }
     // NEED to add Clear function!!
-    
+    /*
+    void dfs(node* u, bool f = 1) {
+        if(f) {
+            pf("rootlist : ");
+            rootList(H);
+        }
+        for(node)
+    }*/
     void rootList() {
+        int X = 0;
+        pf("%d", H->left->key);
         for(node* x = H; ;x = x->right) {
-            pf("-----%d", x->key);
+            pf("-----%d(%d)", x->key, x->degree);
             if(x == H->left)
                 break;
+            X+= 1;
+            if(X > 14) {
+                pf("-----------------------------ERRRORRR\n");
+                exit(EXIT_SUCCESS);
+            }
         }
         pf("\n");
     }
@@ -263,19 +279,19 @@ int main() {
     FibHeap hp;
     
     for(int i = 10; i >= 0; --i) {
-        pf("pushing %d\n", i);
+        //pf("pushing %d\n", i);
         hp.push(i);
-        pf("%d pushed size : %d isEmpty : %d\n", i, hp.size(), hp.empty());
-        hp.rootList();
+        //pf("%d pushed size : %d isEmpty : %d\n", i, hp.size(), hp.empty());
+        //hp.rootList();
     }
-    
-    pf("Extracted Min : %d", hp.pop());
+    hp.rootList();
+    pf("Extracted Min : %d\n", hp.pop());
     hp.rootList();
     pf("pushing %d\n", 50);
     hp.push(50);
     pf("%d pushed size : %d isEmpty : %d\n", 50, hp.size(), hp.empty());
     hp.rootList();
-    
+
     for(int i = 0; i <= 10; ++i) {
         pf("Extracting %d'th\n", i);
         pf("Extracted Min : %d, \n", hp.pop());
@@ -284,7 +300,7 @@ int main() {
     }
     
     pf("Clearing\n");
-    hp.clear();
+    //hp.clear();
     pf("Clearing ok\n");
     
     return 0;
