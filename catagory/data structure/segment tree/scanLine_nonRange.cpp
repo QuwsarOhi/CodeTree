@@ -97,7 +97,7 @@ int main() {
 		scanf("%d", &n);
 		yAxis.pb(0);
 		for(int i = 0; i < n; ++i) {
-			scanf("%d %d %d %d", &x1, &y1, &x2, &y2);
+			scanf("%d %d %d %d", &x1, &y1, &x2, &y2);           // lower-left start point, upper-right end point
 			yAxis.pb(y1);
 			yAxis.pb(y2);
 			yLine.pb(Node(y1, y2, x1, 1));

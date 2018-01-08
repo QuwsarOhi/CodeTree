@@ -56,7 +56,7 @@ int main() {
     sort(v.begin(), v.end());
     
     int card = 0;
-    for(auto it : v) {
+    for(auto it = v.rbegin(); it != v.rend(); ++it) {
         if(it.second != 0)
             card += it.second;
         else

@@ -1,8 +1,8 @@
 #include <bits/stdc++.h>
 using namespace std;
-#define MAX                 1e6
+#define MAX                 100100
 #define EPS                 1e-9
-#define INF                 1e9+10
+#define INF                 1e7
 #define MOD                 1000000007
 #define pb                  push_back
 #define mp                  make_pair
@@ -26,7 +26,6 @@ using namespace std;
 #define setAll(S, n)        (S = (1 << n) - 1)
 #define fileRead(S)         freopen(S, "r", stdin);
 #define fileWrite(S)        freopen(S, "w", stdout);
-#define All(S)              S.begin(), S.end()
 #define Unique(X)           X.erase(unique(X.begin(), X.end()), X.end())
 
 typedef unsigned long long ull;
@@ -35,11 +34,12 @@ typedef map<int, int> mii;
 typedef map<ll, ll>mll;
 typedef map<string, int> msi;
 typedef vector<int> vi;
-typedef vector<ll>vl;
+typedef vector<long long>vl;
 typedef pair<int, int> pii;
 typedef pair<ll, ll> pll;
 typedef vector<pair<int, int> > vii;
 typedef vector<pair<ll, ll> >vll;
+
 
 
 

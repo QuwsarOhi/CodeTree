@@ -1,5 +1,5 @@
 // SPOJ ARDA1
-// 2D KMP, Hashinh, bruteforce
+// 2D KMP, Hashing, bruteforce
 
 #include <bits/stdc++.h>
 using namespace std;
@@ -68,9 +68,7 @@ int main() {
     
     int r, c;
     string Patt[310], Str[2003];
-    
     cin >> r >> c;
-    
     for(int i = 0; i < r; ++i)
         cin >> Patt[i];
             

@@ -78,7 +78,7 @@ void dfs(ll node) {
 ll single(int node, ll d, ll delta) {
     if(d < 0) return 0;
     ll n = upper_bound(v[node].begin(), v[node].end(), d) - v[node].begin();
-    return sum[node][n-1] + delta*n;          // delta is the common distance of all nodes
+    return sum[node][n-1] + delta*n;                                    // delta is the common distance of all nodes
 }
 
 ll query(int node, ll k) {
@@ -96,8 +96,6 @@ ll query(int node, ll k) {
 
 int main() {
     fastIO;
-    //freopen("in", "r", stdin);
-    
     cin >> n >> m;                   // n = total nodes, m = number of query
     w.resize(n+5);
     

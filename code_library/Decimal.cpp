@@ -48,7 +48,7 @@ vi DecimalVal(int a, int b) {           // Calculate Decimal values (after .) of
         return v;
     }
     bool first = 1;
-    while(SIZE(v) <= 200) {          // Define the Maximum Length of decimal values 
+    while(SIZE(v) <= 200) {             // Define the Maximum Length of decimal values 
         if(a == 0)
             return v;                   // If any Zero divisor is found (then, rest all will be Zero) return values
         else if(a < b && !first) {      // If we need to add another zero (add zero after first time)
@@ -71,19 +71,21 @@ vi DecimalVal(int a, int b) {           // Calculate Decimal values (after .) of
 
 // Repetation (PunoPonik) is also calculated
 
-vi dec1, dec2;          // Before . (decimal), after . (decimal)
+vi dec1, dec2;                              // Before . (decimal), after . (decimal)
 int DecimalRepeated(int a, int b) {         // Calculate Decimal values (after .) of a/b
     unordered_map<int, int>mp;
     int k = 0, point = -1;
     bool divisable = 0;
     
-    if(a >= b) {                // Before Decimal Calculation
+    if(a >= b) {                            // Before Decimal Calculation
         dec1.push_back(a/b);
         a %= b;
     }
+    if(dec1.size() == 0)
+        dec1.push_back(0);
 		
     while(a != 0) {
-        if(mp.find(a) != mp.end()) {    // if the remainder is found again, there exists a loop
+        if(mp.find(a) != mp.end()) {        // if the remainder is found again, there exists a loop
             point = mp[a];
             break;
         }
