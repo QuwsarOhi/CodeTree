@@ -9,7 +9,7 @@ int main() {
     while(n--) {
         cin >> x >> y;
         v.push_back({y, x});
-        mx = max(x, y);
+        mx = max(x, mx);
     }
 
     sort(v.begin(), v.end());

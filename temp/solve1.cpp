@@ -3,7 +3,7 @@ using namespace std;
 #define MAX                 100100
 #define EPS                 1e-9
 #define INF                 1e7
-#define MOD                 1000000007
+#define MOD                 1000003
 #define pb                  push_back
 #define mp                  make_pair
 #define fi                  first
@@ -41,32 +41,24 @@ typedef vector<pair<int, int> > vii;
 typedef vector<pair<ll, ll> >vll;
 
 
-vi ans;
-int day, sumTime, l[60], h[60], Low, Hi, lowSum;
-
-
 int main() {
-    cin >> day >> sumTime;
+    int t;
+    sf("%d", &t);
     
-    for(int i = 0; i < day; ++i) {
-        cin >> l[i] >> h[i];
-        Low += l[i];
-        Hi += h[i];
-        lowSum += l[i];
-    }
-    
-    if(Low <= sumTime && sumTime <= Hi) {
-        cout << "YES\n";
-        int extra = sumTime - lowSum;
-        for(int i = 0; i < day; ++i) {
-            int add = min(extra, h[i]-l[i]);
-            if(extra >= add)
-                extra -= add;
-            cout << l[i] + add << " ";
+    for(int Case = 1; Case <= t; ++Case) {
+        sf("%d", &n);
+        
+        while(n--) {
+            sf("%d %d", &x, &y);
+            v.pb(mp(x, y));
         }
-    }
-    else
-        cout << "NO\n";
-    
-    return 0;
-}
+        
+        for(int i = 0; i < SIZE(v); ++i)
+            for(int j = i+1; j < SIZE(v); ++j) {
+                int p = v[i].fi + v[j].fi;
+                int q = v[i].se + v[j].se;
+                Map[mp(p, q)]++;
+            }
+            
+        
+        for()

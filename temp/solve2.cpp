@@ -1,9 +1,13 @@
+// Codeforces
+// Polo the Penguin and Matrix
+// http://codeforces.com/problemset/problem/289/B
+
 #include <bits/stdc++.h>
 using namespace std;
-#define MAX                 200100
+#define MAX                 100100
 #define EPS                 1e-9
 #define INF                 1e7
-#define MOD                 1000000007
+#define MOD                 1000003
 #define pb                  push_back
 #define mp                  make_pair
 #define fi                  first
@@ -41,30 +45,30 @@ typedef vector<pair<int, int> > vii;
 typedef vector<pair<ll, ll> >vll;
 
 
-vii v;
-
 int main() {
-    int n, sum = 0, x, y;
-    cin >> n;
+    int n, m, d, ans = 0, x;
+    vi v;
     
-    for(int i = 0; i < n; ++i) {
-        sf("%d %d", &x, &y);
-        v.pb({max(x, y), min(x, y)});
-        sum += (x+y);
-    }
+    cin >> n >> m >> d;
+    
+    for(int i  = 0; i < n; ++i)
+        for(int j = 0; j < m; ++j) {
+            cin >> x;
+            v.pb(x);
+        }
     
     sort(v.begin(), v.end());
+    int median = v[SIZE(v)/2];
     
-    int card = 0;
     for(auto it : v) {
-        if(it.second != 0)
-            card += it.second;
-        else
-            card += it.first;
-        if(card >= n)
-            break;
+        int dis = abs(it-median);
+        if(dis%d != 0) {
+            cout << "-1\n";
+            return 0;
+        }
+        ans += dis/d;
     }
     
-    cout << sum-card << endl;
+    cout << ans << "\n";
     return 0;
 }
