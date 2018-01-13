@@ -40,4 +40,36 @@ typedef pair<ll, ll> pll;
 typedef vector<pair<int, int> > vii;
 typedef vector<pair<ll, ll> >vll;
 
+string s1, s2;
 
+
+ull recur(int idx, int mask, ull val, bool tight) {
+    if(__builtin_popcount(mask) == SIZE(s1))
+        return val;
+    for(int i = 0; i < SIZE(s1); ++i) {
+        if(!isOn(mask, i)) {
+            if((tight && s1[i]<=s2[idx]) || !tight) {
+                ull nval = val*10 + (s1[i]-'0');
+                bool ntight = tight && (s2[idx]==s1[i]);
+                //cout << "taken " << s1[0] << " at " << __builtin_popcount(mask)+1 <<endl;
+                ull ans = recur(idx+1, mask|(1<<i), nval, ntight);
+                if(ans != 0)
+                    return ans;
+                //cout << "discard " << s1[0] << " at " << __builtin_popcount(mask)+1 << endl;
+            }
+        }
+    }
+    return 0;
+}
+
+int main() {
+    cin >> s1 >> s2;
+    
+    sort(s1.begin(), s1.end());
+    reverse(s1.begin(), s1.end());
+    if(SIZE(s1) == SIZE(s2))
+        cout << recur(0, 0, 0, 1) << endl;
+    else
+        cout << recur(0,0,0,0) << endl;
+    return 0;
+}

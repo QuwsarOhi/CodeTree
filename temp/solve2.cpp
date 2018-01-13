@@ -41,3 +41,44 @@ typedef vector<pair<int, int> > vii;
 typedef vector<pair<ll, ll> >vll;
 
 
+int main() {
+    int n, pos, l, r, ans = 0;
+    
+    cin >> n >> pos >> l >> r;
+    if(r < l)
+        swap(l,r);
+        
+    /*
+    if(l == 1 && r == n) {      // all range
+        cout << "0" << endl;
+        return 0;
+    }*/
+    
+    if(abs(pos-l) < abs(pos-r)) {       // go left
+        if(pos != l && l != 1) {        // go left and delete           
+            ans += abs(pos-l);
+            pos = l;
+        }
+        if(l != 1)
+            ++ans;
+        if(r != n) {                    // go r7 and delete
+            ans += abs(pos-r);
+            ans++;
+        }
+    }
+    else {
+        //cout << "here" << endl;
+        if(pos != r && r != n) {        // go r8 and delete
+            ans += abs(pos-r);
+            pos = r;
+        }
+        if(r != n)
+            ++ans;
+        if(l != 1) {                    // go lft and delete
+            ans += abs(l-pos);
+            ans++;
+        }
+    }
+    cout << ans << endl;
+    return 0;
+}

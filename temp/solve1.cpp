@@ -41,3 +41,18 @@ typedef vector<pair<int, int> > vii;
 typedef vector<pair<ll, ll> >vll;
 
 
+int main() {
+    int n, k, ans = 0, x;
+    cin >> n >> k;
+    
+    for(int i = 0; i < n; ++i) {
+        cin >> x;
+        if(k%x == 0) {
+            ans = max(x, ans);
+        }
+    }
+    
+    cout << k/ans << endl;
+    return 0;
+}
+

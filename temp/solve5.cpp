@@ -40,87 +40,104 @@ typedef pair<ll, ll> pll;
 typedef vector<pair<int, int> > vii;
 typedef vector<pair<ll, ll> >vll;
 
-long long tree[101000], val[101000];
 
-int MaxVal = 100100;
+vector<int>G[600], SCC;
+int dfs_num[600], dfs_low[600], dfsCounter, SCC_no = 0, Indegree[600];
+bitset<600>visited;
 
-void update(int idx, int val) {
-	while(idx <= MaxVal) {
-		tree[idx] += val;
-		idx += (idx & -idx);
-	}
+void tarjanSSC(int u, int ignore) {
+    //Stack, here, it is implemented as vector instead
+    SCC.push_back(u);
+    //Marking node u as visited
+    //visited[u] marks if the node u is usable in a SCC and not used on other SCC
+    //if visited[u] is false, then it is used in other SCC
+    visited[u] = 1;
+    
+    dfs_num[u] = dfs_low[u] = ++dfsCounter;
+    //for all Strongly Connected Component (directed graph), dfs_low[u] is same
+    for(int i = 0; i < (int)G[u].size(); i++) {
+        int v = G[u][i];
+        if(v == ignore)
+            continue;
+        //if it is not visited yet, backtrack it
+        if(dfs_num[v] == 0)
+            tarjanSSC(v, ignore);
+
+        // visited[v] is used to check if this node is not in any other SCC
+        if(visited[v])
+            dfs_low[u] = min(dfs_low[u], dfs_low[v]);
+    }
+
+    //in a SCC the first node of the SCC, node u is the first node in a SCC if dfs_low[u] == dfs_low[v]
+    //as we implementing stack like data structure, the nodes from top to u are on the same SCC
+    if(dfs_low[u] == dfs_num[u]) {
+        SCC_no++;       // Component Node no. starts from 0
+        while(1) {
+            int v = SCC.back();
+            SCC.pop_back();
+
+            //node v is used, so marking it as false, so that the ancestor nodes
+            //doesn't use this node to update it's value
+            
+            visited[v] = 0;
+            //printf("%d\n", v);
+            //Component[v] = SCC_no;      // Marking SCC nodes to as same component
+            if(u == v)
+                break;
+        }
+        //printf("\n");
+    }
 }
 
-long long read(int idx) {
-	long long sum = 0;
-	while(idx > 0) {
-		sum += tree[idx];
-		idx -= (idx & -idx);
-	}
-	return sum;
-}
-
-
-long long readSingle(int idx) {
-	long long sum = tree[idx];
-	if(idx > 0) {
-		int z = idx - (idx & -idx);
-		--idx;
-		while(idx != z) {
-			sum -= tree[idx];
-			idx -= (idx & -idx);
-		}
-	}
-	return sum;
+void init() {
+    memset(dfs_num, 0, sizeof(dfs_num));
+    dfsCounter = 0;
+    visited.reset();
+    SCC_no = 0;
 }
 
 int main() {
     //fileRead("in");
     //fileWrite("out");
-    int t, n, m, q, x, y, l, r, Case = 1;
-    
     FastRead;
-    cin >> t;
+    int n, m, u, v;
+    vi ones;
+    cin >> n >> m;
     
-    while(t--) {
-        cin >> n >> m >> q;
-        memset(tree, 0, sizeof tree);
-        memset(val, 0, sizeof val);
-        //dbug(n), dbug(m), dbug(q);
-        for(int i = 1; i <= n; ++i) {
-            cin >> x;
-            update(i, x);
-            update(i+1, -x);
-        }
-        
-        val[0] = 0;
-        for(int i = 1; i <= m; ++i) {
-            cin >> x;
-            val[i] = val[i-1]+x;
-        }
-        
-        cout << "Case " << Case << ":\n";
-        ++Case;
-        while(q--) {
-            cin >> x >> y >> l >> r;
-            if(x > y)
-                swap(x, y);
-            if(l > r)
-                swap(l, r);
-            ll add = val[y]-val[x-1];
-            //dbug(add);
-            update(l, add);
-            update(r+1, -add);
-        }
-        
-        ll ans = read(1);
-        cout << ans;
-        for(int i = 2; i <= n; ++i) {
-            ll tmp = read(i);
-            cout << " " << tmp;
-        }
-        cout << "\n";
+    for(int i = 0; i < m; ++i) {
+        cin >> u >> v;
+        G[u].pb(v);
+        Indegree[v]++;
     }
     
+    for(int i = 1; i <= n; ++i) {
+        if(Indegree[i] == 1)
+            ones.pb(i);
+    }
+    
+    init();
+    for(int i = 1; i <= n; ++i)
+        if(dfs_num[i] == 0)
+            tarjanSSC(i, 0);
+    
+    if(SCC_no == n) {
+        cout << "YES\n";
+        return 0;
+    }
+    
+    for(auto it : ones) {
+        init();
+        //cout << "IGNORE " << it << endl;
+        for(int i = 1; i <= n; ++i)
+            if(dfs_num[i] == 0)
+                tarjanSSC(i, it);
+        if(SCC_no == n) {
+            cout << "YES\n";
+            return 0;
+        }
+        //cout << SCC_no << endl;
+    }
+    
+    cout << "NO\n";
     return 0;
 }
