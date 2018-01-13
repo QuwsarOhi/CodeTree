@@ -1,3 +1,7 @@
+// LightOJ
+// 1136 - Division by 3
+// http://lightoj.com/volume_showproblem.php?problem=1136
+
 #include <bits/stdc++.h>
 using namespace std;
 #define MAX                 100100
@@ -41,3 +45,24 @@ typedef vector<pair<int, int> > vii;
 typedef vector<pair<ll, ll> >vll;
 
 
+ull cal(ull x) {
+    if(x < 2)
+        return 0;
+    if(x == 2)
+        return 1;
+    ull ans = ceil((x-2)/3.0)*2;
+    ans += ((x-2)%3 == 0);
+    return ans;
+}
+
+int main() {
+    int t;
+    sf("%d", &t);
+    ull l, r;
+    for(int Case = 1; Case <= t; ++Case) {
+        sf("%llu %llu", &l, &r);
+        pf("Case %d: %llu\n", Case, cal(r)-cal(l-1));
+    }
+    
+    return 0;
+}

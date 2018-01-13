@@ -1,299 +1,112 @@
-#include <bits/stdc++.h>
+// C++ program for implementation of Ford Fulkerson algorithm
+#include <iostream>
+#include <limits.h>
+#include <string.h>
+#include <queue>
 using namespace std;
-#define MAX                 100100
-#define EPS                 1e-9
-#define INF                 1e7
-#define MOD                 1000000007
-#define pb                  push_back
-#define mp                  make_pair
-#define fi                  first
-#define se                  second
-#define pi                  acos(-1)
-#define sf                  scanf
-#define pf                  printf
-#define SIZE(a)             ((int)a.size())
-#define Equal(a, b)         (abs(a-b) < EPS)
-#define Greater(a, b)       (a >= (b+EPS))
-#define GreaterEqual(a, b)  (a > (b-EPS)) 
-#define fr(i, a, b)         for(register int i = (a); i < (int)(b); i++)
-#define FastRead            ios_base::sync_with_stdio(false); cin.tie(NULL);
-#define dbug(vari)          cerr << #vari << " = " << (vari) <<endl
-#define isOn(S, j)          (S & (1 << j))
-#define setBit(S, j)        (S |= (1 << j))
-#define clearBit(S, j)      (S &= ~(1 << j))
-#define toggleBit(S, j)     (S ^= (1 << j))
-#define lowBit(S)           (S & (-S))
-#define setAll(S, n)        (S = (1 << n) - 1)
-#define fileRead(S)         freopen(S, "r", stdin);
-#define fileWrite(S)        freopen(S, "w", stdout);
-#define Unique(X)           X.erase(unique(X.begin(), X.end()), X.end())
-
-typedef unsigned long long ull;
-typedef long long ll;
-typedef map<int, int> mii;
-typedef map<ll, ll>mll;
-typedef map<string, int> msi;
-typedef vector<int> vi;
-typedef vector<long long>vl;
-typedef pair<int, int> pii;
-typedef pair<ll, ll> pll;
-typedef vector<pair<int, int> > vii;
-typedef vector<pair<ll, ll> >vll;
-
-
-#include <bits/stdc++.h>
-using namespace std;
-#define MAX                 200100
-#define EPS                 1e-9
-#define INF                 1e7
-#define MOD                 1000000007
-#define pb                  push_back
-#define mp                  make_pair
-#define fi                  first
-#define se                  second
-#define pi                  acos(-1)
-#define sf                  scanf
-#define pf                  printf
-#define SIZE(a)             ((int)a.size())
-#define Equal(a, b)         (abs(a-b) < EPS)
-#define Greater(a, b)       (a >= (b+EPS))
-#define GreaterEqual(a, b)  (a > (b-EPS)) 
-#define fr(i, a, b)         for(register int i = (a); i < (int)(b); i++)
-#define FastRead            ios_base::sync_with_stdio(false); cin.tie(NULL);
-#define dbug(vari)          cerr << #vari << " = " << (vari) <<endl
-#define isOn(S, j)          (S & (1 << j))
-#define setBit(S, j)        (S |= (1 << j))
-#define clearBit(S, j)      (S &= ~(1 << j))
-#define toggleBit(S, j)     (S ^= (1 << j))
-#define lowBit(S)           (S & (-S))
-#define setAll(S, n)        (S = (1 << n) - 1)
-#define fileRead(S)         freopen(S, "r", stdin);
-#define fileWrite(S)        freopen(S, "w", stdout);
-#define Unique(X)           X.erase(unique(X.begin(), X.end()), X.end())
-
-typedef unsigned long long ull;
-typedef long long ll;
-typedef map<int, int> mii;
-typedef map<ll, ll>mll;
-typedef map<string, int> msi;
-typedef vector<int> vi;
-typedef vector<long long>vl;
-typedef pair<int, int> pii;
-typedef pair<ll, ll> pll;
-typedef vector<pair<int, int> > vii;
-typedef vector<pair<ll, ll> >vll;
-
-
-
-struct node {
-    int key;            // Contains the value                   notation : key
-    int degree;         // Degree of this node                  notation : degree(x)
-    node *parent;        // Parent of this node
-    node *left;          // left pointer of this node
-    node *right;         // right pointer of this node
-    node *child;         // child of this node (every node is connected to ONLY ONE child node)
-    
-    node(int val) {
-        this->key = val;
-        this->degree = 0;
-    }
-    
-    void INIT() {
-        this->left = this->right = this;
-        this->parent = this->child = NULL;
-    }
-};
-
-
-struct FibHeap {
-    int nH;             // Number of nodes in Heap              notation : n[H]
-    node *H;            // Heap pointer (Points to the minimum key-Node)
-    int Size;           // Added Extra
-    
-    
-    // Tested, OK
-    FibHeap() {           // Heap initializer
-        nH = 0;                 // heapSize set to 0
-        H = NULL;               // By default the heap is empty, So keep a NULL pointer
-        Size = 0;
-    }
-    
-    
-    void addLeft(node** pstNode, node** newNode) {
-        if(*pstNode == NULL) {
-            *pstNode = *newNode;
-            return;
-        }
-        
-        ((*pstNode)->left)->right = *newNode;         // add to left
-        (*newNode)->right = *pstNode;
-        (*newNode)->left = (*pstNode)->left;
-        (*pstNode)->left = *newNode;
-    }    
-
-    
-    
-    // Tested, OK
-    void push(int value) {
-        node* newNode = new node(value);
-        newNode->INIT();
-        
-        addLeft(&H, &newNode);
-        if(newNode != H && newNode->key < H->key) {          // Update to new node if it is small
-            H = newNode;
-        }
-        
-        ++Size, ++nH;                                // Number of nodes in heap increased by one
-        //pf("DONE\n");
-    }
-    
-    // OK
-    void FibHeapLink(node** y, node** x) {
-        // remove y from x
-        ((*y)->left)->right = (*y)->right;
-        ((*y)->right)->left = (*y)->left;
-        (*y)->left = (*y)->right = (*y);
-        //make y child of x, incrementing x.degree
-        if((*x)->child == NULL) {
-            (*x)->child = *y;
-            (*y)->parent = *x;              // DOES PARENT HAS ANYTHING TO DO????
-        }
-        else {
-            addLeft(&((*x)->child), &(*y));
-            (*x)->degree += 1;
-        }
-    }
-            
-    
-    void Consolidate() {
-        //pf("CAME\n");
-        node* A[nH+2];
-        
-        for(int i = 0; i <= nH; ++i)
-            A[i] = NULL;
-        
-        bool firstIter = 1;
-        for(node* w = H; w != H->left && firstIter; w = w->right, firstIter = 0) {
-            node* x = w;
-            int d = x->degree;
-            //pf("rootlist elem %d : deg : %d\n", x->key, d);
-            while(A[d] != NULL) {
-                node* y = A[d];         // another node same degree as x
-                if(x->key > y->key)     // if x is bigger than y, swap x, y so that x is the smaller one
-                    swap(x, y);
-                FibHeapLink(&y, &x);
-                A[d] = NULL;
-                d += 1;
-            }
-            A[d] = x;
-        }
-        
-        H = NULL;
-        for(int i = 0; i <= nH; ++i) {
-            if(A[i] != NULL) {
-                if(H == NULL) {
-                    //pf("done1\n");
-                    H = A[i];
-                }
-                else {
-                    //pf("done2\n");
-                    addLeft(&H, &A[i]);
-                    if(A[i]->key < H->key)
-                        H = A[i];
-                }
+ 
+// Number of vertices in given graph
+#define V 6
+ 
+/* Returns true if there is a path from source 's' to sink 't' in
+  residual graph. Also fills parent[] to store the path */
+bool bfs(int rGraph[V][V], int s, int t, int parent[])
+{
+    // Create a visited array and mark all vertices as not visited
+    bool visited[V];
+    memset(visited, 0, sizeof(visited));
+ 
+    // Create a queue, enqueue source vertex and mark source vertex
+    // as visited
+    queue <int> q;
+    q.push(s);
+    visited[s] = true;
+    parent[s] = -1;
+ 
+    // Standard BFS Loop
+    while (!q.empty())
+    {
+        int u = q.front();
+        q.pop();
+ 
+        for (int v=0; v<V; v++)
+        {
+            if (visited[v]==false && rGraph[u][v] > 0)
+            {
+                q.push(v);
+                parent[v] = u;
+                visited[v] = true;
             }
         }
     }
-                    
-    int pop() {
-        node* z = H;
-        if(z == NULL)
-            return 1e9;             // Just returning an INFINITE value
-        
-        bool firstIter = 1;
-        for(node* x = z->child; x != NULL && x != (z->child)->left && firstIter; x = x->right) {
-            addLeft(&H, &x);
-            x->parent = NULL;
-            firstIter = 0;
+ 
+    // If we reached sink in BFS starting from source, then return
+    // true, else false
+    return (visited[t] == true);
+}
+ 
+// Returns the maximum flow from s to t in the given graph
+int fordFulkerson(int graph[V][V], int s, int t)
+{
+    int u, v;
+ 
+    // Create a residual graph and fill the residual graph with
+    // given capacities in the original graph as residual capacities
+    // in residual graph
+    int rGraph[V][V]; // Residual graph where rGraph[i][j] indicates 
+                     // residual capacity of edge from i to j (if there
+                     // is an edge. If rGraph[i][j] is 0, then there is not)  
+    for (u = 0; u < V; u++)
+        for (v = 0; v < V; v++)
+             rGraph[u][v] = graph[u][v];
+ 
+    int parent[V];  // This array is filled by BFS and to store path
+ 
+    int max_flow = 0;  // There is no flow initially
+ 
+    // Augment the flow while tere is path from source to sink
+    while (bfs(rGraph, s, t, parent))
+    {
+        // Find minimum residual capacity of the edges along the
+        // path filled by BFS. Or we can say find the maximum flow
+        // through the path found.
+        int path_flow = INT_MAX;
+        for (v=t; v!=s; v=parent[v])
+        {
+            u = parent[v];
+            path_flow = min(path_flow, rGraph[u][v]);
         }
-        if(z != NULL && z == z->right)          // if there is only one node in root list
-            H = NULL;
-        else {
-            H = z->right;
-            Consolidate();
+ 
+        // update residual capacities of the edges and reverse edges
+        // along the path
+        for (v=t; v != s; v=parent[v])
+        {
+            u = parent[v];
+            rGraph[u][v] -= path_flow;
+            rGraph[v][u] += path_flow;
         }
-        nH -= 1, Size -= 1;
-        return z->key;
+ 
+        // Add path flow to overall flow
+        max_flow += path_flow;
     }
-    
-    // Extra function starts------------------------------------
-    
-    int size() {
-        return Size;
-    }
-    
-    bool empty() {
-        return (!(Size));
-    }
-    
-    int top() {
-        if(H != NULL)
-            return H->key;
-        return INF;
-    }
-    
-    // BUGGY -------------------------------------
-    void deleteNode(node* n) {
-        delete n->child;
-        //delete n->right;
-        delete n->left;
-        delete n->parent;
-        delete n;
-    }
-    
-    void goDown(node* n) {
-        if(n != NULL && n->child != NULL)
-            goDown(n);
-        else if(n != H)
-            deleteNode(n);
-        else
-            H = NULL;
-    }
-    
-    void clear() {
-        goDown(H);
-        Size = 0;
-    }
-    // NEED to add Clear function!!
-};
-
-
-
-
-int main() {
-    FibHeap hp;
-    
-    for(int i = 0; i < 10; ++i) {
-        pf("pushing %d\n", i);
-        hp.push(i);
-        pf("%d pushed size : %d isEmpty : %d\n", i, hp.size(), hp.empty());
-    }
-    
-    pf("Extracted Min : %d, Size : %d\n", hp.pop(), hp.size());
-    
-    pf("pushing %d\n", 50);
-    hp.push(50);
-    pf("%d pushed size : %d isEmpty : %d\n", 50, hp.size(), hp.empty());
-    
-    
-    for(int i = 0; i < 10; ++i) {
-        pf("Extracting %d'th\n", i);
-        pf("Extracted Min : %d, Size : %d\n", hp.pop(), hp.size());
-    }
-    
-    pf("Clearing\n");
-    hp.clear();
-    pf("Clearing ok\n");
-    
+ 
+    // Return the overall flow
+    return max_flow;
+}
+ 
+// Driver program to test above functions
+int main()
+{
+    // Let us create a graph shown in the above example
+    int graph[V][V] = { {0, 16, 13, 0, 0, 0},
+                        {0, 0, 10, 12, 0, 0},
+                        {0, 4, 0, 0, 14, 0},
+                        {0, 0, 9, 0, 0, 20},
+                        {0, 0, 0, 7, 0, 4},
+                        {0, 0, 0, 0, 0, 0}
+                      };
+ 
+    cout << "The maximum possible flow is " << fordFulkerson(graph, 0, 5);
+ 
     return 0;
 }

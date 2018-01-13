@@ -1,7 +1,3 @@
-// Codeforces
-// Polo the Penguin and Matrix
-// http://codeforces.com/problemset/problem/289/B
-
 #include <bits/stdc++.h>
 using namespace std;
 #define MAX                 100100
@@ -45,30 +41,3 @@ typedef vector<pair<int, int> > vii;
 typedef vector<pair<ll, ll> >vll;
 
 
-int main() {
-    int n, m, d, ans = 0, x;
-    vi v;
-    
-    cin >> n >> m >> d;
-    
-    for(int i  = 0; i < n; ++i)
-        for(int j = 0; j < m; ++j) {
-            cin >> x;
-            v.pb(x);
-        }
-    
-    sort(v.begin(), v.end());
-    int median = v[SIZE(v)/2];
-    
-    for(auto it : v) {
-        int dis = abs(it-median);
-        if(dis%d != 0) {
-            cout << "-1\n";
-            return 0;
-        }
-        ans += dis/d;
-    }
-    
-    cout << ans << "\n";
-    return 0;
-}

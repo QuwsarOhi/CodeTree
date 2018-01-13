@@ -1,3 +1,7 @@
+// LightOJ
+// http://lightoj.com/volume_usersubmissions.php
+// 1058 - Parallelogram Counting
+
 #include <bits/stdc++.h>
 using namespace std;
 #define MAX                 100100
@@ -41,3 +45,42 @@ typedef vector<pair<int, int> > vii;
 typedef vector<pair<ll, ll> >vll;
 
 
+int main() {
+    int t, ans, x, y, n;
+    vii v, line;
+    sf("%d", &t);
+    
+    for(int Case = 1; Case <= t; ++Case) {
+        sf("%d", &n);
+        ans = 0;
+        
+        for(int i = 0; i < n; ++i) {
+            cin >> x >> y;
+            v.pb(mp(x, y));
+        }
+        
+        for(int i = 0; i < n; ++i) {
+            for(int j = i+1; j < n; ++j) {
+                x = (v[i].fi + v[j].fi);
+                y = (v[i].se + v[j].se);
+                line.pb(mp(x, y));
+            }
+        }
+        
+        int cnt = 0;
+        sort(line.begin(), line.end());
+        for(int i = 1; i < SIZE(line); ++i) {
+            if(line[i] == line[i-1])
+                ++cnt;
+            else {
+                ans += (cnt*(cnt+1))/2;
+                cnt = 0;
+            }
+        }
+        
+        v.clear();
+        line.clear();
+        pf("Case %d: %d\n", Case, ans);
+    }
+    return 0;
+}
