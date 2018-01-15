@@ -40,4 +40,36 @@ typedef pair<ll, ll> pll;
 typedef vector<pair<int, int> > vii;
 typedef vector<pair<ll, ll> >vll;
 
+string s1, s2;
+int freq[12];
 
+ll check(int pos, ll val, int tight) {
+    if(pos == SIZE(s1))
+        return val;
+    for(int i = 9; i >= 0; --i) {
+        if(freq[i] > 0) {
+            if(tight && i > (s2[pos]-'0'))
+                continue;
+            bool ntight = tight && ((s2[pos]-'0') == i);
+            freq[i]--;
+            ll ans = check(pos+1, val*10 + i, ntight);
+            freq[i]++;
+            if(ans != -1)
+                return ans;
+        }
+    }
+    return -1;
+}
+    
+int main() {
+    cin >> s1 >> s2;
+    
+    for(auto it : s1)
+        freq[it-'0']++;
+    
+    if(s1.size() == s2.size())
+        cout << check(0, 0, 1) << endl;
+    else
+        cout << check(0, 0, 0) << endl;
+    return 0;
+}

@@ -1,57 +1,81 @@
+// LightOJ
+// 1060 - nth Permutation
+
 #include <bits/stdc++.h>
 using namespace std;
-#define MAX                 100100
-#define EPS                 1e-9
-#define INF                 1e7
-#define MOD                 1000003
-#define pb                  push_back
-#define mp                  make_pair
-#define fi                  first
-#define se                  second
-#define pi                  acos(-1)
-#define sf                  scanf
-#define pf                  printf
-#define SIZE(a)             ((int)a.size())
-#define Equal(a, b)         (abs(a-b) < EPS)
-#define Greater(a, b)       (a >= (b+EPS))
-#define GreaterEqual(a, b)  (a > (b-EPS)) 
-#define fr(i, a, b)         for(register int i = (a); i < (int)(b); i++)
-#define FastRead            ios_base::sync_with_stdio(false); cin.tie(NULL);
-#define dbug(vari)          cerr << #vari << " = " << (vari) <<endl
-#define isOn(S, j)          (S & (1 << j))
-#define setBit(S, j)        (S |= (1 << j))
-#define clearBit(S, j)      (S &= ~(1 << j))
-#define toggleBit(S, j)     (S ^= (1 << j))
-#define lowBit(S)           (S & (-S))
-#define setAll(S, n)        (S = (1 << n) - 1)
-#define fileRead(S)         freopen(S, "r", stdin);
-#define fileWrite(S)        freopen(S, "w", stdout);
-#define Unique(X)           X.erase(unique(X.begin(), X.end()), X.end())
 
-typedef unsigned long long ull;
-typedef long long ll;
-typedef map<int, int> mii;
-typedef map<ll, ll>mll;
-typedef map<string, int> msi;
-typedef vector<int> vi;
-typedef vector<long long>vl;
-typedef pair<int, int> pii;
-typedef pair<ll, ll> pll;
-typedef vector<pair<int, int> > vii;
-typedef vector<pair<ll, ll> >vll;
+long long per[30] = {0};
+
+long long permute(int freq[]) {
+    int cnt = 0;
+    
+    for(int i = 0; i < 26; ++i)
+        cnt+=freq[i];
+        
+    long long permutation = per[cnt] < 1 ? 0:per[cnt];
+    
+    for(int i = 0; i < 26; ++i)
+        if(freq[i] > 1)
+            permutation /= per[freq[i]];
+        
+    return permutation;
+}
+
+
+string NthPermutation(string str, int n) {
+    string s;
+    int freq[30] = {0};
+    
+    for(int i = 0; i < (int)str.size(); ++i)
+        freq[str[i]-'a']++;
+    
+    if(per[0] == 0) {       // if not initialized
+        per[0] = 1;
+        for(int i = 1; i <= 25; ++i)
+            per[i] = per[i-1]*i;
+    }
+    
+    if(permute(freq) < n)
+        return s;
+    
+    for(int i = 0; i < (int)str.size(); ++i) {
+        for(int j = 0; j < 26; ++j) {
+            if(freq[j] <= 0)
+                continue;
+            freq[j]--;
+            long long P = permute(freq);
+            if(P >= n) {
+                s += char(j+'a');
+                break;
+            }
+            else {
+                n -= P;
+                freq[j]++;
+            }
+        }
+    }
+    
+    return s;
+}
 
 
 int main() {
-    string s[] ={"aabbcc", "abcd", "aabcd"};
+    //freopen("in", "r", stdin);
+    //freopen("out", "w", stdout);
     
+    int t, n;
+    string s;
+    cin >> t;
     
-    for(int i = 0; i < 3; ++i) {
-        do {
-            cout << s[i] << endl;
-        }while(next_permutation(s[i].begin(), s[i].end()));
-        cout << endl;
+    for(int Case = 1; Case <= t; ++Case) {
+        cin >> s >> n;
+        s = NthPermutation(s, n);
+        cout << "Case " << Case << ": ";
+        if(s.empty())
+            cout << "Impossible\n";
+        else
+            cout << s << "\n";
     }
     
     return 0;
 }
-    
