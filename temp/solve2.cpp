@@ -40,4 +40,94 @@ typedef pair<ll, ll> pll;
 typedef vector<pair<int, int> > vii;
 typedef vector<pair<ll, ll> >vll;
 
+ll tree[150][150][150];
+int xMax = 150, yMax = 150, zMax = 150;
 
+void update(int x, int y, int z, ll val) {
+    int y1, z1;
+    while(x <= xMax) {
+        y1 = y;
+        while(y1 <= yMax) {
+            z1 = z;
+            while(z1 <= zMax) {
+                tree[x][y1][z1] += val;
+                z1 += (z1 & -z1);
+            }
+            y1 += (y1 & -y1);
+        }
+        x += (x & -x);
+    }
+}
+
+ll read(int x, int y, int z) {
+    ll sum = 0;
+    int y1, z1;
+    while(x > 0) {
+        y1 = y;
+        while(y1 > 0) {
+            z1 = z;
+            while(z1 > 0) {
+                sum += tree[x][y1][z1];
+                z1 -= (z1 & -z1);
+            }
+            y1 -= (y1 & -y1);
+        }
+        x -= (x & -x);
+    }
+    return sum;
+}
+
+
+ll readRange(int x1, int y1, int z1, int x2, int y2, int z2) {
+    --x1, --y1, --z1;
+    return  read(x2, y2, z2) 
+    - read(x1, y2, z2)
+    - read(x2, y1, z2)
+    - read(x2, y2, z1)
+    + read(x1, y1, z2) 
+    + read(x1, y2, z1) 
+    + read(x2, y1, z1)
+    - read(x1, y1, z1);
+}
+
+
+int main() {
+    //fileRead("in");
+    int t, x1, x2, y1, y2, z1, z2, n, q;
+    ll w;
+    sf("%d", &t);
+    char str[50];
+    stack<pair<pii, pair<int, ll> > >v;
+    //memset(tree, 0, sizeof tree);
+    while(t--) {
+        sf("%d %d", &n, &q);
+
+        while(q--) {
+            sf(" %s", str);
+            if(tolower(str[0]) == 'u') {
+                sf("%d %d %d %lld", &x1, &y1, &z1, &w);
+                ++x1, ++y1, ++z1;
+                update(x1, y1, z1, w);
+                v.push({{x1, y1}, {z1, w}});
+            }
+            else {
+                sf("%d%d%d%d%d%d", &x1, &y1, &z1, &x2, &y2, &z2);
+                ++x1, ++y1, ++z1, ++x2, ++y2, ++z2;
+                if(x1 > x2) {
+                    swap(x1, x2);
+                    swap(y1, y2);
+                    swap(z1, z2);
+                }
+                pf("%lld\n", readRange(x1, y1, z1, x2, y2, z2));
+            }
+        }
+        
+        if(t != 0) {
+            while(!v.empty()) {
+                update(v.top().fi.fi, v.top().fi.se, v.top().se.fi, -v.top().se.se);
+                v.pop();
+            }
+        }
+    }
+    return 0;
+}
