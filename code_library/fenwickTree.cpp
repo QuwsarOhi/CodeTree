@@ -166,12 +166,80 @@ void updateSquare(pii p1, pii p2, ll val) {     // p1 : lower left point, p2 : u
     update(p2.first+1, p2.second+1, val);
 }
 
-// Not Checked!
-ull readSquare(pii p1, pii p2) {                // p1 : lower left point, p2 : upper right point
-    ull ans = 0;
-    ans += read(p2.first, p2.second);
+
+ll readSquare(pii p1, pii p2) {                // p1 : lower left point, p2 : upper right point
+    ll ans = read(p2.first, p2.second);
     ans -= read(p1.first-1, p2.second);
     ans -= read(p2.first, p1.second-1);
     ans += read(p1.first-1, p1.second-1);
     return ans;
 }
+
+// // --------------------------- 3D Fenwick Tree -------------------------
+
+ll tree[105][105][105];
+ll xMax = 100, yMax = 100, zMax = 100;
+void update(int x, int y, int z, ll val) {
+    int y1, z1;
+    while(x <= xMax) {
+        y1 = y;
+        while(y1 <= yMax) {
+            z1 = z;
+            while(z1 <= zMax) {
+                tree[x][y1][z1] += val;
+                z1 += (z1 & -z1);
+            }
+            y1 += (y1 & -y1);
+        }
+        x += (x & -x);
+    }
+}
+ 
+ll read(int x, int y, int z) {
+    ll sum = 0;
+    int y1, z1;
+    while(x > 0) {
+        y1 = y;
+        while(y1 > 0) {
+            z1 = z;
+            while(z1 > 0) {
+                sum += tree[x][y1][z1];
+                z1 -= (z1 & -z1);
+            }
+            y1 -= (y1 & -y1);
+        }
+        x -= (x & -x);
+    }
+    return sum;
+}
+
+
+ll readRange(ll x1, ll y1, ll z1, ll x2, ll y2, ll z2) {
+    --x1, --y1, --z1;
+    return  read(x2, y2, z2) 
+    - read(x1, y2, z2)
+    - read(x2, y1, z2)
+    - read(x2, y2, z1)
+    + read(x1, y1, z2) 
+    + read(x1, y2, z1) 
+    + read(x2, y1, z1)
+    - read(x1, y1, z1);
+}
+
+// Not tested yet!!
+void updateRange(int x1, int y1, int z1, int x2, int y2, int z2) {
+    update(x1, y1, z1, val);
+    update(x2+1, y1, z1, -val);
+    update(x1, y2+1, z1, -val);
+    update(x1, y1, z2+1, -val);
+    update(x2+1, y2+1, z1, val);
+    update(x1, y2+1, z2+1, val);
+    update(x2+1, y1, z2+1, val);
+    update(x2+1, y2+1, z2+1, -val);
+}
+
+
+// Pattens to built BIT update read:
+// always starts with first(starting point), add val
+// take (1 to n) elements from ending point with all combination add it to staring point, add (-1)^n * val
+
