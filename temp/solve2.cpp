@@ -1,7 +1,3 @@
-// UVa
-// 10285 - Longest Run on a Snowboard
-// Longest Path on DAG
-
 #include <bits/stdc++.h>
 using namespace std;
 #define MAX                 100100
@@ -44,75 +40,4 @@ typedef pair<ll, ll> pll;
 typedef vector<pair<int, int> > vii;
 typedef vector<pair<ll, ll> >vll;
 
-vector<int>G[10010];
-int n, m, mat[105][105], dis[10010];
-int dr[] = {-1, 0, 0, 1}, dc[] = {0, -1, 1, 0};
 
-int dfs(int u) {
-    if(dis[u] != -1)
-        return dis[u];
-
-    int len = 0;
-    for(auto v : G[u]) {
-        //pf("%d -> %d\n", u, v);
-        len = max(dfs(v), len);
-    }
-    return dis[u] = len+1;
-}
-
-int toNode(int x, int y) {
-    return m*x + y;
-}
-
-void makeGraph(int x, int y) {
-    int h1 = mat[x][y];
-    for(int i = 0; i < 4; ++i) {
-        int _x = x + dr[i];
-        int _y = y + dc[i];
-        
-        if(_x < 0 || _y < 0 || _x >= n || _y >= m)
-            continue;
-        
-        if(mat[_x][_y] < h1) {
-            //pf("Connect %d - > %d\n(%d, %d) - > (%d, %d)\n%d %d\n", toNode(x, y), toNode(_x, _y), x, y, _x, _y, h1, mat[_x][_y]);
-            G[toNode(x, y)].pb(toNode(_x, _y));
-        }
-    }
-}
-
-int main() {
-    //fileRead("in");
-    //fileWrite("out");
-    
-    int t;
-    char str[200];
-    sf("%d", &t);   
-    
-    while(t--) {
-        sf(" %s %d %d", str, &n, &m);
-        for(int i = 0; i < n; ++i)
-            for(int j = 0; j < m; ++j)
-                sf("%d", &mat[i][j]);
-            
-        for(int i = 0; i < n; ++i)
-            for(int j = 0; j < m; ++j)
-                makeGraph(i, j);
-        
-        int totNode = n*m;
-                
-        int ans = 0;
-        memset(dis, -1, sizeof dis);
-        for(int i = 0; i < totNode; ++i)
-            if(dis[i] == -1) {
-                //pf("start %d\n", i);
-                ans = max(dfs(i), ans);
-            }
-        
-        pf("%s: %d\n", str, ans);
-        
-        for(int i = 0; i < totNode; ++i)
-            G[i].clear();
-    }
-    
-    return 0;
-}
