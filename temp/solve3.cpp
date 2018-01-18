@@ -1,10 +1,12 @@
+// UVa
+// 11957 - Checkers
 
 #include <bits/stdc++.h>
 using namespace std;
 #define MAX                 100100
 #define EPS                 1e-9
 #define INF                 1e7
-#define MOD                 1000003
+#define MOD                 1000007
 #define pb                  push_back
 #define mp                  make_pair
 #define fi                  first
@@ -42,3 +44,65 @@ typedef vector<pair<int, int> > vii;
 typedef vector<pair<ll, ll> >vll;
 
 
+int dr[] = {-1, -1}, dc[] = {1, -1}, n;
+char g[105][105];
+ll dp[105][105];
+
+ll dfs(int r, int c) {
+    if(r == 0)
+        return 1;
+    if(dp[r][c] != -1)
+        return dp[r][c];
+    
+    ll ans = 0;
+    for(int i = 0; i < 2; ++i) {
+        int _r = r+dr[i];
+        int _c = c+dc[i];
+        
+        if(_r < 0 || _c < 0 || _r >= n || _c >= n)
+            continue;
+        
+        if(g[_r][_c] == 'B')        // if Black occurs
+            _r += dr[i], _c += dc[i];
+        
+        if(_r < 0 || _c < 0 || _r >= n || _c >= n)
+            continue;
+        
+        if(g[_r][_c] == 'B')        // still another black
+            continue;
+        
+        //pf("%d %d - > %d %d\n", r, c, _r, _c);
+        ans += dfs(_r, _c);
+        ans %= MOD;
+    }
+    
+    return dp[r][c] = (ans%MOD);
+}
+        
+        
+        
+int main() {
+    //fileRead("in");
+    //fileWrite("out");
+    
+    int t, pX, pY;
+    sf("%d", &t);
+    
+    for(int Case = 1; Case <= t; ++Case) {
+        sf("%d", &n);
+        
+        for(int i = 0; i < n; ++i)
+            for(int j = 0; j < n; ++j) {
+                sf(" %c", &g[i][j]);
+                if(g[i][j] == 'W')
+                    pX = i, pY = j;
+            }
+        
+        memset(dp, -1, sizeof dp);
+        pf("Case %d: %lld\n", Case, dfs(pX, pY));
+    }
+    
+    return 0;
+}
+        
+    
