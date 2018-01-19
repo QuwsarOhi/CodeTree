@@ -115,7 +115,7 @@ int maxFlow(int s, int t) {
 
 int main() {
     fileRead("in");
-    fileWrite("out");
+    //fileWrite("out");
     
     int source = 0, dest = 37, totFlow = 0;
     string s1;
@@ -181,10 +181,10 @@ int main() {
             int v = toNode(s1[i]);
             //pf(" %d", v);
             edge[u].pb(v);
+            edge[v].pb(u);
             G[u][v] = 1;
         }
         //pf("\n");
-        
     }
     
     return 0;
