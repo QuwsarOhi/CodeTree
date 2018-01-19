@@ -1,3 +1,6 @@
+// UVa
+// 452 - Project Scheduling
+
 #include <bits/stdc++.h>
 using namespace std;
 #define MAX                 50
@@ -41,46 +44,79 @@ typedef pair<ll, ll> pll;
 typedef vector<pair<int, int> > vii;
 typedef vector<pair<ll, ll> >vll;
 
-int x, hr, Min;
+vi G[MAX], start;
+int dp[MAX], W[MAX];
 
-void minusX() {
-    Min -= x;
-    if(Min < 0) {
-        Min += 60;
-        hr--;
-        if(hr < 0) {
-            hr = 23;
-            //daypass++;
-        }
-    }
-}
+int dfs(int u) {
+    if(dp[u] != -1)
+        return dp[u];
+    
+    int ret = 0;
+    for(auto v : G[u])
+        ret = max(ret, dfs(v));
 
-bool checkLuck(int v) {
-    while(v > 0) {
-        int t = v%10;
-        if(t==7)
-            return 1;
-        v /=10;
-    }
-    return 0;
+    return dp[u] = ret+W[u];
 }
 
 int main() {
     //fileRead("in");
-    int cnt = 0;
-    cin >> x;
-    cin >> hr >> Min;
+    //fileWrite("out");
     
-    do {
-        if(checkLuck(hr) || checkLuck(Min)) {
-            cout << cnt << endl;
-            //cout << hr << " " << Min << endl;
-            break;
+    int t, in, w, v, V;
+    string str;
+    bool first = 1;
+    cin >> t;
+    getline(cin, str);
+    
+    while(t--) {
+        
+        str.clear();
+        
+        if(!first)
+            cout << "\n";
+        else
+            getline(cin, str);
+        first = 0;
+        
+        while(1) {                  // input loop
+            getline(cin, str);
+            if(str.empty())
+                break;
+            
+            stringstream ss(str);
+            in = V = 0;
+            
+            bool zeroIndegree = 1;
+            while(ss >> str) {
+                if(in == 0)
+                    v = str[0]-'A';
+                else if(in == 1) {
+                    w = stoi(str, nullptr);
+                    W[v] = w;
+                }
+                else {
+                    zeroIndegree = 0;
+                    for(auto u : str)
+                        G[u-'A'].pb(v);
+                }
+                ++in;
+            }
+            if(zeroIndegree)        // if indegree zero
+                start.pb(v);
+            ++V;
         }
-        ++cnt;
-        minusX();
-    }while(1);
-    //main();
+        
+        int ans = 0;
+        memset(dp, -1, sizeof dp);
+        
+        for(auto u : start)
+            ans = max(ans, dfs(u));
+        
+        cout << ans << "\n";
+        
+        for(int i = 0; i < MAX; ++i)
+            G[i].clear();
+        start.clear();
+    }
     return 0;
 }
-    

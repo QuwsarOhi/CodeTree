@@ -1,11 +1,8 @@
-// UVa
-// 988 - Many Paths, One Destination
-
 #include <bits/stdc++.h>
 using namespace std;
 #define MAX                 50
 #define EPS                 1e-9
-#define INF                 1e7
+#define INF                 1000000000
 #define MOD                 1000003
 #define pb                  push_back
 #define mp                  make_pair
@@ -43,51 +40,51 @@ typedef pair<ll, ll> pll;
 typedef vector<pair<int, int> > vii;
 typedef vector<pair<ll, ll> >vll;
 
+bitset<1100000>isPrime;
+vi primes, G[100010], W[100010];
+int S[100010];
 
-int dp[MAX];
-vi G[MAX];
-
-int dfs(int u) {
-    if(dp[u] != -1)
-        return dp[u];
-    
-    if(G[u].empty())
-        return 1;
-    
-    int ways = 0;
-    for(auto v : G[u])
-        ways += dfs(v);
-    
-    return dp[u] = ways;
+void sieveGen(unsigned long long N) {
+    isPrime.set();
+    //0 and 1 are not prime
+	isPrime[0] = isPrime[1] = 0;
+	for(unsigned long long i = 2; i <= N; i++) {
+		if(isPrime[i]) {
+			for(unsigned long long j = i*i; j <= N; j+= i)
+                isPrime[j] = 0;
+			primes.push_back(i);
+		}
+	}
 }
 
 
+int findPrime(ll sum) {
+    for(int p = 1; p <= 1e5; ++p)
+        if(isPrime[sum+p])
+            return p;
+    return -1;
+}
+
 int main() {
-    //fileRead("in");
-    //fileWrite("out");
+    sieveGen(1099990);
+    //cout << "DONE\n";
+    int n, m, w;
+    cin >> n >> m;
     
-    int V, v, n;
-    bool first = 1;
-    
-    while(sf("%d", &V) == 1) {
-        if(!first)
-            pf("\n");
-        first = 0;
-        
-        for(int u = 0; u < V; ++u) {
-            sf("%d", &n);
-            
-            while(n--) {
-                sf("%d", &v);
-                G[u].pb(v);
-            }
-        }
-        
-        memset(dp, -1, sizeof dp);
-        pf("%d\n", dfs(0));
-        
-        for(int u = 0; u < V; ++u)
-            G[u].clear();
+    for(int i = 1; i < n; ++i) {
+        if(i == n-1)
+            w = findPrime(n-2);
+        else
+            w = 1;
+        cout << i << " " << i+1 << " " << w << endl;
     }
+    
+    m -= (n-1);
+    //cout << m << endl;
+    
+    for(int i = 1; i <= n && m > 0; ++i)
+        for(int j = i+2; j <= n && m > 0; ++j, --m)
+            cout << i << " " << j << " " << INF << endl;
+    
     return 0;
 }

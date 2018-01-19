@@ -22,11 +22,13 @@ bool bfs(int s, int d) {                // augment path : source, destination
         for(auto v : edge[u])
             if(parent[v] == -1 && rG[u][v] > 0) {                
                 parent[v] = u;
+                if(v == d)
+                    return 1;
                 q.push(v);
             }
     }
     
-    return parent[d] != -1;
+    return 0;
 }
                 
 

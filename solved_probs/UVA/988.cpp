@@ -1,6 +1,9 @@
+// UVa
+// 988 - Many Paths, One Destination
+
 #include <bits/stdc++.h>
 using namespace std;
-#define MAX                 100100
+#define MAX                 50
 #define EPS                 1e-9
 #define INF                 1e7
 #define MOD                 1000003
@@ -41,3 +44,50 @@ typedef vector<pair<int, int> > vii;
 typedef vector<pair<ll, ll> >vll;
 
 
+int dp[MAX];
+vi G[MAX];
+
+int dfs(int u) {
+    if(dp[u] != -1)
+        return dp[u];
+    
+    if(G[u].empty())
+        return 1;
+    
+    int ways = 0;
+    for(auto v : G[u])
+        ways += dfs(v);
+    
+    return dp[u] = ways;
+}
+
+
+int main() {
+    //fileRead("in");
+    //fileWrite("out");
+    
+    int V, v, n;
+    bool first = 1;
+    
+    while(sf("%d", &V) == 1) {
+        if(!first)
+            pf("\n");
+        first = 0;
+        
+        for(int u = 0; u < V; ++u) {
+            sf("%d", &n);
+            
+            while(n--) {
+                sf("%d", &v);
+                G[u].pb(v);
+            }
+        }
+        
+        memset(dp, -1, sizeof dp);
+        pf("%d\n", dfs(0));
+        
+        for(int u = 0; u < V; ++u)
+            G[u].clear();
+    }
+    return 0;
+}
