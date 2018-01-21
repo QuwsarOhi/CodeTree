@@ -1,3 +1,8 @@
+// DirectedGraphCycle
+// http://codeforces.com/contest/915/problem/D
+// Cycle in Directed graph
+
+
 #include <bits/stdc++.h>
 using namespace std;
 #define MAX                 100100
@@ -41,3 +46,62 @@ typedef vector<pair<int, int> > vii;
 typedef vector<pair<ll, ll> >vll;
 
 
+// Dfs through every node, if there is more than 1 edge that causes cycle, Cycle will increase 
+// according to it (Dfs will check every cycle for a node in its DFS tree)
+//
+// If the node that causes cycle is visited again, we know that hoy many distinc cycle is possible (Previous calculation of Cycle has it),
+// so no traversing needed
+
+// We have to find if there exists only one Backedge (this backedge causes cycle)
+// to find backedge we need to dfs through every node and check if it is single backedge (As backedge from every startind dfs node might be different)
+
+vi G[550];
+int color[550], Cycle = 0;
+
+void dfs(int u) {
+    color[u] = 2;               // Mark as parent
+    for(auto v : G[u]) {
+        if(color[v] == 2)       // If any Parent found (BackEdge)
+            Cycle++;
+        else if(!color[v])
+            dfs(v);
+    }
+    
+    color[u] = 1;               // Visited
+}
+
+
+int main() {
+    //fileRead("in");
+    FastRead;
+    
+    int V, E, u, v;
+    cin >> V >> E;
+    
+    for(int i = 0; i < E; ++i) {
+        cin >> u >> v;
+        G[u].pb(v);         // u != v && {u, v} appears only once
+    }
+    
+    for(u = 1; u <= V; ++u) {
+        Cycle = 0;
+        memset(color, 0, sizeof color);
+        dfs(u);
+        
+        for(v = 1; v <= V && Cycle <= 1; ++v)
+            if(!color[v])
+                dfs(v);
+        
+        //cout << u << " " << Cycle << endl;
+        
+        if(Cycle <= 1) {
+            cout << "YES\n";
+            return 0;
+        }
+    }
+    
+    cout << "NO\n";
+    return 0;
+}
+    
+    

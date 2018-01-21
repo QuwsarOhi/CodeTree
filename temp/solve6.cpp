@@ -40,4 +40,28 @@ typedef pair<ll, ll> pll;
 typedef vector<pair<int, int> > vii;
 typedef vector<pair<ll, ll> >vll;
 
+int v[MAX];
 
+int main() {
+    int n, x;
+    cin >> n;
+    priority_queue<int>pq;
+    // even odd
+    
+    for(int i = 0; i < n; ++i) {
+        cin >> x;
+        v[x]++;
+        pq.push(x);
+    }
+    
+    while(!pq.empty()) {
+        if(v[pq.top()]%2) {
+            cout << "Conan\n";
+            return 0;
+        }
+        pq.pop();
+    }
+    
+    cout << "Agasa\n";
+    return 0;
+}
