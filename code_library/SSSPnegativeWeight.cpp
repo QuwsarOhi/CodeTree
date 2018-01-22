@@ -14,13 +14,13 @@ void bellmanFord()
     //set to -INF if max distance is needed
     for(int i = 0; i <= V; i++)
         dist[i] = INF;
-
+    
     //relax all edges V-1 times
     for(int i = 0; i < V-1; i++)
         for(int u = 0; u < V; u++)     //all the nodes
             for(int j = 0; j < (int)G[u].size(); j++) {
-                int v = G[u][i];
-                int w = W[u][i];
+                int v = G[u][j];
+                int w = W[u][j];
 
                 //relax edges
                 //set to max if max value needed
