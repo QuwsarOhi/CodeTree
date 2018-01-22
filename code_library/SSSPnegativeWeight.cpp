@@ -9,12 +9,12 @@ using namespace std;
 vector<int>G[MAX], W[MAX];
 int V, E, dist[MAX];
 
-void bellmanFord()
+void bellmanFord(int source)
 {
     //set to -INF if max distance is needed
     for(int i = 0; i <= V; i++)
         dist[i] = INF;
-    
+    dist[source] = 0;
     //relax all edges V-1 times
     for(int i = 0; i < V-1; i++)
         for(int u = 0; u < V; u++)     //all the nodes
