@@ -40,28 +40,112 @@ typedef pair<ll, ll> pll;
 typedef vector<pair<int, int> > vii;
 typedef vector<pair<ll, ll> >vll;
 
-int v[MAX];
+struct node {
+    int val, prop;
+    node() {
+        val = 0;
+        prop = -1;
+    }
+};
+
+node tree[1510000];
+queue<pair<pii, int> >query;
+vi point;
+
+void propagate(int pos, int l, int r) {
+    if(tree[pos].prop == -1 || l==r)
+        return;
+    
+    int mid = (l+r)>>1;
+    if(tree[pos].prop) {
+        tree[pos<<1].val = point[mid]-point[l]+1;
+        tree[pos<<1|1].val = point[r]-point[mid+1]+1;
+    }
+    else {
+        tree[pos<<1].val = 0;
+        tree[pos<<1|1].val = 0;
+    }
+    tree[pos<<1].prop = tree[pos<<1|1].prop = tree[pos].prop;
+    tree[pos].prop = -1;
+}
+
+void update(int pos, int l, int r, int lft, int rht, int flag) {
+    if(rht < point[l] || point[r] < lft)
+        return;
+    
+    propagate(pos, l, r);
+    
+    if(lft <= point[l] && point[r] <= rht) {
+        pf("update at %d - %d : ", point[l], point[r]);
+        if(flag)
+            tree[pos].val = point[r]-point[l]+1;
+        else
+            tree[pos].val = 0;
+        pf("%d\n", tree[pos].val);
+        if(l != r)
+            tree[pos].prop = flag;
+        return;
+    }
+    
+    int mid = (l+r)>>1;
+    update(pos<<1, l, mid, lft, rht, flag);
+    update(pos<<1|1, mid+1, r, lft, rht, flag);
+    
+    tree[pos].val = tree[pos<<1].val + tree[pos<<1|1].val;
+    
+    int midVal = point[mid+1]-point[mid]-1;
+    
+    /*if(flag && lft <= point[mid] && point[mid+1] <= rht) {
+        pf("added %d - %d : %d\n", point[mid], point[mid+1], midVal);
+        tree[pos].val += midVal;
+    }*/
+    
+    //else
+        //tree[pos].val -= midVal;
+        
+    //pf("%d - %d : %d\n%d - %d : %d\n", point[l], point[mid], tree[pos<<1].val, point[mid+1], point[r], tree[pos<<1|1].val);
+}
+    
+// |196303|--add middle--|216623 216800 227826|--add middle--|239938 253044 264861 268446 275412 280294 288435|
 
 int main() {
-    int n, x;
-    cin >> n;
-    priority_queue<int>pq;
-    // even odd
+    FastRead;
+    fileRead("in");
     
-    for(int i = 0; i < n; ++i) {
-        cin >> x;
-        v[x]++;
-        pq.push(x);
+    int n, q, l, r, k;
+    cin >> n >> q;
+    
+    point.pb(0);       // dummy
+    while(q--) {
+        cin >> l >> r >> k;
+        k = (k==1 ? 1:0);
+        query.push({{l, r}, k});
+        
+        point.pb(l);
+        point.pb(r);
+    }
+    //cout << "DONE" << endl;
+    
+    sort(point.begin()+1, point.end());
+    point.erase(unique(point.begin()+1, point.end()), point.end());
+    
+    for(auto it : point) {
+        cout << it << " ";
     }
     
-    while(!pq.empty()) {
-        if(v[pq.top()]%2) {
-            cout << "Conan\n";
-            return 0;
-        }
-        pq.pop();
+    cout << endl;
+    
+    //for(int i = 1; i < SIZE(point); ++i)
+    //    cout << point[i] << " ";
+    //cout << "DONE " << SIZE(point)-1<< endl;
+    
+    while(!query.empty()) {
+        l = query.front().fi.fi, r = query.front().fi.se, k = query.front().se;
+        query.pop();
+        
+        update(1, 1, SIZE(point)-1, l, r, k);
+        cout << n-tree[1].val << endl;
     }
     
-    cout << "Agasa\n";
     return 0;
 }
