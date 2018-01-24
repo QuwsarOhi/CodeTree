@@ -1,151 +1,139 @@
-#include <bits/stdc++.h>
+#include<stdio.h>
+#include<stdlib.h>
+#include<string.h>
+#include<iostream>
+#include<algorithm>
+#include<map>
+#define oo (1<<30)
 using namespace std;
-#define MAX                 100100
-#define EPS                 1e-9
-#define INF                 1e7
-#define MOD                 1000003
-#define pb                  push_back
-#define mp                  make_pair
-#define fi                  first
-#define se                  second
-#define pi                  acos(-1)
-#define sf                  scanf
-#define pf                  printf
-#define SIZE(a)             ((int)a.size())
-#define Equal(a, b)         (abs(a-b) < EPS)
-#define Greater(a, b)       (a >= (b+EPS))
-#define GreaterEqual(a, b)  (a > (b-EPS)) 
-#define fr(i, a, b)         for(register int i = (a); i < (int)(b); i++)
-#define FastRead            ios_base::sync_with_stdio(false); cin.tie(NULL);
-#define dbug(vari)          cerr << #vari << " = " << (vari) <<endl
-#define isOn(S, j)          (S & (1 << j))
-#define setBit(S, j)        (S |= (1 << j))
-#define clearBit(S, j)      (S &= ~(1 << j))
-#define toggleBit(S, j)     (S ^= (1 << j))
-#define lowBit(S)           (S & (-S))
-#define setAll(S, n)        (S = (1 << n) - 1)
-#define fileRead(S)         freopen(S, "r", stdin);
-#define fileWrite(S)        freopen(S, "w", stdout);
-#define Unique(X)           X.erase(unique(X.begin(), X.end()), X.end())
 
-typedef unsigned long long ull;
-typedef long long ll;
-typedef map<int, int> mii;
-typedef map<ll, ll>mll;
-typedef map<string, int> msi;
-typedef vector<int> vi;
-typedef vector<long long>vl;
-typedef pair<int, int> pii;
-typedef pair<ll, ll> pll;
-typedef vector<pair<int, int> > vii;
-typedef vector<pair<ll, ll> >vll;
 
-struct node {
-    int val, prop;
-    node() {
-        val = 0;
-        prop = -1;
-    }
+struct Node {
+	int sum;
+	Node *lch,*rch;
+	Node() {
+		lch=rch=NULL;
+		sum=0;
+	}
 };
 
-node tree[1510000];
-queue<pair<pii, int> >query;
-vi point;
-
-void propagate(int pos, int l, int r) {
-    if(tree[pos].prop == -1 || l==r)
-        return;
-    
-    int mid = (l+r)>>1;
-    if(tree[pos].prop) {
-        tree[pos<<1].val = point[mid]-point[l]+1;
-        tree[pos<<1|1].val = point[r]-point[mid+1]+1;
-    }
-    else {
-        tree[pos<<1].val = 0;
-        tree[pos<<1|1].val = 0;
-    }
-    tree[pos<<1].prop = tree[pos<<1|1].prop = tree[pos].prop;
-    tree[pos].prop = -1;
+inline Node *duplicate(Node *x) {
+	Node *ret=new Node();
+	if(x)
+	{
+		ret->sum=x->sum;
+		ret->lch=x->lch;
+		ret->rch=x->rch;
+	}
+	return ret;
 }
 
-void update(int pos, int l, int r, int lft, int rht, int flag) {
-    if(rht < point[l] || point[r] < lft)
-        return;
+#define getsum(x) (x?x->sum:0)
+#define update(x) x->sum=getsum(x->lch)+getsum(x->rch)
+
+void modify(Node *now,int l,int r,int p,int v) {
+	if(l==r) {
+		now->sum+=v;
+		return;
+	}
     
-    propagate(pos, l, r);
+	int mid=(l+r)>>1;
+	
+    if(p<=mid) {
+		now->lch=duplicate(now->lch);
+		modify(now->lch,l,mid,p,v);
+	}
+	else {
+		now->rch=duplicate(now->rch);
+		modify(now->rch,mid+1,r,p,v);
+	}
     
-    if(lft <= point[l] && point[r] <= rht) {
-        pf("update at %d - %d : ", point[l], point[r]);
-        if(flag)
-            tree[pos].val = point[r]-point[l]+1;
-        else
-            tree[pos].val = 0;
-        pf("%d\n", tree[pos].val);
-        if(l != r)
-            tree[pos].prop = flag;
-        return;
-    }
-    
-    int mid = (l+r)>>1;
-    update(pos<<1, l, mid, lft, rht, flag);
-    update(pos<<1|1, mid+1, r, lft, rht, flag);
-    
-    tree[pos].val = tree[pos<<1].val + tree[pos<<1|1].val;
-    
-    int midVal = point[mid+1]-point[mid]-1;
-    
-    /*if(flag && lft <= point[mid] && point[mid+1] <= rht) {
-        pf("added %d - %d : %d\n", point[mid], point[mid+1], midVal);
-        tree[pos].val += midVal;
-    }*/
-    
-    //else
-        //tree[pos].val -= midVal;
+	update(now);
+}
+
+int query(Node *now,int l,int r,int ql,int qr) {
+	if(!now||r<ql||l>qr)
+		return 0;
         
-    //pf("%d - %d : %d\n%d - %d : %d\n", point[l], point[mid], tree[pos<<1].val, point[mid+1], point[r], tree[pos<<1|1].val);
+	if(ql<=l&&r<=qr)
+		return now->sum;
+	
+    int mid=(l+r)>>1;
+	
+    return query(now->lch,l,mid,ql,qr)+query(now->rch,mid+1,r,ql,qr);
 }
-    
-// |196303|--add middle--|216623 216800 227826|--add middle--|239938 253044 264861 268446 275412 280294 288435|
+
+
+Node *value[101010],*ps[101010];
+char op[11];
+char name[20];
+map<string,int> id;
+int cnt=0;
+
+inline int getid(const char *s) {
+	if(id.count(s))
+		return id[s];
+	id[s]=++cnt;
+	return cnt;
+}
+
 
 int main() {
-    FastRead;
-    fileRead("in");
+    freopen("in", "r", stdin);
+	int q;
+	scanf("%d",&q);
     
-    int n, q, l, r, k;
-    cin >> n >> q;
     
-    point.pb(0);       // dummy
-    while(q--) {
-        cin >> l >> r >> k;
-        k = (k==1 ? 1:0);
-        query.push({{l, r}, k});
+    
+	for(int i=1;i<=q;i++) {
+		scanf("%s",op);
+		
+        if(op[0]=='u') {
+			int x;
+			scanf("%d",&x);
+			value[i]=duplicate(value[i-x-1]);
+			ps[i]=duplicate(ps[i-x-1]);
+			continue;
+		}
         
-        point.pb(l);
-        point.pb(r);
-    }
-    //cout << "DONE" << endl;
-    
-    sort(point.begin()+1, point.end());
-    point.erase(unique(point.begin()+1, point.end()), point.end());
-    
-    for(auto it : point) {
-        cout << it << " ";
-    }
-    
-    cout << endl;
-    
-    //for(int i = 1; i < SIZE(point); ++i)
-    //    cout << point[i] << " ";
-    //cout << "DONE " << SIZE(point)-1<< endl;
-    
-    while(!query.empty()) {
-        l = query.front().fi.fi, r = query.front().fi.se, k = query.front().se;
-        query.pop();
+		value[i]=duplicate(value[i-1]);
+		ps[i]=duplicate(ps[i-1]);
+		scanf("%s",name);
+		int nid=getid(name);
+		int origin=query(value[i],1,q,nid,nid);
+        printf("nid %d : origin %d\n", nid, origin);
+		
+        // ps : presistant segment tree
+        // value : unknown
         
-        update(1, 1, SIZE(point)-1, l, r, k);
-        cout << n-tree[1].val << endl;
-    }
-    
-    return 0;
+        if(op[0]=='s') {
+			int x;
+			scanf("%d",&x);
+			if(origin)                  // removing the priority from value 
+				modify(ps[i],0,oo,origin,-1);
+			
+            modify(ps[i],0,oo,x,1);     // adding the string in priority position
+            
+			modify(value[i],1,q,nid,x-origin);      // change in value, indx : nid, value x-origin
+            printf("added in value[%d] : pos %d : val : %d\n", i, nid, x-origin);
+			continue;
+		}
+        
+		else if(op[0]=='r') {
+			if(origin)
+				modify(ps[i],0,oo,origin,-1);
+			modify(value[i],1,q,nid,-origin);
+			continue;
+		}
+        
+		if(origin==0)
+			puts("-1");
+		
+        else {
+			printf("%d\n",query(ps[i],0,oo,0,origin-1));
+        }
+		
+        fflush(stdout);
+	}
+	return 0;
 }

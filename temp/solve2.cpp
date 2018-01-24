@@ -40,3 +40,32 @@ typedef pair<ll, ll> pll;
 typedef vector<pair<int, int> > vii;
 typedef vector<pair<ll, ll> >vll;
 
+
+bitset<20>used;
+int v[] = {1, 2, 3, 4};
+int n = sizeof(v)/sizeof(v[0]);
+
+
+// how would we generate all possible combination (not permutation) in pen & paper?
+
+void allCombination(int pos) {
+    if(used.count() > 0) {                  // print combination
+        for(int i = 0; i < n; ++i)
+            if(used[i])                     // if in this combination the i'th value is taken
+                cout << v[i] << " ";
+        cout << "\n";
+    }
+    
+    for(int i = pos; i < n; ++i)            // take and go next
+        if(!used[i]) {                      // if not taken
+            used[i] = 1;                    // take it
+            allCombination(i+1);            // go to the next state
+            used[i] = 0;                    // again leave it
+        }
+}
+
+int main() {
+    used.reset();
+    allCombination(0);
+    return 0;
+}

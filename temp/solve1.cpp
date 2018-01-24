@@ -41,3 +41,40 @@ typedef pair<ll, ll> pll;
 typedef vector<pair<int, int> > vii;
 typedef vector<pair<ll, ll> >vll;
 
+
+int main() {
+    ll n, k, cnt = 0;
+    
+    cin >> n >> k;
+    priority_queue<int>pq;
+    
+    for(int i = 63; i >= 0; --i)
+        if(n & (1LL << i)) {
+            pq.push(i);
+            ++cnt;
+        }
+        
+    if(cnt > k) {
+        cout << "No\n";
+        return 0;
+    }
+    
+    
+    while(cnt < k) {
+        int t = pq.top();
+        pq.pop();
+        pq.push(t-1);
+        pq.push(t-1);
+        ++cnt;
+    }
+    
+    cout << "Yes\n";
+    
+    do {
+        cout << pq.top();
+        pq.pop();
+    }while(!pq.empty() && (cout << " "));
+    cout << "\n";
+    
+    return 0;
+}
