@@ -1,19 +1,5 @@
-!
-BBB____A__
-!
-BB______AA
-!
-AA________
-_BA_______
-_AA__A____
-CAADCCCDBC
-!
-!
-A_________
-ABA_D___C_
-_A____AA__
-!
-A_____B___
-A__B______
-!
-AAAAB__C_C
+redirect 138.197.64.57; #server
+block 8.8.8.8; #google
+cf 212.193.33.27; #codeforces
+unblock 8.8.8.8; #google
+check 138.197.64.57; #server

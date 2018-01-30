@@ -164,7 +164,7 @@ int main() {
             ll day;
             cin >> day;
             
-            exist[i] = nCopy(exist[i-day-1]);
+            exist[i] = nCopy(exist[i-day-1]);               // note: creating a new copy of pointer, not assigning to pointer
             presis[i] = nCopy(presis[i-day-1]);
             continue;
         }
@@ -184,7 +184,7 @@ int main() {
             if(pastPrio)                                              // exists
                 update(presis[i], 0, lim, pastPrio, -1);              // remove presis past value
             
-            update(exist[i], 1, q, id, prio-pastPrio);     //  re-assign new priority in exist
+            update(exist[i], 1, q, id, prio-pastPrio);          //  re-assign new priority in exist
             update(presis[i], 0, lim, prio, 1);                 // update in presis 
         }
         

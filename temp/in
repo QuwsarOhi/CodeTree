@@ -1,11 +1,5 @@
-10
-remove zldrn
-set fao 119602000
-remove iapyj
-set iapyj 593479446
-set fao 165144523
-set zldrn 647531329
-query zldrn
-set iapyj 551036304
-undo 0
-query fao
+7 3
+1 5 2 6 3 7 4
+2 5 3
+4 4 1
+1 7 3

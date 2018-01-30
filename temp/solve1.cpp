@@ -1,3 +1,8 @@
+// SPOJ
+// MKTHNUM - K-th Number
+// Presistant Segment Tree
+
+
 #include <bits/stdc++.h>
 using namespace std;
 #define MAX                 50
@@ -41,40 +46,116 @@ typedef pair<ll, ll> pll;
 typedef vector<pair<int, int> > vii;
 typedef vector<pair<ll, ll> >vll;
 
+struct node {
+    int val;
+    node *lft, *rht;
+    
+    node(node *l = NULL, node *r = NULL, int v = 0) {
+        lft = l;
+        rht = r;
+        val = v;
+    }
+};
+
+map<ll, ll>Map, RMap;
+ll val[110000];
+node *presis[100000];
+
+
+node *nCopy(node *x) {                  // initialize if value doesn't exist
+    node *tmp = new node();
+    if(x) {
+        tmp->val = x->val;
+        tmp->lft = x->lft;
+        tmp->rht = x->rht;
+    }
+    return tmp;
+}
+
+void nINIT(node *x) {
+    x = nCopy(x);
+}
+
+void update(node *pos, int l, int r, int idx) {
+    if(l == r) {
+        pos->val += 1;
+        return;
+    }
+    
+    int mid = (l+r)>>1;
+    
+    if(idx <= mid) {
+        pos->lft = nCopy(pos->lft);
+        update(pos->lft, l, mid, idx);
+    }
+    else {
+        pos->rht = nCopy(pos->rht);
+        update(pos->rht, mid+1, r, idx);
+    }
+    
+    pos->val = 0;
+    if(pos->lft != NULL)
+        pos->val += pos->lft->val;
+    if(pos->rht != NULL)
+        pos->val += pos->rht->val;
+}
+
+
+int query(node *RMax, node *LMax, int l, int r, int k) {
+    if(l == r)
+        return l;
+        
+    RMax->lft = nCopy(RMax->lft);
+    LMax->lft = nCopy(LMax->lft);
+    RMax->rht = nCopy(RMax->rht);
+    LMax->rht = nCopy(LMax->rht);
+    
+    // for each range [l, r] we will ignore every [1, l-1] range numbers
+    
+    int Count = RMax->lft->val - LMax->lft->val; 
+    int mid = (l+r)>>1;
+    
+    // if there exists more than or equal to k values in left range, then we'll find kth number in left segment
+    
+    if(Count >= k)
+        return query(RMax->lft, LMax->lft, l, mid, k);
+    else
+        return query(RMax->rht, LMax->rht, mid+1, r, k-Count);
+}
+
 
 int main() {
-    ll n, k, cnt = 0;
+    //fileRead("in");
+    int n, m, l, r, k, pos;
     
-    cin >> n >> k;
-    priority_queue<int>pq;
+    sf("%d %d", &n, &m);
     
-    for(int i = 63; i >= 0; --i)
-        if(n & (1LL << i)) {
-            pq.push(i);
-            ++cnt;
-        }
-        
-    if(cnt > k) {
-        cout << "No\n";
-        return 0;
+    for(int i = 1; i <= n; ++i) {
+        sf("%lld", &val[i]);
+        Map[val[i]];
     }
     
-    
-    while(cnt < k) {
-        int t = pq.top();
-        pq.pop();
-        pq.push(t-1);
-        pq.push(t-1);
-        ++cnt;
+    int idx = 0;
+    for(auto it = Map.begin(); it != Map.end(); ++it) {         // Assigning value to it's sorted index
+        it->second = ++idx;
+        RMap[idx] = it->first;
     }
     
-    cout << "Yes\n";
+    for(int i = 1; i <= n; ++i) {
+        presis[i] = nCopy(presis[i-1]);
+        update(presis[i], 1, idx, Map[val[i]]);
+    }
     
-    do {
-        cout << pq.top();
-        pq.pop();
-    }while(!pq.empty() && (cout << " "));
-    cout << "\n";
+    node *dummy = new node();
+    
+    while(m--) {
+        sf("%d %d %d", &l, &r, &k);
+        if(l == 1)
+            pos = query(presis[r], dummy, 1, idx, k);
+        else
+            pos = query(presis[r], presis[l-1], 1, idx, k);
+        pf("%lld\n", RMap[pos]);
+    }
     
     return 0;
 }
