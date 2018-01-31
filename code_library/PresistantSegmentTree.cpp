@@ -1,6 +1,9 @@
+// Presistant/Dynamic Segment Tree
+// Pointer Version
+
 #include <bits/stdc++.h>
 using namespace std;
-#define MAX                 50
+#define MAX                 500000
 #define EPS                 1e-9
 #define INF                 1e7
 #define MOD                 1000003
@@ -18,7 +21,6 @@ using namespace std;
 #define fr(i, a, b)         for(register int i = (a); i < (int)(b); i++)
 #define FastRead            ios_base::sync_with_stdio(false); cin.tie(NULL);
 #define dbug(vari)          cerr << #vari << " = " << (vari) <<endl
-#define StrToInt(STR)       stoi(STR, nullptr)
 #define isOn(S, j)          (S & (1 << j))
 #define setBit(S, j)        (S |= (1 << j))
 #define clearBit(S, j)      (S &= ~(1 << j))
@@ -43,44 +45,66 @@ typedef vector<pair<ll, ll> >vll;
 
 
 struct node {
-    int val;
+    ll val;
     node *lft, *rht;
+    
     node(node *L = NULL, node *R = NULL, ll v = 0) {
+        lft = L;
+        rht = R;
         val = v;
-        L = lft;
-        R = rht;
     }
 };
 
+node *presis[101000];
 
 node *nCopy(node *x) {
     node *tmp = new node();
     if(x) {
+        tmp->val = x->val;
         tmp->lft = x->lft;
         tmp->rht = x->rht;
-        tmp->val = x->val;
     }
     return tmp;
 }
 
-void nINIT(node *x) {
-    x = nCopy(x);
-}
 
-void update(node *pos, int l, int r, int idx, int val) {
+// NOT tested
+void init(node *pos, ll l, ll r) {
     if(l == r) {
-        pos->val += 1;
+        pos->val = v[l];
         return;
     }
     
-    int mid = (l+r)>>1;
+    ll mid = (l+r)>>1;
+    
+    pos->lft = nCopy(pos->lft);
+    pos->rht = nCopy(pos->rht);
+    
+    init(pos->lft, l, mid);
+    init(pos->rht, mid+1, r);
+    
+    pos->val = 0;
+    if(pos->lft)
+        pos->val += pos->lft->val;
+    if(pos->rht)
+        pos->val += pos->rht->val;
+}
+
+// Single Position update
+void update(node *pos, ll l, ll r, ll idx, ll val) {
+    if(l == r) {
+        pos->val += val;
+        return;
+    }
+    
+    ll mid = (l+r)/1;
     
     if(idx <= mid) {
-        nINIT(pos->lft);
+        pos->lft = nCopy(pos->lft);
         update(pos->lft, l, mid, idx, val);
     }
     else {
-        nINIT(pos->rht);
+        pos->rht = nCopy(pos->rht);
         update(pos->rht, mid+1, r, idx, val);
     }
     
@@ -91,41 +115,50 @@ void update(node *pos, int l, int r, int idx, int val) {
         pos->val += pos->rht->val;
 }
 
+// Range [L, R] Sum Query
+ll query(node *pos, ll l, ll r, ll L, ll R) {
+    if(r < L || R < l || pos == NULL)
+        return 0;
+    
+    if(L <= l && r <= R)
+        return pos->val;
+    
+    ll mid = (l+r)/2LL;
+    
+    ll x = query(pos->lft, l, mid, L, R);
+    ll y = query(pos->rht, mid+1, r, L, R);
 
-int query(node *lca0, node *lca, node *u, node *v, int l, int r, int k) {
+    return x+y;
+}
+
+
+// Ignore LMax presistant tree positions query for finding k'th value
+int query(node *RMax, node *LMax, int l, int r, int k) {                         // (LMax : past, RMax : updated)
     if(l == r)
         return l;
+        
+    RMax->lft = nCopy(RMax->lft);
+    LMax->lft = nCopy(LMax->lft);
+    RMax->rht = nCopy(RMax->rht);
+    LMax->rht = nCopy(LMax->rht);
     
-    nINIT(lca0);
-    nINIT(lca);
-    nINIT(u);
-    nINIT(v);
+    // for each range [l, r] we will ignore every [1, l-1] range numbers
     
+    int Count = RMax->lft->val - LMax->lft->val; 
     int mid = (l+r)>>1;
-    int Count = u->lft->val + v->lft->val - lca->lft->val - lca0->lft->val;
     
-    if(Count <= k)
-        return query(lca0->lft, lca->lft, u->lft, v->lft, l, mid, k);
+    // if there exists more than or equal to k values in left range, then we'll find kth number in left segment
+    if(Count >= k)
+        return query(RMax->lft, LMax->lft, l, mid, k);
     else
-        return query(lca0->rht, lca->rht, u->rht, v->rht, mid+1, r, k);
+        return query(RMax->rht, LMax->rht, mid+1, r, k-Count);
 }
 
-
-void dfs(int u, int prnt, int lvl) {
-    // For Sparce Table
-    level[u] = lvl;
-    parent[u] = prnt;
-    
-    // Segment Tree
-    update(presis[prnt], 1, V, Map[val[u]], 1);
-    
-    for(auto v : G[u])
-        if(parent[u][0] != v)
-            dfs(v, u, lvl+1);
-}
-
-
-void LCAinit() {
-    
-}
-
+int main() {
+    // DEMO
+    for(int i = 1; i <= 10; ++i) {
+        presis[i] = nCopy(presis[i-1]);
+        update(presis[i], 1, n, idx, val);
+    }
+     return 0;
+ }

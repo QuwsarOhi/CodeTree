@@ -1,3 +1,8 @@
+// SPOJ
+// MKTHNUM - K-th Number
+// Presistant Segment Tree
+
+
 #include <bits/stdc++.h>
 using namespace std;
 #define MAX                 50
@@ -41,24 +46,28 @@ typedef pair<ll, ll> pll;
 typedef vector<pair<int, int> > vii;
 typedef vector<pair<ll, ll> >vll;
 
-
 struct node {
     int val;
     node *lft, *rht;
-    node(node *L = NULL, node *R = NULL, ll v = 0) {
+    
+    node(node *l = NULL, node *r = NULL, int v = 0) {
+        lft = l;
+        rht = r;
         val = v;
-        L = lft;
-        R = rht;
     }
 };
 
+map<ll, ll>Map, RMap;
+ll val[110000];
+node *presis[100000];
 
-node *nCopy(node *x) {
+
+node *nCopy(node *x) {                  // initialize if value doesn't exist
     node *tmp = new node();
     if(x) {
+        tmp->val = x->val;
         tmp->lft = x->lft;
         tmp->rht = x->rht;
-        tmp->val = x->val;
     }
     return tmp;
 }
@@ -67,7 +76,7 @@ void nINIT(node *x) {
     x = nCopy(x);
 }
 
-void update(node *pos, int l, int r, int idx, int val) {
+void update(node *pos, int l, int r, int idx) {
     if(l == r) {
         pos->val += 1;
         return;
@@ -76,56 +85,77 @@ void update(node *pos, int l, int r, int idx, int val) {
     int mid = (l+r)>>1;
     
     if(idx <= mid) {
-        nINIT(pos->lft);
-        update(pos->lft, l, mid, idx, val);
+        pos->lft = nCopy(pos->lft);
+        update(pos->lft, l, mid, idx);
     }
     else {
-        nINIT(pos->rht);
-        update(pos->rht, mid+1, r, idx, val);
+        pos->rht = nCopy(pos->rht);
+        update(pos->rht, mid+1, r, idx);
     }
     
     pos->val = 0;
-    if(pos->lft)
+    if(pos->lft != NULL)
         pos->val += pos->lft->val;
-    if(pos->rht)
+    if(pos->rht != NULL)
         pos->val += pos->rht->val;
 }
 
 
-int query(node *lca0, node *lca, node *u, node *v, int l, int r, int k) {
+int query(node *RMax, node *LMax, int l, int r, int k) {
     if(l == r)
         return l;
+        
+    RMax->lft = nCopy(RMax->lft);
+    LMax->lft = nCopy(LMax->lft);
+    RMax->rht = nCopy(RMax->rht);
+    LMax->rht = nCopy(LMax->rht);
     
-    nINIT(lca0);
-    nINIT(lca);
-    nINIT(u);
-    nINIT(v);
+    // for each range [l, r] we will ignore every [1, l-1] range numbers
     
+    int Count = RMax->lft->val - LMax->lft->val; 
     int mid = (l+r)>>1;
-    int Count = u->lft->val + v->lft->val - lca->lft->val - lca0->lft->val;
     
-    if(Count <= k)
-        return query(lca0->lft, lca->lft, u->lft, v->lft, l, mid, k);
+    // if there exists more than or equal to k values in left range, then we'll find kth number in left segment
+    
+    if(Count >= k)
+        return query(RMax->lft, LMax->lft, l, mid, k);
     else
-        return query(lca0->rht, lca->rht, u->rht, v->rht, mid+1, r, k);
+        return query(RMax->rht, LMax->rht, mid+1, r, k-Count);
 }
 
 
-void dfs(int u, int prnt, int lvl) {
-    // For Sparce Table
-    level[u] = lvl;
-    parent[u] = prnt;
+int main() {
+    //fileRead("in");
+    int n, m, l, r, k, pos;
     
-    // Segment Tree
-    update(presis[prnt], 1, V, Map[val[u]], 1);
+    sf("%d %d", &n, &m);
     
-    for(auto v : G[u])
-        if(parent[u][0] != v)
-            dfs(v, u, lvl+1);
+    for(int i = 1; i <= n; ++i) {
+        sf("%lld", &val[i]);
+        Map[val[i]];
+    }
+    
+    int idx = 0;
+    for(auto it = Map.begin(); it != Map.end(); ++it) {         // Assigning value to it's sorted index
+        it->second = ++idx;
+        RMap[idx] = it->first;
+    }
+    
+    for(int i = 1; i <= n; ++i) {
+        presis[i] = nCopy(presis[i-1]);
+        update(presis[i], 1, idx, Map[val[i]]);
+    }
+    
+    node *dummy = new node();
+    
+    while(m--) {
+        sf("%d %d %d", &l, &r, &k);
+        if(l == 1)
+            pos = query(presis[r], dummy, 1, idx, k);
+        else
+            pos = query(presis[r], presis[l-1], 1, idx, k);
+        pf("%lld\n", RMap[pos]);
+    }
+    
+    return 0;
 }
-
-
-void LCAinit() {
-    
-}
-
