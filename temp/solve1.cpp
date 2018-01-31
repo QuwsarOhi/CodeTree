@@ -1,6 +1,6 @@
 #include <bits/stdc++.h>
 using namespace std;
-#define MAX                 50
+#define MAX                 200000
 #define EPS                 1e-9
 #define INF                 1e7
 #define MOD                 1000003
@@ -111,10 +111,10 @@ int query(node *lca0, node *lca, node *u, node *v, int l, int r, int k) {
     int mid = (l+r)>>1;
     int Count = u->lft->val + v->lft->val - lca->lft->val - lca0->lft->val;
     
-    if(Count <= k)
+    if(Count >= k)
         return query(lca0->lft, lca->lft, u->lft, v->lft, l, mid, k);
     else
-        return query(lca0->rht, lca->rht, u->rht, v->rht, mid+1, r, k);
+        return query(lca0->rht, lca->rht, u->rht, v->rht, mid+1, r, k-Count);
 }
 
 
@@ -173,7 +173,7 @@ int LCA(int u, int v) {
 
 
 int main() {
-    fileRead("in");
+    //fileRead("in");
     //fileWrite("out");
     
     int V, u, v, q, ans, k, LCAnode;
@@ -192,6 +192,10 @@ int main() {
         ReMap[idx] = it->first;
     }
     
+    //for(auto it : Map) {
+    //    cout << it.fi << " " << it.se << endl;
+    //}
+    
     // Tree Input
     for(int i = 1; i < V; ++i) {
         cin >> u >> v;
@@ -199,13 +203,13 @@ int main() {
         G[v].pb(u);
     }
     
-    cout << "INPUT DONE\n";
+    //cout << "INPUT DONE\n";
     // SegTree + LCA
     presis[1] = nCopy(presis[1]);
     dfs(1, -1, 0, V);
-    cout << "DFS done\n";
+    //cout << "DFS done\n";
     LCAinit(V);
-    cout << "PROCESS OK\n";
+    //cout << "PROCESS OK\n";
     
     node *dummy = new node();
     node *lca, *lca0;
@@ -218,7 +222,7 @@ int main() {
         lca = presis[LCAnode];
         
         lca0 = sparse[LCAnode][0] == -1 ? dummy:presis[sparse[LCAnode][0]];
-        pf("LCA : %d LCA0 : %d : %d %d %d\n", LCAnode, sparse[LCAnode][0], u, v, k);
+        //pf("LCA : %d LCA0 : %d : %d %d %d\n", LCAnode, sparse[LCAnode][0], u, v, k);
         ans = query(lca0, lca, presis[u], presis[v], 1, idx, k);
         cout << ReMap[ans] << "\n";
     }
