@@ -41,3 +41,31 @@ typedef vector<pair<int, int> > vii;
 typedef vector<pair<ll, ll> >vll;
 
 
+int main() {
+    vector<pair<double, pii> >v;
+    int n, m, a, b, cnt = 0, taken = 0;
+    
+    
+    cin >> n >> m;
+    
+    double ans = 0;
+    fr(i, 0, n) {
+        cin >> a >> b;
+        v.pb({{a/double(b)}, {a, b}});
+        ans += a/double(b);
+    }
+    
+    
+    cout << ans << endl;
+    sort(v.begin(), v.end());
+    
+    ans = 0;
+    for(int i = 0; i < SIZE(v); ++i) {
+        if()
+    
+    cout << ans << endl;
+    cout << ans/m << endl;
+
+    
+    return 0;
+}

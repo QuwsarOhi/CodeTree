@@ -52,6 +52,11 @@ struct node {
     }
 };
 
+node *presis[MAX];
+vi G[MAX];
+int parent[MAX], sparse[MAX][20], level[MAX], val[MAX];
+map<ll, ll>Map, ReMap;
+
 
 node *nCopy(node *x) {
     node *tmp = new node();
@@ -63,24 +68,22 @@ node *nCopy(node *x) {
     return tmp;
 }
 
-void nINIT(node *x) {
-    x = nCopy(x);
-}
-
 void update(node *pos, int l, int r, int idx, int val) {
     if(l == r) {
-        pos->val += 1;
+        //pf("DONE %d\n", l);
+        pos->val = 1;
         return;
     }
     
+    //pf("%d ********* %d :: %d\n", l, r, idx);
     int mid = (l+r)>>1;
     
     if(idx <= mid) {
-        nINIT(pos->lft);
+        pos->lft = nCopy(pos->lft);
         update(pos->lft, l, mid, idx, val);
     }
     else {
-        nINIT(pos->rht);
+        pos->rht = nCopy(pos->rht);
         update(pos->rht, mid+1, r, idx, val);
     }
     
@@ -96,10 +99,14 @@ int query(node *lca0, node *lca, node *u, node *v, int l, int r, int k) {
     if(l == r)
         return l;
     
-    nINIT(lca0);
-    nINIT(lca);
-    nINIT(u);
-    nINIT(v);
+    lca0->lft = nCopy(lca0->lft);
+    lca0->rht = nCopy(lca0->rht);
+    lca->lft = nCopy(lca->lft);
+    lca->rht = nCopy(lca->rht);
+    u->lft = nCopy(u->lft);
+    u->rht = nCopy(u->rht);
+    v->lft = nCopy(v->lft);
+    v->rht = nCopy(v->rht);
     
     int mid = (l+r)>>1;
     int Count = u->lft->val + v->lft->val - lca->lft->val - lca0->lft->val;
@@ -111,21 +118,112 @@ int query(node *lca0, node *lca, node *u, node *v, int l, int r, int k) {
 }
 
 
-void dfs(int u, int prnt, int lvl) {
-    // For Sparce Table
+void dfs(int u, int prnt, int lvl, int V) {
+    // For Sparse Table
     level[u] = lvl;
     parent[u] = prnt;
     
     // Segment Tree
-    update(presis[prnt], 1, V, Map[val[u]], 1);
+    if(prnt != -1)
+        presis[u] = nCopy(presis[prnt]);
+    update(presis[u], 1, V, Map[val[u]], 1);
     
     for(auto v : G[u])
-        if(parent[u][0] != v)
-            dfs(v, u, lvl+1);
+        if(parent[u] != v)
+            dfs(v, u, lvl+1, V);
 }
 
 
-void LCAinit() {
+void LCAinit(int V) {
+    memset(sparse, -1, sizeof sparse);
     
+    for(int u = 0; u <= V; ++u)             // node u's 2^0 parent
+        sparse[u][0] = parent[u];
+    
+    int v;
+    for(int p = 1; (1<<p) <= V; ++p)
+        for(int u = 1; u <= V; ++u)
+            if((v = sparse[u][p-1]) != -1)      // node u's 2^x parent = parent of node v's 2^(x-1) [ where node v : (node u's 2^(x-1) parent) ]
+                sparse[u][p] = sparse[v][p-1];
 }
 
+
+int LCA(int u, int v) {
+    if(level[u] < level[v])     // v is deeper
+        swap(u, v);
+    
+    int p = ceil(log2(level[v]));
+    
+    // Pull up v to same level as u
+    for(int i = p ; i >= 0; --i)
+        if(level[v] - (1LL<<i) >= level[u])
+            v = sparse[v][i];
+    
+    // if u WAS the parent
+    if(u == v)
+        return u;
+    
+    // Pull up u and v together while LCA not found
+    for(int i = p; i >= 0; --i)
+        if(sparse[v][i] != -1 && sparse[u][i] != sparse[v][i])      // -1 check is for being on safe side
+            u = sparse[u][i], v = sparse[v][i];
+    
+    return parent[u];
+}
+
+
+int main() {
+    fileRead("in");
+    //fileWrite("out");
+    
+    int V, u, v, q, ans, k, LCAnode;
+    
+    cin >> V >> q;
+    
+    for(int i = 1; i <= V; ++i) {
+        cin >> val[i];
+        Map[val[i]];
+    }
+    
+    // Compression
+    int idx = 0;
+    for(auto it = Map.begin(); it != Map.end(); ++it) {
+        it->second = ++idx;
+        ReMap[idx] = it->first;
+    }
+    
+    // Tree Input
+    for(int i = 1; i < V; ++i) {
+        cin >> u >> v;
+        G[u].pb(v);
+        G[v].pb(u);
+    }
+    
+    cout << "INPUT DONE\n";
+    // SegTree + LCA
+    presis[1] = nCopy(presis[1]);
+    dfs(1, -1, 0, V);
+    cout << "DFS done\n";
+    LCAinit(V);
+    cout << "PROCESS OK\n";
+    
+    node *dummy = new node();
+    node *lca, *lca0;
+    
+    //return 0;
+    
+    while(q--) {
+        cin >> u >> v >> k;
+        LCAnode = LCA(u, v);
+        lca = presis[LCAnode];
+        
+        lca0 = sparse[LCAnode][0] == -1 ? dummy:presis[sparse[LCAnode][0]];
+        pf("LCA : %d LCA0 : %d : %d %d %d\n", LCAnode, sparse[LCAnode][0], u, v, k);
+        ans = query(lca0, lca, presis[u], presis[v], 1, idx, k);
+        cout << ReMap[ans] << "\n";
+    }
+    
+    return 0;
+}
+    
+        

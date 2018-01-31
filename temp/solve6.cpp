@@ -40,4 +40,67 @@ typedef pair<ll, ll> pll;
 typedef vector<pair<int, int> > vii;
 typedef vector<pair<ll, ll> >vll;
 
+char mat[2100][2100];
 
+ll rowWise(int n, int m, int k) {
+    //if(m < k)
+      //  return 0;
+        
+    ll cnt = 0, ret = 0;
+    
+    fr(r, 0, n) {
+        cnt = 0;
+        fr(c, 0, m) {
+            if(mat[r][c] == '*')
+                cnt = 0;
+            else
+                ++cnt;
+            if(cnt >= k)
+                ++ret;
+        }
+    }
+    
+    return ret;
+}
+
+
+ll colWise(int n, int m, int k) {
+    //if(n < k)
+      //  return 0;
+    
+    ll cnt = 0, ret = 0;
+    
+    fr(c, 0, m) {
+        cnt = 0;
+        fr(r, 0, n) {
+            if(mat[r][c] == '*')
+                cnt = 0;
+            else
+                ++cnt;
+            if(cnt >= k)
+                ++ret;
+        }
+    }
+        
+    return ret;
+}
+                
+
+int main() {
+    //fileRead("in");
+    int n, m, k;
+    int cnt = 0;
+    cin >> n >> m >> k;
+    
+    fr(i, 0, n)
+        fr(j, 0, m) {
+            sf(" %c", &mat[i][j]);
+            if(mat[i][j] == '.')
+                ++cnt;
+        }
+    if(k == 1) {
+        pf("%d\n", cnt);
+        return 0;
+    }
+    pf("%lld\n", rowWise(n, m, k)+colWise(n, m, k));
+}

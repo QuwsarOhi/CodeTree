@@ -42,3 +42,11 @@ typedef vector<pair<ll, ll> >vll;
 
 
 
+int main() {
+    fileWrite("in");
+    cout << 2000 << " " << 2000 << " " << 2 << "\n";
+    for(int i = 0; i < 2000; ++i, cout << "\n")
+        for(int j = 0; j < 2000; ++j)
+            cout << ".";
+    return 0;
+}

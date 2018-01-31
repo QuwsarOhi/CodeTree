@@ -42,3 +42,28 @@ typedef vector<pair<int, int> > vii;
 typedef vector<pair<ll, ll> >vll;
 
 
+int main() {
+    vl v;
+    int cnt = 0, k;
+    cin >> k;
+    for(ll i = 1; cnt != k; ++i) {
+        ll x = i, sum = 0;
+        //cout << i << endl;
+        while(x) {
+            sum += x%10;
+            if(sum > 10)
+                break;
+            x /= 10;
+        }
+        
+        //cout << i << " " << sum << endl;
+        if(sum == 10) {
+            v.pb(i);
+            cnt++;
+        }
+    }
+    
+    
+    cout << v[k-1] << endl;
+    return 0;
+}

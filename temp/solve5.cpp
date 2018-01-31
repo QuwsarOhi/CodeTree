@@ -1,6 +1,6 @@
 #include <bits/stdc++.h>
 using namespace std;
-#define MAX                 501000
+#define MAX                 300100
 #define EPS                 1e-9
 #define INF                 1e7
 #define MOD                 1000003
@@ -40,5 +40,75 @@ typedef pair<ll, ll> pll;
 typedef vector<pair<int, int> > vii;
 typedef vector<pair<ll, ll> >vll;
 
+int color[MAX], dp[MAX][27], ans, track[27];
+vi G[MAX];
+string str;
+bool cycle;
+map<pii, bool>Map;
+
+void dfs(int u, int pst) {
+    color[u] = 1;           // visited this instance
+    
+    int idx = str[u-1]-'a';
+    dp[u][idx]++;
+    track[idx]++;
+    ans = max(track[idx], ans);
+    
+    
+    for(auto v : G[u]) {
+        if(color[v] == 1 || cycle) {
+            cycle = 1;
+            return;
+        }
+        else if(color[v] == 2) {                    // Memoization
+            for(int i = 0; i < 26; ++i)
+                ans = max(track[i]+dp[v][i], ans);
+        }
+        else
+            dfs(v, u);
+    }
+    
+    
+    track[idx]--;
+    color[u] = 2;           // visited previous instance
+    
+    
+    // Now pull up all the child value to top [THE DP PART]
+    // Finding max chars
+    int tmp[27] = {0};
+    for(auto v : G[u]) {
+        for(int i = 0; i < 26; ++i)
+            tmp[i] = max(dp[v][i], tmp[i]);
+    }
+    
+    // Adding them to this parent node dp
+    for(int i = 0; i < 26; ++i)
+        dp[u][i] += tmp[i];
+}
 
 
+int main() {
+    int V, E, u, v;
+    FastRead;
+    cin >> V >> E;
+    cin >> str;
+    
+    for(int i = 0; i < E; ++i) {
+        cin >> u >> v;
+        
+        if(Map.find({u, v}) == Map.end())
+            G[u].pb(v);
+        
+        Map[{u, v}];
+        if(u == v)
+            cycle = 1;
+    }
+    
+    for(int u = 1; u <= V && !cycle; ++u)
+        if(!color[u])
+            dfs(u, -1);
+    
+    
+    cout << (cycle == 1 ? -1:ans) << endl;
+    return 0;
+}
