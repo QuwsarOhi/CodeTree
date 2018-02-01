@@ -1,14 +1,12 @@
 #include <bits/stdc++.h>
 using namespace std;
-#define MAX                 250000
+#define MAX 111111
 typedef vector<int> vi;
-typedef vector<long long>vl;
-typedef long long ll;
 
 struct node {
-    ll val;
+    int val;
     node *lft, *rht;
-    node(node *L = NULL, node *R = NULL, ll v = 0) {
+    node(node *L = NULL, node *R = NULL, int v = 0) {
         val = v;
         L = lft;
         R = rht;
@@ -17,9 +15,8 @@ struct node {
 
 node *presis[MAX];
 vi G[MAX];
-int parent[MAX], sparse[MAX][20], level[MAX], val[MAX];
-map<ll, ll>Map, ReMap;
-
+int parent[MAX], sparse[MAX][19], level[MAX], val[MAX];
+unordered_map<int, int>Map, ReMap;
 
 node *nCopy(node *x) {
     node *tmp = new node();
@@ -32,6 +29,7 @@ node *nCopy(node *x) {
 }
 
 void update(node *pos, int l, int r, int idx, int val) {
+    //printf("update %d --------- %d idx : %d\n", l, r, idx);
     if(l == r) {
         pos->val += 1;
         return;
@@ -55,27 +53,29 @@ void update(node *pos, int l, int r, int idx, int val) {
         pos->val += pos->rht->val;
 }
 
-
 int query(node *lca0, node *lca, node *u, node *v, int l, int r, int k) {
+    //printf("query %d --------- %d\n", l, r);
     if(l == r)
         return l;
     
     lca0->lft = nCopy(lca0->lft);
-    lca0->rht = nCopy(lca0->rht);
     lca->lft = nCopy(lca->lft);
-    lca->rht = nCopy(lca->rht);
     u->lft = nCopy(u->lft);
-    u->rht = nCopy(u->rht);
     v->lft = nCopy(v->lft);
-    v->rht = nCopy(v->rht);
+    
     
     int mid = (l+r)>>1;
     int Count = u->lft->val + v->lft->val - lca->lft->val - lca0->lft->val;
     
     if(Count >= k)
         return query(lca0->lft, lca->lft, u->lft, v->lft, l, mid, k);
-    else
+    else {
+        lca0->rht = nCopy(lca0->rht);
+        lca->rht = nCopy(lca->rht);
+        u->rht = nCopy(u->rht);
+        v->rht = nCopy(v->rht);
         return query(lca0->rht, lca->rht, u->rht, v->rht, mid+1, r, k-Count);
+    }
 }
 
 
@@ -87,11 +87,11 @@ void dfs(int u, int prnt, int lvl, int V) {
     // Segment Tree
     if(prnt != -1)
         presis[u] = nCopy(presis[prnt]);
-    update(presis[u], 1, V, Map[val[u]], 1);
+    update(presis[u], 1, V, Map[val[u]], 1);                // V or IDX??
     
-    for(auto v : G[u])
-        if(parent[u] != v)
-            dfs(v, u, lvl+1, V);
+    for(int i = 0; i < (int)G[u].size(); ++i)
+        if(parent[u] != G[u][i])
+            dfs(G[u][i], u, lvl+1, V);
 }
 
 
@@ -116,7 +116,7 @@ int LCA(int u, int v) {
     int p = ceil(log2(level[v]));
     
     // Pull up v to same level as u
-    for(int i = p ; i >= 0; --i)
+    for(int i = p ; i >= 0 && level[u] != level[v]; --i)
         if(level[v] - (1LL<<i) >= level[u])
             v = sparse[v][i];
     
@@ -126,7 +126,7 @@ int LCA(int u, int v) {
     
     // Pull up u and v together while LCA not found
     for(int i = p; i >= 0; --i)
-        if(sparse[v][i] != -1 && sparse[u][i] != sparse[v][i])      // -1 check is for being on safe side
+        if(sparse[v][i] != -1 && sparse[u][i] != sparse[v][i])      // -1 check is if 2^i is out of calculated range
             u = sparse[u][i], v = sparse[v][i];
     
     return parent[u];
@@ -134,21 +134,26 @@ int LCA(int u, int v) {
 
 
 int main() {
-    //freopen("in", "r", stdin);
+    freopen("in", "r", stdin);
     int V, u, v, q, ans, k, LCAnode;
 
     scanf("%d %d", &V, &q);
     
     for(int i = 1; i <= V; ++i) {
-        cin >> val[i];
-        Map[val[i]];
+        scanf("%d", &val[i]);
     }
     
     int idx = 0;
-    for(auto it = Map.begin(); it != Map.end(); ++it) {
-        it->second = ++idx;
-        ReMap[idx] = it->first;
-    }
+    sort(val+1, val+V+1);
+    
+    for(int i = 1; i <= V; ++i)
+        if(Map.find(val[i]) == Map.end()) {
+            Map[val[i]] = ++idx;
+            ReMap[idx] = val[i];
+        }
+    
+    //for(auto it : Map)
+        //cout << it.first << " " << it.second << endl;
     
     for(int i = 1; i < V; ++i) {
         scanf("%d%d", &u, &v);
@@ -157,11 +162,12 @@ int main() {
     }
 
     presis[1] = nCopy(presis[1]);
-    dfs(1, -1, 0, V);
+    dfs(1, -1, 0, idx);
     LCAinit(V);
     
     node *dummy = new node();
     node *lca, *lca0;
+    
     while(q--) {
         scanf("%d%d%d", &u, &v, &k);
         LCAnode = LCA(u, v);
@@ -169,7 +175,7 @@ int main() {
         
         lca0 = sparse[LCAnode][0] == -1 ? dummy:presis[sparse[LCAnode][0]];
         ans = query(lca0, lca, presis[u], presis[v], 1, idx, k);
-        printf("%lld\n", ReMap[ans]);
+        printf("%d\n", ReMap[ans]);
     }
     
     return 0;

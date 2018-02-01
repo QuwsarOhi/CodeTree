@@ -1,51 +1,14 @@
+// SPOJ COT
+
 #include <bits/stdc++.h>
 using namespace std;
-#define MAX                 200000
-#define EPS                 1e-9
-#define INF                 1e7
-#define MOD                 1000003
-#define pb                  push_back
-#define mp                  make_pair
-#define fi                  first
-#define se                  second
-#define pi                  acos(-1)
-#define sf                  scanf
-#define pf                  printf
-#define SIZE(a)             ((int)a.size())
-#define Equal(a, b)         (abs(a-b) < EPS)
-#define Greater(a, b)       (a >= (b+EPS))
-#define GreaterEqual(a, b)  (a > (b-EPS)) 
-#define fr(i, a, b)         for(register int i = (a); i < (int)(b); i++)
-#define FastRead            ios_base::sync_with_stdio(false); cin.tie(NULL);
-#define dbug(vari)          cerr << #vari << " = " << (vari) <<endl
-#define StrToInt(STR)       stoi(STR, nullptr)
-#define isOn(S, j)          (S & (1 << j))
-#define setBit(S, j)        (S |= (1 << j))
-#define clearBit(S, j)      (S &= ~(1 << j))
-#define toggleBit(S, j)     (S ^= (1 << j))
-#define lowBit(S)           (S & (-S))
-#define setAll(S, n)        (S = (1 << n) - 1)
-#define fileRead(S)         freopen(S, "r", stdin);
-#define fileWrite(S)        freopen(S, "w", stdout);
-#define Unique(X)           X.erase(unique(X.begin(), X.end()), X.end())
-
-typedef unsigned long long ull;
-typedef long long ll;
-typedef map<int, int> mii;
-typedef map<ll, ll>mll;
-typedef map<string, int> msi;
+#define MAX 111111
 typedef vector<int> vi;
-typedef vector<long long>vl;
-typedef pair<int, int> pii;
-typedef pair<ll, ll> pll;
-typedef vector<pair<int, int> > vii;
-typedef vector<pair<ll, ll> >vll;
-
 
 struct node {
     int val;
     node *lft, *rht;
-    node(node *L = NULL, node *R = NULL, ll v = 0) {
+    node(node *L = NULL, node *R = NULL, int v = 0) {
         val = v;
         L = lft;
         R = rht;
@@ -54,9 +17,11 @@ struct node {
 
 node *presis[MAX];
 vi G[MAX];
-int parent[MAX], sparse[MAX][20], level[MAX], val[MAX];
-map<ll, ll>Map, ReMap;
+vector<pair<int, int> >vec;
+int parent[MAX], sparse[MAX][19], level[MAX], val[MAX]; //Map[MAX], ReMap[MAX];
+map<int, int>Map, ReMap;
 
+node *null = new node(NULL, NULL, 0);
 
 node *nCopy(node *x) {
     node *tmp = new node();
@@ -65,27 +30,49 @@ node *nCopy(node *x) {
         tmp->rht = x->rht;
         tmp->val = x->val;
     }
+    else {                  // Rewire
+        tmp->lft = null;
+        tmp->rht = null;
+        tmp->val = 0;
+    }
     return tmp;
 }
 
-void update(node *pos, int l, int r, int idx, int val) {
+inline void fastIn(int &num) {          // Fast IO
+    bool neg = false;
+    register int c;
+    num = 0;
+    
+    c = getchar_unlocked();
+    for( ; c != '-' && (c < '0' || c > '9'); c = getchar_unlocked());
+    
+    if (c == '-') {
+        neg = true;
+        c = getchar_unlocked();
+    }
+    
+    for(; (c>47 && c<58); c=getchar_unlocked())
+        num = (num<<1) + (num<<3) + c - 48;
+        
+    if(neg)
+        num *= -1;
+}
+
+inline void update(node *pos, int l, int r, int idx, int val) {
     if(l == r) {
-        //pf("DONE %d\n", l);
-        pos->val = 1;
+        pos->val += 1;
         return;
     }
     
-    //pf("%d ********* %d :: %d\n", l, r, idx);
     int mid = (l+r)>>1;
     
-    if(idx <= mid) {
-        pos->lft = nCopy(pos->lft);
+    pos->lft = nCopy(pos->lft);
+    pos->rht = nCopy(pos->rht);
+    
+    if(idx <= mid)
         update(pos->lft, l, mid, idx, val);
-    }
-    else {
-        pos->rht = nCopy(pos->rht);
+    else
         update(pos->rht, mid+1, r, idx, val);
-    }
     
     pos->val = 0;
     if(pos->lft)
@@ -94,19 +81,9 @@ void update(node *pos, int l, int r, int idx, int val) {
         pos->val += pos->rht->val;
 }
 
-
-int query(node *lca0, node *lca, node *u, node *v, int l, int r, int k) {
+inline int query(node *lca0, node *lca, node *u, node *v, int l, int r, int k) {        // More fast Query?
     if(l == r)
         return l;
-    
-    lca0->lft = nCopy(lca0->lft);
-    lca0->rht = nCopy(lca0->rht);
-    lca->lft = nCopy(lca->lft);
-    lca->rht = nCopy(lca->rht);
-    u->lft = nCopy(u->lft);
-    u->rht = nCopy(u->rht);
-    v->lft = nCopy(v->lft);
-    v->rht = nCopy(v->rht);
     
     int mid = (l+r)>>1;
     int Count = u->lft->val + v->lft->val - lca->lft->val - lca0->lft->val;
@@ -126,22 +103,22 @@ void dfs(int u, int prnt, int lvl, int V) {
     // Segment Tree
     if(prnt != -1)
         presis[u] = nCopy(presis[prnt]);
-    update(presis[u], 1, V, Map[val[u]], 1);
+    update(presis[u], 1, V, Map[val[u]], 1);                // V or IDX??
     
-    for(auto v : G[u])
-        if(parent[u] != v)
-            dfs(v, u, lvl+1, V);
+    for(int i = 0; i < (int)G[u].size(); ++i)
+        if(parent[u] != G[u][i])
+            dfs(G[u][i], u, lvl+1, V);
 }
 
 
 void LCAinit(int V) {
     memset(sparse, -1, sizeof sparse);
     
-    for(int u = 0; u <= V; ++u)             // node u's 2^0 parent
+    for(int u = 1; u <= V; ++u)                 // node u's 2^0 parent
         sparse[u][0] = parent[u];
     
     int v;
-    for(int p = 1; (1<<p) <= V; ++p)
+    for(int p = 1; (1LL<<p) <= V; ++p)
         for(int u = 1; u <= V; ++u)
             if((v = sparse[u][p-1]) != -1)      // node u's 2^x parent = parent of node v's 2^(x-1) [ where node v : (node u's 2^(x-1) parent) ]
                 sparse[u][p] = sparse[v][p-1];
@@ -149,7 +126,7 @@ void LCAinit(int V) {
 
 
 int LCA(int u, int v) {
-    if(level[u] < level[v])     // v is deeper
+    if(level[u] > level[v])     // v is deeper
         swap(u, v);
     
     int p = ceil(log2(level[v]));
@@ -165,7 +142,7 @@ int LCA(int u, int v) {
     
     // Pull up u and v together while LCA not found
     for(int i = p; i >= 0; --i)
-        if(sparse[v][i] != -1 && sparse[u][i] != sparse[v][i])      // -1 check is for being on safe side
+        if(sparse[v][i] != -1 && sparse[u][i] != sparse[v][i])      // -1 check is if 2^i is out of calculated range
             u = sparse[u][i], v = sparse[v][i];
     
     return parent[u];
@@ -173,61 +150,43 @@ int LCA(int u, int v) {
 
 
 int main() {
-    //fileRead("in");
-    //fileWrite("out");
-    
+    //freopen("in", "r", stdin);
     int V, u, v, q, ans, k, LCAnode;
-    
-    cin >> V >> q;
+
+    fastIn(V), fastIn(q);
     
     for(int i = 1; i <= V; ++i) {
-        cin >> val[i];
+        fastIn(val[i]);
         Map[val[i]];
     }
     
-    // Compression
     int idx = 0;
+    
+    // Normal Compress
     for(auto it = Map.begin(); it != Map.end(); ++it) {
-        it->second = ++idx;
+        Map[it->first] = ++idx;
         ReMap[idx] = it->first;
-    }
+    }    
     
-    //for(auto it : Map) {
-    //    cout << it.fi << " " << it.se << endl;
-    //}
-    
-    // Tree Input
     for(int i = 1; i < V; ++i) {
-        cin >> u >> v;
-        G[u].pb(v);
-        G[v].pb(u);
+        fastIn(u), fastIn(v);
+        G[u].push_back(v);
+        G[v].push_back(u);
     }
     
-    //cout << "INPUT DONE\n";
-    // SegTree + LCA
+    null->lft = null;       // rewiring null itself
+    null->rht = null;
     presis[1] = nCopy(presis[1]);
-    dfs(1, -1, 0, V);
-    //cout << "DFS done\n";
+    dfs(1, -1, 0, idx);
     LCAinit(V);
-    //cout << "PROCESS OK\n";
-    
-    node *dummy = new node();
-    node *lca, *lca0;
-    
-    //return 0;
     
     while(q--) {
-        cin >> u >> v >> k;
+        fastIn(u), fastIn(v), fastIn(k);
         LCAnode = LCA(u, v);
-        lca = presis[LCAnode];
         
-        lca0 = sparse[LCAnode][0] == -1 ? dummy:presis[sparse[LCAnode][0]];
-        //pf("LCA : %d LCA0 : %d : %d %d %d\n", LCAnode, sparse[LCAnode][0], u, v, k);
-        ans = query(lca0, lca, presis[u], presis[v], 1, idx, k);
-        cout << ReMap[ans] << "\n";
+        ans = query((sparse[LCAnode][0] == -1 ? null:presis[sparse[LCAnode][0]]), presis[LCAnode] , presis[u], presis[v], 1, idx, k);
+        printf("%d\n", ReMap[ans]);
     }
     
     return 0;
 }
-    
-        
