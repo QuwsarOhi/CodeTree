@@ -1,44 +1,50 @@
 #include <bits/stdc++.h>
+#define fi first
+#define se second
+#define mp make_pair
+#define pb push_back
+#define pop pop_back()
+#define ll long long
+#define sz size()
+#define speed ios_base::sync_with_stdio(0);cin.tie(0);
 using namespace std;
-#define MAX                 200100
-#define EPS                 1e-9
-#define INF                 1e7
-#define MOD                 1000000007
-#define pb                  push_back
-#define mp                  make_pair
-#define fi                  first
-#define se                  second
-#define pi                  acos(-1)
-#define sf                  scanf
-#define pf                  printf
-#define SIZE(a)             ((int)a.size())
-#define Equal(a, b)         (abs(a-b) < EPS)
-#define Greater(a, b)       (a >= (b+EPS))
-#define GreaterEqual(a, b)  (a > (b-EPS)) 
-#define fr(i, a, b)         for(register int i = (a); i < (int)(b); i++)
-#define FastRead            ios_base::sync_with_stdio(false); cin.tie(NULL);
-#define dbug(vari)          cerr << #vari << " = " << (vari) <<endl
-#define isOn(S, j)          (S & (1 << j))
-#define setBit(S, j)        (S |= (1 << j))
-#define clearBit(S, j)      (S &= ~(1 << j))
-#define toggleBit(S, j)     (S ^= (1 << j))
-#define lowBit(S)           (S & (-S))
-#define setAll(S, n)        (S = (1 << n) - 1)
-#define fileRead(S)         freopen(S, "r", stdin);
-#define fileWrite(S)        freopen(S, "w", stdout);
-#define Unique(X)           X.erase(unique(X.begin(), X.end()), X.end())
+///////////////////////////////////////////
+int n;
+int a[200200];
+int lef[200200];
+int righ[200200];
+int main(){
+    freopen("in", "r", stdin);
+    speed
+    cin>>n;
+    for(int i=0;i<n;i++){
+        int x;
+        cin>>x;
+        x--;
+        a[i]=x;
+    }
+    string s;
+    cin>>s;
 
-typedef unsigned long long ull;
-typedef long long ll;
-typedef map<int, int> mii;
-typedef map<ll, ll>mll;
-typedef map<string, int> msi;
-typedef vector<int> vi;
-typedef vector<long long>vl;
-typedef pair<int, int> pii;
-typedef pair<ll, ll> pll;
-typedef vector<pair<int, int> > vii;
-typedef vector<pair<ll, ll> >vll;
+    for(int i=1;i<n;i++){
+        if(s[i-1]=='1') lef[i] = lef[i-1]+1;
+        else lef[i]=0;
+    }
 
+    for(int i=n-2;i>=0;i--){
+        if(s[i]=='1') righ[i] = righ[i+1]+1;
+        else righ[i]=0;
+    }
+    bool ok=0;
 
-
+    for(int i=0;i<n;i++){
+        if(a[i]>0){
+            if(righ[i]<a[i]-i) ok=1;
+        }
+        if(a[i]<=0){
+            if(lef[i]<i-a[i]) ok=1;
+        }
+    }
+    if(!ok) cout<<"YES";
+    else cout<<"NO";
+}

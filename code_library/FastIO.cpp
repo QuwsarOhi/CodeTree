@@ -1,3 +1,5 @@
+// Fast IO with Templates
+
 #include <bits/stdc++.h>
 using namespace std;
 #define MAX                 200100
@@ -45,7 +47,9 @@ typedef vector<pair<ll, ll> >vll;
 void err(istream_iterator<string> it) {}
 template<typename T, typename... Args>
 void err(istream_iterator<string> it, T a, Args... args) {                                                  // Debugger error(a, b, ....)
-	cerr << *it << " = " << a << "\n";
+    istream_iterator<string> eos;
+    if(it == eos)   cout << "\n";
+	cerr << *it << " = " << a << "   ";
 	err(++it, args...);
 }
 
@@ -53,50 +57,24 @@ void err(istream_iterator<string> it, T a, Args... args) {                      
 //const int dxx[8][2] = {{0,1}, {0,-1}, {1,0}, {-1,0}, {1,1}, {1,-1}, {-1,1}, {-1,-1}};                     // Eight side
 //----------------------------------------------------------------------------------------------------------
 
-
-bitset<300>water;
-
-void turnOn(int n) {
-    bitset<300>on;
-    fr(i, 1, n+1)
-        if(water[i+1]) {    // lft on
-            water[i] = 1;
-            on[i] = 1;
-        }
-    
-    for(int i = n; i >= 1; --i)     // rht on
-        if(!on[i-1] && water[i-1])
-            water[i] = 1;
-    
-    //fr(i, 1, n+1)
-    //    cout << water[i] << " ";
-    //cout << endl;
+inline void fastIn(int &num) {          // Fast IO, with space and new line ignoring
+    bool neg = false;
+    register int c;
+    num = 0;
+    c = getchar_unlocked();
+    for( ; c != '-' && (c < '0' || c > '9'); c = getchar_unlocked());
+    if (c == '-') {
+        neg = true;
+        c = getchar_unlocked();
+    }
+    for(; (c>47 && c<58); c=getchar_unlocked())
+        num = (num<<1) + (num<<3) + c - 48;
+    if(neg)
+        num *= -1;
 }
 
 
 int main() {
-    fileRead("out");
-    ll t, p, n, k;
-    FastRead;
-    cin >> t;
-    
-    while(t--) {
-        cin >> n >> k;
-        water.reset();
-        fr(i, 0, k) {
-            cin >> p;
-            water[p] = 1;
-        }
-
-        
-        int tm = 1;
-        while(water.count() != n) {
-            //error(water.count(), tm, n);
-            turnOn(n);
-            tm++;
-        }
-        cout << tm << endl;
-    }
-    //main();
+    error("errors", 1, 2, 3, 4);
     return 0;
 }
