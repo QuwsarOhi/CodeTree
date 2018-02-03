@@ -1,50 +1,124 @@
-#include <bits/stdc++.h>
-#define fi first
-#define se second
-#define mp make_pair
-#define pb push_back
-#define pop pop_back()
-#define ll long long
-#define sz size()
-#define speed ios_base::sync_with_stdio(0);cin.tie(0);
+// C++ program for building suffix array of a given text
+#include <iostream>
+#include <cstring>
+#include <algorithm>
 using namespace std;
-///////////////////////////////////////////
-int n;
-int a[200200];
-int lef[200200];
-int righ[200200];
-int main(){
-    freopen("in", "r", stdin);
-    speed
-    cin>>n;
-    for(int i=0;i<n;i++){
-        int x;
-        cin>>x;
-        x--;
-        a[i]=x;
-    }
-    string s;
-    cin>>s;
+ 
+// Structure to store information of a suffix
+struct suffix
+{
+    int index; // To store original index
+    int rank[2]; // To store ranks and next rank pair
+};
+ 
+// A comparison function used by sort() to compare two suffixes
+// Compares two pairs, returns 1 if first pair is smaller
+int cmp(struct suffix a, struct suffix b)
+{
+    return (a.rank[0] == b.rank[0])? (a.rank[1] < b.rank[1] ?1: 0):
+               (a.rank[0] < b.rank[0] ?1: 0);
+}
 
-    for(int i=1;i<n;i++){
-        if(s[i-1]=='1') lef[i] = lef[i-1]+1;
-        else lef[i]=0;
-    }
+int order(char x) {
+    if(isdigit(x))
+        return x-'0';
+    else if(isupper(x))
+        return x-'A'+11;
+    else
+        return x-'a'+38;
+}
 
-    for(int i=n-2;i>=0;i--){
-        if(s[i]=='1') righ[i] = righ[i+1]+1;
-        else righ[i]=0;
+ 
+// This is the main function that takes a string 'txt' of size n as an
+// argument, builds and return the suffix array for the given string
+int *buildSuffixArray(char *txt, int n)
+{
+    // A structure to store suffixes and their indexes
+    struct suffix suffixes[n];
+ 
+    // Store suffixes and their indexes in an array of structures.
+    // The structure is needed to sort the suffixes alphabatically
+    // and maintain their old indexes while sorting
+    for (int i = 0; i < n; i++)
+    {
+        suffixes[i].index = i;
+        suffixes[i].rank[0] = order(txt[i]);
+        suffixes[i].rank[1] = ((i+1) < n)? order(txt[j]): -1;
     }
-    bool ok=0;
-
-    for(int i=0;i<n;i++){
-        if(a[i]>0){
-            if(righ[i]<a[i]-i) ok=1;
+ 
+    // Sort the suffixes using the comparison function
+    // defined above.
+    sort(suffixes, suffixes+n, cmp);
+ 
+    // At his point, all suffixes are sorted according to first
+    // 2 characters.  Let us sort suffixes according to first 4
+    // characters, then first 8 and so on
+    int ind[n];  // This array is needed to get the index in suffixes[]
+                 // from original index.  This mapping is needed to get
+                 // next suffix.
+    for (int k = 4; k < 2*n; k = k*2)
+    {
+        // Assigning rank and index values to first suffix
+        int rank = 0;
+        int prev_rank = suffixes[0].rank[0];
+        suffixes[0].rank[0] = rank;
+        ind[suffixes[0].index] = 0;
+ 
+        // Assigning rank to suffixes
+        for (int i = 1; i < n; i++)
+        {
+            // If first rank and next ranks are same as that of previous
+            // suffix in array, assign the same new rank to this suffix
+            if (suffixes[i].rank[0] == prev_rank &&
+                    suffixes[i].rank[1] == suffixes[i-1].rank[1])
+            {
+                prev_rank = suffixes[i].rank[0];
+                suffixes[i].rank[0] = rank;
+            }
+            else // Otherwise increment rank and assign
+            {
+                prev_rank = suffixes[i].rank[0];
+                suffixes[i].rank[0] = ++rank;
+            }
+            ind[suffixes[i].index] = i;
         }
-        if(a[i]<=0){
-            if(lef[i]<i-a[i]) ok=1;
+ 
+        // Assign next rank to every suffix
+        for (int i = 0; i < n; i++)
+        {
+            int nextindex = suffixes[i].index + k/2;
+            suffixes[i].rank[1] = (nextindex < n)?
+                                  suffixes[ind[nextindex]].rank[0]: -1;
         }
+ 
+        // Sort the suffixes according to first k characters
+        sort(suffixes, suffixes+n, cmp);
     }
-    if(!ok) cout<<"YES";
-    else cout<<"NO";
+ 
+    // Store indexes of all sorted suffixes in the suffix array
+    int *suffixArr = new int[n];
+    for (int i = 0; i < n; i++)
+        suffixArr[i] = suffixes[i].index;
+ 
+    // Return the suffix array
+    return  suffixArr;
+}
+ 
+// A utility function to print an array of given size
+void printArr(int arr[], int n)
+{
+    for (int i = 0; i < n; i++)
+        cout << arr[i] << " ";
+    cout << endl;
+}
+ 
+// Driver program to test above functions
+int main()
+{
+    char txt[] = "abracadabra0AbRa4Cad14abra";
+    int n = strlen(txt);
+    int *suffixArr = buildSuffixArray(txt,  n);
+    cout << "Following is suffix array for " << txt << endl;
+    printArr(suffixArr, n);
+    return 0;
 }
