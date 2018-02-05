@@ -47,9 +47,7 @@ typedef vector<pair<ll, ll> >vll;
 void err(istream_iterator<string> it) {}
 template<typename T, typename... Args>
 void err(istream_iterator<string> it, T a, Args... args) {                                                  // Debugger error(a, b, ....)
-    istream_iterator<string> eos;
-    if(it == eos)   cout << "\n";
-	cerr << *it << " = " << a << "   ";
+	cerr << *it << " = " << a << "\n";
 	err(++it, args...);
 }
 

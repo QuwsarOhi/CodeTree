@@ -1,5 +1,5 @@
-// Suffix Array
-// Complexity : N log^2(N)
+// SPOJ BEADS
+// Cycle Shifts, Ad-hoc, suffix array
 
 #include <bits/stdc++.h>
 #define fi      first
@@ -15,6 +15,7 @@ struct suffix{
 };
 
 suffix suff[200000];
+char str[11000], txt[55000];
 
 bool cmp(suffix a, suffix b) {
     return a.rank < b.rank;
@@ -71,46 +72,31 @@ void SuffixArray(char str[], int n) {
 }
 
 
-// Longest Common Prefix: Kasai's Algorithm
-// Complexity: O(n) ~ O(n logn)
-
-vector<int> LCP(char str[], int suffArr[], int n) {
-    vector<int>Rank(n), lcp(n);
-    
-    for(int i = 0; i < n; ++i)              // suffArr : {key:rank, value:index}
-        Rank[suffArr[i]] = i;               // rank    : {key:index, value:rank}
-    
-    int k = 0;
-    for(int i = 0; i < n; ++i) {            // loop runs from string index 0 to n
-        if(Rank[i] == n-1) {                // if the rank of i'th index is last, there is no consicutive same suffix
-            k = 0;
-            continue;
-        }
-        
-        int j = suffArr[Rank[i]+1];         // Starting index of the next rank suffix
-        
-        while(i+k < n && j+k < n && str[i+k] == str[j+k])
-            ++k;
-        
-        lcp[Rank[i]] = k;                   // k is the lcp size of that rank
-        
-        //printf("comparing %s & %s ::: k = %d\n", str+i, str+j, k);
-        if(k>0) --k;
-    }
-    
-    return lcp;                              // contains rank-wise lcp length
-}
-
-
 int main() {
-    char str[200000];
-    scanf("%s", str);
-    int len = strlen(str);
+    //freopen("in", "r", stdin);
+    int t;
     
-    SuffixArray(str, len);
+    scanf("%d", &t);
     
-    for(int i = 0; i < len; ++i)                // i : rank
-        printf("%d\n", suff[i].idx);            // idx: starting index of suffix
-    
+    while(t--) {
+        memset(txt, 0, sizeof txt);
+        memset(str, 0, sizeof str);
+        scanf("%s", str);
+        int len1 = strlen(str);
+        strcat(txt, str);
+        strcat(txt, str);                   // Critical Case: "aaaa", "aaabba"
+        strcat(txt, "{");                   // "{" is lexicograpgically bigger than any other string
+        int len2 = len1*2 + 1;              // we need strings sorted also according to size (bigger to lower + lexicographical), the "{" produces this
+        SuffixArray(txt, len2);
+        
+        //for(int i = 0; i < len2; ++i)     // se all suffix sortings
+        //    printf("%2d : %s\n", suff[i].idx, txt+suff[i].idx);
+        
+        for(int i = 0; i < len2; ++i)
+            if(suff[i].idx < len1) {
+                printf("%d\n", suff[i].idx+1);
+                break;
+            }
+    }
     return 0;
 }
