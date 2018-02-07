@@ -77,7 +77,7 @@ void Update(int v[], int l, int val) {          // Updates value in position l :
 int Query(int l, int r, int k) {                // Query in range l -- r for k
     int Count = 0, val = 0;
     while(l%BlockSize != 0 && l < r) {          // if l partially lies inside of a sqrt segment
-        cout << "P1" << endl;
+        //cout << "P1" << endl;
         Count += (Seg[l/BlockSize][l%BlockSize] == k);
         val = val^Seg[l/BlockSize][l%BlockSize];
         ++l;

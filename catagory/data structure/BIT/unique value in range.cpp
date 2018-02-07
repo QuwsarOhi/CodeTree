@@ -1,3 +1,8 @@
+// SPOJ DQUERY
+// Segment Tree/BIT
+
+// Number of unique values in sub array
+
 #include <bits/stdc++.h>
 using namespace std;
 #define MAX                 200100
@@ -53,89 +58,62 @@ void err(istream_iterator<string> it, T a, Args... args) {                      
 //const int dxx[8][2] = {{0,1}, {0,-1}, {1,0}, {-1,0}, {1,1}, {1,-1}, {-1,1}, {-1,-1}};                     // Eight side
 //----------------------------------------------------------------------------------------------------------
 
-set<int>Divisors[320][245], QuSet;
-int Div[1000100], val[1000100], blockSize;
+int tree[31000], val[30100], IDX[1001000], MaxVal = 30100;
+set<pair< pair<int, int>, int> >Boundary;
 
-
-void sqrtDecompose(int n) {
-    blockSize = sqrt(n);
-    int idx, pos;
-    
-    for(int i = 0; i < n; ++i) {
-        idx = i/blockSize;
-        pos = i%blockSize;
-    
-
-        Divisors[idx][Div[val[i]]].insert(val[i]);
-    }
+void update(int idx, int val) {
+    for( ; idx <= MaxVal; idx += idx&-idx)
+        tree[idx] += val;
 }
 
-
-int Query(int l, int r, int k) {
-    while(l%blockSize != 0 && l < r) {
-        if(Div[val[l]] == k)
-            QuSet.insert(val[l]);
-        ++l;
-    }
-    while(l+blockSize <= r) {
-        QuSet.insert(Divisors[l/blockSize][k].begin(), Divisors[l/blockSize][k].end());         // TLE LINE
-        l += blockSize;
-    }
-    while(l <= r) {
-        if(Div[val[l]] == k)
-            QuSet.insert(val[l]);
-        ++l;
-    }
-    
-    return QuSet.size();
+int read(int idx) {
+    ll sum = 0;
+    for( ; idx > 0; idx -= idx&-idx)
+        sum += tree[idx];
+    return sum;
 }
-
-
-void DivCal(int n) {
-    for(int i = 1; i <= n; ++i)
-        for(int j = i; j <= n; j+=i)
-            Div[j]++;
-}
-
 
 int main() {
-    int n, l, r, k, q;
+    int n, l, r, q;
+    FastRead;
     
-    DivCal(1000000);
-    //fr(i, 1, 1000001)
-    //    ans = max(ans, Div[i]);
+    cin >> n;
     
-    //cout << ans << endl;
+    for(int i = 1; i <= n; ++i)
+        cin >> val[i];
     
+    cin >> q;
     
-    int t;
-    sf("%d", &t);
+    for(int i = 0; i < q; ++i) {
+        cin >> l >> r;
+        Boundary.insert({{r, l}, i});
+    }
     
-    for(int Case = 1; Case <= t; ++Case) {
-        sf("%d", &n);
+    int pos = 1;
+    vector<int>ans(q);
+    memset(IDX, -1, sizeof IDX);
+    
+    for(auto it : Boundary) {
+        r = it.first.first, l = it.first.second;
         
-        for(int i = 0; i < n; ++i)
-            sf("%d", &val[i]);
-        
-        //for(int i = 0; i < n; ++i)
-        //    pf("%d ", Div[val[i]]);
-        //pf("\n");
-        
-        sf("%d", &q);
-        sqrtDecompose(n);
-        pf("Case %d:\n", Case);
-        
-        while(q--) {
-            sf("%d%d%d", &l, &r, &k);
-            --l, --r;
-            QuSet.clear();
-            pf("%d\n", Query(l, r, k));
+        for( ; pos <= r; ++pos) {
+            if(IDX[val[pos]] == -1) {
+                update(pos, 1);
+                IDX[val[pos]] = pos;
+            }
+            else {
+                int pstPos = IDX[val[pos]];
+                IDX[val[pos]] = pos;
+                update(pos, 1);
+                update(pstPos, -1);
+            }
         }
         
-        if(Case+1 <= t)
-            for(int i = 0; i < n; ++i)
-                Divisors[i/blockSize][Div[val[i]]].clear();
+        ans[it.second] = read(r) - read(l-1);
     }
+    
+    for(auto it : ans)
+        cout << it << "\n";
     
     return 0;
 }

@@ -154,6 +154,20 @@ int query(node *RMax, node *LMax, int l, int r, int k) {                        
         return query(RMax->rht, LMax->rht, mid+1, r, k-Count);
 }
 
+
+// Erasing A segment tree, pos = root, must run for each root
+void ClearTree(node *pos) {
+    if(pos == NULL) {
+        delete pos;
+        return;
+    }
+
+    ClearTree(pos->lft);
+    ClearTree(pos->rht);
+    
+    delete pos;
+}
+
 int main() {
     // DEMO
     for(int i = 1; i <= 10; ++i) {
