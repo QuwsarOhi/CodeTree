@@ -1,140 +1,125 @@
+// SPOJ TTM
+// Presistant Segment Tree
+
 #include <bits/stdc++.h>
 using namespace std;
-#define MAX                 200100
-#define EPS                 1e-9
-#define INF                 1e7
-#define MOD                 1000000007
-#define pb                  push_back
-#define mp                  make_pair
-#define fi                  first
-#define se                  second
-#define pi                  acos(-1)
-#define sf                  scanf
-#define pf                  printf
-#define SIZE(a)             ((int)a.size())
-#define All(S)              S.begin(), S.end()              
-#define Equal(a, b)         (abs(a-b) < EPS)
-#define Greater(a, b)       (a >= (b+EPS))
-#define GreaterEqual(a, b)  (a > (b-EPS))
-#define fr(i, a, b)         for(register int i = (a); i < (int)(b); i++)
-#define FastRead            ios_base::sync_with_stdio(false); cin.tie(NULL);
-#define fileRead(S)         freopen(S, "r", stdin);
-#define fileWrite(S)        freopen(S, "w", stdout);
-#define Unique(X)           X.erase(unique(X.begin(), X.end()), X.end())
-#define error(args...)      { string _s = #args; replace(_s.begin(), _s.end(), ',', ' '); stringstream _ss(_s); istream_iterator<string> _it(_ss); err(_it, args); }
 
-#define isOn(S, j)          (S & (1 << j))
-#define setBit(S, j)        (S |= (1 << j))
-#define clearBit(S, j)      (S &= ~(1 << j))
-#define toggleBit(S, j)     (S ^= (1 << j))
-#define lowBit(S)           (S & (-S))
-#define setAll(S, n)        (S = (1 << n) - 1)
-
-typedef unsigned long long ull;
 typedef long long ll;
-typedef map<int, int> mii;
-typedef map<ll, ll>mll;
-typedef map<string, int> msi;
-typedef vector<int> vi;
-typedef vector<long long>vl;
-typedef pair<int, int> pii;
-typedef pair<ll, ll> pll;
-typedef vector<pair<int, int> > vii;
-typedef vector<pair<ll, ll> >vll;
-
-void err(istream_iterator<string> it) {}
-template<typename T, typename... Args>
-void err(istream_iterator<string> it, T a, Args... args) {                                                  // Debugger error(a, b, ....)
-	cerr << *it << " = " << a << "\n";
-	err(++it, args...);
-}
-
-//const int dx[4][2] = {{0,1}, {0,-1}, {1,0}, {-1,0}};                                                      // Four side 
-//const int dxx[8][2] = {{0,1}, {0,-1}, {1,0}, {-1,0}, {1,1}, {1,-1}, {-1,1}, {-1,-1}};                     // Eight side
-//----------------------------------------------------------------------------------------------------------
-
-set<int>Divisors[320][245], QuSet;
-int Div[1000100], val[1000100], blockSize;
 
 
-void sqrtDecompose(int n) {
-    blockSize = sqrt(n);
-    int idx, pos;
+struct node {
+    ll val, prop;
+    node *lft, *rht;
     
-    for(int i = 0; i < n; ++i) {
-        idx = i/blockSize;
-        pos = i%blockSize;
-    
-
-        Divisors[idx][Div[val[i]]].insert(val[i]);
+    node(node *lft = NULL, node *rht = NULL, ll val = 0, ll prop = 0) {
+        this->lft = lft;
+        this->rht = rht;
+        this->val = val;
+        this->prop = prop;
     }
+};
+
+node *prop[200100];
+ll val[200100];
+
+
+node *nCopy(node *x) {
+    node *tmp = new node();
+    if(x) {
+        tmp->lft = x->lft;
+        tmp->rht = x->rht;
+        tmp->val = x->val;
+        tmp->prop = x->prop;
+    }
+    return tmp;
 }
 
 
-int Query(int l, int r, int k) {
-    while(l%blockSize != 0 && l < r) {
-        if(Div[val[l]] == k)
-            QuSet.insert(val[l]);
-        ++l;
-    }
-    while(l+blockSize <= r) {
-        QuSet.insert(Divisors[l/blockSize][k].begin(), Divisors[l/blockSize][k].end());         // TLE LINE
-        l += blockSize;
-    }
-    while(l <= r) {
-        if(Div[val[l]] == k)
-            QuSet.insert(val[l]);
-        ++l;
+void init(node *pos, ll l, ll r) {
+    if(l == r) {
+        pos->val = val[l];
+        return;
     }
     
-    return QuSet.size();
+    ll mid = (l+r)>>1;
+    
+    pos->lft = new node();
+    pos->rht = new node();
+    
+    init(pos->lft, l, mid);
+    init(pos->rht, mid+1, r);
+    pos->val = pos->lft->val + pos->rht->val;
+}
+
+void update(node *pos, ll l, ll r, ll L, ll R, ll val) {
+    if(r < L || R < l)
+        return;
+    
+    if(L <= l && r <= R) {
+        pos->prop += val;
+        pos->val += (r-l+1)*val;
+        return;
+    }
+    
+    ll mid = (l+r)>>1;
+    
+    pos->lft = nCopy(pos->lft);
+    pos->rht = nCopy(pos->rht);
+    
+    update(pos->lft, l, mid, L, R, val);
+    update(pos->rht, mid+1, r, L, R, val);
+    
+    pos->val = pos->lft->val + pos->rht->val + (r-l+1)*pos->prop;
 }
 
 
-void DivCal(int n) {
-    for(int i = 1; i <= n; ++i)
-        for(int j = i; j <= n; j+=i)
-            Div[j]++;
+ll query(node *pos, ll l, ll r, ll L, ll R, ll carry = 0) {
+    if(r < L || R < l)
+        return 0;
+    
+    if(L <= l && r <= R)
+        return pos->val + (r-l+1)*carry;
+    
+    ll mid = (l+r)>>1;
+    ll x = query(pos->lft, l, mid, L, R, carry+pos->prop);
+    ll y = query(pos->rht, mid+1, r, L, R, carry+pos->prop);
+    
+    return x+y;
 }
 
 
 int main() {
-    int n, l, r, k, q;
+    ll l, r, Time = 0, t, m, n, d;
+    char str[10];
     
-    DivCal(1000000);
-    //fr(i, 1, 1000001)
-    //    ans = max(ans, Div[i]);
+    scanf("%lld%lld", &n, &m);
     
-    //cout << ans << endl;
+    prop[Time] = new node();
     
+    for(int i = 1; i <= n; ++i)
+        scanf("%lld", &val[i]);
     
-    int t;
-    sf("%d", &t);
+    init(prop[Time], 1, n);
     
-    for(int Case = 1; Case <= t; ++Case) {
-        sf("%d", &n);
-        
-        for(int i = 0; i < n; ++i)
-            sf("%d", &val[i]);
-        
-        //for(int i = 0; i < n; ++i)
-        //    pf("%d ", Div[val[i]]);
-        //pf("\n");
-        
-        sf("%d", &q);
-        sqrtDecompose(n);
-        pf("Case %d:\n", Case);
-        
-        while(q--) {
-            sf("%d%d%d", &l, &r, &k);
-            --l, --r;
-            QuSet.clear();
-            pf("%d\n", Query(l, r, k));
+    while(m--) {
+        scanf(" %s", str);
+        if(str[0] == 'C') {
+            scanf("%lld%lld%lld", &l, &r, &d);
+            Time++;
+            prop[Time] = nCopy(prop[Time-1]);
+            update(prop[Time], 1, n, l, r, d);
         }
-        
-        if(Case+1 <= t)
-            for(int i = 0; i < n; ++i)
-                Divisors[i/blockSize][Div[val[i]]].clear();
+        else if(str[0] == 'Q') {
+            scanf("%lld%lld", &l, &r);
+            printf("%lld\n", query(prop[Time], 1, n, l, r));
+        }
+        else if(str[0] == 'H') {
+            scanf("%lld%lld%lld", &l, &r, &t);
+            printf("%lld\n", query(prop[t], 1, n, l, r));
+        }
+        else {
+            scanf("%lld", &Time);
+        }
     }
     
     return 0;

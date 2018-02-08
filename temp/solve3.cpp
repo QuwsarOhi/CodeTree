@@ -1,3 +1,9 @@
+// Codeforces
+// Persistent Bookcase
+// http://codeforces.com/contest/707/problem/D
+
+// Propagation + Presistance
+
 #include <bits/stdc++.h>
 using namespace std;
 #define MAX                 200100
@@ -53,56 +59,143 @@ void err(istream_iterator<string> it, T a, Args... args) {                      
 //const int dxx[8][2] = {{0,1}, {0,-1}, {1,0}, {-1,0}, {1,1}, {1,-1}, {-1,1}, {-1,-1}};                     // Eight side
 //----------------------------------------------------------------------------------------------------------
 
-ll Time;
-vi v;
-queue<pii>q;
+struct node {
+    ll val;
+    bool flip;
+    node *lft, *rht;
+    
+    node(node *L = NULL, node *R = NULL, ll v = 0, bool f = 0) {
+        lft = L;
+        rht = R;
+        val = v;
+        flip = f;
+    }
+};
 
-void process() {
-    while(!q.empty() && q.front().se < Time) {        // will go out not having
-        v.pb(0);
-        q.pop();
+node *presis[1001000];
+
+node *nCopy(node *x) {
+    node *tmp = new node();
+    if(x) {
+        tmp->val = x->val;
+        tmp->lft = x->lft;
+        tmp->rht = x->rht;
+        tmp->flip = x->flip;
+    }
+    return tmp;
+}
+
+bool flipProp(bool par, bool child) {
+    if(par == child)
+        return 0;
+    return 1;
+}
+
+void propagate(node *pos, ll l, ll r) {
+    if(l == r)
+        return;
+    
+    pos->lft = nCopy(pos->lft);
+    pos->rht = nCopy(pos->rht);
+    
+    
+    if(!pos->flip)
+        return;
+    
+    ll mid = (l+r)>>1;
+    pos->lft->flip = flipProp(pos->flip, pos->lft->flip);
+    pos->rht->flip = flipProp(pos->flip, pos->rht->flip);
+    
+    //if(pos->lft->flip)
+        pos->lft->val = (mid-l+1)-pos->lft->val;
+    //if(pos->rht->flip)
+        pos->rht->val = (r-mid)-pos->rht->val;
+    
+    pos->flip = 0;
+}
+
+
+// Single Position update
+void updateTrigger(node *pos, ll l, ll r, ll idx, ll val) {
+    if(l == r) {
+        pos->val = val;
         return;
     }
     
-    if(!q.empty()) {
-        v.pb(Time);
-        q.pop();
-        Time++;
+    propagate(pos, l, r);
+    ll mid = (l+r)>>1;
+    
+    if(idx <= mid) {
+        //pos->lft = nCopy(pos->lft);
+        updateTrigger(pos->lft, l, mid, idx, val);
     }
+    else {
+        //pos->rht = nCopy(pos->rht);
+        updateTrigger(pos->rht, mid+1, r, idx, val);
+    }
+    
+    pos->val = 0;
+    if(pos->lft)
+        pos->val += pos->lft->val;
+    if(pos->rht)
+        pos->val += pos->rht->val;
 }
-        
+
+void updateFlip(node *pos, ll l, ll r, ll L, ll R) {
+    if(r < L || R < l)
+        return;
+    
+    propagate(pos, l, r);
+    if(L <= l && r <= R) {
+        pos->flip = 1;
+        pos->val = (r-l+1) - pos->val;
+        return;
+    }
+    
+    ll mid = (l+r)>>1;
+    
+    updateFlip(pos->lft, l, mid, L, R);
+    updateFlip(pos->rht, mid+1, r, L, R);
+    
+    pos->val = 0;
+    if(pos->rht)
+        pos->val += pos->rht->val;
+    if(pos->lft)
+        pos->val += pos->lft->val;
+}
+
+
 int main() {
-    fileRead("in");
-    int t;
-    ll l, r, n;
     FastRead;
+    ll n, m, q, i, j, t, Time = 0;
     
-    cin >> t;
+    cin >> n >> m >> q;
+    ll lim = n*m;
+    presis[Time] = new node();
     
-    while(t--) {
-        cin >> n;
+    while(q--) {
+        cin >> t;
         
-        fr(i, 0, n) {
-            cin >> l >> r;
-            q.push({l, r});
+        ++Time;
+        presis[Time] = nCopy(presis[Time-1]);
+        
+        if(t == 1 || t == 2) {
+            cin >> i >> j;
+            ll pos = (i-1)*m + j;
+            //cout << "POS " << pos << endl;
+            updateTrigger(presis[Time], 1, lim, pos, (t==1));
+        }
+        else if(t == 3) {
+            cin >> i;
+            //cout << "Range " << (i-1)*m+1 << " " << i*m << endl;
+            updateFlip(presis[Time], 1, lim, (i-1)*m+1, i*m);
+        }
+        else {
+            cin >> t;
+            presis[Time] = nCopy(presis[t]);
         }
         
-        Time = q.front().fi;
-        while(!q.empty()) {
-            process();
-            if(!q.empty())
-                Time = max((int)Time, q.front().fi);
-        }
-        
-        
-        bool first = 1;
-        for(auto T : v) {
-            if(!first) cout << " ";
-            cout << T;
-            first = 0;
-        }
-        cout << endl;
-        v.clear();
+        cout << presis[Time]->val << "\n";
     }
     
     return 0;
