@@ -45,7 +45,7 @@ typedef vector<pair<ll, ll> >vll;
 
 vl G[MAX], W[MAX];
 int level[MAX], parent[MAX], sparse[MAX][20];
-ll dist[MAX];
+ll dist[MAX], DIST[MAX][20];
 
 void dfs(int u, int par, int lvl, ll d) {           // Tracks distance as well (From root 1 to all nodes)
     level[u] = lvl;                                 // parent[] and level[] is necessary
@@ -97,7 +97,62 @@ int LCA(int u, int v) {
         if(sparse[v][i] != -1 && sparse[u][i] != sparse[v][i])      // -1 check is if 2^i is out of calculated range
             u = sparse[u][i], v = sparse[v][i];
     
-    //cout << "lcs:: " << parent[u] << endl;
+    return parent[u];
+}
+
+
+
+
+// --------------------------- LCA WITH DISTANCE --------------------------- 
+
+void distDP(int V) {                    // initialiser for LCA_with_DIST, call after LCAinit()
+    
+    // NOTE : DIST[u][0] = weight of node u
+    for(int u = 1; u <= V; ++u)
+        DIST[u][0] = W[u];              // Where W[u] = weight of node u
+    
+    for(int p = 1; (1<<p)<=V; ++p)
+        for(int u = 1; u <=V; ++u) {
+            int v = sparse[u][p-1];
+            
+            if(v == -1)
+                continue;
+            
+            DIST[u][p] += DIST[u][p-1] + DIST[v][p-1];
+        }
+}
+
+
+int LCA_with_DIST(int u, int v, long long &w) {           // w retuns distance from u -> v
+    w = 0;
+    
+    if(level[u] > level[v])     // v is deeper
+        swap(u, v);
+    
+    int p = ceil(log2(level[v]));
+    
+    // Pull up v to same level as u
+    for(int i = p ; i >= 0; --i)
+        if(level[v] - (1LL<<i) >= level[u]) {
+            w += DIST[v][i];
+            v = sparse[v][i];
+        }
+    
+    // if u WAS the parent
+    if(u == v) {
+        w += DIST[v][0];
+        return u;
+    }
+    
+    // Pull up u and v together while LCA not found
+    for(int i = p; i >= 0; --i)
+        if(sparse[v][i] != -1 && sparse[u][i] != sparse[v][i])      // -1 check is if 2^i is out of calculated range
+            u = sparse[u][i], v = sparse[v][i];
+    
+    w += DIST[v][0];            // 
+    w += DIST[u][0];
+    w += DIST[sparse[v][0]][0];
+    
     return parent[u];
 }
 
@@ -108,10 +163,15 @@ ll Distance(int u, int v) {
 }
 
 
+
+
+
 int main() {
     // Graph Input
     int V = 10;
     
     LCAinit(V);
+    distDP(V);
+    
     return 0;
 }
