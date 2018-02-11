@@ -6,7 +6,7 @@ using namespace std;
 #define MAX         100100
 #define INF         1e8
 
-vector<int>G[MAX], W[MAX], ChainWeight[MAX][MAX];
+vector<int>G[MAX], W[MAX], ChainWeight[MAX][20];
 int sparse[MAX][20], parent[MAX], level[MAX], nextNode[MAX], chain[MAX], num[MAX], val[MAX], numToNode[MAX], top[MAX], ChainSize[MAX], ChildNode[MAX];
 int ChainNo = 1, all = 1;
 

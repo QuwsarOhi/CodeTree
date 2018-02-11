@@ -153,11 +153,14 @@ ll query(node *pos, ll l, ll r, ll L, ll R) {
 int query(node *RMax, node *LMax, int l, int r, int k) {                         // (LMax : past, RMax : updated)
     if(l == r)
         return l;
-        
+    
+    // NO NEED THIS SECTOR STILL AC --
     RMax->lft = nCopy(RMax->lft);
     LMax->lft = nCopy(LMax->lft);
     RMax->rht = nCopy(RMax->rht);
     LMax->rht = nCopy(LMax->rht);
+    //--------------------------------
+    
     
     // for each range [l, r] we will ignore every [1, l-1] range numbers
     
