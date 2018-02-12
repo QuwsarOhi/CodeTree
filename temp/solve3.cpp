@@ -91,7 +91,7 @@ inline void fastIn(ll &num) {          // Fast IO, with space and new line ignor
 
 
 ll query(node *lPos, node *rPos, ll l, ll r, ll k) {
-    if(!lPos || !rPos || r <= k || rPos->val == 0) {
+    if(!lPos || !rPos || r <= k || rPos->val == 0 || rPos->lft == rPos || rPos->rht == rPos) {
         //cout << "BRK " << l << " ---- " << r << endl;
         return 0;
     }
