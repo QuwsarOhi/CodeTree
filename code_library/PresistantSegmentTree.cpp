@@ -1,4 +1,4 @@
-// Presistant/Dynamic Segment Tree
+// Peresistant/Dynamic Segment Tree
 // Pointer Version
 
 #include <bits/stdc++.h>

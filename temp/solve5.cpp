@@ -1,136 +1,103 @@
-#include <bits/stdc++.h>
+// SPOJ KQUERY-II
 
+// IDEA : Fenwick Tree + Square Root Decomposition
+
+// Array size n is 30000, where sqrt(n) = 174
+// So we will convert n to sqrt(n) blocks (for some position range [block 2*block] ), each block will contain its own fenwick tree of index 1 to 10000
+// Memomry Complexity becomes : 174*10000 which is considerable
+
+// To be noted, BlockSize, is changed to due to time limit
+
+// In each block(according to index) we will update 1 to the position of the value
+// Removing the value is almost the same
+// Query also works like Sqrt Decomposition
+
+
+#include <bits/stdc++.h>
 using namespace std;
 
-#define FastRead    ios_base::sync_with_stdio(false); cin.tie(NULL);
-#define MAX         100100
-#define INF         1e8
 
-vector<int>G[MAX], W[MAX], ChainWeight[MAX][20];
-int sparse[MAX][20], parent[MAX], level[MAX], nextNode[MAX], chain[MAX], num[MAX], val[MAX], numToNode[MAX], top[MAX], ChainSize[MAX], ChildNode[MAX];
-int ChainNo = 1, all = 1;
+int tree[380][10010], val[30100], BlockSize, MaxVal;
 
-// Heavy Light Decomposition Start
+void update(int block, int idx, int val) {
+    for( ; idx <= MaxVal; idx += idx & -idx)
+        tree[block][idx] += val;
+}
 
-void dfs(int u, int par, int lvl) {
-    parent[u] = par;
-    level[u] = lvl;
-    ChildNode[u] = 1;
+
+long long read(int block, int idx) {
+    long long sum = 0;
+    for( ; idx >= 1; idx -= idx & -idx)
+        sum += tree[block][idx];
+    return sum;
+}
+
+
+void Build(int n) {
+    //BlockSize = sqrt(n);
+    BlockSize = 340;
     
-    for(auto v : G[u]) {
-        if(par == v)
-            continue;
-        
-        dfs(v, u, lvl+1);
-        
-        ChildNode[u] += ChildNode[v];
-        
-        if(nextNode[u] == -1 || ChildNode[v] > ChildNode[nextNode[u]])
-            nextNode[u] = v;
+    for(int i = 1; i <= n; ++i)
+        update(i/BlockSize, val[i], 1);
+}
+
+
+void Remove(int pos, int val) {
+    update(pos/BlockSize, val, -1);
+}
+
+void Insert(int pos, int val) {
+    update(pos/BlockSize, val, 1);
+}
+
+
+int Query(int l, int r, int k) {                // Query in range l -- r for k
+    int Count = 0;
+    while(l%BlockSize != 0 && l < r) {          // if l partially lies inside of a sqrt segment
+        Count += val[l] > k;
+        ++l;
     }
-}
-
-
-void HLD(int u, int par) {
-    chain[u] = ChainNo;
-    num[u] = all++;
-    
-    if(ChainSize[ChainNo] == 0)
-        top[ChainNo] = u;
-    
-    ChainSize[ChainNo]++;
-    
-    if(nextNode[u] != -1)
-        HLD(nextNode[u], u);
-    
-    for(auto v : G[u]) {
-        if(v == par || nextNode[u] == v)
-            continue;
-        ChainNo++;
-        HLD(v, u);
+    while(l+BlockSize <= r) {                   // for all full sqrt segment
+        Count += read(l/BlockSize, MaxVal) - read(l/BlockSize, k);
+        l += BlockSize;
     }
-}
-
-
-void NumToNode(int V) {
-    for(int i = 1; i <= V; ++i)
-        numToNode[num[i]] = i;
-}
-
-vector<int>tmp;
-
-void MERGE(int i, int j, int k) {
-    if(i > j)
-        swap(i, j);
-        
-    for(; i <= j; ++i)
-        for(auto val : ChainWeight[i])
-            tmp.push_back(val);
-
-    sort(tmp.begin(), tmp.end());
-    while((int)tmp.size() > k)
-        tmp.pop_back();
-}
-
-
-
-void GetVector(int u, int v, int k) {
-    while(chain[u] != chain[v]) {                           // While two nodes are not in same chain
-        if(level[top[chain[u]]] < level[top[chain[v]]])     // u is the chain which's topmost node is deeper
-            swap(u, v);
-        int start = top[chain[u]];
-        MERGE(num[start], num[u], k);
-        u = parent[start];                                  // go to the upper chain of u
+    while(l <= r) {                             // for the rightmost partial sqrt segment values
+        Count += val[l] > k;
+        ++l;
     }
     
-    if(num[u] > num[v])
-        swap(u, v);
-
-    MERGE(num[u], num[v], k);
+    return Count;
 }
-
 
 int main() {
-    //freopen("in", "r", stdin);
-    FastRead;
-    int n, m, q, u, v, k;
+    int n, l, r, k, q, x, t, pos;
+    MaxVal = -1;
     
-    cin >> n >> m >> q;
+    scanf("%d", &n);
     
-    for(int i = 1; i < n; ++i) {
-        cin >> u >> v;
-        G[u].push_back(v);
-        G[v].push_back(u);
+    
+    for(int i = 1; i <= n; ++i) {
+        scanf("%d", &val[i]);
+        MaxVal = max(val[i], MaxVal);
     }
     
-    memset(parent, -1, sizeof parent);
-    memset(nextNode, -1, sizeof nextNode);
-    ChainNo = 1, all = 1;
-    
-    dfs(1, -1, 0);
-    
-    memset(ChainSize, 0, sizeof ChainSize);
-    HLD(1, -1);
-    
-    NumToNode(n);
-    
-    for(int i = 1; i <= m; ++i) {
-        cin >> u;
-        ChainWeight[num[u]][0].push_back(i);
-    }
-    
-    tmp.reserve(n+100);
+    Build(n);
+    scanf("%d", &q);
     
     while(q--) {
-        cin >> u >> v >> k;
-        tmp.clear();
-        GetVector(u, v, k);
+        scanf("%d", &t);
         
-        cout << tmp.size();
-        for(auto x : tmp)
-            cout << " " << x;
-        cout << endl;
+        if(t == 0) {
+            scanf("%d%d", &pos, &x);
+            Remove(pos, val[pos]);
+            Insert(pos, x);
+            val[pos] = x;
+        }
+        else {
+            scanf("%d%d%d", &l, &r, &k);
+            printf("%d\n", Query(l, r, k));
+        }
     }
     
     return 0;
-}
+} 
