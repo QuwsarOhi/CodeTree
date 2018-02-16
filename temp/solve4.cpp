@@ -52,3 +52,54 @@ void err(istream_iterator<string> it, T a, Args... args) {                      
 //const int dx[4][2] = {{0,1}, {0,-1}, {1,0}, {-1,0}};                                                      // Four side 
 //const int dxx[8][2] = {{0,1}, {0,-1}, {1,0}, {-1,0}, {1,1}, {1,-1}, {-1,1}, {-1,-1}};                     // Eight side
 //----------------------------------------------------------------------------------------------------------
+
+string str;
+
+int dp[10][10000], v[10], MIN = INT_MAX, MAX_LEN;
+
+int recur(int pos, int val, int len) {
+    if(dp[pos][val] != -1)
+        return dp[pos][val];
+        
+    if(pos == 0)
+        return len == MAX_LEN;
+
+    if(val-v[pos] >= 0 && recur(pos, val-v[pos], len+1)) {
+        str.push_back(char('0'+pos));
+        return dp[pos][val] = 1;
+    }    
+    else if(recur(pos-1, val, len))
+        return dp[pos][val] = 1;
+    
+    dp[pos][val] = 0;
+    return 0;
+}
+    
+    
+    
+
+
+int main() {
+    int val;
+    string st;
+    cin >> val;
+    for(int i = 1; i <= 9; ++i) {
+        cin >> v[i];
+        MIN = min(v[i], MIN);
+    }
+    
+    MAX_LEN = val/MIN;
+    
+    memset(dp, -1, sizeof dp);
+    
+    if(!recur(9, val, 0) || MIN > val) {
+        cout << "-1\n";
+        return 0;
+    }
+    
+    reverse(str.begin(), str.end());
+    cout << str << endl;
+    
+    return 0;
+}
+        

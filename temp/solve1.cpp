@@ -52,3 +52,33 @@ void err(istream_iterator<string> it, T a, Args... args) {                      
 //const int dx[4][2] = {{0,1}, {0,-1}, {1,0}, {-1,0}};                                                      // Four side 
 //const int dxx[8][2] = {{0,1}, {0,-1}, {1,0}, {-1,0}, {1,1}, {1,-1}, {-1,1}, {-1,-1}};                     // Eight side
 //----------------------------------------------------------------------------------------------------------
+
+    
+    
+int main() {
+    ll Lim, x;
+    cin >> Lim;
+    
+    ll len = -1, track = -1;
+    
+    fr(i, 1, 10) {
+        cin >> x;
+        if(len <= Lim/x) {
+            track = i;
+            len = Lim/x;
+        }
+    }
+    
+    if(len <= 0) {
+        cout << -1 << endl;
+        return 0;
+    }
+    
+    for(int i = 1; i <= len; ++i)
+        cout << track;
+    cout << endl;
+    
+    return 0;
+}
+    
+    
