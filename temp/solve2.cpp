@@ -1,58 +1,54 @@
-// LightOJ
-// 1207 - Posters for Election
-
 #include <bits/stdc++.h>
 using namespace std;
+#define MAX                 200100
+#define EPS                 1e-9
+#define INF                 1e7
+#define MOD                 1000000007
+#define pb                  push_back
+#define mp                  make_pair
+#define fi                  first
+#define se                  second
+#define pi                  acos(-1)
+#define sf                  scanf
+#define pf                  printf
+#define SIZE(a)             ((int)a.size())
+#define All(S)              S.begin(), S.end()              
+#define Equal(a, b)         (abs(a-b) < EPS)
+#define Greater(a, b)       (a >= (b+EPS))
+#define GreaterEqual(a, b)  (a > (b-EPS))
+#define fr(i, a, b)         for(register int i = (a); i < (int)(b); i++)
+#define FastRead            ios_base::sync_with_stdio(false); cin.tie(NULL);
+#define fileRead(S)         freopen(S, "r", stdin);
+#define fileWrite(S)        freopen(S, "w", stdout);
+#define Unique(X)           X.erase(unique(X.begin(), X.end()), X.end())
+#define error(args...)      { string _s = #args; replace(_s.begin(), _s.end(), ',', ' '); stringstream _ss(_s); istream_iterator<string> _it(_ss); err(_it, args); }
 
-set<pair<pair<int, int>, int> >Set;
-bitset<101000>found;
+#define isOn(S, j)          (S & (1 << j))
+#define setBit(S, j)        (S |= (1 << j))
+#define clearBit(S, j)      (S &= ~(1 << j))
+#define toggleBit(S, j)     (S ^= (1 << j))
+#define lowBit(S)           (S & (-S))
+#define setAll(S, n)        (S = (1 << n) - 1)
 
-int main() {
-    //freopen("in", "r", stdin);
-    //freopen("out", "w", stdout);
-    
-    int t, n, l, r, poster = 0;
-    
-    scanf("%d", &t);
-    
-    for(int Case = 1; Case <= t; ++Case) {
-        scanf("%d", &n);
-        poster = 0;
-        
-        while(n--) {
-            scanf("%d%d", &l, &r);
-            
-            poster++;
-            pair<pair<int, int>, int> pi = make_pair(make_pair(l, -1), -1);
-            set<pair<pair<int, int>, int> > :: iterator it = Set.lower_bound(pi);
-            
-            while(it != Set.end() && it->first.second <= r) {
-                int segL = it->first.second;
-                int segR = it->first.first;
-                int pastPoster = it->second;
-                
-                Set.erase(it++);
-                
-                if(segL < l)
-                    Set.insert(make_pair(make_pair(l-1, segL), pastPoster));
-                if(segR > r)
-                    Set.insert(make_pair(make_pair(segR, r+1), pastPoster));
-            }
-            
-            Set.insert(make_pair(make_pair(r, l), poster));
-        }
-        
-        set<pair<pair<int, int>, int> > :: iterator it = Set.begin();
-        found.reset();
-        
-        while(it != Set.end()) {
-            found[it->second] = 1;
-            ++it;
-        }
-        
-        Set.clear();
-        printf("Case %d: %d\n", Case, int(found.count()));
-    }
-    
-    return 0;
+typedef unsigned long long ull;
+typedef long long ll;
+typedef map<int, int> mii;
+typedef map<ll, ll>mll;
+typedef map<string, int> msi;
+typedef vector<int> vi;
+typedef vector<long long>vl;
+typedef pair<int, int> pii;
+typedef pair<ll, ll> pll;
+typedef vector<pair<int, int> > vii;
+typedef vector<pair<ll, ll> >vll;
+
+void err(istream_iterator<string> it) {}
+template<typename T, typename... Args>
+void err(istream_iterator<string> it, T a, Args... args) {                                                  // Debugger error(a, b, ....)
+	cerr << *it << " = " << a << "\n";
+	err(++it, args...);
 }
+
+//const int dx[4][2] = {{0,1}, {0,-1}, {1,0}, {-1,0}};                                                      // Four side 
+//const int dxx[8][2] = {{0,1}, {0,-1}, {1,0}, {-1,0}, {1,1}, {1,-1}, {-1,1}, {-1,-1}};                     // Eight side
+//----------------------------------------------------------------------------------------------------------

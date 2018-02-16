@@ -1,102 +1,83 @@
-// SPOJ KQUERY 
-// http://www.spoj.com/problems/KQUERY/
-
-// BIT + OFFLINE
-// TLE WITH SEG-TREE
-
-// Find values strictly greater than k in range [l, r]
-// Offline Process
-
+https://toph.co/s/105765
 #include <bits/stdc++.h>
 using namespace std;
-typedef long long ll;
 
+typedef long long int LL;
+typedef unsigned long long uLL;
+const int inf = 1e9;
+const LL INF = 1e18;
+const int N = 100005;
+const int MOD = 1e9+7;
+#define endl         '\n'
+#define clr(V)       V.clear()
+#define sz(V)        V.size()
+#define SORT(V)      sort( V.begin(), V.end() )
+#define MEM(a,x)     memset( a, x, sizeof(a) )
+#define FOR(i,a,b)   for( int i = a; i <= b; i++ )
 
-struct node {
-    ll l, r, id, val;
-    
-    node(ll l, ll r, ll val, ll id) {
-        this->l = l;
-        this->r = r;
-        this->val = val;
-        this->id = id;
+int ara[ 10*N ];
+int NOD[ 10*N ];
+int n , q , l = 1 , r = 0;
+int cnt[ 10*N ] , Ans[ 10*N ] , res[ 10*N ];
+
+const int block = 320;
+
+struct query {
+    int l , r , id , val;
+    bool operator <( const query &q ) const {
+        int block_a = l/block;
+        int block_b = q.l/block;
+        if( block_a == block_b ) return ( r < q.r );
+        else return ( block_a < block_b );
     }
-};
+} Q[ N ];
 
-vector<node>v;
-ll tree[31000], MaxVal = 30100;
-int ans[200100];
-
-inline void fastIn(ll &num) {          // Fast IO, with space and new line ignoring
-    bool neg = false;
-    register int c;
-    num = 0;
-    c = getchar_unlocked();
-    for( ; c != '-' && (c < '0' || c > '9'); c = getchar_unlocked());
-    if (c == '-') {
-        neg = true;
-        c = getchar_unlocked();
+void calc( ) {
+    for( int i = 1; i <= 10*N; i++ ) {
+        for( int j = i; j <= 10*N; j += i ) {
+            NOD[j]++;
+        }
     }
-    for(; (c>47 && c<58); c=getchar_unlocked())
-        num = (num<<1) + (num<<3) + c - 48;
-    if(neg)
-        num *= -1;
 }
-
-
-void update(int idx, int val) {
-	while(idx <= MaxVal) {
-		tree[idx] = (val + tree[idx]);
-		idx += (idx & -idx);
-	}
+void Remove( int idx ) {
+    int x = ara[idx];
+    cnt[x]--;
+    if( cnt[x] == 0 ) res[ NOD[x] ]--;
 }
-
-
-long long read(int idx) {
-	long long sum = 0;
-	while(idx > 0) {
-		sum = (tree[idx] + sum);
-		idx -= (idx & -idx);
-	}
-	return sum;
+void Add( int idx ) {
+    int x = ara[idx];
+    cnt[x]++;
+    if( cnt[x] == 1 ) res[ NOD[x] ]++;
 }
-
-
-bool cmp(node a, node b) {
-    if(a.val != b.val)
-        return a.val > b.val;           // Greater value goes first
-    return a.id > b.id;                 // ID = -1 for input values, so if there is any query, it should go first
+void MO( ) {
+    sort( Q+1 , Q+q+1 );
+    l = 1 , r = 0;
+    FOR( i , 1 , q ) {
+        while( l < Q[i].l ) Remove( l++ );
+        while( l > Q[i].l ) Add( --l );
+        while( r < Q[i].r ) Add( ++r );
+        while( r > Q[i].r ) Remove( r-- );
+        Ans[ Q[i].id ] = res[ Q[i].val ];
+    }
 }
-
-int main() {
-    ll n, l, r, k, x, q;
-    
-    fastIn(n);
-    
-    for(ll i = 1; i <= n; ++i) {
-        fastIn(x);
-        v.push_back({i, -1, x, -1});
+int main(int argc,char const *argv[]) {
+    int t;
+    scanf("%d",&t);
+    calc( );
+    FOR( tc , 1 , t ) {
+        int n;
+        scanf("%d",&n);
+        FOR( i , 1 , n ) scanf("%d",&ara[i]);
+        scanf("%d",&q);
+        FOR( i , 1 , q ) {
+            scanf("%d %d %d",&Q[i].l,&Q[i].r,&Q[i].val);
+            Q[i].id = i;
+        }
+        MO( );
+        printf("Case %d:\n",tc);
+        FOR( i , 1 , q ) printf("%d\n",Ans[i]);
+        MEM( cnt , 0 );
+        MEM( res , 0 );
     }
-    
-    fastIn(q);
-    
-    for(ll i = 1; i <= q; ++i) {
-        fastIn(l), fastIn(r), fastIn(k);
-        v.push_back({l, r, k, i});
-    }
-    
-    sort(v.begin(), v.end(), cmp);      // Sorting gurantees that every greater value contains 1 in their position
-    
-    
-    for(auto it : v) {
-        if(it.id == -1)
-            update(it.l, 1);            // This value is greater than all other queries that comes next, so set 1 to this index
-        else
-            ans[it.id] = read(it.r) - read(it.l-1);     // Range Sum
-    }
-    
-    for(ll i = 1; i <= q; ++i)
-        printf("%d\n", ans[i]);
-    
     return 0;
 }

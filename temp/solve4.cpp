@@ -1,66 +1,54 @@
-// LightOJ
-// 1085 - All Possible Increasing Subsequences
-
-
 #include <bits/stdc++.h>
-#define MOD 1000000007
 using namespace std;
+#define MAX                 200100
+#define EPS                 1e-9
+#define INF                 1e7
+#define MOD                 1000000007
+#define pb                  push_back
+#define mp                  make_pair
+#define fi                  first
+#define se                  second
+#define pi                  acos(-1)
+#define sf                  scanf
+#define pf                  printf
+#define SIZE(a)             ((int)a.size())
+#define All(S)              S.begin(), S.end()              
+#define Equal(a, b)         (abs(a-b) < EPS)
+#define Greater(a, b)       (a >= (b+EPS))
+#define GreaterEqual(a, b)  (a > (b-EPS))
+#define fr(i, a, b)         for(register int i = (a); i < (int)(b); i++)
+#define FastRead            ios_base::sync_with_stdio(false); cin.tie(NULL);
+#define fileRead(S)         freopen(S, "r", stdin);
+#define fileWrite(S)        freopen(S, "w", stdout);
+#define Unique(X)           X.erase(unique(X.begin(), X.end()), X.end())
+#define error(args...)      { string _s = #args; replace(_s.begin(), _s.end(), ',', ' '); stringstream _ss(_s); istream_iterator<string> _it(_ss); err(_it, args); }
 
-long long tree[100010], val[100010];
-int MaxVal;
-map<long long, int>Map;
+#define isOn(S, j)          (S & (1 << j))
+#define setBit(S, j)        (S |= (1 << j))
+#define clearBit(S, j)      (S &= ~(1 << j))
+#define toggleBit(S, j)     (S ^= (1 << j))
+#define lowBit(S)           (S & (-S))
+#define setAll(S, n)        (S = (1 << n) - 1)
 
-void update(int idx, int val) {
-	while(idx <= MaxVal) {
-		tree[idx] = (val + tree[idx]) % MOD;
-		idx += (idx & -idx);
-	}
+typedef unsigned long long ull;
+typedef long long ll;
+typedef map<int, int> mii;
+typedef map<ll, ll>mll;
+typedef map<string, int> msi;
+typedef vector<int> vi;
+typedef vector<long long>vl;
+typedef pair<int, int> pii;
+typedef pair<ll, ll> pll;
+typedef vector<pair<int, int> > vii;
+typedef vector<pair<ll, ll> >vll;
+
+void err(istream_iterator<string> it) {}
+template<typename T, typename... Args>
+void err(istream_iterator<string> it, T a, Args... args) {                                                  // Debugger error(a, b, ....)
+	cerr << *it << " = " << a << "\n";
+	err(++it, args...);
 }
 
-long long read(int idx) {
-	long long sum = 0;
-	while(idx > 0) {
-		sum = (tree[idx] + sum) % MOD;
-		idx -= (idx & -idx);
-	}
-	return sum%MOD;
-}
-
-
-long long findMax(long long x) {
-    return (read(MaxVal) - read(x) + MOD)%MOD;
-}
-
-int main() {
-    int t, n;
-    
-    scanf("%d", &t);
-    
-    for(int Case = 1; Case <= t; ++Case) {
-        scanf("%d", &n);
-        MaxVal = 0;
-        memset(tree, 0, sizeof tree);
-        
-        for(int i = 1; i <= n; ++i) {
-            scanf("%lld", &val[i]);
-            Map[val[i]];
-        }
-        
-        map<long long, int> :: iterator it;
-        MaxVal = 0;
-        
-        for(it = Map.begin(); it != Map.end(); ++it)
-            it->second = ++MaxVal;
-        
-        for(int i = n; i >= 1; --i) {
-            long long tmp = (findMax(Map[val[i]]) + 1)%MOD;
-            update(Map[val[i]], tmp);
-        }
-        
-        printf("Case %d: %lld\n", Case, read(MaxVal)%MOD);
-        
-        Map.clear();
-    }
-    
-    return 0;
-}
+//const int dx[4][2] = {{0,1}, {0,-1}, {1,0}, {-1,0}};                                                      // Four side 
+//const int dxx[8][2] = {{0,1}, {0,-1}, {1,0}, {-1,0}, {1,1}, {1,-1}, {-1,1}, {-1,-1}};                     // Eight side
+//----------------------------------------------------------------------------------------------------------

@@ -1,103 +1,54 @@
-// SPOJ KQUERY-II
-
-// IDEA : Fenwick Tree + Square Root Decomposition
-
-// Array size n is 30000, where sqrt(n) = 174
-// So we will convert n to sqrt(n) blocks (for some position range [block 2*block] ), each block will contain its own fenwick tree of index 1 to 10000
-// Memomry Complexity becomes : 174*10000 which is considerable
-
-// To be noted, BlockSize, is changed to due to time limit
-
-// In each block(according to index) we will update 1 to the position of the value
-// Removing the value is almost the same
-// Query also works like Sqrt Decomposition
-
-
 #include <bits/stdc++.h>
 using namespace std;
+#define MAX                 200100
+#define EPS                 1e-9
+#define INF                 1e7
+#define MOD                 1000000007
+#define pb                  push_back
+#define mp                  make_pair
+#define fi                  first
+#define se                  second
+#define pi                  acos(-1)
+#define sf                  scanf
+#define pf                  printf
+#define SIZE(a)             ((int)a.size())
+#define All(S)              S.begin(), S.end()              
+#define Equal(a, b)         (abs(a-b) < EPS)
+#define Greater(a, b)       (a >= (b+EPS))
+#define GreaterEqual(a, b)  (a > (b-EPS))
+#define fr(i, a, b)         for(register int i = (a); i < (int)(b); i++)
+#define FastRead            ios_base::sync_with_stdio(false); cin.tie(NULL);
+#define fileRead(S)         freopen(S, "r", stdin);
+#define fileWrite(S)        freopen(S, "w", stdout);
+#define Unique(X)           X.erase(unique(X.begin(), X.end()), X.end())
+#define error(args...)      { string _s = #args; replace(_s.begin(), _s.end(), ',', ' '); stringstream _ss(_s); istream_iterator<string> _it(_ss); err(_it, args); }
 
+#define isOn(S, j)          (S & (1 << j))
+#define setBit(S, j)        (S |= (1 << j))
+#define clearBit(S, j)      (S &= ~(1 << j))
+#define toggleBit(S, j)     (S ^= (1 << j))
+#define lowBit(S)           (S & (-S))
+#define setAll(S, n)        (S = (1 << n) - 1)
 
-int tree[380][10010], val[30100], BlockSize, MaxVal;
+typedef unsigned long long ull;
+typedef long long ll;
+typedef map<int, int> mii;
+typedef map<ll, ll>mll;
+typedef map<string, int> msi;
+typedef vector<int> vi;
+typedef vector<long long>vl;
+typedef pair<int, int> pii;
+typedef pair<ll, ll> pll;
+typedef vector<pair<int, int> > vii;
+typedef vector<pair<ll, ll> >vll;
 
-void update(int block, int idx, int val) {
-    for( ; idx <= MaxVal; idx += idx & -idx)
-        tree[block][idx] += val;
+void err(istream_iterator<string> it) {}
+template<typename T, typename... Args>
+void err(istream_iterator<string> it, T a, Args... args) {                                                  // Debugger error(a, b, ....)
+	cerr << *it << " = " << a << "\n";
+	err(++it, args...);
 }
 
-
-long long read(int block, int idx) {
-    long long sum = 0;
-    for( ; idx >= 1; idx -= idx & -idx)
-        sum += tree[block][idx];
-    return sum;
-}
-
-
-void Build(int n) {
-    //BlockSize = sqrt(n);
-    BlockSize = 340;
-    
-    for(int i = 1; i <= n; ++i)
-        update(i/BlockSize, val[i], 1);
-}
-
-
-void Remove(int pos, int val) {
-    update(pos/BlockSize, val, -1);
-}
-
-void Insert(int pos, int val) {
-    update(pos/BlockSize, val, 1);
-}
-
-
-int Query(int l, int r, int k) {                // Query in range l -- r for k
-    int Count = 0;
-    while(l%BlockSize != 0 && l < r) {          // if l partially lies inside of a sqrt segment
-        Count += val[l] > k;
-        ++l;
-    }
-    while(l+BlockSize <= r) {                   // for all full sqrt segment
-        Count += read(l/BlockSize, MaxVal) - read(l/BlockSize, k);
-        l += BlockSize;
-    }
-    while(l <= r) {                             // for the rightmost partial sqrt segment values
-        Count += val[l] > k;
-        ++l;
-    }
-    
-    return Count;
-}
-
-int main() {
-    int n, l, r, k, q, x, t, pos;
-    MaxVal = -1;
-    
-    scanf("%d", &n);
-    
-    
-    for(int i = 1; i <= n; ++i) {
-        scanf("%d", &val[i]);
-        MaxVal = max(val[i], MaxVal);
-    }
-    
-    Build(n);
-    scanf("%d", &q);
-    
-    while(q--) {
-        scanf("%d", &t);
-        
-        if(t == 0) {
-            scanf("%d%d", &pos, &x);
-            Remove(pos, val[pos]);
-            Insert(pos, x);
-            val[pos] = x;
-        }
-        else {
-            scanf("%d%d%d", &l, &r, &k);
-            printf("%d\n", Query(l, r, k));
-        }
-    }
-    
-    return 0;
-} 
+//const int dx[4][2] = {{0,1}, {0,-1}, {1,0}, {-1,0}};                                                      // Four side 
+//const int dxx[8][2] = {{0,1}, {0,-1}, {1,0}, {-1,0}, {1,1}, {1,-1}, {-1,1}, {-1,-1}};                     // Eight side
+//----------------------------------------------------------------------------------------------------------

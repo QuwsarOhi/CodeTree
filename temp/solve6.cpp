@@ -1,83 +1,54 @@
-https://toph.co/s/105765
 #include <bits/stdc++.h>
 using namespace std;
+#define MAX                 200100
+#define EPS                 1e-9
+#define INF                 1e7
+#define MOD                 1000000007
+#define pb                  push_back
+#define mp                  make_pair
+#define fi                  first
+#define se                  second
+#define pi                  acos(-1)
+#define sf                  scanf
+#define pf                  printf
+#define SIZE(a)             ((int)a.size())
+#define All(S)              S.begin(), S.end()              
+#define Equal(a, b)         (abs(a-b) < EPS)
+#define Greater(a, b)       (a >= (b+EPS))
+#define GreaterEqual(a, b)  (a > (b-EPS))
+#define fr(i, a, b)         for(register int i = (a); i < (int)(b); i++)
+#define FastRead            ios_base::sync_with_stdio(false); cin.tie(NULL);
+#define fileRead(S)         freopen(S, "r", stdin);
+#define fileWrite(S)        freopen(S, "w", stdout);
+#define Unique(X)           X.erase(unique(X.begin(), X.end()), X.end())
+#define error(args...)      { string _s = #args; replace(_s.begin(), _s.end(), ',', ' '); stringstream _ss(_s); istream_iterator<string> _it(_ss); err(_it, args); }
 
-typedef long long int LL;
-typedef unsigned long long uLL;
-const int inf = 1e9;
-const LL INF = 1e18;
-const int N = 100005;
-const int MOD = 1e9+7;
-#define endl         '\n'
-#define clr(V)       V.clear()
-#define sz(V)        V.size()
-#define SORT(V)      sort( V.begin(), V.end() )
-#define MEM(a,x)     memset( a, x, sizeof(a) )
-#define FOR(i,a,b)   for( int i = a; i <= b; i++ )
+#define isOn(S, j)          (S & (1 << j))
+#define setBit(S, j)        (S |= (1 << j))
+#define clearBit(S, j)      (S &= ~(1 << j))
+#define toggleBit(S, j)     (S ^= (1 << j))
+#define lowBit(S)           (S & (-S))
+#define setAll(S, n)        (S = (1 << n) - 1)
 
-int ara[ 10*N ];
-int NOD[ 10*N ];
-int n , q , l = 1 , r = 0;
-int cnt[ 10*N ] , Ans[ 10*N ] , res[ 10*N ];
+typedef unsigned long long ull;
+typedef long long ll;
+typedef map<int, int> mii;
+typedef map<ll, ll>mll;
+typedef map<string, int> msi;
+typedef vector<int> vi;
+typedef vector<long long>vl;
+typedef pair<int, int> pii;
+typedef pair<ll, ll> pll;
+typedef vector<pair<int, int> > vii;
+typedef vector<pair<ll, ll> >vll;
 
-const int block = 320;
+void err(istream_iterator<string> it) {}
+template<typename T, typename... Args>
+void err(istream_iterator<string> it, T a, Args... args) {                                                  // Debugger error(a, b, ....)
+	cerr << *it << " = " << a << "\n";
+	err(++it, args...);
+}
 
-struct query {
-    int l , r , id , val;
-    bool operator <( const query &q ) const {
-        int block_a = l/block;
-        int block_b = q.l/block;
-        if( block_a == block_b ) return ( r < q.r );
-        else return ( block_a < block_b );
-    }
-} Q[ N ];
-
-void calc( ) {
-    for( int i = 1; i <= 10*N; i++ ) {
-        for( int j = i; j <= 10*N; j += i ) {
-            NOD[j]++;
-        }
-    }
-}
-void Remove( int idx ) {
-    int x = ara[idx];
-    cnt[x]--;
-    if( cnt[x] == 0 ) res[ NOD[x] ]--;
-}
-void Add( int idx ) {
-    int x = ara[idx];
-    cnt[x]++;
-    if( cnt[x] == 1 ) res[ NOD[x] ]++;
-}
-void MO( ) {
-    sort( Q+1 , Q+q+1 );
-    l = 1 , r = 0;
-    FOR( i , 1 , q ) {
-        while( l < Q[i].l ) Remove( l++ );
-        while( l > Q[i].l ) Add( --l );
-        while( r < Q[i].r ) Add( ++r );
-        while( r > Q[i].r ) Remove( r-- );
-        Ans[ Q[i].id ] = res[ Q[i].val ];
-    }
-}
-int main(int argc,char const *argv[]) {
-    int t;
-    scanf("%d",&t);
-    calc( );
-    FOR( tc , 1 , t ) {
-        int n;
-        scanf("%d",&n);
-        FOR( i , 1 , n ) scanf("%d",&ara[i]);
-        scanf("%d",&q);
-        FOR( i , 1 , q ) {
-            scanf("%d %d %d",&Q[i].l,&Q[i].r,&Q[i].val);
-            Q[i].id = i;
-        }
-        MO( );
-        printf("Case %d:\n",tc);
-        FOR( i , 1 , q ) printf("%d\n",Ans[i]);
-        MEM( cnt , 0 );
-        MEM( res , 0 );
-    }
-    return 0;
-}
+//const int dx[4][2] = {{0,1}, {0,-1}, {1,0}, {-1,0}};                                                      // Four side 
+//const int dxx[8][2] = {{0,1}, {0,-1}, {1,0}, {-1,0}, {1,1}, {1,-1}, {-1,1}, {-1,-1}};                     // Eight side
+//----------------------------------------------------------------------------------------------------------
