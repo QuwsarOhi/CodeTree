@@ -53,53 +53,86 @@ void err(istream_iterator<string> it, T a, Args... args) {                      
 //const int dxx[8][2] = {{0,1}, {0,-1}, {1,0}, {-1,0}, {1,1}, {1,-1}, {-1,1}, {-1,-1}};                     // Eight side
 //----------------------------------------------------------------------------------------------------------
 
-string str;
-
-int dp[10][10000], v[10], MIN = INT_MAX, MAX_LEN;
-
-int recur(int pos, int val, int len) {
-    if(dp[pos][val] != -1)
-        return dp[pos][val];
+struct RMQ {
+    vector<ll>tree;
+    
+    void resize(ll sz) {
+        tree.resize(sz, LONG_LONG_MIN);
+    }
+    
+    void init(int pos, int l, int r, ll v[]) {
+        if(l == r) {
+            tree[pos] = v[l];
+            return;
+        }
         
-    if(pos == 0)
-        return len == MAX_LEN;
+        int mid = (l+r)>>1;
+        
+        init(pos<<1, l, mid, v);
+        init(pos<<1|1, mid+1, r, v);
+        
+        tree[pos] = max(tree[pos<<1], tree[pos<<1|1]);
+    }
+    
+    ll query(int pos, int l, int r, int L, int R) {
+        if(r < L || R < l)
+            return LONG_LONG_MIN;
+        
+        if(L <= l && r <= R)
+            return tree[pos];
+        
+        int mid = (l+r)>>1;
+        
+        ll x = query(pos<<1, l, mid, L, R);
+        ll y = query(pos<<1|1, mid+1, r, L, R);
+        
+        return max(x, y);
+    }
+};
 
-    if(val-v[pos] >= 0 && recur(pos, val-v[pos], len+1)) {
-        str.push_back(char('0'+pos));
-        return dp[pos][val] = 1;
-    }    
-    else if(recur(pos-1, val, len))
-        return dp[pos][val] = 1;
-    
-    dp[pos][val] = 0;
-    return 0;
-}
-    
-    
-    
-
+ll lsum[110000], rsum[110000], v[110000];
 
 int main() {
-    int val;
-    string st;
-    cin >> val;
-    for(int i = 1; i <= 9; ++i) {
-        cin >> v[i];
-        MIN = min(v[i], MIN);
+    //fileRead("in");
+    //fileWrite("out");
+    
+    ll t, tot, n, q, x1, x2, y1, y2;
+    
+    while(t--) {
+        scanf("%lld", &n);
+        
+        //rsum[n+1] = lsum[0] = 0;
+        memset(rsum, 0, sizeof rsum);
+        memset(lsum, 0, sizeof lsum);
+        
+        for(ll i = 1; i <= n; ++i) {
+            scanf("%lld", &v[i]);
+            lsum[i] = lsum[i-1] + v[i];
+            //printf("%lld ", v[i]);
+        }
+        //printf("\n");
+        
+        for(int i = n; i >= 1; --i)
+            rsum[i] = rsum[i+1]+v[i];
+        
+        tot = lsum[n];
+        
+        RMQ lSUM, rSUM;
+        
+        lSUM.resize(n*5);
+        rSUM.resize(n*5);
+        lSUM.init(1, 1, n, lsum);
+        rSUM.init(1, 1, n, rsum);
+        
+        scanf("%lld", &q);
+        
+        for(ll i = 1; i <= q; ++i) {
+            scanf("%lld%lld", &x1, &y1);
+            //printf("%d : %lld %lld %lld %lld\n", i, x1, y1, x2, y2);
+            ll ans = lSUM.query(1, 1, n, x1, y1) + rSUM.query(1, 1, n, x1, y1) - tot;
+            printf("%lld\n", ans);
+        }
     }
-    
-    MAX_LEN = val/MIN;
-    
-    memset(dp, -1, sizeof dp);
-    
-    if(!recur(9, val, 0) || MIN > val) {
-        cout << "-1\n";
-        return 0;
-    }
-    
-    reverse(str.begin(), str.end());
-    cout << str << endl;
     
     return 0;
 }
-        
