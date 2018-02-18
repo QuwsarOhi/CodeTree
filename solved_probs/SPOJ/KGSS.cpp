@@ -1,11 +1,11 @@
-// SPOJ - GSS5 - Can you answer these queries V
-// http://www.spoj.com/problems/GSS5/
+// SPOJ - KGSS
+// http://www.spoj.com/problems/KGSS/
 
 #include <bits/stdc++.h>
 using namespace std;
 #define MAX                 200100
 #define EPS                 1e-9
-#define INF                 1e9
+#define INF                 1e7
 #define MOD                 1000000007
 #define pb                  push_back
 #define mp                  make_pair
@@ -57,92 +57,98 @@ void err(istream_iterator<string> it, T a, Args... args) {                      
 //----------------------------------------------------------------------------------------------------------
 
 struct node {
-	ll ans, prefix, suffix, sum;
-	
-	node(int val = 0) {
-		ans = prefix = suffix = sum = val;
-	}
-	
-	void merge(node left, node right) {
-		this->prefix = max(left.prefix, left.sum+right.prefix);
-		this->suffix = max(right.suffix, right.sum+left.suffix);
-		this->sum = left.sum + right.sum;
-		this->ans = max(left.ans, max(right.ans, left.suffix+right.prefix));
-	}
+    ll a, b;
+    
+    node(ll a = -1, ll b = -1) {
+        this->a = a;
+        this->b = b;
+    }
+    
+    void merge(node a, node b) {
+        ll v[] = {a.a, a.b, b.a, b.b};
+        sort(v, v+4);
+        this->a = v[3];
+        this->b = v[2];
+    }
 };
 
-node tree[200100];
-ll val[50100];
+
+node tree[5*1000000];
+ll v[1000000];
 
 void init(int pos, int l, int r) {
-	if(l == r) {
-		tree[pos] = node(val[l]);
-		return;
-	}
-	
-	int mid = (l+r)/2;
-	
-	init(pos*2, l, mid);
-	init(pos*2+1, mid+1, r);
-	
-	tree[pos].merge(tree[pos*2], tree[pos*2+1]);
-}
-
-
-node query(int pos, int l, int r, int x, int y) {
-	if(r < x || y < l) {
-        node tmp = node(-INF);
-        tmp.sum = 0;
-        return tmp;
+    if(l == r) {
+        tree[pos] = node(v[l], -1);
+        return;
     }
-	
-	if(x <= l && r <= y)
-		return tree[pos];
-	
-	int mid = (l+r)/2;
-	
-	node lft = query(pos*2, l, mid, x, y);
-	node rht = query(pos*2+1, mid+1, r, x, y);
     
-	node parent = node();
-	parent.merge(lft, rht);
-	return parent;
+    int mid = (l+r)>>1;
+    
+    init(pos<<1, l, mid);
+    init(pos<<1|1, mid+1, r);
+    
+    tree[pos].merge(tree[pos<<1], tree[pos<<1|1]);
 }
 
 
+node query(int pos, int l, int r, int L, int R) {
+    if(r < L || R < l)
+        return node(-1, -1);
+    
+    if(L <= l && r <= R)
+        return tree[pos];
+    
+    int mid = (l+r)>>1;
+    
+    node x = query(pos<<1, l, mid, L, R);
+    node y = query(pos<<1|1, mid+1, r, L, R);
+    
+    node tmp = node(-1, -1);
+    tmp.merge(x, y);
+    
+    return tmp;
+}
+
+
+void update(int pos, int l, int r, int idx, ll val) {
+    if(l == r) {
+        tree[pos] = node(val, -1);
+        return;
+    }
+    
+    int mid = (l+r)>>1;
+    
+    if(idx <= mid)
+        update(pos<<1, l, mid, idx, val);
+    else
+        update(pos<<1|1, mid+1, r, idx, val);
+    
+    tree[pos].merge(tree[pos<<1], tree[pos<<1|1]);
+}
+    
 int main() {
-    ll t, x1, x2, y1, y2, q, ans, n;
+    ll l, r, n, q;
+    char c;
     
-    scanf("%lld", &t);
+    scanf("%lld", &n);
     
-    while(t--) {
-        scanf("%lld", &n);
+    for(int i = 1; i <= n; ++i)
+        scanf("%lld", &v[i]);
+    
+    init(1, 1, n);
+    
+    scanf("%lld", &q);
+    
+    while(q--) {
+        scanf(" %c%lld%lld", &c, &l, &r);
         
-        for(int i = 1; i <= n; ++i)
-            scanf("%lld", &val[i]);
-        
-        init(1, 1, n);
-        
-        
-        
-        scanf("%lld", &q);
-        
-        while(q--) {
-            scanf("%lld%lld%lld%lld", &x1, &y1, &x2, &y2);
-            
-            if(y1 < x2) {
-                ans = query(1, 1, n, x1, y1).suffix;
-                ans += query(1, 1, n, x2, y2).prefix;
-                ans += query(1, 1, n, y1+1, x2-1).sum;
-            }
-            else {
-                ans = query(1, 1, n, x1, x2-1).suffix + query(1, 1, n, x2, y2).prefix;
-                ans = max(ans, query(1, 1, n, x2, y1).suffix + query(1, 1, n, y1+1, y2).prefix);
-                ans = max(ans, query(1, 1, n, x2, y1).ans);
-            }
-            printf("%lld\n", ans);
+        if(c == 'Q') {
+            node t = query(1, 1, n, l, r);
+            printf("%lld\n", t.a+t.b);
         }
+        else
+            update(1, 1, n, l, r);
     }
-    
+        
     return 0;
 }

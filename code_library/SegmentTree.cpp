@@ -294,6 +294,23 @@ void printer(int pos, int x1, int y1, int x2, int y2) {
     printer(4*pos+1, midX+1, midY+1, x2, y2);      // rhtDown
 }
 
+// ----------------------- Segment Tree Range Maximum Sum -----------------------
+
+struct node {
+	ll ans, prefix, suffix, sum;
+	
+	node(int val = 0) {
+		ans = prefix = suffix = sum = val;
+	}
+	
+	void merge(node left, node right) {
+		prefix = max(left.prefix, left.sum+right.prefix);
+		suffix = max(right.suffix, right.sum+left.suffix);
+		sum = left.sum + right.sum;
+		ans = max(left.ans, max(right.ans, left.suffix+right.prefix));
+	}
+};
+
 int main() {
     int t, q, n, x1, x2, y1, y2, val;
     scanf("%d", &t);
