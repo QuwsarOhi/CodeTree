@@ -1,14 +1,11 @@
-// CodeForces
-// http://codeforces.com/contest/349/problem/B
-
-// DP with Same State occurance
-// Path printing
+// SPOJ - GSS5 - Can you answer these queries V
+// http://www.spoj.com/problems/GSS5/
 
 #include <bits/stdc++.h>
 using namespace std;
 #define MAX                 200100
 #define EPS                 1e-9
-#define INF                 1e7
+#define INF                 1e9
 #define MOD                 1000000007
 #define pb                  push_back
 #define mp                  make_pair
@@ -59,64 +56,93 @@ void err(istream_iterator<string> it, T a, Args... args) {                      
 //const int dxx[8][2] = {{0,1}, {0,-1}, {1,0}, {-1,0}, {1,1}, {1,-1}, {-1,1}, {-1,-1}};                     // Eight side
 //----------------------------------------------------------------------------------------------------------
 
-int COLOR, v[12], dp[10][1000001], track[10][1000001];
-vi ans;
+struct node {
+	ll ans, prefix, suffix, sum;
+	
+	node(int val = 0) {
+		ans = prefix = suffix = sum = val;
+	}
+	
+	void merge(node left, node right) {
+		this->prefix = max(left.prefix, left.sum+right.prefix);
+		this->suffix = max(right.suffix, right.sum+left.suffix);
+		this->sum = left.sum + right.sum;
+		this->ans = max(left.ans, max(right.ans, left.suffix+right.prefix));
+	}
+};
 
-int recur(int pos, int val) {
-    if(dp[pos][val] != -1)
-        return dp[pos][val];
-    
-    int ret1 = INT_MIN, ret2 = INT_MIN;
-    
-    if(val + v[pos] <= COLOR)               // Stay in this node
-        ret1 = recur(pos, val+v[pos])+1;
-    if(pos-1 > 0)                           // Go for next node
-        ret2 = recur(pos-1, val);
-    
-    int ret = max(max(ret1, ret2), 0);
-    
-    if(ret1 >= ret2)                        // Track array indicates if the state (pos) remained in same position for the maximum value
-        track[pos][val] = 1;
-    else
-        track[pos][val] = 0;
-    
-    return dp[pos][val] = ret;
+node tree[200100];
+ll val[50100];
+
+void init(int pos, int l, int r) {
+	if(l == r) {
+		tree[pos] = node(val[l]);
+		return;
+	}
+	
+	int mid = (l+r)/2;
+	
+	init(pos*2, l, mid);
+	init(pos*2+1, mid+1, r);
+	
+	tree[pos].merge(tree[pos*2], tree[pos*2+1]);
 }
 
 
-void print(int pos, int val) {
-    if(val >= COLOR)
-        return;
-    
-    if(track[pos][val]) {
-        if(val+v[pos] > COLOR)
-            return;
-        printf("%d", pos);
-        print(pos, val+v[pos]);
+node query(int pos, int l, int r, int x, int y) {
+	if(r < x || y < l) {
+        node tmp = node(-INF);
+        tmp.sum = 0;
+        return tmp;
     }
-    else 
-        print(pos-1, val);
+	
+	if(x <= l && r <= y)
+		return tree[pos];
+	
+	int mid = (l+r)/2;
+	
+	node lft = query(pos*2, l, mid, x, y);
+	node rht = query(pos*2+1, mid+1, r, x, y);
+    
+	node parent = node();
+	parent.merge(lft, rht);
+	return parent;
 }
 
 
 int main() {
-    cin >> COLOR;
+    ll t, x1, x2, y1, y2, q, ans, n;
     
-    fr(i, 1, 10)
-        cin >> v[i];
+    scanf("%lld", &t);
+    
+    while(t--) {
+        scanf("%lld", &n);
         
-    
-    memset(dp, -1, sizeof dp);
-    int ret = recur(9, 0);
-    
-    if(ret == 0) {
-        cout << -1 << endl;
-        return 0;
+        for(int i = 1; i <= n; ++i)
+            scanf("%lld", &val[i]);
+        
+        init(1, 1, n);
+        
+        
+        
+        scanf("%lld", &q);
+        
+        while(q--) {
+            scanf("%lld%lld%lld%lld", &x1, &y1, &x2, &y2);
+            
+            if(y1 < x2) {
+                ans = query(1, 1, n, x1, y1).suffix;
+                ans += query(1, 1, n, x2, y2).prefix;
+                ans += query(1, 1, n, y1+1, x2-1).sum;
+            }
+            else {
+                ans = query(1, 1, n, x1, x2-1).suffix + query(1, 1, n, x2, y2).prefix;
+                ans = max(ans, query(1, 1, n, x2, y1).suffix + query(1, 1, n, y1+1, y2).prefix);
+                ans = max(ans, query(1, 1, n, x2, y1).ans);
+            }
+            printf("%lld\n", ans);
+        }
     }
-    
-    print(9, 0);
-    
-    for(auto it : ans) cout << it;
     
     return 0;
 }

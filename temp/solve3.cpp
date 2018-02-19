@@ -1,12 +1,3 @@
-// SOPJ - KQUERYO
-// http://www.spoj.com/problems/KQUERYO/
-
-// SEGMENT TREE WITH VECTORS (Merge Sort Tree)
-// at each level there exists total of n values (if we sum up all vector element sizes at each level)
-// there is log_n levels of a segment tree of 1 - n interval
-
-// so total memory complexity nlog_n
-
 #include <bits/stdc++.h>
 using namespace std;
 #define MAX                 200100
@@ -62,69 +53,4 @@ void err(istream_iterator<string> it, T a, Args... args) {                      
 //const int dxx[8][2] = {{0,1}, {0,-1}, {1,0}, {-1,0}, {1,1}, {1,-1}, {-1,1}, {-1,-1}};                     // Eight side
 //----------------------------------------------------------------------------------------------------------
 
-vi tree[1200000];
-int val[1200000];
 
-void init(int pos, int l, int r) {
-    if(l == r) {
-        tree[pos].pb(val[l]);
-        return;
-    }
-    
-    int mid = (l+r)>>1;
-    
-    init(pos<<1, l, mid);
-    init(pos<<1|1, mid+1, r);
-    
-    merge(tree[pos<<1].begin(), tree[pos<<1].end(), tree[pos<<1|1].begin(), tree[pos<<1|1].end(), back_inserter(tree[pos]));
-}
-
-
-int query(int pos, int l, int r, int L, int R, int k) {
-    if(r < L || R < l)
-        return 0;
-    
-    if(L <= l && r <= R)
-        return (int)tree[pos].size() - (upper_bound(tree[pos].begin(), tree[pos].end(), k) - tree[pos].begin());
-    
-    int mid = (l+r)>>1;
-    
-    return query(pos<<1, l, mid, L, R, k) + query(pos<<1|1, mid+1, r, L, R, k);
-}
-
-
-int main() {
-    ll n, l, r, k, q, lst;
-    
-    scanf("%lld", &n);
-    
-    for(int i = 1; i <= n; ++i) 
-        scanf("%d", &val[i]);
-    
-    scanf("%lld", &q);
-    
-    init(1, 1, n);
-    lst = 0;
-    
-    while(q--) {
-        scanf("%lld%lld%lld", &l, &r, &k);
-        l ^= lst;
-        r ^= lst;
-        k ^= lst;
-        if(l < 1)
-            l = 1;
-        if(r > n)
-            r = n;
-        if(l > r) {
-            lst = 0;
-            printf("0\n");
-        }
-        else {
-            lst = query(1, 1, n, l, r, k);
-            printf("%lld\n", lst);
-        }
-    }
-    
-    return 0;
-}
-    

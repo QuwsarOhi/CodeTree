@@ -1,8 +1,11 @@
-// CodeForces
-// http://codeforces.com/contest/349/problem/B
+// SOPJ - KQUERYO
+// http://www.spoj.com/problems/KQUERYO/
 
-// DP with Same State occurance
-// Path printing
+// SEGMENT TREE WITH VECTORS (Merge Sort Tree)
+// at each level there exists total of n values (if we sum up all vector element sizes at each level)
+// there is log_n levels of a segment tree of 1 - n interval
+
+// so total memory complexity nlog_n
 
 #include <bits/stdc++.h>
 using namespace std;
@@ -59,64 +62,69 @@ void err(istream_iterator<string> it, T a, Args... args) {                      
 //const int dxx[8][2] = {{0,1}, {0,-1}, {1,0}, {-1,0}, {1,1}, {1,-1}, {-1,1}, {-1,-1}};                     // Eight side
 //----------------------------------------------------------------------------------------------------------
 
-int COLOR, v[12], dp[10][1000001], track[10][1000001];
-vi ans;
+vi tree[1200000];
+int val[1200000];
 
-int recur(int pos, int val) {
-    if(dp[pos][val] != -1)
-        return dp[pos][val];
+void init(int pos, int l, int r) {
+    if(l == r) {
+        tree[pos].pb(val[l]);
+        return;
+    }
     
-    int ret1 = INT_MIN, ret2 = INT_MIN;
+    int mid = (l+r)>>1;
     
-    if(val + v[pos] <= COLOR)               // Stay in this node
-        ret1 = recur(pos, val+v[pos])+1;
-    if(pos-1 > 0)                           // Go for next node
-        ret2 = recur(pos-1, val);
+    init(pos<<1, l, mid);
+    init(pos<<1|1, mid+1, r);
     
-    int ret = max(max(ret1, ret2), 0);
-    
-    if(ret1 >= ret2)                        // Track array indicates if the state (pos) remained in same position for the maximum value
-        track[pos][val] = 1;
-    else
-        track[pos][val] = 0;
-    
-    return dp[pos][val] = ret;
+    merge(tree[pos<<1].begin(), tree[pos<<1].end(), tree[pos<<1|1].begin(), tree[pos<<1|1].end(), back_inserter(tree[pos]));
 }
 
 
-void print(int pos, int val) {
-    if(val >= COLOR)
-        return;
+int query(int pos, int l, int r, int L, int R, int k) {
+    if(r < L || R < l)
+        return 0;
     
-    if(track[pos][val]) {
-        if(val+v[pos] > COLOR)
-            return;
-        printf("%d", pos);
-        print(pos, val+v[pos]);
-    }
-    else 
-        print(pos-1, val);
+    if(L <= l && r <= R)
+        return (int)tree[pos].size() - (upper_bound(tree[pos].begin(), tree[pos].end(), k) - tree[pos].begin());
+    
+    int mid = (l+r)>>1;
+    
+    return query(pos<<1, l, mid, L, R, k) + query(pos<<1|1, mid+1, r, L, R, k);
 }
 
 
 int main() {
-    cin >> COLOR;
+    ll n, l, r, k, q, lst;
     
-    fr(i, 1, 10)
-        cin >> v[i];
-        
+    scanf("%lld", &n);
     
-    memset(dp, -1, sizeof dp);
-    int ret = recur(9, 0);
+    for(int i = 1; i <= n; ++i) 
+        scanf("%d", &val[i]);
     
-    if(ret == 0) {
-        cout << -1 << endl;
-        return 0;
+    scanf("%lld", &q);
+    
+    init(1, 1, n);
+    lst = 0;
+    
+    while(q--) {
+        scanf("%lld%lld%lld", &l, &r, &k);
+        l ^= lst;
+        r ^= lst;
+        k ^= lst;
+        if(l < 1)
+            l = 1;
+        if(r > n)
+            r = n;
+        if(l > r) {
+            lst = 0;
+            printf("0\n");
+        }
+        else {
+            lst = query(1, 1, n, l, r, k);
+            printf("%lld\n", lst);
+        }
     }
-    
-    print(9, 0);
-    
-    for(auto it : ans) cout << it;
     
     return 0;
 }
+    
