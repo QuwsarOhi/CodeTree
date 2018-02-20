@@ -1,3 +1,9 @@
+// Codeforces
+// http://codeforces.com/contest/550/problem/C
+
+// Digit DP
+// Eleminate zero or more numbers so that it is divisible by 8
+
 #include <bits/stdc++.h>
 using namespace std;
 #define MAX                 200100
@@ -53,4 +59,45 @@ void err(istream_iterator<string> it, T a, Args... args) {                      
 //const int dxx[8][2] = {{0,1}, {0,-1}, {1,0}, {-1,0}, {1,1}, {1,-1}, {-1,1}, {-1,-1}};                     // Eight side
 //----------------------------------------------------------------------------------------------------------
 
+int dp[110][10];
+string str;
+vi ans;
 
+
+bool recur(int pos, int pstVal, bool ok) {               // Must present at least one value
+    if(pos == (int)str.size())
+        return ((pstVal == 0) && ok);
+    
+    if(dp[pos][pstVal] != -1)
+        return dp[pos][pstVal];
+    
+    int val = (str[pos]-'0');
+    
+    ans.pb(pos);                                        // Save take this value as answer
+    if(recur(pos+1, (val+pstVal*10)%8, 1))              // don't skip
+        return 1;
+        
+    ans.pop_back();                                     // Remove this value from answer
+
+    if(recur(pos+1, pstVal, ok))                        // Skip
+        return 1;
+    
+    return (dp[pos][pstVal] = 0);
+}
+
+int main() {
+    cin >> str;
+    memset(dp, -1, sizeof dp);
+    
+    if(!recur(0, 0, 0)) {
+        cout << "NO\n";
+        return 0;
+    }
+    
+    cout << "YES\n";
+    
+    for(auto it : ans)
+        cout << str[it];
+    
+    return 0;
+}

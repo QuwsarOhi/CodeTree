@@ -1,6 +1,12 @@
+// CodeForces
+// D. Destiny
+// http://codeforces.com/contest/840/problem/D
+
+// Find value that occurs STRICTLY greater than k times in a given range [L, R]
+
 #include <bits/stdc++.h>
 using namespace std;
-#define MAX                 200100
+#define MAX                 110000
 #define EPS                 1e-9
 #define INF                 1e7
 #define MOD                 1000000007
@@ -53,4 +59,112 @@ void err(istream_iterator<string> it, T a, Args... args) {                      
 //const int dxx[8][2] = {{0,1}, {0,-1}, {1,0}, {-1,0}, {1,1}, {1,-1}, {-1,1}, {-1,-1}};                     // Eight side
 //----------------------------------------------------------------------------------------------------------
 
+struct node {
+    int val;
+    node *lft, *rht;
+    
+    node(node *L = NULL, node *R = NULL, int v = 0) {
+        lft = L;
+        rht = R;
+        val = v;
+    }
+};
 
+node *presis[301000], *null = new node();
+
+node *nCopy(node *x) {
+    node *tmp = new node();
+    if(x) {
+        tmp->val = x->val;
+        tmp->lft = x->lft;
+        tmp->rht = x->rht;
+    }
+    return tmp;
+}
+
+
+// Single Position update
+void insert(node *pos, ll l, ll r, ll idx) {
+    if(l == r) {
+        pos->val++;
+        pos->lft = null;
+        pos->rht = null;
+        return;
+    }
+    
+    ll mid = (l+r)>>1;
+    
+    if(idx <= mid) {
+        pos->lft = nCopy(pos->lft);
+        if(pos->rht == NULL)
+            pos->rht = null;
+        insert(pos->lft, l, mid, idx);
+    }
+    else {
+        pos->rht = nCopy(pos->rht);
+        if(pos->lft == NULL)
+            pos->lft = null;
+        insert(pos->rht, mid+1, r, idx);
+    }
+    
+    pos->val++;
+}
+
+
+int query(node *RMax, node *LMax, int l, int r, int k) {                         // (LMax : past, RMax : updated)
+    int Count = RMax->val - LMax->val;
+    
+    //printf("%d ---- %d :: %d [%d %d]\n", l, r, Count, RMax->val, LMax->val);
+    
+    // Search for the minimum val where Count is STRICTLY greater than k
+    
+    // Almost like binary search??
+    
+    if(Count <= k)
+        return -1;
+    
+    if(l == r)
+        return l;
+    
+    int mid = (l+r)>>1, ret = -1;
+    
+    if(RMax->lft && LMax->lft)                          // if we can go lft and it is valid
+        ret = query(RMax->lft, LMax->lft, l, mid, k);
+    
+    if(ret == -1 && RMax->rht && LMax->rht)             // if we didnt find answer and we can go rhight and its also valid
+        ret = query(RMax->rht, LMax->rht, mid+1, r, k);
+    
+    return ret;
+}
+
+// Create NULL node
+
+int main() {
+    int n, q, l, r, k, val, lim = 300000, pos;
+    
+    //lim = 3; //////////////////
+    
+    scanf("%d%d", &n, &q);
+    null->lft = null->rht = null;
+    presis[0] = new node();
+    
+    for(int i = 1; i <= n; ++i) {
+        scanf("%d", &val);
+        presis[i] = nCopy(presis[i-1]);
+        insert(presis[i], 1, lim, val);
+    }
+    
+    //cout << "DONE\n";
+    
+    while(q--) {
+        scanf("%d%d%d", &l, &r, &k);
+        
+        if(l == 1)
+            pos = query(presis[r], null, 1, lim, (r-l+1)/k);            // (r-l+1)/k is the given value which is the number of occurance
+        else
+            pos = query(presis[r], presis[l-1], 1, lim, (r-l+1)/k);
+        printf("%d\n", pos);
+    }
+    
+    return 0;
+}

@@ -1,51 +1,73 @@
+// Codeforces
+// B. Maxim Buys an Apartment
+// http://codeforces.com/contest/854/problem/B
+
+// Count maximum & minimum position where there exists an element beside the position
+
 #include <bits/stdc++.h>
 using namespace std;
 
+int cal1(int n, int k) {
+    int cnt = 0, empty = n-k, pos=0;
+    bool filled = 0;
+    while(pos < n) {
+        if(!filled && pos+k+1 <= n) {
+            cnt++;
+            empty--;
+            filled = 1;
+            //cout << "counting at " << pos << endl;
+            if(k == 0)
+                break;
+        }
+        else if(filled) {
+            k--;
+            filled = 0;
+            if(empty == 0)
+                break;
+        }
+        pos++;
+        
+        if(filled && empty > 0 && k > 0) {             // we just counted an empty apt
+            if(pos+empty+k <= n) {
+                //cout << "Double at " << pos << endl;
+                pos+=2;
+                cnt += 1;
+                empty--;
+                k--;
+                filled = 0;
+            }
+            if(empty == 0 || k == 0)
+                break;
+        }
+    }
+    return cnt;
+}
 
 int main() {
     int n, k;
     
     cin >> n >> k;
-    vector<int> v(n+1);
     
-    if((n == 1 && k == 1) || n == k) {
-        cout << -1 << endl;
+    if(n == k || k == 0) {
+        cout << "0 0" << endl;
         return 0;
     }
     
-    //set<int>Set;
+    cout << "1 ";               // if everyone is side by side minimum is always one
+
     
-    //for(int i = 1; i <= n; ++i)
-    //    Set.insert(i);
+    // When to break the loop
+    // 1. if there is no more people to place
+    // 2. if there is no more empty apts
     
-    int i = 2, j = n-k;
-    
-    if((n-k) % 2 == 0)
-        i = 1;
-    else {
-        v[1] = 1;
-        j--;
-    }
+    // always start by setting an empty apt
+    // also check if there is any empty 
+
     
     
-    for( ; i+1 <= n && j-2 >= 0; i+=2, j-=2) {
-        v[i] = i+1;
-        v[i+1] = i;
-        //Set.erase(i);
-        //Set.erase(i+1);
-    }
+    cout << cal1(n, k) << endl;
     
-    //cout << "done\n";
-    
-    //cout << i << endl;
-    for( ; i <= n; ++i) v[i] = i;
-    
-    for( i = 1; i <= n; ++i)
-        cout << v[i] << " ";
+    //main();
     
     return 0;
 }
-    
-    
-    
-    
