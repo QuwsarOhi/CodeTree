@@ -54,3 +54,28 @@ void err(istream_iterator<string> it, T a, Args... args) {                      
 //----------------------------------------------------------------------------------------------------------
 
 
+int main() {
+    fileRead("input.txt");
+    fileWrite("output.txt");
+    
+    int n, k, x;
+    vii v;
+    cin >> n >> k;
+    
+    for(int i = 1; i <= n; ++i) {
+        cin >> x;
+        v.pb({x, i});
+    }
+    
+    sort(v.begin(), v.end(), greater<pii >());
+    
+    cout << v[0].second;
+    
+    for(int i = 1 ; k-1> 0; --k, ++i)
+        cout << " " << v[i].second;
+    
+    cout << endl;
+    
+    return 0;
+}
+    

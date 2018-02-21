@@ -54,3 +54,59 @@ void err(istream_iterator<string> it, T a, Args... args) {                      
 //const int dxx[8][2] = {{0,1}, {0,-1}, {1,0}, {-1,0}, {1,1}, {1,-1}, {-1,1}, {-1,-1}};                     // Eight side
 //----------------------------------------------------------------------------------------------------------
 
+
+// A = 0
+// B = 1
+// C = 2
+// D = 3 (start, dest)
+
+int dp[4][10001000];
+
+int recur(int steps, int pos, int dest) {
+    if(pos == 3 && steps == 0) {
+        //cout << "pos " << pos << " steps " << steps << endl;
+        return 1;
+    }
+    
+    if(steps <= 0)
+        return 0;
+    
+    if(dp[pos][steps] != -1)
+        return dp[pos][steps];
+    
+    ll ret = 0;
+    for(int i = 0; i < 4; ++i)
+        if(i != pos) {
+            //cout << "From " << pos << " to " << i << endl;
+            ret = (ret + recur(steps-1, i, dest))%MOD;
+        }
+    
+    return dp[pos][steps] = ret;
+    //return ret;
+}
+
+ll iter(int N) {
+    dp[3][0] = 1;
+    
+    for(int n = 1; n <= N; ++n) {
+        for(int pstPos = 0; pstPos < 4; ++pstPos) {
+            for(int newPos = 0; newPos < 4; ++newPos) {
+                if(newPos != pstPos)
+                    dp[newPos][n] = (dp[newPos][n] + dp[pstPos][n-1])%MOD;
+            }
+        }
+    }
+    
+    return dp[3][N];
+}
+
+int main() {
+    int N;
+    cin >> N;
+    
+    //memset(dp, -1, sizeof dp);
+    
+    //cout << recur(N, 3, 3) << endl;
+    cout << iter(N) << endl;
+    return 0;
+}
