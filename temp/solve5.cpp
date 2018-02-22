@@ -53,18 +53,109 @@ void err(istream_iterator<string> it, T a, Args... args) {                      
 //const int dxx[8][2] = {{0,1}, {0,-1}, {1,0}, {-1,0}, {1,1}, {1,-1}, {-1,1}, {-1,-1}};                     // Eight side
 //----------------------------------------------------------------------------------------------------------
 
-vector<int> GenVal(int x, int mxVal) {
-    
 
-int main() {
-    int n, k;
-    
-    cin >> n >> k;
-    
-    if(k < n/2 || ) {
-        cout << "-1\n";
-        return 0;
+struct node {
+	ll ans, prefix, suffix, sum;
+	
+	node(int val = 0) {
+		ans = prefix = suffix = sum = val;
+	}
+	
+	void merge(node left, node right) {
+		prefix = max(left.prefix, left.sum+right.prefix);
+		suffix = max(right.suffix, right.sum+left.suffix);
+		sum = left.sum + right.sum;
+		ans = max(left.ans, max(right.ans, left.suffix+right.prefix));
+	}
+};
+
+node tree[600000];
+ll ans[110000], IDX[220000], CONST = 101000, val[110000];
+set<pair<pii, int> >Query;
+
+void update(int pos, int l, int r, int idx, int val) {
+    if(l == r) {
+        tree[pos] = node(val);
+        return;
     }
     
+    int mid = (l+r)>>1;
     
+    if(idx <= mid)
+        update(pos<<1, l, mid, idx, val);
+    else
+        update(pos<<1|1, mid+1, r, idx, val);
     
+    tree[pos].merge(tree[pos<<1], tree[pos<<1|1]);
+}
+
+
+node query(int pos, int l, int r, int L, int R) {
+    if(r < L || R < l)
+        return node(0);
+    
+    if(L <= l && r <= R)
+        return tree[pos];
+    
+    int mid = (l+r)>>1;
+    
+    node x = query(pos<<1, l, mid, L, R);
+    node y = query(pos<<1|1, mid+1, r, L, R);
+    
+    node tmp = node(0);
+    tmp.merge(x, y);
+    
+    return tmp;
+}
+
+
+int main() {
+    fileRead("in");
+    fileWrite("out");
+    
+    int n, q, l, r;
+    
+    scanf("%d", &n);
+    
+    for(int i = 1; i <= n; ++i)
+        scanf("%lld", &val[i]);
+    
+    scanf("%d", &q);
+    
+    for(int i = 1; i <= q; ++i) {
+        scanf("%d%d", &l, &r);
+        Query.insert({{r, l}, i});
+    }
+    
+    //for(int i = 0; i < 600000; ++i)
+    //    tree[i] = node(0);
+    
+    int pos = 1;
+    memset(IDX, -1, sizeof IDX);
+    
+    for(auto it : Query) {
+        l = it.first.second;
+        r = it.first.first;
+        //printf("%d At Query %d %d\n", it.second, l, r);
+        
+        while(pos <= r) {
+            if(IDX[val[pos]+CONST] != -1) {
+                //printf("Remove %d from %d\n", val[pos], IDX[val[pos]+CONST]);
+                update(1, 1, n, IDX[val[pos]+CONST], 0);
+            }
+            
+            //printf("Adding %d at %d\n", val[pos], pos);
+            IDX[val[pos]+CONST] = pos;
+            update(1, 1, n, pos, val[pos]);
+            pos++;
+        }
+        
+        ans[it.second] = max(query(1, 1, n, l, r).ans, 0LL);
+        //printf("Ans : %d\n", ans[it.second]);
+    }
+    
+    for(int i = 1; i <= q; ++i)
+        printf("%lld\n", ans[i]);
+    
+    return 0;
+}
