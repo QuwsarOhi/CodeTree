@@ -53,29 +53,18 @@ void err(istream_iterator<string> it, T a, Args... args) {                      
 //const int dxx[8][2] = {{0,1}, {0,-1}, {1,0}, {-1,0}, {1,1}, {1,-1}, {-1,1}, {-1,-1}};                     // Eight side
 //----------------------------------------------------------------------------------------------------------
 
+vector<int> GenVal(int x, int mxVal) {
+    
 
 int main() {
-    fileRead("input.txt");
-    fileWrite("output.txt");
+    int n, k;
     
-    int n, k, x;
-    vii v;
     cin >> n >> k;
     
-    for(int i = 1; i <= n; ++i) {
-        cin >> x;
-        v.pb({x, i});
+    if(k < n/2 || ) {
+        cout << "-1\n";
+        return 0;
     }
     
-    sort(v.begin(), v.end(), greater<pii >());
     
-    cout << v[0].second;
-    
-    for(int i = 1 ; k-1> 0; --k, ++i)
-        cout << " " << v[i].second;
-    
-    cout << endl;
-    
-    return 0;
-}
     

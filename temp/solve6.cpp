@@ -55,58 +55,54 @@ void err(istream_iterator<string> it, T a, Args... args) {                      
 //----------------------------------------------------------------------------------------------------------
 
 
-// A = 0
-// B = 1
-// C = 2
-// D = 3 (start, dest)
+struct suffix {
+    int r[2], idx;
+};
 
-int dp[4][10001000];
+suffix suff[1000];
+int P[22][1000];                    // Sparse Table Like    
+char str[1000];
 
-int recur(int steps, int pos, int dest) {
-    if(pos == 3 && steps == 0) {
-        //cout << "pos " << pos << " steps " << steps << endl;
-        return 1;
-    }
-    
-    if(steps <= 0)
-        return 0;
-    
-    if(dp[pos][steps] != -1)
-        return dp[pos][steps];
-    
-    ll ret = 0;
-    for(int i = 0; i < 4; ++i)
-        if(i != pos) {
-            //cout << "From " << pos << " to " << i << endl;
-            ret = (ret + recur(steps-1, i, dest))%MOD;
-        }
-    
-    return dp[pos][steps] = ret;
-    //return ret;
+int order(char x) {                 // Ordering : Number < Capital Letter < Small Letter
+    if(isdigit(x))
+        return x-'0';
+    else if(isupper(x))
+        return x-'A'+10;
+    else if(islower(x))
+        return x-'a'+36;
+    else
+        return 110;                 // Adding a big constant : {, }, #..
 }
 
-ll iter(int N) {
-    dp[3][0] = 1;
-    
-    for(int n = 1; n <= N; ++n) {
-        for(int pstPos = 0; pstPos < 4; ++pstPos) {
-            for(int newPos = 0; newPos < 4; ++newPos) {
-                if(newPos != pstPos)
-                    dp[newPos][n] = (dp[newPos][n] + dp[pstPos][n-1])%MOD;
-            }
-        }
-    }
-    
-    return dp[3][N];
+bool cmp(suffix a, suffix b) {
+    if(a.r[0] != b.r[0])
+        return a.r[0] < b.r[0];
+    return a.r[1] < b.r[1];
 }
+
+void SuffixArray(char str[], int len) {
+    for(int i = 0; i < len; ++i)
+        P[0][i] = order(str[i]);
+    
+    for(int stp = 1, cnt = 1; cnt >> 1 < N; stp++, cnt <<= 1) {
+        for(int i = 0; i < len; ++i) {
+            suff[i].r[0] = P[i][stp-1];
+            suff[i].r[1] = i + cnt < N ? P[i+cnt][stp-1]:-1;
+            suff[i].idx = i;
+        }
+        sort(suff, suff+len, cmp);
+        
+        P[suff[0].idx][stp] = 0;
+        for(int i = 1; i < len; ++i)
+            P[suff[i].idx][stp] = suff[i].r[0] == suff[i-1].r[0] && suff[i].r[1] == suff[i-1].r[1] ? P[suff[i-1].idx][stp] : i;
+    }
+}
+
 
 int main() {
-    int N;
-    cin >> N;
+    gets(str);
+    int len = strlen(str);
     
-    //memset(dp, -1, sizeof dp);
-    
-    //cout << recur(N, 3, 3) << endl;
-    cout << iter(N) << endl;
+    SuffixArray(str, len);
     return 0;
 }
