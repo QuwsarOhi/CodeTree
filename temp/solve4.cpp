@@ -137,12 +137,8 @@ int query(node *RMax, node *LMax, int l, int r, int k) {                        
     return ret;
 }
 
-// Create NULL node
-
 int main() {
     int n, q, l, r, k, val, lim = 300000, pos;
-    
-    //lim = 3; //////////////////
     
     scanf("%d%d", &n, &q);
     null->lft = null->rht = null;
@@ -154,7 +150,6 @@ int main() {
         insert(presis[i], 1, lim, val);
     }
     
-    //cout << "DONE\n";
     
     while(q--) {
         scanf("%d%d%d", &l, &r, &k);

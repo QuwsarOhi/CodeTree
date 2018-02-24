@@ -1,7 +1,8 @@
+// SUFFIX ARRAY NEW
 
 #include <bits/stdc++.h>
 using namespace std;
-#define MAX                 200100
+#define MAX                 10000000
 #define EPS                 1e-9
 #define INF                 1e9
 #define MOD                 1000000007
@@ -59,9 +60,9 @@ struct suffix {
     int r[2], idx;
 };
 
-suffix suff[1000];
-int P[22][1000];                    // Sparse Table Like    
-char str[1000];
+suffix suff[MAX];
+int P[MAX][22];                    // Sparse Table Like    
+char str[MAX];
 
 int order(char x) {                 // Ordering : Number < Capital Letter < Small Letter
     if(isdigit(x))
@@ -80,11 +81,11 @@ bool cmp(suffix a, suffix b) {
     return a.r[1] < b.r[1];
 }
 
+
 void SuffixArray(char str[], int len) {
     for(int i = 0; i < len; ++i)
-        P[i][0] = str[i]-'a';
-        //P[i][0] = order(str[i]);
-    
+        P[i][0] = order(str[i]);
+
     for(int stp = 1, cnt = 1; cnt >> 1 < len; stp++, cnt <<= 1) {
         for(int i = 0; i < len; ++i) {
             suff[i].r[0] = P[i][stp-1];
@@ -101,19 +102,18 @@ void SuffixArray(char str[], int len) {
 
 
 int main() {
-    gets(str);
+    scanf("%s", str);
     int len = strlen(str);
-    
     SuffixArray(str, len);
     
     for(int i = 0; i < len; ++i)
-        cout << suff[i].idx << endl;
+        printf("%d\n", suff[i].idx);
     
-    for(int i = 0; i < len; ++i) {
+    /*for(int i = 0; i < len; ++i) {
         printf("P[%d][0] : %d %s\n", i, P[i][0], str+i);
         for(int k = 1; (1 << k)+i <= len; k <<= 1)
             printf("P[%d][%d] : %d %s\n", i, k, P[i][k], str+i);
-    }
+    }*/
     
     return 0;
 }
