@@ -57,3 +57,101 @@ void err(istream_iterator<string> it, T a, Args... args) {                      
 //----------------------------------------------------------------------------------------------------------
 
 
+struct node {
+    ll lazy, maxLazy, ans, childMax;
+    
+    node(ll val=0) {
+        lazy = maxLazy = ans = childMax = val;
+    }
+};
+
+
+node tree[5*MAX];
+ll ans[MAX], val[MAX], IDX[3*MAX];
+set<pair<pll, ll> >Query;
+
+void propagate(int pos, int l, int r) {
+    if(l == r)
+        return;
+    
+    for(int child = pos<<1; child <= (pos<<1|1); ++child) {
+        tree[child].maxLazy = max(tree[child].maxLazy, tree[child].lazy + tree[pos].maxLazy);
+        tree[child].ans = max(tree[child].ans, tree[child].childMax + tree[pos].maxLazy);
+        
+        tree[child].lazy += tree[pos].lazy;
+        tree[child].childMax += tree[pos].lazy;
+    }
+    
+    tree[pos].lazy = tree[pos].maxLazy = 0;
+}
+
+
+void update(int pos, int l, int r, int L, int R, ll val) {
+    if(r < L || R < l)
+        return;
+    
+    propagate(pos, l, r);
+    if(L <= l && r <= R) {
+        tree[pos].maxLazy = max(tree[pos].maxLazy, tree[pos].lazy += val);
+        tree[pos].ans = max(tree[pos].ans, tree[pos].childMax += val);
+        
+        return;
+    }
+    
+    int mid = (l+r)>>1;
+    
+    update(pos<<1, l, mid, L, R, val);
+    update(pos<<1|1, mid+1, r, L, R, val);
+    
+    tree[pos].ans = max(tree[pos<<1].ans, tree[pos<<1|1].ans);
+    tree[pos].childMax = max(tree[pos<<1].childMax, tree[pos<<1|1].childMax);
+}
+
+
+ll query(int pos, int l, int r, int L, int R) {
+    if(r < L || R < l)
+        return 0;
+    
+    propagate(pos, l, r);
+    if(L <= l && r <= R)
+        return tree[pos].ans;
+    
+    int mid = (l+r)>>1;
+    
+    return max(query(pos<<1, l, mid, L, R), query(pos<<1|1, mid+1, r, L, R));
+}
+
+
+int main() {
+    ll n, l, r, q;
+    
+    scanf("%lld", &n);
+    
+    for(ll i = 1; i <= n; ++i)
+        scanf("%lld", &val[i]);
+    
+    scanf("%lld", &q);
+    for(ll i = 1; i <= q; ++i) {
+        scanf("%lld %lld", &l, &r);
+        Query.insert({{r, l}, i});
+    }
+    
+    ll pos = 1;
+    for(auto it : Query) {
+        l = it.first.second;
+        r = it.first.first;
+        
+        for( ; pos <= r; ++pos) {
+            //printf("Update from %lld to %lld\n", IDX[val[pos]+100010]+1, pos);
+            update(1, 1, n, IDX[val[pos]+100010]+1, pos, val[pos]); 
+            IDX[val[pos]+100010] = pos;
+        }
+        
+        ans[it.second] = query(1, 1, n, l, r);
+    }
+    
+    for(int i = 1; i <= q; ++i)
+        printf("%lld\n", ans[i]);
+    
+    return 0;
+}

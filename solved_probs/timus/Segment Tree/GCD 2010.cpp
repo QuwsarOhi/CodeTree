@@ -1,3 +1,6 @@
+// TIMUS - GCD 2010
+// http://acm.timus.ru/problem.aspx?space=1&num=1846
+
 #include <bits/stdc++.h>
 using namespace std;
 #define MAX                 200100
@@ -53,3 +56,58 @@ void err(istream_iterator<string> it, T a, Args... args) {                      
 //const int dxx[8][2] = {{0,1}, {0,-1}, {1,0}, {-1,0}, {1,1}, {1,-1}, {-1,1}, {-1,-1}};                     // Eight side
 //----------------------------------------------------------------------------------------------------------
 
+ll val[110000], tree[510000];
+
+void update(ll pos, ll l, ll r, ll idx, ll val) {
+    if(l == r) {
+        tree[pos] = val;
+        return;
+    }
+    
+    ll mid = (l+r)>>1;
+    
+    if(idx <= mid)
+        update(pos<<1, l, mid, idx, val);
+    else
+        update(pos<<1|1, mid+1, r, idx, val);
+    
+    if(!tree[pos<<1])
+        tree[pos] = tree[pos<<1|1];
+    else if(!tree[pos<<1|1])
+        tree[pos] = tree[pos<<1];
+    else
+        tree[pos] = __gcd(tree[pos<<1], tree[pos<<1|1]);
+}
+
+map<ll, ll>Count, IDX;
+bitset<110000>first;
+
+int main() {
+    ll n, idx = 0, val;
+    char c;
+    
+    scanf("%lld", &n);
+    
+    for(int i = 0; i < n; ++i) {
+        scanf(" %c%lld", &c, &val);
+        
+        if(c == '+') {
+            Count[val]++;
+            if(Count[val] == 1) {
+                if(IDX[val] == 0)
+                    IDX[val] = ++idx;
+                update(1, 1, n, IDX[val], val);
+            }
+            printf("%lld\n", tree[1]);
+        }
+        else {
+            Count[val]--;
+            if(Count[val] == 0)
+                update(1, 1, n, IDX[val], 0);
+            printf("%lld\n", max(tree[1], 1LL));
+        }
+    }
+    
+    return 0;
+}
+        

@@ -1,9 +1,3 @@
-// CodeForces
-// http://codeforces.com/contest/349/problem/B
-
-// DP with Same State occurance
-// Path printing
-
 #include <bits/stdc++.h>
 using namespace std;
 #define MAX                 200100
@@ -59,64 +53,4 @@ void err(istream_iterator<string> it, T a, Args... args) {                      
 //const int dxx[8][2] = {{0,1}, {0,-1}, {1,0}, {-1,0}, {1,1}, {1,-1}, {-1,1}, {-1,-1}};                     // Eight side
 //----------------------------------------------------------------------------------------------------------
 
-int COLOR, v[12], dp[10][1000001], track[10][1000001];
-vi ans;
 
-int recur(int pos, int val) {
-    if(dp[pos][val] != -1)
-        return dp[pos][val];
-    
-    int ret1 = INT_MIN, ret2 = INT_MIN;
-    
-    if(val + v[pos] <= COLOR)               // Stay in this node
-        ret1 = recur(pos, val+v[pos])+1;
-    if(pos-1 > 0)                           // Go for next node
-        ret2 = recur(pos-1, val);
-    
-    int ret = max(max(ret1, ret2), 0);
-    
-    if(ret1 >= ret2)                        // Track array indicates if the state (pos) remained in same position for the maximum value
-        track[pos][val] = 1;
-    else
-        track[pos][val] = 0;
-    
-    return dp[pos][val] = ret;
-}
-
-
-void print(int pos, int val) {
-    if(val >= COLOR)
-        return;
-    
-    if(track[pos][val]) {
-        if(val+v[pos] > COLOR)
-            return;
-        printf("%d", pos);
-        print(pos, val+v[pos]);
-    }
-    else 
-        print(pos-1, val);
-}
-
-
-int main() {
-    cin >> COLOR;
-    
-    fr(i, 1, 10)
-        cin >> v[i];
-        
-    
-    memset(dp, -1, sizeof dp);
-    int ret = recur(9, 0);
-    
-    if(ret == 0) {
-        cout << -1 << endl;
-        return 0;
-    }
-    
-    print(9, 0);
-    
-    for(auto it : ans) cout << it;
-    
-    return 0;
-}

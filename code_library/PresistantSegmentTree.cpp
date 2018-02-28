@@ -55,7 +55,8 @@ struct node {
     }
 };
 
-node *presis[101000];
+node *presis[101000] *null = new node();
+null->lft = null->rht = null;
 
 node *nCopy(node *x) {
     node *tmp = new node();
@@ -71,6 +72,7 @@ node *nCopy(node *x) {
 void init(node *pos, ll l, ll r) {
     if(l == r) {
         pos->val = val[l];
+        pos->lft = pos->rht = null;
         return;
     }
     
@@ -88,6 +90,7 @@ void init(node *pos, ll l, ll r) {
 void update(node *pos, ll l, ll r, ll idx, ll val) {
     if(l == r) {
         pos->val += val;
+        pos->lft = pos->rht = null;
         return;
     }
     
@@ -95,10 +98,14 @@ void update(node *pos, ll l, ll r, ll idx, ll val) {
     
     if(idx <= mid) {
         pos->lft = nCopy(pos->lft);
+        if(!pos->rht)
+            pos->rht = null;
         update(pos->lft, l, mid, idx, val);
     }
     else {
         pos->rht = nCopy(pos->rht);
+        if(!pos->lft)
+            pos->lft = null;
         update(pos->rht, mid+1, r, idx, val);
     }
     

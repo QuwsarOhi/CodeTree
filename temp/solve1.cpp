@@ -1,140 +1,56 @@
-// SPOJ - CNTPRIME - Counting Primes
-// http://www.spoj.com/problems/CNTPRIME/
-
 #include <bits/stdc++.h>
 using namespace std;
+#define MAX                 200100
+#define EPS                 1e-9
+#define INF                 1e7
+#define MOD                 1000000007
+#define pb                  push_back
+#define mp                  make_pair
+#define fi                  first
+#define se                  second
+#define pi                  acos(-1)
+#define sf                  scanf
+#define pf                  printf
+#define SIZE(a)             ((int)a.size())
+#define All(S)              S.begin(), S.end()              
+#define Equal(a, b)         (abs(a-b) < EPS)
+#define Greater(a, b)       (a >= (b+EPS))
+#define GreaterEqual(a, b)  (a > (b-EPS))
+#define fr(i, a, b)         for(register int i = (a); i < (int)(b); i++)
+#define FastRead            ios_base::sync_with_stdio(false); cin.tie(NULL);
+#define fileRead(S)         freopen(S, "r", stdin);
+#define fileWrite(S)        freopen(S, "w", stdout);
+#define Unique(X)           X.erase(unique(X.begin(), X.end()), X.end())
+#define error(args...)      { string _s = #args; replace(_s.begin(), _s.end(), ',', ' '); stringstream _ss(_s); istream_iterator<string> _it(_ss); err(_it, args); }
+
+#define isOn(S, j)          (S & (1 << j))
+#define setBit(S, j)        (S |= (1 << j))
+#define clearBit(S, j)      (S &= ~(1 << j))
+#define toggleBit(S, j)     (S ^= (1 << j))
+#define lowBit(S)           (S & (-S))
+#define setAll(S, n)        (S = (1 << n) - 1)
+
+typedef unsigned long long ull;
 typedef long long ll;
+typedef map<int, int> mii;
+typedef map<ll, ll>mll;
+typedef map<string, int> msi;
+typedef vector<int> vi;
+typedef vector<long long>vl;
+typedef pair<int, int> pii;
+typedef pair<ll, ll> pll;
+typedef vector<pair<int, int> > vii;
+typedef vector<pair<ll, ll> >vll;
 
-struct node {
-    ll prop, val;
-    bool propSet;
-    
-    node(ll v=0) {
-        propSet = 0;
-        prop = val = v;
-    }
-};
-
-
-bitset<1110000>isPrime;
-node tree[51000];
-ll val[11000];
-
-//Only generates a number is prime or not
-void sieve(unsigned long long N)
-{
-    isPrime.set();
-    //0 and 1 are not prime
-    isPrime[0] = isPrime[1] = 0;
-
-    for(unsigned long long i = 2; i <= N; i++) {      // change lim to N, if all primes in range N is needed
-        if(isPrime[i]) {
-            for(unsigned long long j = i*i; j <= N; j+= i)
-                isPrime[j] = 0;
-        }
-    }
+void err(istream_iterator<string> it) {}
+template<typename T, typename... Args>
+void err(istream_iterator<string> it, T a, Args... args) {                                                  // Debugger error(a, b, ....)
+	cerr << *it << " = " << a << "\n";
+	err(++it, args...);
 }
 
-
-void propagate(int pos, int l, int r) {
-    if(l == r || !tree[pos].propSet)
-        return;
-    
-    tree[pos<<1].prop = tree[pos<<1|1].prop = tree[pos].prop;
-    tree[pos<<1].propSet = tree[pos<<1|1].propSet = 1;
-    if(!tree[pos].prop)
-        tree[pos<<1].val = tree[pos<<1|1].val = 0;
-    else {
-        int mid = (l+r)>>1;
-        tree[pos<<1].val = (mid-l+1);
-        tree[pos<<1|1].val = (r-mid);
-    }
-    
-    tree[pos].prop = tree[pos].propSet = 0;
-}
+//const int dx[4][2] = {{0,1}, {0,-1}, {1,0}, {-1,0}};                                                      // Four side 
+//const int dxx[8][2] = {{0,1}, {0,-1}, {1,0}, {-1,0}, {1,1}, {1,-1}, {-1,1}, {-1,-1}};                     // Eight side
+//----------------------------------------------------------------------------------------------------------
 
 
-void init(int pos, int L, int R) {
-    if(L == R) {
-        tree[pos].val = val[L];
-        tree[pos].prop = tree[pos].propSet = 0;
-        return;
-    }
-    
-    int mid = (L+R)>>1;
-    
-    init(pos<<1, L, mid);
-    init(pos<<1|1, mid+1, R);
-
-    tree[pos].val = tree[pos<<1].val + tree[pos<<1|1].val;
-    tree[pos].prop = tree[pos].propSet = 0;
-}
-
-
-void update(int pos, int l, int r, int L, int R, int isPrime) {
-    if(r < L || R < l)
-        return;
-    
-    propagate(pos, l, r);
-    if(L <= l && r <= R) {
-        tree[pos].prop = isPrime;
-        tree[pos].val = isPrime ? (r-l+1):0;
-        tree[pos].propSet = 1;
-        return;
-    }
-    
-    int mid = (l+r)>>1;
-    
-    update(pos<<1, l, mid, L, R, isPrime);
-    update(pos<<1|1, mid+1, r, L, R, isPrime);
-    
-    tree[pos].val = tree[pos<<1].val + tree[pos<<1|1].val;
-}
-
-
-ll query(int pos, int l, int r, int L, int R) {
-    if(r < L || R < l)
-        return 0;
-    
-    propagate(pos, l, r);
-    if(L <= l && r <= R)
-        return tree[pos].val;
-    
-    int mid = (l+r)>>1;
-    
-    return query(pos<<1, l, mid, L, R) + query(pos<<1|1, mid+1, r, L, R);
-}
-
-
-int main() {
-    ll t, n, q, tp, x, l, r;
-    
-    scanf("%lld", &t);
-    
-    sieve(1100000);
-    
-    for(ll Case = 1; Case <= t; ++Case) {
-        scanf("%lld%lld", &n, &q);
-        printf("Case %lld:\n", Case);
-        
-        for(int i = 1; i <= n; ++i) {
-            scanf("%lld", &x);
-            val[i] = isPrime[x] ? 1:0;
-        }
-        
-        init(1, 1, n);
-        
-        for(int i = 1; i <= q; ++i) {
-            scanf("%lld%lld%lld", &tp, &l, &r);
-            
-            if(tp)
-                printf("%lld\n", query(1, 1, n, l, r));
-            else {
-                scanf("%lld\n", &x);
-                update(1, 1, n, l, r, isPrime[x]);
-            }
-        }
-    }
-    
-    return 0;
-}
