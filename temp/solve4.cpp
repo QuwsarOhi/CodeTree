@@ -1,8 +1,6 @@
 // CodeForces
-// D. Destiny
-// http://codeforces.com/contest/840/problem/D
-
-// Find value that occurs STRICTLY greater than k times in a given range [L, R]
+// B. A Lot of Games
+// http://codeforces.com/contest/455/problem/B
 
 #include <bits/stdc++.h>
 using namespace std;
@@ -59,3 +57,78 @@ void err(istream_iterator<string> it, T a, Args... args) {                      
 //const int dxx[8][2] = {{0,1}, {0,-1}, {1,0}, {-1,0}, {1,1}, {1,-1}, {-1,1}, {-1,-1}};                     // Eight side
 //----------------------------------------------------------------------------------------------------------
 
+struct node {
+    bool win, lose;
+    node *nxt[26];
+    node() {
+        win = lose = 0;
+        for(int i = 0; i < 26; ++i)
+            nxt[i] = NULL;
+    }
+};
+
+char str[110000];
+
+void insert(node *root, int pos, int len) {
+    if(pos == len)
+        return;
+    
+    int idx = str[pos]-'a';
+    if(!root->nxt[idx])
+        root->nxt[idx] = new node();
+    
+    insert(root->nxt[idx], pos+1, len);
+}
+
+
+void dfs(node *root) {
+    bool isLeaf = 1;
+    for(int i = 0; i < 26; ++i)
+        if(root->nxt[i]) {
+            isLeaf = 0;
+            dfs(root->nxt[i]);
+        }
+    
+    if(isLeaf) {
+        root->lose = 1;
+        return;
+    }
+    
+    for(int i = 0; i < 26; ++i)
+        if(root->nxt[i]) {
+            root->win |= (not root->nxt[i]->win);
+            root->lose |= (not root->nxt[i]->lose);
+        }
+}
+ 
+void winner(bool state) {
+    printf("%s\n", state ? "First":"Second");
+    return;
+}
+
+int main() {
+    int n, k;
+    node *root = new node();
+    scanf("%d%d", &n, &k);
+    
+    for(int i = 0; i < n; ++i) {
+        scanf("%s", str);
+        insert(root, 0, strlen(str));
+    }
+    
+    dfs(root);
+    
+    // First : player who gave first move
+    // Second: player who gave second move
+    
+    if(!root->win)                              // First player can't win by any means
+        winner(0);
+    else if(root->lose)                         // First player does have a winning state
+        winner(root->win);
+    else if(k%2)                                // if there is odd number of plays, the first player can win if there exists a winning state
+        winner(root->win);
+    else
+        winner(!root->win);
+    
+    return 0;
+}

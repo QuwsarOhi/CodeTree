@@ -23,8 +23,8 @@ struct node {
 
 //creates trie, returns true if the trie we are creating is a segment of a string
 //to only create a trie remove lines which are comment marked
-bool create(char str[], int len, node *current)
-{
+
+bool create(char str[], int len, node *current) {
     for(int i = 0; i < len; i++) {
         int pos = str[i] - '0';
         if(current->next[pos] == NULL)
@@ -37,16 +37,14 @@ bool create(char str[], int len, node *current)
     return false;			//
 }
 
-void del(node *current)
-{
+void del(node *current) {
     for(int i = 0; i < 10; i++)
         if(current->next[i] != NULL)
             del(current->next[i]);
     delete current;
 }
 
-void check(node *current)
-{
+void check(node *current) {
     for(int i = 0; i < 10; i++) {
         if(current->next[i] != NULL)
             check(current->next[i]);
@@ -61,8 +59,7 @@ void check(node *current)
     }
 }
 
-int main()
-{
+int main() {
     //freopen("in", "r", stdin);
     //freopen("out", "w", stdout);
     int t, n;

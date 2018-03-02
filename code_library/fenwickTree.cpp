@@ -98,7 +98,7 @@ int binarySearch(int lo, int hi, int cSum) {		// Returns the greater index if va
 	int pos = -1, mid;								// More trustworthy
 	while(lo <= hi) {
 		mid = (lo+hi)/2;
-		if(read(mid) == cSum) {
+		if(read(mid) == cSum) {     // read(mid) >= cSum        : can be used to find the lowest index of cSum value
 			pos = mid;
 			hi = mid-1;
 		}

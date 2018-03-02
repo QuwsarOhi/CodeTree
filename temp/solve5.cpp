@@ -1,9 +1,9 @@
-// SPOJ - GSS2 - Can you answer these queries II
-// http://www.spoj.com/problems/GSS2/
+// SPOJ - ORDERSET - Order statistic set
+// http://www.spoj.com/problems/ORDERSET/
 
 #include <bits/stdc++.h>
 using namespace std;
-#define MAX                 110000
+#define MAX                 210000
 #define EPS                 1e-9
 #define INF                 1e7
 #define MOD                 1000000007
@@ -56,4 +56,115 @@ void err(istream_iterator<string> it, T a, Args... args) {                      
 //const int dxx[8][2] = {{0,1}, {0,-1}, {1,0}, {-1,0}, {1,1}, {1,-1}, {-1,1}, {-1,-1}};                     // Eight side
 //----------------------------------------------------------------------------------------------------------
 
+unordered_map<int, int>Map;
+unordered_map<int, int>ReMap;
+int MaxVal = 0, tree[MAX];
+set<int>Set;
+set<int>Compress;
+vector<pair<char, int> > Query;
 
+void update(int idx, int val) {
+	while(idx <= MaxVal) {
+		tree[idx] += val;
+		idx += (idx & -idx);
+	}
+}
+
+ll read(int idx) {
+	ll sum = 0;
+	while(idx > 0) {
+		sum += tree[idx];
+		idx -= (idx & -idx);
+	}
+	return sum;
+}
+
+ll readSingle(int idx) {
+	ll sum = tree[idx];
+	if(idx > 0) {
+		int z = idx - (idx & -idx);
+		--idx;
+		while(idx != z) {
+			sum -= tree[idx];
+			idx -= (idx & -idx);
+		}
+	}
+	return sum;
+}
+
+int getIDX(ll val) {
+    if(Map.find(val) ==  Map.end())
+        return 0;
+    return Map[val];
+}
+
+void Insert(int val) {
+    if(readSingle(val))
+        return;
+    update(val, 1);
+}
+
+void Delete(int val) {
+    if(!readSingle(val))
+        return;
+    update(val, -1);
+}
+
+int Smaller(int val) {
+    return read(val-1);
+}
+
+ll Kth(int k) {
+    int low = 1, hi = MaxVal, pos = -1;
+    if(k > read(MaxVal))
+        return -1;
+    
+    while(low <= hi) {
+        int mid = (low+hi)>>1;
+		if(read(mid) >= k) {
+			pos = mid;
+			hi = mid-1;
+		}
+		else
+			low = mid+1;
+    }
+    
+    return pos;
+}
+
+int main() {
+    int t, x;
+    char q;
+    
+    scanf("%d", &t);
+    
+    for(int i = 0; i < t; ++i) {
+        scanf(" %c %d", &q, &x);
+        if(q != 'K')
+            Compress.insert(x);
+        Query.push_back({q, x});
+    }
+    
+    for(auto it = Compress.begin(); it != Compress.end(); ++it) {
+        Map[*it] = ++MaxVal;
+        ReMap[MaxVal] = *it;
+    }
+    
+    for(int i = 0; i < t; ++i) {
+        if(Query[i].first == 'I')
+            Insert(Map[Query[i].second]);
+        else if(Query[i].first == 'D')
+            Delete(Map[Query[i].second]);
+        else if(Query[i].first == 'C')
+            printf("%d\n", Smaller(Map[Query[i].second]));
+        else {
+            int ans = Kth(Query[i].second);
+            if(ans == -1)
+                printf("invalid\n");
+            else
+                printf("%d\n", ReMap[ans]);
+        }
+    }
+    
+    return 0;
+}
