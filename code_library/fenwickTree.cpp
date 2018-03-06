@@ -37,76 +37,109 @@ typedef pair<int, int> pii;
 typedef pair<ll, ll> pll;
 typedef vector<pair<int, int> > vii;
 typedef vector<pair<ll, ll> >vll;
-// ----------------------- 1D Fenwick Tree-----------------
 
-long long tree[100010];
-int MaxVal;
+// 1D Fenwick Tree
+struct BIT {
+    vector<ll>tree;
+    int MaxVal;
+    
+    void init(int sz=1e7) {
+        tree.resize(sz+1, 0);
+        MaxVal = sz+1;
+    }
 
-void update(int idx, int val) {
-	while(idx <= MaxVal) {
-		tree[idx] += val;
-		idx += (idx & -idx);
-	}
-}
+    void update(int idx, ll val) {
+        for( ;idx <= MaxVal; idx += (idx & -idx))
+            tree[idx] += val;
+    }
+    
+    void update(int l, int r, ll val) {
+        if(l > r) swap(l, r);
+        update(l, val);
+        update(r+1, -val);
+    }
 
-long long read(int idx) {
-	long long sum = 0;
-	while(idx > 0) {
-		sum += tree[idx];
-		idx -= (idx & -idx);
-	}
-	return sum;
-}
+    ll read(int idx) {
+        ll sum = 0;
+        for( ;idx > 0; idx -= (idx & -idx))
+            sum += tree[idx];
+        return sum;
+    }
+    
+    ll read(int l, int r) {
+        ll ret = read(r) - read(l-1);
+        return ret;
+    }
 
-long long readSingle(int idx) {
-	long long sum = tree[idx];
-	if(idx > 0) {
-		int z = idx - (idx & -idx);
-		--idx;
-		while(idx != z) {
-			sum -= tree[idx];
-			idx -= (idx & -idx);
-		}
-	}
-	return sum;
-}
+    ll readSingle(int idx) {             // Point read in log(n)
+        ll sum = tree[idx];
+        if(idx > 0) {
+            int z = idx - (idx & -idx);
+            --idx;
+            while(idx != z) {
+                sum -= tree[idx];
+                idx -= (idx & -idx);
+            }
+        }   
+        return sum;
+    }
 
-// Tested Version
-// Complexity : LogN
-int binarySearch(int cSum) {			// Binary search for the cumulative sum
-	int idx = 0, tIdx;					// Returns the greater index if value is present more than once
-	int bitmask = highBitMaxVal;		// Another way is to use hand made binary search with read() function (logN)^2 complexity
-	
-	while(bitmask != 0 && idx < MaxVal) {
-		tIdx = idx + bitmask;
-		if(cSum == tree[tIdx])
-			return tIdx;
-		if(cSum > tree[tIdx]) {
-			idx = tIdx;
-			cSum -= tree[tIdx];
-		}
-		bitmask >>= 1;
-	}
-	if(cSum != 0) 
-		return -1;
-	else
-		return idx;
-}
-
-// Complexity : (logN)^2
-int binarySearch(int lo, int hi, int cSum) {		// Returns the greater index if value is present more than once
-	int pos = -1, mid;								// More trustworthy
-	while(lo <= hi) {
-		mid = (lo+hi)/2;
-		if(read(mid) == cSum) {     // read(mid) >= cSum        : can be used to find the lowest index of cSum value
-			pos = mid;
-			hi = mid-1;
-		}
-		else
-			lo = mid+1;
-	}
-	return pos;
-}
+    int search(int cSum) {
+        int pos = -1, lo = 1, hi = MaxVal, mid;
+        while(lo <= hi) {
+            mid = (lo+hi)/2;
+            if(read(mid) >= cSum) {     // read(mid) >= cSum : to find the lowest index of cSum value
+                pos = mid;              // read(mid) == cSum : to find the greatest index of cSum value
+                hi = mid-1;
+            }
+            else
+                lo = mid+1;
+        }
+        return pos;
+    }
+    
+    ll size() {
+        return read(MaxVal);
+    }
+    
+    int KthPos(int k) {
+        if(read(MaxVal) > k)        // Position is greater than existing values in BIT
+            return -1;
+        return search(k);
+    }
+    
+    void insert(int pos) {
+        update(pos, 1);
+    }
+    
+    void remove(int pos) {
+        update(pos, -1);
+    }
+    
+    // Modified BIT, this section can be used to add/remove/read 1 to all elements from 1 to pos
+    // all of the inverse functions must be used, for any manipulation
+    
+    ll invRead(int idx) {           // gives summation from 1 to idx
+        return read(MaxVal-idx);
+    }
+    
+    void invInsert(int idx) {       // adds 1 to all index less than idx
+        update(MaxVal-idx, 1);
+    }
+    
+    void invRemove(int idx) {       // removes 1 from idx
+        update(MaxVal-idx, -1);
+    }
+    
+    void invUpdate(int idx, ll val) {
+        update(MaxVal-idx, val);
+    }
+    
+    /*void scale(int idx = MaxVal) {                    // BIT supports scaling
+        for(int i = 0; i < idx; ++i)
+            tree[i] %= MOD;                             // all mathematical operations supported
+    }*/
+};
 
 // --------------------------- 2D Fenwick Tree -------------------------
 
