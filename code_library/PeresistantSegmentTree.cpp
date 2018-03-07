@@ -1,4 +1,4 @@
-// Peresistant/Dynamic Segment Tree
+// Persistant/Dynamic Segment Tree
 // Pointer Version
 
 #include <bits/stdc++.h>
@@ -55,8 +55,8 @@ struct node {
     }
 };
 
-node *presis[101000] *null = new node();
-null->lft = null->rht = null;
+node *persis[101000], *null = new node();
+// null->lft = null->rht = null;
 
 node *nCopy(node *x) {
     node *tmp = new node();
@@ -156,7 +156,7 @@ ll query(node *pos, ll l, ll r, ll L, ll R) {
 }
 
 
-// Ignore LMax presistant tree positions query for finding k'th value
+// Ignore LMax persistant tree positions query for finding k'th value
 int query(node *RMax, node *LMax, int l, int r, int k) {                         // (LMax : past, RMax : updated)
     if(l == r)
         return l;
@@ -250,10 +250,13 @@ void ClearTree(node *pos) {
 }
 
 int main() {
-    // DEMO
+    // MUST BE INITIALIZED
+    null->lft = null->rht = null;
+    
+    //
     for(int i = 1; i <= 10; ++i) {
-        presis[i] = nCopy(presis[i-1]);
-        update(presis[i], 1, n, idx, val);
+        persis[i] = nCopy(persis[i-1]);
+        update(persis[i], 1, n, idx, val);
     }
      return 0;
  }

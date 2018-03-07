@@ -1,131 +1,160 @@
 #include <bits/stdc++.h>
+#define MAX 200000
 using namespace std;
-
 typedef long long ll;
 
-struct BIT {
-    vector<ll>tree;
-    int MaxVal;
+struct node {
+    ll val;
+    node *lft, *rht;
     
-    void init(int sz=1e7) {
-        tree.resize(sz+1, 0);
-        MaxVal = sz;
+    node(node *L = NULL, node *R = NULL, ll v = 0) {
+        lft = L;
+        rht = R;
+        val = v;
     }
-
-    void update(int idx, ll val) {
-        while(idx <= MaxVal) {
-            //tree[idx] = (tree[idx] + MOD) % MOD;
-            tree[idx] += val;
-            idx += (idx & -idx);
-        }
-    }
-    
-    void update(int l, int r, ll val) {
-        if(l > r) swap(l, r);
-        update(l, val);
-        update(r+1, -val);
-    }
-
-    ll read(int idx) {
-        ll sum = 0;
-        while(idx > 0) {
-            //sum = (sum + tree[idx] + MOD) % MOD;
-            sum += tree[idx];
-            idx -= (idx & -idx);
-        }
-        return sum;
-    }
-    
-    ll read(int l, int r) {
-        ll ret = read(r) - read(l-1);
-        //return (ret + MOD)%MOD;
-        return ret;
-    }
-
-    ll readSingle(int idx) {             // Point read in log(n)
-        ll sum = tree[idx];
-        if(idx > 0) {
-            int z = idx - (idx & -idx);
-            --idx;
-            while(idx != z) {
-                sum -= tree[idx];
-                idx -= (idx & -idx);
-            }
-        }   
-        return sum;
-    }
-
-    int search(int cSum) {		        // Returns the greater index if value is present more than once
-        int pos = -1, lo = 1, hi = MaxVal, mid;
-        while(lo <= hi) {
-            mid = (lo+hi)/2;
-            if(read(mid) >= cSum) {     // read(mid) >= cSum : can be used to find the lowest index of cSum value
-                pos = mid;              // read(mid) == cSum : can be used to find the greatest index of cSum value
-                hi = mid-1;
-            }
-            else
-                lo = mid+1;
-        }
-        return pos;
-    }
-    
-    ll size() {
-        return read(MaxVal);
-    }
-    
-    /*void scale(int idx = MaxVal) {                      // BIT supports scaling
-        for(int i = 0; i < idx; ++i)
-            tree[i] %= MOD;
-    }*/
 };
 
-BIT bt;
-vector<int>v;
+node *persis[MAX], *null = new node();
+ll val[MAX];
+
+node *nCopy(node *x) {
+    node *tmp = new node();
+    if(x) {
+        tmp->val = x->val;
+        tmp->lft = x->lft;
+        tmp->rht = x->rht;
+    }
+    return tmp;
+}
+
+// Single Position update
+void update(node *pos, ll l, ll r, ll idx, ll val) {
+    if(l == r) {
+        pos->val += val;
+        pos->lft = pos->rht = null;
+        return;
+    }
+    
+    ll mid = (l+r)>>1;
+    
+    if(idx <= mid) {
+        pos->lft = nCopy(pos->lft);
+        if(!pos->rht)
+            pos->rht = null;
+        update(pos->lft, l, mid, idx, val);
+    }
+    else {
+        pos->rht = nCopy(pos->rht);
+        if(!pos->lft)
+            pos->lft = null;
+        update(pos->rht, mid+1, r, idx, val);
+    }
+    
+    pos->val++;
+}
+
+
+ll Count;
+ll query(node *lftNode, node *rhtNode, node *track, int l, int r, ll val) {
+    ll cnt = rhtNode->val-lftNode->val-track->val;
+    
+    //printf("At range %d %d : %lld %lld %lld %lld\n", l, r, cnt, rhtNode->val, lftNode->val, track->val);
+    if(val < l || cnt <= 0) {
+        Count = 0;
+        return -1;
+    }
+    
+    if(l == r) {
+        track->val += cnt;
+        Count = cnt;
+        return l;
+    }
+    
+    if(!track->lft)
+        track->lft = new node();
+    if(!track->rht)
+        track->rht = new node();
+    
+    //cout << (rhtNode->lft == NULL) << (lftNode->lft == NULL) << (track->lft == NULL) << endl;
+    
+    //cout << "OKA\n";
+    int mid = (l+r)>>1, ret = -1;
+    int lftCnt = rhtNode->lft->val - lftNode->lft->val - track->lft->val;
+    //int rhtCnt = rhtNode->rht->val - lftNode->rht->val - track->rht->val;
+    //printf("lftCnt %d\n", lftCnt);
+    
+    if(val <= mid && lftCnt > 0)
+        ret = query(lftNode->lft, rhtNode->lft, track->lft, l, mid, val);
+    else
+        ret = query(lftNode->rht, rhtNode->rht, track->rht, mid+1, r, val);
+        
+    track->val += Count;
+    return ret;
+}
+
+
+void ClearTree(node *pos) {
+    if(pos == NULL) {
+        delete pos;
+        return;
+    }
+
+    ClearTree(pos->lft);
+    ClearTree(pos->rht);
+    
+    delete pos;
+}
 
 int main() {
-    int t, n;
-    scanf("%d", &t);
+    ll n, q, l, r, lim=-1;
     
-    while(t--) {
-        scanf("%d", &n);
-        v.resize(n+1);
+    
+    // MODIFY N before submit
+    
+    null->lft = null->rht = null;
+    persis[0] = null;
+    
+    scanf("%lld", &n);
+    for(int i = 1; i <= n; ++i) {
+        scanf("%lld", &val[i]);
+        lim = max(val[i], lim);
+    }
+    
+    for(int i = 1; i <= n; ++i) {
+        persis[i] = nCopy(persis[i-1]);
+        update(persis[i], 1, lim, val[i], 1);
+    }
+    
+    // Query Starts
+    
+    scanf("%lld", &q);
+    
+    while(q--) {
+        scanf("%lld%lld", &l, &r);
+        ll cSum = 0;
+        node *track = new node();
         
-        bt.init(n);
-        
-        for(int i = 1; i <= n; ++i)
-            bt.update(i, 1);
-        
-        int pstPos = 0;
-        for(int i = 1; i <= n; ++i) {
-            //cout << "I " << i << endl;
-            int pos = pstPos + i + 1;
+        while(1) {
+            //printf("-----------------Search for %lld\n", cSum);
+            // how to keep track of used values in this range??
+            // use key -> count, and minus??
+            Count = 0;
+            ll val = query(persis[l-1], persis[r], track, 1, lim, cSum+1);     // finds val less than or equal to cSum
+            // if val found, then cSum += val, then again search
+            // else break
             
-            //cout << "Pos " << pos << endl;
+            //printf("Found %lld : %lld\n", val, Count);
             
-            if(pos > bt.size()) {
-                //cout << "MOD " << endl;
-                pos %= bt.size();
-                if(pos == 0) pos = bt.size();
-            }
-            
-            //for(int i = 1; i <= n; ++i)
-            //    printf("%lld ", bt.read(i));
-            //printf("\n");
-            //cout << "SZ " << bt.size() << endl;
-            //cout << "Pos " << pos << endl;
-            int newPos = bt.search(pos);
-            //cout << "NewPos " << newPos << endl;
-            v[newPos] = i;
-            bt.update(newPos, -1);
-            
-            pstPos = max(bt.read(newPos), 0LL);
-            //cout << "pstPos " << pstPos << endl;
+            if(val == -1)
+                break;
+
+            cSum += (val*Count);
         }
+        printf("%lld\n", cSum+1);
         
-        for(int i = 1; i < n; ++i)
-            printf("%d ", v[i]);
-        printf("%d\n", v[n]);
+        ClearTree(track);
     }
     
     return 0;
 }
+    
