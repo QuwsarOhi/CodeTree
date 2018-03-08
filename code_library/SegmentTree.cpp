@@ -311,16 +311,37 @@ struct node {
 	}
 };
 
-int main() {
-    int t, q, n, x1, x2, y1, y2, val;
-    scanf("%d", &t);
-    
-    for(int Case = 1; Case <= t; ++Case) {
-        scanf("%d", &q);
-        while(q--) {
-            scanf("%d", &n);
-            if(n == 0) {
-                scanf("%d %d", &x1, &y1);
-                if(query(1, 1, 1000, 1000, x1, y1))    
+
+
+// ------------------------- MERGE SORT TREE ----------------------------------
+
+vi tree[1200000];
+int val[1200000];
+
+void init(int pos, int l, int r) {
+    if(l == r) {
+        tree[pos].pb(val[l]);
+        return;
     }
+    
+    int mid = (l+r)>>1;
+    
+    init(pos<<1, l, mid);
+    init(pos<<1|1, mid+1, r);
+    
+    merge(tree[pos<<1].begin(), tree[pos<<1].end(), tree[pos<<1|1].begin(), tree[pos<<1|1].end(), back_inserter(tree[pos]));
 }
+
+
+int query(int pos, int l, int r, int L, int R, int k) {
+    if(r < L || R < l)
+        return 0;
+    
+    if(L <= l && r <= R)
+        return (int)tree[pos].size() - (upper_bound(tree[pos].begin(), tree[pos].end(), k) - tree[pos].begin());
+    
+    int mid = (l+r)>>1;
+    
+    return query(pos<<1, l, mid, L, R, k) + query(pos<<1|1, mid+1, r, L, R, k);
+}
+
