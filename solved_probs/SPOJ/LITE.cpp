@@ -27,8 +27,7 @@ void init(int L, int R, int pos) {
     init(L, mid, pos<<1);
     init(mid+1, R, pos<<1|1);
 
-    tree[pos].val = 0;
-    tree[pos].prop = 0;
+    tree[pos].val = tree[pos].prop = 0;
 }
 
 int flipProp(int parentVal, int childVal) {
@@ -36,19 +35,18 @@ int flipProp(int parentVal, int childVal) {
         return 0;
     return parentVal;
 }
-        
 
 void propagate(int L, int R, int pos) {
     if(tree[pos].prop == 0 || L == R)       // If no propagation tag
         return;                             // or leaf node, then no need to change
     
     int mid = (L+R)>>1;
-    tree[pos<<1].val = (mid-L+1) - tree[pos<<1].val;        // Set left & right child value
+    tree[pos<<1].val = (mid-L+1) - tree[pos<<1].val;                    // Set left & right child value
     tree[pos<<1|1].val = (R-mid) - tree[pos<<1|1].val;
     
     tree[pos<<1].prop = flipProp(tree[pos].prop, tree[pos<<1].prop);    // Flip child prop according to problem
     tree[pos<<1|1].prop = flipProp(tree[pos].prop, tree[pos<<1|1].prop);
-    tree[pos].prop = 0;         // Clear parent propagation tag
+    tree[pos].prop = 0;                                                 // Clear parent propagation tag
 }
 
 void update(int L, int R, int l, int r, int pos) {

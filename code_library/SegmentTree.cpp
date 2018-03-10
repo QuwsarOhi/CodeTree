@@ -31,317 +31,284 @@ typedef pair<int, int> pii;
 typedef pair<ll, ll> pll;
 typedef vector<pair<int, int> > vii;
 
-// Basic Segment Tree (Without Propagation)
-vi tree;
+ll val[10];
 
-void segment_build(int pos, int L, int R) {
-    tree[pos] = 0;		//init is here, no need to manual init
-    if(L==R) {
-        tree[pos] = arr[L];
-        return;
+// Only Supports Range Value set and Point Query
+struct SegTreeProp {
+    vector<int>tree;
+    vector<bool>prop;
+    
+    void init(int n) {
+        tree.resize(n+10);
+        prop.resize(n+10);
     }
-    int mid = (L+R)/2;
-    segment_build(pos*2, L, mid);
-    segment_build(pos*2+1, mid+1, R);
-    tree[pos] = tree[pos*2] * tree[pos*2+1];	//depends on usage
-}
-
-void segment_update(int pos, int L, int R, int i, int val) {
-    if(L==R) {
-        tree[pos] = val;
-        return;
+    
+    void propagate(int pos, int l, int r) {
+        if(!prop[pos] || l == r)
+            return;
+        tree[pos<<1|1] = tree[pos<<1] = tree[pos];
+        prop[pos<<1|1] = prop[pos<<1] = 1;
+        prop[pos] = 0;
     }
-    int mid = (L+R)/2;
-    if(i <= mid) segment_update(pos*2, L, mid, i, val);
-    else segment_update(pos*2+1, mid+1, R, i, val);
-    tree[pos] = tree[pos*2] * tree[pos*2+1];		//depends on usage
-}
-
-int segment_query(int pos, int L, int R, int l, int r) {
-    if(R < l || r < L)
-		return 1;	//depends on usage (return 0)
-    if(l <= L && R <= r) 
-		return tree[pos];	//depends on usage
-    int mid = (L+R)/2;
-    int x = segment_query(pos*2, L, mid, l, r);
-    int y = segment_query(pos*2+1, mid+1, R, l, r);
-    return x*y;			//depends on usage
-}
-
+    
+    void update(int pos, int l, int r, int L, int R, int val) {
+        if(r < L || R < l)
+            return;
+        
+        propagate(pos, l, r);
+        if(L <= l && r <= R) {
+            tree[pos] = val;
+            prop[pos] = 1;
+            return;
+        }
+        
+        int mid = (l+r)>>1;
+        update(pos<<1, l, mid, L, R, val);
+        update(pos<<1|1, mid+1, r, L, R, val);
+    }
+    
+    int query(int pos, int l, int r, int idx) {
+        if(l == r)
+            return tree[pos];
+        
+        propagate(pos, l, r);
+        int mid = (l+r)>>1;
+        if(idx <= mid)
+            return query(pos<<1, l, mid, idx);
+        else
+            return query(pos<<1|1, mid+1, r, idx);
+    }
+};
 
 
 
 // Segment Tree Lazy Propagation (Without Propagation Update)
+struct SegLazy {
+    vector<pair<ll, ll> > tree;         // Resize First
+    
+    void init(int pos, int l, int r) {
+        if(l == r) {
+            tree[pos].se = val[l];
+            return;
+        }
+        
+        int mid = (l+r)/2;
+        init(pos*2, l, mid);
+        init(pos*2+1, mid+1, r);
+        tree[pos].se = tree[pos*2].se + tree[pos*2+1].se;
+    }
 
-vector<pair<ull, ull> > tree;
+    // (l, r) : tree segment, (x, y) : update segment
+    void update(int pos, int l, int r, int x, int y, ll val) {
+        if(y < l || x > r)
+            return;
+	
+        if(x <= l && r <= y) {		            // Tree segment in update segment
+            tree[pos].fi += (r-l+1)*val;
+            tree[pos].se += val;	            // Lazy
+            return;
+        }
+	
+        int mid = (l+r)/2LL;
+	
+        update(pos*2LL, l, mid, x, y, val);
+        update(pos*2LL + 1, mid+1, r, x, y, val);
+	
+        tree[pos].fi = tree[pos*2].fi + tree[pos*2+1].fi + (r-l+1)*tree[pos].se;
+    }
 
-// (l, r) : tree segment, (x, y) : update segment
-
-void update(ll pos, ll l, ll r, ll x, ll y, ll val) {
-	if(y < l || x > r)
-		return;
+    // Pass propagate value through carry
+    ll query(ll pos, ll l, ll r, ll x, ll y, ll carry) {
+        if(y < l || x > r)
+            return 0;
 	
-	if(x <= l && r <= y) {		// Tree segment in update segment
-		tree[pos].fi += (r-l+1)*val;
-		tree[pos].se += val;	// Propagate
-		return;
-	}
+        if(x <= l && r <= y)
+            return tree[pos].fi + (carry * (r-l+1));
 	
-	ll mid = (l+r)/2LL;
-	
-	update(pos*2LL, l, mid, x, y, val);
-	update(pos*2LL + 1, mid+1, r, x, y, val);
-	
-	tree[pos].fi = tree[pos*2].fi + tree[pos*2+1].fi + (r-l+1)*tree[pos].se;
-}
-
-// Pass propagate value through carry
-ll query(ll pos, ll l, ll r, ll x, ll y, ll carry) {
-	if(y < l || x > r)
-		return 0;
-	
-	if(x <= l && r <= y)
-		return tree[pos].fi + (carry * (r-l+1));
-	
-	ll mid = (l+r)/2LL;
-	
-	ll lft = query(pos*2LL, l, mid, x, y, carry + tree[pos].se);
-	ll rht = query(pos*2LL + 1, mid+1, r, x, y, carry + tree[pos].se);
-	
-	return lft + rht;
-}
-
-
-
-// Segment Tree Laze (With Propagation Update)
-
-struct node {
-    int val, prop;
+        int mid = (l+r)/2LL;
+        ll lft = query(pos*2LL, l, mid, x, y, carry + tree[pos].se);
+        ll rht = query(pos*2LL + 1, mid+1, r, x, y, carry + tree[pos].se);
+        return lft + rht;
+    }
 };
 
+
+
+// SegTree with Lazy Propagation (Flip Count in Range)
 // Prop :
 // 0 : No prop operation
 // 1 : Prop operation should be done
 
-node tree[409000];
+struct Node {
+    int val, prop;
+};
 
-void init(int L, int R, int pos) {
-    if(L == R) {
-        tree[pos].val = 0;
-        tree[pos].prop = 0;
-        return;
+struct SegProp {
+    vector<Node>tree;
+    void init(int L, int R, int pos) {
+        if(L == R) {
+            tree[pos].val = 0;
+            tree[pos].prop = 0;
+            return;
+        }
+    
+        int mid = (L+R)>>1;
+        init(L, mid, pos<<1);
+        init(mid+1, R, pos<<1|1);
+        tree[pos].val = tree[pos].prop = 0;
     }
-    
-    int mid = (L+R)>>1;
-    
-    init(L, mid, pos<<1);
-    init(mid+1, R, pos<<1|1);
 
-    tree[pos].val = 0;
-    tree[pos].prop = 0;
-}
+    int flipProp(int parentVal, int childVal) {
+        if(parentVal == childVal)
+            return 0;
+        return parentVal;
+    }
 
-int flipProp(int parentVal, int childVal) {
-    if(parentVal == childVal)
-        return 0;
-    return parentVal;
-}
+    void propagate(int L, int R, int pos) {
+        if(tree[pos].prop == 0 || L == R)       // If no propagation tag
+            return;                             // or leaf node, then no need to change
+    
+        int mid = (L+R)>>1;
+        tree[pos<<1].val = (mid-L+1) - tree[pos<<1].val;                    // Set left & right child value
+        tree[pos<<1|1].val = (R-mid) - tree[pos<<1|1].val;
+        tree[pos<<1].prop = flipProp(tree[pos].prop, tree[pos<<1].prop);    // Flip child prop according to problem
+        tree[pos<<1|1].prop = flipProp(tree[pos].prop, tree[pos<<1|1].prop);
+        tree[pos].prop = 0;                                                 // Clear parent propagation tag
+    }
+
+    void update(int L, int R, int l, int r, int pos) {
+        if(r < L || R < l)
+            return;
+    
+        propagate(L, R, pos);
+        if(l <= L && R <= r) {
+            tree[pos].val = (R-L+1) - tree[pos].val;    // Value updated
+            tree[pos].prop = 1;                         // Propagation tag set
+            return;
+        }
+    
+        int mid = (L+R)>>1;
+        update(L, mid, l, r, pos<<1);
+        update(mid+1, R, l, r, pos<<1|1);
+        tree[pos].val = tree[pos<<1].val + tree[pos<<1|1].val;
+    }
+
+    int querySum(int L, int R, int l, int r, int pos) {
+        if(r < L || R < l)
+            return 0;
         
-
-void propagate(int L, int R, int pos) {
-    if(tree[pos].prop == 0 || L == R)       // If no propagation tag
-        return;                             // or leaf node, then no need to change
+        propagate(L, R, pos);
+        if(l <= L && R <= r)
+            return tree[pos].val;
     
-    int mid = (L+R)>>1;
-    tree[pos<<1].val = (mid-L+1) - tree[pos<<1].val;        // Set left & right child value
-    tree[pos<<1|1].val = (R-mid) - tree[pos<<1|1].val;
-    
-    tree[pos<<1].prop = flipProp(tree[pos].prop, tree[pos<<1].prop);    // Flip child prop according to problem
-    tree[pos<<1|1].prop = flipProp(tree[pos].prop, tree[pos<<1|1].prop);
-    tree[pos].prop = 0;         // Clear parent propagation tag
-}
-
-void update(int L, int R, int l, int r, int pos) {
-    if(r < L || R < l)
-        return;
-    
-    propagate(L, R, pos);
-    if(l <= L && R <= r) {
-        tree[pos].val = (R-L+1) - tree[pos].val;    // Value updated
-        tree[pos].prop = 1;                         // Propagation tag set
-        return;
+        int mid = (L+R)>>1;
+        int lft = querySum(L, mid, l, r, pos<<1);
+        int rht = querySum(mid+1, R, l, r, pos<<1|1);
+        return lft+rht;
     }
-    
-    int mid = (L+R)>>1;
-    update(L, mid, l, r, pos<<1);
-    update(mid+1, R, l, r, pos<<1|1);
-    tree[pos].val = tree[pos<<1].val + tree[pos<<1|1].val;
-}
+};
 
-int querySum(int L, int R, int l, int r, int pos) {
-    if(r < L || R < l)
-        return 0;
-        
-    propagate(L, R, pos);
-    if(l <= L && R <= r)
-        return tree[pos].val;
-    
-    int mid = (L+R)>>1;
-    int lft = querySum(L, mid, l, r, pos<<1);
-    int rht = querySum(mid+1, R, l, r, pos<<1|1);
-    return lft+rht;
-}
-
-
-
-// ----------------------------NOT tested 2D segment tree-----------------------
-
-// reference:
-// https://stackoverflow.com/questions/25121878/2d-segment-quad-tree-explanation-with-c/25122078#25122078
-
-#include <stdio.h>
-#include <string.h>
-//#include <bits/stdc++.h>
-//using namespace std;
-
-// x1, y1 is upper left point, x2, y2 lower point
-// 
-
-int tree[4100][4100];
-
-
-/*
-void init(int px, int py, int x1, int y1, int x2, int y2) {
-    if(x1 > x2 || y1 > y2)
-        return;
-    if(x1 == x2 && y1 == y2) {
-        tree[pos] = v[x1][y1];
-        return;
-    }
-    int midX = (x1+x2)>>1, midY = (y1+y2)>>1;
-    int Px = 2*px, Py = 2*py;    
-
-    init(Px, Py, x1, y1, midX, midY);          // lftUp
-    init(Px+1, Py, midX+1, y1, x2, midY);        // rhtUp
-    init(Px, Py+1, x1, midY+1, midX, y2);          // lftDown
-    init(Px+1, Py+1, midX+1, midY+1, x2, y2);      // rhtDown
-    
-    //tree[pos] = lftUp + rhtUp + lftDown + rhtDown;      // fix this
-    tree[px][py] = tree[Px][Py]+tree[Px+1][Py]+tree[Px][Py+1]+tree[Px+1][Py+1];
-}*/
-
-void update(int px, int py, int x1, int y1, int x2, int y2, int x, int y, int val) {
-    if(x1 > x2 || y1 > y2)
-        return;
-    if(x > x2 || y > y2 || x < x1 || y < y1)
-        return;
-    if(x1 == x2 && y1 == y2) {
-        //cout << "set at " << x1 << " " << y1 << " :: " << pos << endl;
-        tree[pos] += val;
-        return;
-    }
-    
-    int midX = (x1+x2)>>1, midY = (y1+y2)>>1;
-    int Px = 2*px, Py = 2*py;    
-
-    update(Px, Py, x1, y1, midX, midY, x, y, val);
-    update(Px+1, Py, midX+1, y1, x2, midY, x, y, val);
-    update(Px, Py+1, x1, midY+1, midX, y2, x, y, val);
-    update(Px+1, Py+1, midX+1, midY+1, x2, y2, x, y, val);
-
-    tree[px][py] = tree[Px][Py]+tree[Px+1][Py]+tree[Px][Py+1]+tree[Px+1][Py+1];
-}
-
-int query(int px, int py, int x1, int y1, int x2, int y2, int xq1, int yq1, int xq2, int yq2) {
-    printf("outQ : %d : %d %d %d %d :: %d\n", pos, x1, y1, x2, y2, tree[pos]);
-    if(x1 > x2 || y1 > y2)
-        return 0;
-    
-    if(xq1 > x2 || yq1 > y2 || xq2 < x1 || yq2 < y1)
-        return 0;
-
-    if(x1 >= xq1 && x2 <= xq2 && y1 >= yq1 && y2 <= yq2) {
-        printf("q : %d : %d %d %d %d :: %d\n", pos, x1, y1, x2, y2, tree[pos]);
-        return tree[pos];
-    }
-    
-    int midX = (x1+x2)>>1, midY = (y1+y2)>>1;
-    int Px = 2*px, Py = 2*py;    
-
-    int lftUp = query(Px, Py, x1, y1, midX, midY, xq1, yq1, xq2, yq2);
-    int rhtUp = query(Px+1, Py, midX+1, y1, x2, midY, xq1, yq1, xq2, yq2);
-    int lftDown = query(Px, Py+1 x1, midY+1, midX, y2, xq1, yq1, xq2, yq2);
-    int rhtDown = query(Px+1, Py+1, midX+1, midY+1, x2, y2, xq1, yq1, xq2, yq2);
-    
-    return (lftUp + rhtUp + lftDown + rhtDown);
-}
-
-int query(int px, int py, int x1, int x2, int y1, int y2)
-
-void printer(int pos, int x1, int y1, int x2, int y2) {
-    if(x1 > x2 || y1 > y2)
-        return;
-        
-    printf("pos %d: %d %d %d %d :: %d\n", pos, x1, y1, x2, y2, tree[pos]);
-    if(x1 == x2 && y1 == y2) {
-        return;
-    }
-    int midX = (x1+x2)>>1, midY = (y1+y2)>>1;
-    
-    printer(4*pos-2, x1, y1, midX, midY);          // lftUp
-    printer(4*pos-1, midX+1, y1, x2, midY);        // rhtUp
-    printer(4*pos, x1, midY+1, midX, y2);          // lftDown
-    printer(4*pos+1, midX+1, midY+1, x2, y2);      // rhtDown
-}
 
 // ----------------------- Segment Tree Range Maximum Sum -----------------------
 
 struct node {
-	ll ans, prefix, suffix, sum;
+	ll sum, prefix, suffix, ans;
 	
-	node(int val = 0) {
-		ans = prefix = suffix = sum = val;
+	node(ll val = 0) {
+		sum = prefix = suffix = ans = val;
 	}
 	
 	void merge(node left, node right) {
+		sum = left.sum + right.sum;
 		prefix = max(left.prefix, left.sum+right.prefix);
 		suffix = max(right.suffix, right.sum+left.suffix);
-		sum = left.sum + right.sum;
 		ans = max(left.ans, max(right.ans, left.suffix+right.prefix));
 	}
 };
 
 
+struct SegTreeRMS {
+    vector<node>tree;
 
-// ------------------------- MERGE SORT TREE ----------------------------------
-
-vi tree[1200000];
-int val[1200000];
-
-void init(int pos, int l, int r) {
-    if(l == r) {
-        tree[pos].pb(val[l]);
-        return;
+    void init(int pos, int l, int r) {
+        if(l == r) {
+            tree[pos] = node(val[l]);
+            return;
+        }
+	
+        int mid = (l+r)/2;
+	
+        init(pos*2, l, mid);
+        init(pos*2+1, mid+1, r);
+	
+        tree[pos] = node(-INF);
+        tree[pos].merge(tree[pos*2], tree[pos*2+1]);
     }
+
+    void update(int pos, int l, int r, int x, int val) {
+        if(x < l || r < x)
+            return;
+            
+        if(l == r && l == x) {
+            tree[pos] = node(val);
+            return;
+        }
+	
+        int mid = (l+r)/2;
+        update(pos*2, l, mid, x, val);
+        update(pos*2+1, mid+1, r, x, val);
+        tree[pos] = node(-INF);
+        tree[pos].merge(tree[pos*2], tree[pos*2+1]);
+    }
+
+    node query(int pos, int l, int r, int x, int y) {
+        if(r < x || y < l)
+            return node(-INF);
+	
+        if(x <= l && r <= y)
+            return tree[pos];
+	
+        int mid = (l+r)/2;	
+        node lft = query(pos*2, l, mid, x, y);
+        node rht = query(pos*2+1, mid+1, r, x, y);
+        node parent = node(-INF);
+        parent.merge(lft, rht);
+        return parent;
+    }
+};
+
+
+// Merge Sort Tree
+struct MergeSortTree {
+    vector<int>tree[1200000];
+
+    void init(int pos, int l, int r) {
+        if(l == r) {
+            tree[pos].pb(val[l]);
+            return;
+        }
     
-    int mid = (l+r)>>1;
+        int mid = (l+r)>>1;
+        init(pos<<1, l, mid);
+        init(pos<<1|1, mid+1, r);
+        merge(tree[pos<<1].begin(), tree[pos<<1].end(), tree[pos<<1|1].begin(), tree[pos<<1|1].end(), back_inserter(tree[pos]));
+    }
+
+    int query(int pos, int l, int r, int L, int R, int k) {
+        if(r < L || R < l)
+            return 0;
     
-    init(pos<<1, l, mid);
-    init(pos<<1|1, mid+1, r);
+        if(L <= l && r <= R)
+            return (int)tree[pos].size() - (upper_bound(tree[pos].begin(), tree[pos].end(), k) - tree[pos].begin());
     
-    merge(tree[pos<<1].begin(), tree[pos<<1].end(), tree[pos<<1|1].begin(), tree[pos<<1|1].end(), back_inserter(tree[pos]));
+        int mid = (l+r)>>1;
+        return query(pos<<1, l, mid, L, R, k) + query(pos<<1|1, mid+1, r, L, R, k);
+    }
+};
+
+
+
+
+int main() {
+    return 0;
 }
-
-
-int query(int pos, int l, int r, int L, int R, int k) {
-    if(r < L || R < l)
-        return 0;
-    
-    if(L <= l && r <= R)
-        return (int)tree[pos].size() - (upper_bound(tree[pos].begin(), tree[pos].end(), k) - tree[pos].begin());
-    
-    int mid = (l+r)>>1;
-    
-    return query(pos<<1, l, mid, L, R, k) + query(pos<<1|1, mid+1, r, L, R, k);
-}
-
