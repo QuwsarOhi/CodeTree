@@ -38,9 +38,9 @@ struct SegTreeProp {
     vector<int>tree;
     vector<bool>prop;
     
-    void init(int n) {
-        tree.resize(n+10);
-        prop.resize(n+10);
+    void Resize(int n) {
+        tree.resize(n*5);
+        prop.resize(n*5);
     }
     
     void propagate(int pos, int l, int r) {
@@ -82,53 +82,66 @@ struct SegTreeProp {
 
 
 
-// Segment Tree Lazy Propagation (Without Propagation Update)
-struct SegLazy {
-    vector<pair<ll, ll> > tree;         // Resize First
-    
-    void init(int pos, int l, int r) {
+// Segment Tree Lazy with Propagation (MOD used)
+struct SegTreeRSQ {
+    vector<ll>sum, prop;
+
+    void Resize(int n) {
+        sum.resize(5*n);
+        prop.resize(5*n);
+    }
+
+    void init(int pos, int l, int r, ll val[]) {
+        sum[pos] = prop[pos] = 0;
         if(l == r) {
-            tree[pos].se = val[l];
+            sum[pos] = val[l]%MOD;
             return;
         }
-        
-        int mid = (l+r)/2;
-        init(pos*2, l, mid);
-        init(pos*2+1, mid+1, r);
-        tree[pos].se = tree[pos*2].se + tree[pos*2+1].se;
+        int mid = (l+r)>>1;
+        init(pos<<1, l, mid, val);
+        init(pos<<1|1, mid+1, r, val);
+        sum[pos] = (sum[pos<<1] + sum[pos<<1|1])%MOD;
     }
 
-    // (l, r) : tree segment, (x, y) : update segment
-    void update(int pos, int l, int r, int x, int y, ll val) {
-        if(y < l || x > r)
+    void propagate(int pos, int l, int r) {
+        if(prop[pos] == 0 || l == r)
             return;
-	
-        if(x <= l && r <= y) {		            // Tree segment in update segment
-            tree[pos].fi += (r-l+1)*val;
-            tree[pos].se += val;	            // Lazy
+
+        int mid = (l+r)>>1;
+        sum[pos<<1] = (sum[pos<<1] + prop[pos]*(mid-l+1))%MOD;
+        sum[pos<<1|1] = (sum[pos<<1|1] + prop[pos]*(r-mid))%MOD;
+        prop[pos<<1] = (prop[pos<<1] + prop[pos])%MOD;
+        prop[pos<<1|1] = (prop[pos<<1|1] + prop[pos])%MOD;
+        prop[pos] = 0;
+    }
+
+    void update(int pos, int l, int r, int L, int R, ll val) {
+        if(r < L || R < l)
+            return;
+
+        propagate(pos, l, r);
+        if(L <= l && r <= R) {
+            sum[pos] = (sum[pos] + val*(r-l+1))%MOD;
+            prop[pos] = (prop[pos] + val)%MOD;
             return;
         }
-	
-        int mid = (l+r)/2LL;
-	
-        update(pos*2LL, l, mid, x, y, val);
-        update(pos*2LL + 1, mid+1, r, x, y, val);
-	
-        tree[pos].fi = tree[pos*2].fi + tree[pos*2+1].fi + (r-l+1)*tree[pos].se;
+
+        int mid = (l+r)>>1;
+        update(pos<<1, l, mid, L, R, val);
+        update(pos<<1|1, mid+1, r, L, R, val);
+        sum[pos] = (sum[pos<<1] + sum[pos<<1|1])%MOD;
     }
 
-    // Pass propagate value through carry
-    ll query(ll pos, ll l, ll r, ll x, ll y, ll carry) {
-        if(y < l || x > r)
+    ll query(int pos, int l, int r, int L, int R) {
+        if(r < L || R < l)
             return 0;
-	
-        if(x <= l && r <= y)
-            return tree[pos].fi + (carry * (r-l+1));
-	
-        int mid = (l+r)/2LL;
-        ll lft = query(pos*2LL, l, mid, x, y, carry + tree[pos].se);
-        ll rht = query(pos*2LL + 1, mid+1, r, x, y, carry + tree[pos].se);
-        return lft + rht;
+
+        propagate(pos, l, r);
+        if(L <= l && r <= R)
+            return sum[pos];
+
+        int mid = (l+r)>>1;
+        return (query(pos<<1, l, mid, L, R) + query(pos<<1|1, mid+1, r, L, R))%MOD;
     }
 };
 
@@ -145,7 +158,7 @@ struct Node {
 
 struct SegProp {
     vector<Node>tree;
-    void init(int L, int R, int pos) {
+    void init(int L, int R, int pos, ll val[]) {
         if(L == R) {
             tree[pos].val = 0;
             tree[pos].prop = 0;
@@ -153,8 +166,8 @@ struct SegProp {
         }
     
         int mid = (L+R)>>1;
-        init(L, mid, pos<<1);
-        init(mid+1, R, pos<<1|1);
+        init(L, mid, pos<<1, val);
+        init(mid+1, R, pos<<1|1, val);
         tree[pos].val = tree[pos].prop = 0;
     }
 
@@ -230,7 +243,7 @@ struct node {
 struct SegTreeRMS {
     vector<node>tree;
 
-    void init(int pos, int l, int r) {
+    void init(int pos, int l, int r, ll val[]) {
         if(l == r) {
             tree[pos] = node(val[l]);
             return;
@@ -238,8 +251,8 @@ struct SegTreeRMS {
 	
         int mid = (l+r)/2;
 	
-        init(pos*2, l, mid);
-        init(pos*2+1, mid+1, r);
+        init(pos*2, l, mid, val);
+        init(pos*2+1, mid+1, r, val);
 	
         tree[pos] = node(-INF);
         tree[pos].merge(tree[pos*2], tree[pos*2+1]);
@@ -277,20 +290,19 @@ struct SegTreeRMS {
     }
 };
 
-
 // Merge Sort Tree
 struct MergeSortTree {
     vector<int>tree[1200000];
 
-    void init(int pos, int l, int r) {
+    void init(int pos, int l, int r, ll val[]) {
         if(l == r) {
             tree[pos].pb(val[l]);
             return;
         }
     
         int mid = (l+r)>>1;
-        init(pos<<1, l, mid);
-        init(pos<<1|1, mid+1, r);
+        init(pos<<1, l, mid, val);
+        init(pos<<1|1, mid+1, r, val);
         merge(tree[pos<<1].begin(), tree[pos<<1].end(), tree[pos<<1|1].begin(), tree[pos<<1|1].end(), back_inserter(tree[pos]));
     }
 
@@ -307,6 +319,70 @@ struct MergeSortTree {
 };
 
 
+
+// Segment Tree Sequence (Lazy Propagation):: Contains sequnce A + 2A + 3A + ..... nA
+struct SegTreeSeq {
+    vector<ll>sum, prop;
+
+    void Resize(int n) {
+        sum.resize(n*5);
+        prop.resize(n*5);
+    }
+
+    ll intervalSum(ll l, ll r, ll val) {
+        ll interval = (r*(r+1))/2LL - (l*(l-1))/2LL;
+        return (interval*val+MOD)%MOD;
+    }
+
+    void propagate(int pos, int l, int r) {
+        if(prop[pos] == 0 || l == r)
+            return;
+        
+        int mid = (l+r)>>1;
+        sum[pos<<1] = (sum[pos<<1] + intervalSum(l, mid, prop[pos]))%MOD;
+        sum[pos<<1|1] = (sum[pos<<1|1] + intervalSum(mid+1, r, prop[pos]))%MOD;
+        prop[pos<<1] = (prop[pos<<1] + prop[pos])%MOD;
+        prop[pos<<1|1] = (prop[pos<<1|1] + prop[pos])%MOD;
+        prop[pos] = 0;
+    }
+
+    void init(int pos, int l, int r, ll val[]) {
+        sum[pos] = prop[pos] = 0;
+        if(l == r) {
+            sum[pos] = (val[l]*l)%MOD;
+            return;
+        }
+        int mid = (l+r)>>1;
+        init(pos<<1, l, mid, val);
+        init(pos<<1|1, mid+1, r, val);
+        sum[pos] = (sum[pos<<1] + sum[pos<<1|1])%MOD;
+    }
+
+    void update(int pos, int l, int r, int L, int R, ll val) {      // Range Update
+        if(r < L || R < l)
+            return;
+        propagate(pos, l, r);
+        if(L <= l && r <= R) {
+            sum[pos] = (intervalSum(l, r, val) + sum[pos])%MOD;
+            prop[pos] = (val + prop[pos])%MOD;
+            return;
+        }
+        int mid = (l+r)>>1;
+        update(pos<<1, l, mid, L, R, val);
+        update(pos<<1|1, mid+1, r, L, R, val);
+        sum[pos] = (sum[pos<<1] + sum[pos<<1|1])%MOD;
+    }
+    
+    ll query(int pos, int l, int r, int L, int R) {     // Range Query
+        if(r < L || R < l || L > R)
+            return 0;
+        propagate(pos, l, r);
+        if(L <= l && r <= R)
+            return sum[pos];
+        int mid = (l+r)>>1;
+        return (query(pos<<1, l, mid, L, R) + query(pos<<1|1, mid+1, r, L, R))%MOD;
+    }
+};
 
 
 int main() {

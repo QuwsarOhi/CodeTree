@@ -1,3 +1,5 @@
+// CodeChef
+// ForbiddenSum - FRBSUM
 
 #include <bits/stdc++.h>
 using namespace std;
@@ -54,3 +56,90 @@ void err(istream_iterator<string> it, T a, Args... args) {                      
 //const int dxx[8][2] = {{0,1}, {0,-1}, {1,0}, {-1,0}, {1,1}, {1,-1}, {-1,1}, {-1,-1}};                     // Eight side
 //----------------------------------------------------------------------------------------------------------
 
+vl val[MAX*5], prefix[MAX*5];
+int v[MAX];
+
+void init(int pos, int l, int r) {
+    if(l == r) {
+        val[pos].pb(v[l]);
+        prefix[pos].pb(v[l]);
+        return;
+    }
+    
+    int mid = (l+r)>>1;
+    init(pos<<1, l, mid);
+    init(pos<<1|1, mid+1, r);
+    
+    merge(val[pos<<1].begin(), val[pos<<1].end(), val[pos<<1|1].begin(), val[pos<<1|1].end(), back_inserter(val[pos]));
+    merge(val[pos<<1].begin(), val[pos<<1].end(), val[pos<<1|1].begin(), val[pos<<1|1].end(), back_inserter(prefix[pos]));
+    
+    for(int i = 1; i < SIZE(prefix[pos]); ++i)
+        prefix[pos][i] += prefix[pos][i-1];
+}
+
+ll query(int pos, int l, int r, int L, int R, ll sum) {
+    if(r < L || R < l)
+        return 0;
+    
+    if(L <= l && r <= R) {
+        int idx = upper_bound(val[pos].begin(), val[pos].end(), sum) - val[pos].begin();
+        if(idx <= 0)
+            return 0;
+        return prefix[pos][idx-1];
+    }
+    
+    int mid = (l+r)>>1;
+    
+    return query(pos<<1, l, mid, L, R, sum) + query(pos<<1|1, mid+1, r, L, R, sum);
+}
+
+
+
+int main() {
+    int n, q, l, r;
+    
+    scanf("%d", &n);
+    
+    for(int i = 1; i <= n; ++i)
+        scanf("%d", &v[i]);
+    
+    init(1, 1, n);
+    scanf("%d", &q);
+    
+    while(q--) {
+        scanf("%d%d", &l, &r);
+        
+        ll cSum = 0;
+        while(1) {
+            ll newSum = query(1, 1, n, l, r, cSum+1);
+            
+            if(newSum <= cSum)
+                break;
+            cSum = newSum;
+        }
+        printf("%lld\n", cSum+1);
+    }
+    
+    return 0;
+}
+
+
+/*
+Input:
+7
+3 1 4 2 1 1 5
+6
+1 3
+2 4
+2 6
+3 4
+3 7
+2 3
+Output:
+2
+8
+10
+1
+14
+2
+*/
