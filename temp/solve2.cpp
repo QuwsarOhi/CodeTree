@@ -1,56 +1,127 @@
-
 #include <bits/stdc++.h>
 using namespace std;
-#define MAX                 100100
-#define EPS                 1e-9
-#define INF                 1e9
-#define MOD                 1000000007
-#define pb                  push_back
-#define mp                  make_pair
-#define fi                  first
-#define se                  second
-#define pi                  acos(-1)
-#define sf                  scanf
-#define pf                  printf
-#define SIZE(a)             ((int)a.size())
-#define All(S)              S.begin(), S.end()              
-#define Equal(a, b)         (abs(a-b) < EPS)
-#define Greater(a, b)       (a >= (b+EPS))
-#define GreaterEqual(a, b)  (a > (b-EPS))
-#define fr(i, a, b)         for(register int i = (a); i < (int)(b); i++)
-#define FastRead            ios_base::sync_with_stdio(false); cin.tie(NULL);
-#define fileRead(S)         freopen(S, "r", stdin);
-#define fileWrite(S)        freopen(S, "w", stdout);
-#define Unique(X)           X.erase(unique(X.begin(), X.end()), X.end())
-#define error(args...)      { string _s = #args; replace(_s.begin(), _s.end(), ',', ' '); stringstream _ss(_s); istream_iterator<string> _it(_ss); err(_it, args); }
-
-#define isOn(S, j)          (S & (1 << j))
-#define setBit(S, j)        (S |= (1 << j))
-#define clearBit(S, j)      (S &= ~(1 << j))
-#define toggleBit(S, j)     (S ^= (1 << j))
-#define lowBit(S)           (S & (-S))
-#define setAll(S, n)        (S = (1 << n) - 1)
-
-typedef unsigned long long ull;
 typedef long long ll;
-typedef map<int, int> mii;
-typedef map<ll, ll>mll;
-typedef map<string, int> msi;
-typedef vector<int> vi;
-typedef vector<long long>vl;
-typedef pair<int, int> pii;
-typedef pair<ll, ll> pll;
-typedef vector<pair<int, int> > vii;
-typedef vector<pair<ll, ll> >vll;
 
-void err(istream_iterator<string> it) {}
-template<typename T, typename... Args>
-void err(istream_iterator<string> it, T a, Args... args) {                                                  // Debugger error(a, b, ....)
-	cerr << *it << " = " << a << "\n";
-	err(++it, args...);
+inline void fastIn(int &num) {          // Fast IO, with space and new line ignoring
+    bool neg = false;
+    register int c;
+    num = 0;
+    c = getchar_unlocked();
+    for( ; c != '-' && (c < '0' || c > '9'); c = getchar_unlocked());
+    if (c == '-') {
+        neg = true;
+        c = getchar_unlocked();
+    }
+    for(; (c>47 && c<58); c=getchar_unlocked())
+        num = (num<<1) + (num<<3) + c - 48;
+    if(neg)
+        num *= -1;
 }
 
-//const int dx[4][2] = {{0,1}, {0,-1}, {1,0}, {-1,0}};                                                      // Four side 
-//const int dxx[8][2] = {{0,1}, {0,-1}, {1,0}, {-1,0}, {1,1}, {1,-1}, {-1,1}, {-1,-1}};                     // Eight side
-//----------------------------------------------------------------------------------------------------------
 
+void dfs(int u, int par, int lvl) {           // Tracks distance as well (From root 1 to all nodes)
+    level[u] = lvl;                                 // parent[] and level[] is necessary
+    parent[u] = par;
+    start[u] = ++timer;
+    
+    for(auto v : G[u])
+        if(par != v)
+            dfs(v, u, lvl+1);
+    finish[u] = timer;
+}
+
+void LCAinit(int V) {
+    // Main initialization of sparse table LCA starts here
+    memset(sparse, -1, sizeof sparse);
+    
+    for(int u = 1; u <= V; ++u)                 // node u's 2^0 parent
+        sparse[u][0] = parent[u];
+    
+    int v;
+    for(int p = 1; (1LL<<p) <= V; ++p)
+        for(int u = 1; u <= V; ++u)
+            if((v = sparse[u][p-1]) != -1)      // node u's 2^x parent = parent of node v's 2^(x-1) [ where node v : (node u's 2^(x-1) parent) ]
+                sparse[u][p] = sparse[v][p-1];
+}
+
+
+int LCA(int u, int v) {
+    if(level[u] > level[v])     // v is deeper
+        swap(u, v);
+    
+    int p = ceil(log2(level[v]));
+    
+    // Pull up v to same level as u
+    for(int i = p ; i >= 0; --i)
+        if(level[v] - (1LL<<i) >= level[u])
+            v = sparse[v][i];
+    
+    // if u WAS the parent
+    if(u == v)
+        return u;
+    
+    // Pull up u and v together while LCA not found
+    for(int i = p; i >= 0; --i)
+        if(sparse[v][i] != -1 && sparse[u][i] != sparse[v][i])      // -1 check is if 2^i is out of calculated range
+            u = sparse[u][i], v = sparse[v][i];
+    
+    return parent[u];
+}
+
+void Merge(set<ll> &s1, set<ll> &s2, set<ll> &s3) {
+    s1.clear();
+    for(auto it : s2)
+        s1.insert(it);
+    for(auto it : s3)
+        s1.insert(it);
+}
+
+void init(int pos, int l, int r) {
+    if(l == r) {
+        Set[pos].insert(val[revStart[i]]);
+        return;
+    }
+    int mid = (l+r)>>1;
+    init(pos<<1, l, mid);
+    init(pos<<1|1, mid+1, r);
+    Merge(Set[pos], Set[pos<<1], Set[pos<<1|1]);
+}
+
+int query(int pos, int l, int r, int L, int R) {
+    if(r < L || R < l)
+        return;
+    if(L <= l && r <= R)
+        return Set[pos].size();
+    int mid = (l+r)>>1;
+    return query(pos<<1, l, mid, L, R) + query(pos<<1|1, mid+1, r, L, R);
+}
+
+int main() {
+    int n, q;
+    
+    fastIn(&n), fastIn(&q);
+    
+    for(int i = 1; i <= n; ++i)
+        fastIn(&val[i]);
+    
+    for(int i = 1; i < n; ++i) {
+        fastIn(&u), fastIn(&v);
+        G[u].push_back(v);
+        G[v].push_back(u);
+    }
+    
+    // LCA + DFS Tree
+    memset(parent, -1, sizeof parent);
+    dfs(1, -1, 0);
+    LCAinit(n);
+    
+    for(int i = 1; i <= n; ++i)
+        revStart[start[i]] = i;
+    
+    init(1, 1, n);
+    
+    while(q--) {
+        fastIn(u), fastIn(v);
+        int lca = LCA(u, v);
+        
+    }
