@@ -30,7 +30,7 @@ struct query {
         if( block_a == block_b ) return ( r < q.r );
         else return ( block_a < block_b );
     }
-} Q[ N ];
+} Q[N];
 
 void calc( ) {
     for( int i = 1; i <= 10*N; i++ ) {
@@ -39,6 +39,7 @@ void calc( ) {
         }
     }
 }
+
 void Remove( int idx ) {
     int x = ara[idx];
     cnt[x]--;
@@ -60,6 +61,7 @@ void MO( ) {
         Ans[ Q[i].id ] = res[ Q[i].val ];
     }
 }
+
 int main(int argc,char const *argv[]) {
     int t;
     scanf("%d",&t);
