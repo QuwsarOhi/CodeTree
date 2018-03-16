@@ -102,20 +102,6 @@ struct BIT {
         return read(MaxVal);
     }
     
-    int KthPos(int k) {
-        if(read(MaxVal) > k)        // Position is greater than existing values in BIT
-            return -1;
-        return search(k);
-    }
-    
-    void insert(int pos) {
-        update(pos, 1);
-    }
-    
-    void remove(int pos) {
-        update(pos, -1);
-    }
-    
     // Modified BIT, this section can be used to add/remove/read 1 to all elements from 1 to pos
     // all of the inverse functions must be used, for any manipulation
     
@@ -134,11 +120,6 @@ struct BIT {
     void invUpdate(int idx, ll val) {
         update(MaxVal-idx, val);
     }
-    
-    /*void scale(int idx = MaxVal) {                    // BIT supports scaling
-        for(int i = 0; i < idx; ++i)
-            tree[i] %= MOD;                             // all mathematical operations supported
-    }*/
 };
 
 // --------------------------- 2D Fenwick Tree -------------------------
