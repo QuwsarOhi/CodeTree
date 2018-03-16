@@ -1,14 +1,20 @@
+// Hackerrank
+// Sherlock and Inversions
+// https://www.hackerearth.com/practice/data-structures/advanced-data-structures/fenwick-binary-indexed-trees/practice-problems/algorithm/sherlock-and-inversions/description/
+
 #include <bits/stdc++.h>
+#define pc(x) putchar_unlocked(x);
+
 using namespace std;
 typedef long long ll;
 const int MAX = 100100;
 
+
 struct BIT {
-    vector<ll>tree;
+    int tree[MAX];
     int MaxVal;
     
     void init(int sz=1e7) {
-        tree.resize(sz+1, 0);
         MaxVal = sz+1;
     }
 
@@ -38,13 +44,64 @@ struct BIT {
     ll size() {
         return read(MaxVal);
     }
+    
+    ll invRead(int idx) {           // gives summation from 1 to idx
+        return read(MaxVal-idx);
+    }
+    
+    void invInsert(int idx) {       // adds 1 to all index less than idx
+        update(MaxVal-idx, 1);
+    }
+    
+    void invRemove(int idx) {       // removes 1 from idx
+        update(MaxVal-idx, -1);
+    }
+    
+    void invUpdate(int idx, ll val) {
+        update(MaxVal-idx, val);
+    }
 };
-
-BIT t1;
 
 struct query {
     int l, r, id;
 } q[MAX];
+
+
+const int block = 320;
+BIT t1;
+unordered_map<int, int>Map;
+ll Ans = 0, ans[MAX];
+int val[MAX], LIM = 1;
+set<int>Set;
+
+
+inline void fastIn(int &num) {          // Fast IO, with space and new line ignoring
+    bool neg = false;
+    register int c;
+    num = 0;
+    c = getchar_unlocked();
+    for( ; c != '-' && (c < '0' || c > '9'); c = getchar_unlocked());
+    if (c == '-') {
+        neg = true;
+        c = getchar_unlocked();
+    }
+    for(; (c>47 && c<58); c=getchar_unlocked())
+        num = (num<<1) + (num<<3) + c - 48;
+    if(neg)
+        num *= -1;
+}
+
+inline void fastOut(long long n) {
+    long long N = n, rev, count = 0;
+    rev = N;
+    if (N == 0) { pc('0'); return ;}
+    while ((rev % 10) == 0) { count++; rev /= 10;}                  //obtain the count of the number of 0s
+    rev = 0;
+    while (N != 0) { rev = (rev<<3) + (rev<<1) + N % 10; N /= 10;}  //store reverse of N in rev
+    while (rev != 0) { pc(rev % 10 + '0'); rev /= 10;}
+    while (count--) pc('0');
+}
+
 
 bool cmp(query a, query b) {
     int block_a = a.l/block, block_b = b.l/block;
@@ -53,60 +110,66 @@ bool cmp(query a, query b) {
     return block_a < block_b;
 }
 
+// For adding left, found how many numbers are less than val[x]
+
+// t1 : for finding smaller
+// t2 : for finding greater
 
 void addLeft(int x) {
     int idx = Map[val[x]];
-    int smaller = TOT - t1.read(idx+1);
-    Ans += bigger;
+    ll smaller = t1.read(idx-1);
+    Ans += smaller;
     t1.update(idx, 1);
-    ++TOT;
 }
 
 
 void removeLeft(int x) {
     int idx = Map[val[x]];
-    int smaller = TOT - t1.read(idx+1);
-    Ans -= bigger;
+    ll smaller = t1.read(idx-1);
+    Ans -= smaller;
     t1.update(idx, -1);
-    --TOT;
 }
 
 
+// For adding right, found how many numbers are greater than val[x]
+
 void addRight(int x) {
     int idx = Map[val[x]];
-    int smaller = TOT - t1.read(idx);
-    Ans += smaller;
+    ll greater = t1.read(LIM) - t1.read(idx);
+    Ans += greater;
     t1.update(idx, 1);
-    ++TOT;
 }
 
 void removeRight(int x) {
     int idx = Map[val[x]];
-    int smaller = TOT - t1.read(idx);
-    Ans -= smaller;
+    ll greater = t1.read(LIM) - t1.read(idx);
+    Ans -= greater;
     t1.update(idx, -1);
-    --TOT;
 }
 
 
 int main() {
     int n, Q;
     
-    scanf("%d%d", &n, &Q);
-    
+    fastIn(n), fastIn(Q);
     for(int i = 0; i < n; ++i) {
-        scanf("%d", &v[i]);
-        Map[v[i]];
+        fastIn(val[i]);
+        Set.insert(val[i]);
     }
     
-    int LIM = 0;
-    for(auto it = Map.begin(); it != Map.end(); ++it)
-        it->second = ++LIM;
+    //int LIM = 1;
+    //for(auto it = Map.begin(); it != Map.end(); ++it)
+    //    it->second = ++LIM;
+    
+    for(auto it : Set)
+        Map[it] = ++LIM;
+    
     
     t1.init(LIM+2);
+    //t2.init(LIM+2);
     
-    for(int i = 0; i < q; ++i) {
-        scanf("%d%d", &q[i].l, &q[i].r);
+    for(int i = 0; i < Q; ++i) {
+        fastIn(q[i].l), fastIn(q[i].r);
         q[i].l--, q[i].r--;
         q[i].id = i;
     }
@@ -114,5 +177,18 @@ int main() {
     sort(q, q+Q, cmp);
     int l = 0, r = -1;
     
+    for(int i = 0; i < Q; ++i) {
+        
+        while(l > q[i].l)   addLeft(--l);
+        while(r < q[i].r)   addRight(++r);
+        while(l < q[i].l)   removeLeft(l++);
+        while(r > q[i].r)   removeRight(r--);
+        
+        ans[q[i].id] = Ans;
+    }
     
+    for(int i = 0; i < Q; ++i) {
+        fastOut(ans[i]);
+        puts("");
+    }
 }
