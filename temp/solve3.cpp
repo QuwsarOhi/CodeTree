@@ -35,31 +35,6 @@ struct BIT {
             sum += tree[idx];
         return sum;
     }
-    
-    ll read(int l, int r) {
-        ll ret = read(r) - read(l-1);
-        return ret;
-    }
-    
-    ll size() {
-        return read(MaxVal);
-    }
-    
-    ll invRead(int idx) {           // gives summation from 1 to idx
-        return read(MaxVal-idx);
-    }
-    
-    void invInsert(int idx) {       // adds 1 to all index less than idx
-        update(MaxVal-idx, 1);
-    }
-    
-    void invRemove(int idx) {       // removes 1 from idx
-        update(MaxVal-idx, -1);
-    }
-    
-    void invUpdate(int idx, ll val) {
-        update(MaxVal-idx, val);
-    }
 };
 
 struct query {
@@ -157,16 +132,10 @@ int main() {
         Set.insert(val[i]);
     }
     
-    //int LIM = 1;
-    //for(auto it = Map.begin(); it != Map.end(); ++it)
-    //    it->second = ++LIM;
-    
     for(auto it : Set)
         Map[it] = ++LIM;
     
-    
     t1.init(LIM+2);
-    //t2.init(LIM+2);
     
     for(int i = 0; i < Q; ++i) {
         fastIn(q[i].l), fastIn(q[i].r);
