@@ -36,17 +36,17 @@ Data Structures:
 
 1D List: 
 arr = []
-arr.append(val)                         #push_back
-a = list(map(int, In().split()))        #direct array input
+arr.append(val)                         # push_back
+a = list(map(int, In().split()))        # direct array input
 
 2D List:
-arr = [[] for i in range(n)]        #n is the number of row, this is a 2d vector
-matrix = [[]*n for i in range(n)]   #n is the number of row, this is a matix
+arr = [[] for i in range(n)]        # n is the number of row, this is a 2d vector
+matrix = [[]*n for i in range(n)]   # n is the number of row, this is a matix
 
 Set:
 
 Set = set()
-Set.add(val)                        #insert val in set
+Set.add(val)                        # insert val in set
 
 Binary Search:
 lower_bound = bisect_left(arr, val)
@@ -73,3 +73,16 @@ GCD :
 
 from fractions import *
 GCD = gcd(x, y)
+
+
+Fractions :
+
+from fractions import *
+frac = Fraction(x, y)
+print(frac.numerator, frac.denominator)     # prints the fraction
+
+#supports all operations
+
+frac1 = Fraction(a, b).limit_denominator(k)     # will find such a fraction that has denominator less or equal to k
+                                                # and will be in the smallest distant to a/b
+

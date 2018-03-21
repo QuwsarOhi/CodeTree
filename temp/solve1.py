@@ -22,23 +22,12 @@ def inputGrab():
         Input.extend(map(str, line.strip().split()))
 '''--------------------------------------------------------------------------------'''
 
-def recur(pos, modVal):
-    
-
 def main():
-    n = int(In())
-    v = list(map(int, In().split()))
-    v.sort()
+    x, y, k = map(int, In().split())
     
-    if(v[0] != 0):
-        print("-1")
-        return
+    ans = Fraction(x/y).limit_denominator(k)
     
-    for val in reversed(v):
-        print(val, end='')
-    print()
-    return
-    
+    print(str(ans.numerator)+"/"+str(ans.denominator))
     
 if __name__ == '__main__':
     main()
