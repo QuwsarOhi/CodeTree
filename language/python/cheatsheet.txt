@@ -1,0 +1,75 @@
+My Template:
+
+from sys import *
+from bisect import *
+from collections import *
+from itertools import *
+from fractions import *
+
+Input = []
+
+#stdin = open('in', 'r')
+#stdout = open('out', 'w')
+
+def Out(x):
+    stdout.write(str(x) + '\n')
+
+def In():
+    return stdin.readline().strip()
+
+def inputGrab():
+    for line in stdin:
+        Input.extend(map(str, line.strip().split()))
+'''--------------------------------------------------------------------------------'''
+
+def main():
+    
+if __name__ == '__main__':
+    main()
+
+
+
+-----------------------------------------------------------------------------------------------------------------------------------
+
+
+Data Structures:
+
+1D List: 
+arr = []
+arr.append(val)                         #push_back
+a = list(map(int, In().split()))        #direct array input
+
+2D List:
+arr = [[] for i in range(n)]        #n is the number of row, this is a 2d vector
+matrix = [[]*n for i in range(n)]   #n is the number of row, this is a matix
+
+Set:
+
+Set = set()
+Set.add(val)                        #insert val in set
+
+Binary Search:
+lower_bound = bisect_left(arr, val)
+upper_bound = bisect_right(arr, val)
+
+
+Permutations:
+
+v = 'ABCD'
+from itertools import permutations
+for p in permutations(v):
+    print(" ".join(p))
+
+
+Combinations:
+
+v = 'ABCD'
+from itertools import combinations
+for c in combinations(v, 2):
+    print(" ".join(c))
+
+
+GCD :
+
+from fractions import *
+GCD = gcd(x, y)

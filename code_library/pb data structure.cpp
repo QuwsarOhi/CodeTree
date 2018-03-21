@@ -12,6 +12,9 @@
 #include <ext/pb_ds/assoc_container.hpp>    // rb_tree_tag
 #include <ext/pb_ds/tree_policy.hpp>        // tree_order_statistics_node_update
 
+#define at(X)          find_by_order(X)
+#define lessThan(x)    order_of_key(X)
+
 using namespace std;
 using namespace __gnu_pbds;
 
