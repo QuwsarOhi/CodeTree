@@ -1,92 +1,97 @@
 #include <bits/stdc++.h>
 using namespace std;
 typedef long long ll;
+typedef pair<ll, ll> pll;
 
-// p = 31, 51
-// MOD = 1e9+9, 1e9+7
 
-pair<ll, ll> doubleHash(string s, ll mod1 = 1e9+9, ll mod2 = 1e9+7) {
-    int p = 31;
-    ll hashVal1 = 0, hashVal2 = 0;
-    ll pPow1 = 1, pPow2 = 1;
-    //vector<pair<ll, ll> >v;
+vector<ll> power(int lim, ll st, ll mod) {
+    vector<ll>p(lim+1);
+    p[0] = 1;
     
-    for(int i = 0; i < (int)s.size(); ++i) {
-        hashVal1 = (hashVal1 + (s[i] - 'a' + 1)* pPow1)%mod1;
-        hashVal2 = (hashVal2 + (s[i] - 'a' + 1)* pPow2)%mod2;
-        pPow1 = (pPow1 * p)%mod1;
-        pPow2 = (pPow2 * p)%mod2;
-        //v.push_back({hashVal1, hashVal2});
+    for(int i = 1; i < lim; ++i) {
+        p[i] = p[i-1] * st;
+        p[i] %= mod;
     }
-    return {hashVal1, hashVal2};
+    return p;
 }
 
-
-vector<pair<ll, ll> >ContDoubleHash(string s, ll mod1 = 1e9+9, ll mod2 = 1e9+7) {
-    int p = 31;
-    ll hashVal1 = 0, hashVal2 = 0;
-    ll pPow1 = 1, pPow2 = 1;
-    vector<pair<ll, ll> >v;
+vector<pll> ContHash(string s, vector<ll>&p1, vector<ll>&p2, ll mod1 = 1e9+9, ll mod2 = 1e9+7) {
+    ll hash1 = 0, hash2 = 0;
+    vector<pll>v;
     
     for(int i = 0; i < (int)s.size(); ++i) {
-        hashVal1 = (hashVal1 + (s[i] - 'a' + 1)* pPow1)%mod1;
-        hashVal2 = (hashVal2 + (s[i] - 'a' + 1)* pPow2)%mod2;
-        pPow1 = (pPow1 * p)%mod1;
-        pPow2 = (pPow2 * p)%mod2;
-        v.push_back({hashVal1, hashVal2});
+        hash1 = (hash1 + (s[i] - 'a' + 1) * p1[i])%mod1;
+        hash2 = (hash2 + (s[i] - 'a' + 1) * p2[i])%mod2;
+        v.push_back({hash1, hash2});
     }
+    
     return v;
 }
 
-vector<pair<ll, ll> >Hash;
-pair<ll, ll>Patt;
-string s;
-const int p = 31;
+
+string str;
+vector<ll>p1, p2;
+vector<pll>hashTable;
 const ll mod1 = 1e9+9, mod2 = 1e9+7;
+const int p = 31;
 
 
-int main() {
-    //freopen("in", "r", stdin);
+bool Match(int l, int r, int len) {
+    if(l >= r)
+        return 0;
+        
+    pll hash1 = {(hashTable[l].first*p1[r])%mod1, (hashTable[l].second*p2[r])%mod2};
+    pll hash2 = {(hashTable[len-1].first - hashTable[r-1].first + mod1)%mod1, (hashTable[len-1].second - hashTable[r-1].second + mod2)%mod2};
     
-    ll n;
     
-    while(scanf("%lld ", &n) == 1) {
-        getline(cin, s);
-        Patt = doubleHash(s, mod1, mod2);
+    
+    return (hash1 == hash2);
+}
+
+// 1 2 3 4 5 6
+//   |   |
+
+bool Match(int l, int r, int len, pll Hash) {
+    for(int i = len+1; i < r; ++i) {
+        pll tHash1 = {(hashTable[i].first - hashTable[i-len-1].first + mod1)%mod1, (hashTable[i].second - hashTable[i-len-1].second + mod2)%mod2};
+        pll tHash2 = {(Hash.first*p1[i])%mod1, (Hash.second*p2[i])%mod2};
         
-        //cout << Patt.first << " " << Patt.second << endl;
-        
-        getline(cin, s);
-        
-        Hash = ContDoubleHash(s, mod1, mod2);
-        bool ok = 0;
-        
-        /*for(int i = 0; i < n-1; ++i) {
-            Patt.first = (Patt.first * p)%mod1;
-            Patt.second = (Patt.second * p)%mod2;
-        }*/
-        
-        
-        for(int i = n-1; i < int(Hash.size()); ++i) {
-            pair<ll, ll> RangeHash = Hash[i];
-            
-            if(i-n >= 0) {
-                RangeHash.first = (RangeHash.first + mod1 - Hash[i-n].first)%mod1;
-                RangeHash.second = (RangeHash.second + mod2 - Hash[i-n].second)%mod2;
-            }
-            
-            if(Patt == RangeHash) {
-                ok = 1;
-                cout << i-n+1 << "\n";
-            }
-            
-            //cout << i << " :: " << Patt.first << " " << RangeHash.first << endl;
-            
-            Patt.first = (Patt.first * p)%mod1;
-            Patt.second = (Patt.second * p)%mod2;
-        }
-        
-        if(!ok) cout << "\n";
+        if(tHash1 == tHash2)
+            return 1;
     }
+    return 0;
+}
+        
+int main() {
+    getline(cin, str);
+    int len = str.size();
+    
+    p1 = power(len+2, p, mod1);
+    p2 = power(len+2, p, mod2);
+    
+    hashTable = ContHash(str, p1, p2, mod1, mod2);
+    
+    int low = 0, hi = len+10, ans = -1;
+    
+    while(low <= hi) {
+        int mid = (low+hi)>>1;
+        
+        cout << "MID " << mid << endl;
+        
+        if(!Match(mid, len-mid-1, len)) {
+            cout << "PRE-SUFF NOT MATCH AT " << mid << endl;
+            hi = mid-1;
+        }
+        else if(Match(1, len-1, mid, hashTable[mid])) {
+            cout << "FULL MATCH FOUND at " << mid << endl;
+            ans = mid;
+            low = mid+1;
+        }
+        else
+            hi = mid-1;
+    }
+    
+    cout << ans << endl;
+    
     return 0;
 }
