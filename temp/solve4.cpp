@@ -1,13 +1,14 @@
 #include <bits/stdc++.h>
 using namespace std;
 typedef long long ll;
-typedef pair<ll, ll> pll;
-const ll mod1 = 1e9+9, mod2 = 1e9+7, p = 31;
+typedef  pair<ll, ll>pll;
 
-string s;
-vector<pll>Hash, Power;
-vector<pair<int, pll> >Match;
+const ll p = 31;
+const ll mod1 = 1e9+9, mod2 = 1e9+7;
 
+vector<pll>Power(501000);
+
+// Genarates Powers
 void PowerGen(int n) {
     Power.resize(n+1);
     Power[0] = {1, 1};
@@ -18,7 +19,8 @@ void PowerGen(int n) {
     }
 }
 
-vector<pair<ll, ll> > doubleHash(string s, int len, ll mod1 = 1e9+9, ll mod2 = 1e9+7) {
+// Returns Double Hash vector for a full string
+vector<pair<ll, ll> > doubleHash(char *s, int len) {
     ll hashVal1 = 0, hashVal2 = 0;
     vector<pair<ll, ll> >v;
     
@@ -31,10 +33,13 @@ vector<pair<ll, ll> > doubleHash(string s, int len, ll mod1 = 1e9+9, ll mod2 = 1
     return v;
 }
 
+
+// Returns True if the Hashval of length len exists in subrange [l, r] of Hash vector
 bool MatchSubStr(int l, int r, vector<pll>&Hash, pll HashVal, int len) {
     for(int Start = l, End = l+len-1; End <= r; ++End, ++Start) {
-        cout << "At Range " << Start << " " << End << endl;
         pll pattHash;
+        cout << "Start " << Start << " End " << End << " Len " << len << endl;
+        
         pattHash.first = (HashVal.first*Power[Start].first)%mod1;
         pattHash.second = (HashVal.second*Power[Start].second)%mod2;
         
@@ -42,36 +47,54 @@ bool MatchSubStr(int l, int r, vector<pll>&Hash, pll HashVal, int len) {
         strHash.first = (Hash[End].first - Hash[Start-1].first + mod1)%mod1;
         strHash.second = (Hash[End].second - Hash[Start-1].second + mod2)%mod2;
         
-        //cout << pattHash.first << " " << strHash.first << endl;
-        
         if(strHash == pattHash) {
-            cout << "Match Found\n";
+            cout << "MATCHED\n";
             return 1;
         }
     }
     return 0;
 }
 
+
+char s[510000];
+vector<pll>Hash;
+
 int main() {
-    getline(cin, s);
-    int len = s.size();
+    scanf("%s", s);
+    int len = strlen(s), q, l;
     
     PowerGen(len+10);
-    Hash = doubleHash(s, len, mod1, mod2);
+    Hash = doubleHash(s, len);
     
-    // Prefix Suffix Match
-    pll SuffHash = {0, 0};
-    for(int i = 0, j = len-1; i < j; ++i, --j) {
-        SuffHash.first = (SuffHash.first*p + (s[j] - 'a' + 1))%mod1;
-        SuffHash.second = (SuffHash.second*p + (s[j] - 'a' + 1))%mod2;
+    scanf("%d", &q);
+    
+    while(q--) {
+        scanf("%d", &l);
         
-        if(Hash[i] == SuffHash) {
-            cout << "Match " << i << " " << j << endl;
-            Match.push_back({i, Hash[i]});
+        int low = 1, hi = l, ans = -1;
+        
+        while(low <= hi) {
+            int mid = ((low+hi)>>1);
+            
+            cout << "MID " << mid << " L " << l << " " << l+mid+1 << " " << l << endl;            
+            pll SubStrHash;
+            SubStrHash.first = (Hash[l+mid].first - Hash[l-1].first + mod1)%mod1;
+            SubStrHash.second = (Hash[l+mid].second - Hash[l-1].second + mod2)%mod2;
+            
+            pll prefHash;
+            prefHash.first = (Hash[l-1].first * Power[l].first)%mod1;
+            prefHash.second = (Hash[l-1].second * Power[l].second)%mod2;
+            
+            if(prefHash == SubStrHash) {
+                ans = mid;
+                low = mid+1;
+            }
+            else
+                hi = mid-1;
         }
+        
+        printf("%d\n", ans+1);
     }
-    
-    MatchSubStr(1, len-1, Hash, Hash[2], 3);
     
     return 0;
 }
