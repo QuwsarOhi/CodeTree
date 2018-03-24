@@ -1,3 +1,10 @@
+// CodeChef
+// The Gift Of Raksha Bandhan
+// https://www.codechef.com/problems/INSQ15_A
+
+// Longest Substring Matching
+// Hashing With Binary search
+
 #include <bits/stdc++.h>
 using namespace std;
 typedef long long ll;
@@ -6,7 +13,7 @@ typedef  pair<ll, ll>pll;
 const ll p = 31;
 const ll mod1 = 1e9+9, mod2 = 1e9+7;
 
-vector<pll>Power(501000);
+vector<pll>Power(5010000);
 
 // Genarates Powers
 void PowerGen(int n) {
@@ -34,29 +41,7 @@ vector<pair<ll, ll> > doubleHash(char *s, int len) {
 }
 
 
-// Returns True if the Hashval of length len exists in subrange [l, r] of Hash vector
-bool MatchSubStr(int l, int r, vector<pll>&Hash, pll HashVal, int len) {
-    for(int Start = l, End = l+len-1; End <= r; ++End, ++Start) {
-        pll pattHash;
-        cout << "Start " << Start << " End " << End << " Len " << len << endl;
-        
-        pattHash.first = (HashVal.first*Power[Start].first)%mod1;
-        pattHash.second = (HashVal.second*Power[Start].second)%mod2;
-        
-        pll strHash;
-        strHash.first = (Hash[End].first - Hash[Start-1].first + mod1)%mod1;
-        strHash.second = (Hash[End].second - Hash[Start-1].second + mod2)%mod2;
-        
-        if(strHash == pattHash) {
-            cout << "MATCHED\n";
-            return 1;
-        }
-    }
-    return 0;
-}
-
-
-char s[510000];
+char s[5100000];
 vector<pll>Hash;
 
 int main() {
@@ -76,14 +61,13 @@ int main() {
         while(low <= hi) {
             int mid = ((low+hi)>>1);
             
-            cout << "MID " << mid << " L " << l << " " << l+mid+1 << " " << l << endl;            
             pll SubStrHash;
-            SubStrHash.first = (Hash[l+mid].first - Hash[l-1].first + mod1)%mod1;
-            SubStrHash.second = (Hash[l+mid].second - Hash[l-1].second + mod2)%mod2;
+            SubStrHash.first = (Hash[l+mid-1].first - Hash[l-1].first + mod1)%mod1;
+            SubStrHash.second = (Hash[l+mid-1].second - Hash[l-1].second + mod2)%mod2;
             
             pll prefHash;
-            prefHash.first = (Hash[l-1].first * Power[l].first)%mod1;
-            prefHash.second = (Hash[l-1].second * Power[l].second)%mod2;
+            prefHash.first = (Hash[mid-1].first * Power[l].first)%mod1;
+            prefHash.second = (Hash[mid-1].second * Power[l].second)%mod2;
             
             if(prefHash == SubStrHash) {
                 ans = mid;
@@ -93,7 +77,10 @@ int main() {
                 hi = mid-1;
         }
         
-        printf("%d\n", ans+1);
+        if(ans == -1)
+            printf("0\n");
+        else
+            printf("%d\n", ans);
     }
     
     return 0;

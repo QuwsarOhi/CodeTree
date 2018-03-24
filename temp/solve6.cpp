@@ -1,119 +1,124 @@
-// SUFFIX ARRAY NEW
+// Toph
+// https://toph.co/p/palindromist
+
+// Prefix and Suffix Hash
 
 #include <bits/stdc++.h>
 using namespace std;
-#define MAX                 10000000
-#define EPS                 1e-9
-#define INF                 1e9
-#define MOD                 1000000007
-#define pb                  push_back
-#define mp                  make_pair
-#define fi                  first
-#define se                  second
-#define pi                  acos(-1)
-#define sf                  scanf
-#define pf                  printf
-#define SIZE(a)             ((int)a.size())
-#define All(S)              S.begin(), S.end()              
-#define Equal(a, b)         (abs(a-b) < EPS)
-#define Greater(a, b)       (a >= (b+EPS))
-#define GreaterEqual(a, b)  (a > (b-EPS))
-#define fr(i, a, b)         for(register int i = (a); i < (int)(b); i++)
-#define FastRead            ios_base::sync_with_stdio(false); cin.tie(NULL);
-#define fileRead(S)         freopen(S, "r", stdin);
-#define fileWrite(S)        freopen(S, "w", stdout);
-#define Unique(X)           X.erase(unique(X.begin(), X.end()), X.end())
-#define error(args...)      { string _s = #args; replace(_s.begin(), _s.end(), ',', ' '); stringstream _ss(_s); istream_iterator<string> _it(_ss); err(_it, args); }
-
-#define isOn(S, j)          (S & (1 << j))
-#define setBit(S, j)        (S |= (1 << j))
-#define clearBit(S, j)      (S &= ~(1 << j))
-#define toggleBit(S, j)     (S ^= (1 << j))
-#define lowBit(S)           (S & (-S))
-#define setAll(S, n)        (S = (1 << n) - 1)
-
-typedef unsigned long long ull;
 typedef long long ll;
-typedef map<int, int> mii;
-typedef map<ll, ll>mll;
-typedef map<string, int> msi;
-typedef vector<int> vi;
-typedef vector<long long>vl;
-typedef pair<int, int> pii;
-typedef pair<ll, ll> pll;
-typedef vector<pair<int, int> > vii;
-typedef vector<pair<ll, ll> >vll;
+typedef pair<long, long>pll;
 
-void err(istream_iterator<string> it) {}
-template<typename T, typename... Args>
-void err(istream_iterator<string> it, T a, Args... args) {                                                  // Debugger error(a, b, ....)
-	cerr << *it << " = " << a << "\n";
-	err(++it, args...);
-}
+const ll p = 31;
+const ll mod1 = 1e9+9;
+const ll mod2 = 1e9+7;
 
-//const int dx[4][2] = {{0,1}, {0,-1}, {1,0}, {-1,0}};                                                      // Four side 
-//const int dxx[8][2] = {{0,1}, {0,-1}, {1,0}, {-1,0}, {1,1}, {1,-1}, {-1,1}, {-1,-1}};                     // Eight side
-//----------------------------------------------------------------------------------------------------------
+vector<pll> Power;
 
 
-struct suffix {
-    int r[2], idx;
-};
-
-suffix suff[MAX];
-int P[MAX][22];                    // Sparse Table Like    
-char str[MAX];
-
-int order(char x) {                 // Ordering : Number < Capital Letter < Small Letter
-    if(isdigit(x))
-        return x-'0';
-    else if(isupper(x))
-        return x-'A'+10;
-    else if(islower(x))
-        return x-'a'+36;
-    else
-        return 110;                 // Adding a big constant : {, }, #..
-}
-
-bool cmp(suffix a, suffix b) {
-    if(a.r[0] != b.r[0])
-        return a.r[0] < b.r[0];
-    return a.r[1] < b.r[1];
-}
-
-
-void SuffixArray(char str[], int len) {
-    for(int i = 0; i < len; ++i)
-        P[i][0] = order(str[i]);
-
-    for(int stp = 1, cnt = 1; cnt >> 1 < len; stp++, cnt <<= 1) {
-        for(int i = 0; i < len; ++i) {
-            suff[i].r[0] = P[i][stp-1];
-            suff[i].r[1] = i + cnt < len ? P[i+cnt][stp-1]:-1;
-            suff[i].idx = i;
-        }
-        sort(suff, suff+len, cmp);
-        
-        P[suff[0].idx][stp] = 0;
-        for(int i = 1; i < len; ++i)
-            P[suff[i].idx][stp] = suff[i].r[0] == suff[i-1].r[0] && suff[i].r[1] == suff[i-1].r[1] ? P[suff[i-1].idx][stp] : i;
+// Genarates Powers
+void PowerGen(int n) {
+    Power.resize(n+1);
+    Power[0] = {1, 1};
+    
+    for(int i = 1; i < n; ++i) {
+        Power[i].first = (Power[i-1].first * p)%mod1;
+        Power[i].second = (Power[i-1].second * p)%mod2;
     }
 }
 
+pll prefixHash(char *s, int len) {
+    ll hashVal1 = 0, hashVal2 = 0;
+    
+    for(int i = 0; i < len; ++i) {
+        hashVal1 = (hashVal1 + (s[i] - 'a' + 1)* Power[i].first)%mod1;
+        hashVal2 = (hashVal2 + (s[i] - 'a' + 1)* Power[i].second)%mod2;
+    }
+    return {hashVal1, hashVal2};
+}
+
+pll suffixHash(char *s, int len) {
+    ll hashVal1 = 0, hashVal2 = 0;
+    
+    for(int i = 0, j = len-1; i < len ; ++i, --j) {
+        hashVal1 = (hashVal1 + (s[j] - 'a' + 1)* Power[i].first)%mod1;
+        hashVal2 = (hashVal2 + (s[j] - 'a' + 1)* Power[i].second)%mod2;
+    }
+    return {hashVal1, hashVal2};
+}
+
+char s[10100];
 
 int main() {
-    scanf("%s", str);
-    int len = strlen(str);
-    SuffixArray(str, len);
+    int t, len, q, k;
+    char typ, c;
+    PowerGen(1100000);
     
-    for(int i = 0; i < len; ++i)
-        printf("%d\n", suff[i].idx);
+    scanf("%d", &t);
     
-    /*for(int i = 0; i < len; ++i) {
-        printf("P[%d][0] : %d %s\n", i, P[i][0], str+i);
-        for(int k = 1; (1 << k)+i <= len; k <<= 1)
-            printf("P[%d][%d] : %d %s\n", i, k, P[i][k], str+i);
-    }*/
+    for(int Case = 1; Case <= t; ++Case) {
+        scanf(" %s", s);
+        len = strlen(s);
+        
+        pll pHash = prefixHash(s, len);
+        pll sHash = suffixHash(s, len);
+        
+        scanf("%d", &q);
+        printf("Case %d:\n", Case);
+        
+        while(q--) {
+            scanf(" %c %c %d", &typ, &c, &k);
+            c = c - 'a' + 1;
+            
+            if(typ == 'L') {
+                // Prefix Add
+                
+                pHash.first = ((ll)pHash.first * Power[k].first)%mod1;
+                pHash.second = ((ll)pHash.second * Power[k].second)%mod2;
+                
+                for(int i = 0; i < k; ++i) {
+                    pHash.first = (pHash.first + ((ll)c*Power[i].first)%mod1)%mod1;
+                    pHash.second = (pHash.second + ((ll)c*Power[i].second)%mod2)%mod2;
+                }
+                
+                // Suffix Add
+                for(int i = len; i < k+len; ++i) {
+                    sHash.first = (sHash.first + ((ll)c*Power[i].first)%mod1)%mod1;
+                    sHash.second = (sHash.second + ((ll)c*Power[i].second)%mod2)%mod2;
+                }
+            }
+            else {
+                // Prefix Add
+                for(int i = len; i < len+k; ++i) {
+                    pHash.first = (pHash.first + ((ll)c*Power[i].first)%mod1)%mod1;
+                    pHash.second = (pHash.second + ((ll)c*Power[i].second)%mod2)%mod2;
+                }
+                
+                // Suffix Add
+                sHash.first = ((ll)sHash.first * Power[k].first)%mod1;
+                sHash.second = ((ll)sHash.second * Power[k].second)%mod2;
+                
+                for(int i = 0; i < k; ++i) {
+                    sHash.first = (sHash.first + ((ll)c*Power[i].first)%mod1)%mod1;
+                    sHash.second = (sHash.second + ((ll)c*Power[i].second)%mod2)%mod2;
+                }
+            }
+            
+            len += k;
+            printf("%s\n", pHash == sHash ? "Yes":"No");
+        }
+    }
     
     return 0;
 }
+
+
+/*
+1
+aba
+5
+L b 2
+R b 1
+R b 1
+L z 3
+R z 3
+*/
