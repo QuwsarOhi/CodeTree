@@ -1,76 +1,81 @@
-// Codeforces
-// http://codeforces.com/problemset/problem/220/B
+// Toph
+// https://toph.co/p/hardest-update-and-easiest-query
 
-// MO's Algorithm
+// Hardest Update and Easiest Query
+// Sum of pairs
+// Square Sum technique
 
-#include <bits/stdc++.h>
-#define MAX 100100
-using namespace std;
+#include <stdio.h>
+#include <string.h>
+#define M 1000000007LL
+#define pf printf
+typedef long long ll;
 
-struct query {
-    int l, r, id;
-}q[MAX];
-
-const int block = 320;
-int v[MAX], ans[MAX], Ans = 0;
-unordered_map<int, int>Map;
-
-bool cmp(query a, query b) {
-    int query_a = a.l/block, query_b = b.l/block;
-    if(query_a == query_b)
-        return a.r < b.r;
-    return query_a < query_b;
+inline void sf(ll &num) {          // Fast IO, with space and new line ignoring
+    bool neg = false;
+    register ll c;
+    num = 0;
+    c = getchar_unlocked();
+    for( ; c != '-' && (c < '0' || c > '9'); c = getchar_unlocked());
+    if (c == '-') {
+        neg = true;
+        c = getchar_unlocked();
+    }
+    for(; (c>47 && c<58); c=getchar_unlocked())
+        num = (num<<1) + (num<<3) + c - 48;
+    if(neg)
+        num *= -1;
 }
 
-void add(int x) {
-    int val = v[x];
-    int tmp = ++Map[val];
-    if(tmp == val)
-        Ans++;
-    else if(tmp-1 == val)
-        --Ans;
-}
+struct BIT {
+    ll tree[100002], MX = 100000;
+    BIT(int n) {
+        MX = n;
+        memset(tree, 0, sizeof tree);
+    }
+    void update(int idx, ll val) {
+        for( ;idx <= MX; idx += (idx & -idx))
+            tree[idx] = (tree[idx] + val + M)%M;
+    }
+    void upd(int idx, ll val) {
+        update(idx, (val - read(idx, idx) + M)%M);
+    }
+    ll read(int idx) {
+        ll sum = 0;
+        for( ;idx > 0; idx -= (idx & -idx))
+            sum = (sum + tree[idx] + M)%M;
+        return sum;
+    }
+    ll read(int l, int r) {
+        return ((read(r) - read(l-1) + M)%M);
+    }
+};
 
-void remove(int x) {
-    int val = v[x];
-    int tmp = --Map[val];
-    if(tmp+1 == val)
-        Ans--;
-    if(tmp == val)
-        Ans++;
-}
 
 int main() {
-    int n, Q;
+    ll r, n, t, l;
     
-    scanf("%d%d", &n, &Q);
-    
-    
-    for(int i = 0; i < n; ++i)
-        scanf("%d", &v[i]);
-        
-    for(int i = 0; i < Q; ++i) {
-        scanf("%d%d", &q[i].l, &q[i].r);
-        q[i].l--, q[i].r--;
-        q[i].id = i;
+    sf(n);
+    BIT sqSum(n), sum(n);
+    for(int i = 1; i <= n; ++i) {
+        sf(r);
+        sqSum.update(i, (r*r)%M);
+        sum.update(i, r);
     }
     
-    
-    sort(q, q+Q, cmp);
-    int l = 0, r = -1;
-    
-    for(int i = 0; i < Q; ++i) {
-        
-        while(l > q[i].l)   add(--l);
-        while(r < q[i].r)   add(++r);
-        while(l < q[i].l)   remove(l++);
-        while(r > q[i].r)   remove(r--);
-        
-        ans[q[i].id] = Ans;
+    sf(n);
+    while(n--) {
+        sf(t), sf(l), sf(r);
+        if(t == 1) {
+            sqSum.upd(l, (r*r)%M);
+            sum.upd(l, r);
+        }
+        else {
+            ll tm = sum.read(l, r);
+            tm = ((tm*tm)%M - sqSum.read(l, r) + M)%M;
+            if(tm&1LL) tm += M;
+            tm /= 2;
+            pf("%lld\n", tm);
+        }
     }
-    
-    for(int i = 0; i < Q; ++i)
-        printf("%d\n", ans[i]);
-    
-    return 0;
 }

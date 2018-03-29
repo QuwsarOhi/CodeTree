@@ -1,75 +1,50 @@
-// Codeforces
-// http://codeforces.com/contest/86/problem/D
-// Powerful array
-
-// MO's Algo
-
 #include <bits/stdc++.h>
-#define MAX 210000
+#define MAX 1000
 using namespace std;
 typedef long long ll;
 
-struct query {
-    int l, r, id;
-};
+ll tree[320][MAX];
+int val[MAX], BlockSize, MaxVal;
+int pre[320][320], suff[320][320];
 
-const int block = 447;
-query q[MAX];
-int v[MAX], Count[2010000];
-ll ansId[MAX], ans = 0;
-
-bool cmp(query a, query b) {
-    int block_a = a.l/block, block_b = b.l/block;
-    if(block_a == block_b)
-        return a.r < b.r;
-    return block_a < block_b;
+void update(ll *tree, int idx, ll val, int MxVal) {
+    for( ; idx <= MxVal; idx += idx & -idx)
+        tree[idx] += val;
 }
 
 
-void add(int x) {
-    long long k = Count[v[x]]++;
-    ans -= k*k*v[x];
-    ans += (k+1)*(k+1)*v[x];
+ll read(ll *tree, int idx) {
+    ll sum = 0;
+    for( ; idx >= 1; idx -= idx & -idx)
+        sum += tree[idx];
+    return sum;
+}
+
+ll readSingle(ll *tree, int idx) {             // Point read in log(n)
+    ll sum = tree[idx];
+    if(idx > 0) {
+        int z = idx - (idx & -idx);
+        --idx;
+        while(idx != z) {
+            sum -= tree[idx];
+            idx -= (idx & -idx);
+        }
+    }   
+    return sum;
 }
 
 
-void remove(int x) {
-    long long k = Count[v[x]]--;
-    ans -= k*k*v[x];
-    ans += (k-1)*(k-1)*v[x];
+void Build(int n) {
+    BlockSize = sqrt(n)+1;
+    for(register int i = 1; i <= n; ++i)
+        update(tree[i/BlockSize], i%BlockSize+1, val[i], 200000);
 }
 
+void updateBlocks(int l, int r) {
+    int p = l;
+    while(l%BlockSize != 0 and l < r) {
+        int updateIdx = val[i]+
 
 int main() {
-    int n, Q;
-    
-    scanf("%d%d", &n, &Q);
-    
-    for(int i = 0; i < n; ++i)
-        scanf("%d", &v[i]);
-    
-    
-    for(int i = 0; i < Q; ++i) {
-        scanf("%d%d", &q[i].l, &q[i].r);
-        q[i].l--, q[i].r--;
-        q[i].id = i;
-    }
-    
-    sort(q, q+Q, cmp);
-    int l = 0, r = -1;
-    
-    for(int i = 0; i < Q; ++i) {
-        while(l > q[i].l)   add(--l);
-        while(r < q[i].r)   add(++r);
-        while(l < q[i].l)   remove(l++);
-        while(r > q[i].r)   remove(r--);
-        
-        ansId[q[i].id] = ans;
-    }
-    
-    
-    for(int i = 0; i < Q; ++i)
-        printf("%lld\n", ansId[i]);
-    
     return 0;
 }

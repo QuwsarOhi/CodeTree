@@ -9,16 +9,14 @@ vector<int>u_list, u_set;
 //u_list[x] contains the size of a set x
 //u_set[x] contains the root of x
 
-int unionRoot(int n)
-{
+int unionRoot(int n) {
     if(u_set[n] == n)
         return n;
     else
         return u_set[n] = unionRoot(u_set[n]);
 }
 
-int makeUnion(int a, int b)
-{
+int makeUnion(int a, int b) {
     int x = unionRoot(a);
     int y = unionRoot(b);
 
@@ -36,8 +34,7 @@ int makeUnion(int a, int b)
     }
 }
 
-void unionInit(int len)
-{
+void unionInit(int len) {
     u_list.resize(len+5, 1);
     u_set.resize(len+5);
 
@@ -45,15 +42,13 @@ void unionInit(int len)
         u_set[i] = i;
 }
 
-bool isSameSet(int a, int b)
-{
+bool isSameSet(int a, int b) {
     if(unionRoot(a) == unionRoot(b))
         return 1;
     return 0;
 }
 
 
-int main()
-{
+int main() {
     return 0;
 }

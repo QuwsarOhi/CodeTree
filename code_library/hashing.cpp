@@ -3,10 +3,13 @@
 #include <bits/stdc++.h>
 using namespace std;
 typedef long long ll;
+typedef pair<ll, ll> pll;
 
 // p = 31, 51
 // MOD = 1e9+9, 1e7+7
 
+const ll p = 31;
+const ll mod1 = 1e9+9, mod2 = 1e9+7;
 
 // Returns Single Hash Val
 ll hash(char *s,  int len, ll mod = 1e9+9) {

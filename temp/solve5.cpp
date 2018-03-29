@@ -1,78 +1,126 @@
-// Toph
-// https://toph.co/p/chikongunia
+// Convex Hull
+// Gift Wrapping (Jarvis)
+// Complexity : O(n^2)
 
-// HashValue Manipulation
+// https://www.geeksforgeeks.org/convex-hull-set-1-jarviss-algorithm-or-wrapping/
+// https://www.hackerearth.com/problem/approximate/polygon-partition-910a3b76/
 
 #include <bits/stdc++.h>
+#define x first
+#define y second
 using namespace std;
 typedef long long ll;
-typedef pair<ll, ll>pll;
+typedef pair<ll, ll> pll;
 
-const ll p = 31;
-const ll mod1 = 1e9+9;
-const ll mod2 = 1e9+7;
 
-map<pll, int>PrevHash;
-vector<pll>Hash, Power;
-
-// Genarates Powers
-void PowerGen(int n) {
-    Power.resize(n+1);
-    Power[0] = {1, 1};
+ll whichSide(pll p, pll q, pll r) {     // returns on which side point r is w.r.t pq line
+    // slope = 0 : linear
+    // slope > 0 : right
+    // slope < 0 : left
     
-    for(int i = 1; i < n; ++i) {
-        Power[i].first = (Power[i-1].first * p)%mod1;
-        Power[i].second = (Power[i-1].second * p)%mod2;
-    }
-}
-
-pll HashCal(char *s, int len) {
-    ll hashVal1 = 0, hashVal2 = 0;
-    
-    for(int i = 0; i < len; ++i) {
-        hashVal1 = (hashVal1 + (s[i] - 'a' + 1)* Power[i].first)%mod1;
-        hashVal2 = (hashVal2 + (s[i] - 'a' + 1)* Power[i].second)%mod2;
-    }
-    return {hashVal1, hashVal2};
+    ll slope = (p.y-q.y)*(q.x-r.x) - (q.y-r.y)*(p.x-q.x);
+    return slope;
 }
 
 
-pll ChangeHash(pll hash, int pos, char newChar, char oldChar) {
-    hash.first -= ((oldChar - 'a' + 1) * Power[pos].first)%mod1;
-    hash.second -= ((oldChar - 'a' + 1) * Power[pos].second)%mod2;
+ll dist(pll a, pll b) {
+    ll X = a.x - b.x;
+    ll Y = a.y - b.y;
     
-    hash.first = (hash.first + (newChar - 'a' + 1) * Power[pos].first + mod1)%mod1;
-    hash.second = (hash.second + (newChar - 'a' + 1) * Power[pos].second + mod2)%mod2;
-    
-    return hash;
+    return X*X + Y*Y;
 }
 
-char s[1000100];
+
+vector<int> hull;       // Used in convexHull
+
+bool convexHull(vector<pll> &v) {
+    if(v.size() < 3)
+        return 0;
+    
+    
+    
+    // Finding Upper LeftMost point
+    int l = 0;
+    for(int i = 1; i < (int)v.size(); ++i)
+        if(v[i].x < v[l].x)
+            l = i;
+    
+    //printf("Starting %lld %lld\n", v[l].x, v[l].y);
+    int p = l, q;
+    
+    do {
+        hull.push_back(p);          // Hull point index is pushed
+        
+        q = (p+1) % v.size();
+        
+        // This checks if there exists same point twice (no need if points are unique)
+        while(v[p] == v[q])
+            q = (q+1) % v.size();
+        
+        for(int i = 0; i < (int)v.size(); ++i) {
+            ll side = whichSide(v[p], v[q], v[i]);
+            if(side < 0)                                                        // point i is on left w.r.t point pq
+                q = i;
+            
+            // Use this commented code, if minimum number of points needed (points in same line is rejected)
+            //else if(side == 0 and dist(v[p], v[q]) < dist(v[p], v[i]))          // if point i is on same line pq
+            //    q = i;
+        }
+        p = q;
+    }while(p != l);
+    
+    return 1;
+}
+
+vector<pll>points;
+vector<int>Ans[1010];
+map<pll, vector<int> > Map;
 
 int main() {
-    ll n, Ans = 0, len;
+    int sz = 0, n;
+    ll X, Y;
     
-    scanf("%lld%lld", &n, &len);
-    PowerGen(len+5);
-    
+    scanf("%d", &n);
     for(int i = 0; i < n; ++i) {
-        scanf(" %s", s);
-        
-        pll HashVal = HashCal(s, len);
-        
-        for(int i = 0; i < len; ++i)
-            for(int c = 'a'; c <= 'z'; ++c) {
-                if(c == s[i])
-                    continue;
-                pll ModifiedHash = ChangeHash(HashVal, i, c, s[i]);
-                if(PrevHash.find(ModifiedHash) != PrevHash.end())
-                    Ans += PrevHash[ModifiedHash];
-            }
+        scanf("%lld %lld", &X, &Y);
+        points.push_back({X, Y});
+    }
             
-        PrevHash[HashVal]++;
+    for(auto it : points)
+        Map[it].push_back(sz++);
+    sz = 0;
+    
+    while(1) {
+        if(!convexHull(points)) {
+            break;
+        }
+        
+        //cout << "WORKING\n";
+        sort(hull.begin(), hull.end(), greater<int>());
+        
+        for(auto idx : hull) {
+            Ans[sz].push_back(Map[points[idx]].back());
+            Map[points[idx]].pop_back();
+            points.erase(points.begin()+idx);
+        }
+        
+        hull.clear();
+        ++sz;
     }
     
-    printf("%lld\n", Ans);
     
+    
+    for(int i = 0; i < (int)points.size(); ++i)
+        Ans[sz].push_back(Map[points[i]].back());
+    sz += (points.empty() == 0);
+        
+    printf("%d\n", sz);
+    for(int i = 0; i < sz; ++i) {
+        printf("%d", Ans[i].size());
+        for(auto it : Ans[i])
+            printf(" %d", it+1);
+        printf("\n");
+    }
+        
     return 0;
 }

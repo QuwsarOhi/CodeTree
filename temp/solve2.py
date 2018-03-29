@@ -1,13 +1,15 @@
 from sys import *
 from bisect import *
 from collections import *
+from itertools import *
+from fractions import *
 
-INF = 1e9
 Input = []
-MOD = 1000000007
 
-stdin = open('in', 'r')
+#stdin = open('in', 'r')
 #stdout = open('out', 'w')
+
+## for i, val in enumerate(array, start_i_value)
 
 def Out(x):
     stdout.write(str(x) + '\n')
@@ -19,52 +21,21 @@ def inputGrab():
     for line in stdin:
         Input.extend(map(str, line.strip().split()))
 
-############################################################
-
-isPrime = [True for i in range(7100)]
-primes = []
-divCount = {}
-
-def sieve(lim = 7000):
-    global isPrime
-    global primes
-    
-    isPrime[0] = isPrime[1] = 0
-    for i in range(2, lim):
-        if isPrime[i]:
-            primes.append(i)
-            for j in range(i*i, lim, i):
-                isPrime[j] = 0
-
-
-def factorize(val, Cnt):
-    global primes
-    global divCount
-    
-    for prime in primes:
-        if val < prime:
-            break
-        if val % prime == 0:
-            divCount[prime] += Cnt
-        while val >= prime and val % prime == 0:
-            val /= prime
-    if val != 1:
-        if val not in divCount:
-            divCount[val] = Cnt
-            primes.append(val)
-        else:
-            divCount[val] += Cnt
-
-
-
 def main():
-    n = int(In())
-    v = map(int, In().split())
-    global divCount
-    global primes
+    #inputGrab()
+    i = 0
     
-
+    while(1):
+        #a = int(Input[i])
+        #b = int(Input[i+1])
+        #m = int(Input[i+2])
+        a, b, m = map(int, input().strip().split())
         
+        if(a == 0 and b == 0 and m == 0):
+            break
+        
+        print((a**b)%m)
+        i = i + 3
     
 if __name__ == '__main__':
     main()

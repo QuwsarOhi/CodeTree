@@ -1,163 +1,102 @@
-// Hackerrank
-// Sherlock and Inversions
-// https://www.hackerearth.com/practice/data-structures/advanced-data-structures/fenwick-binary-indexed-trees/practice-problems/algorithm/sherlock-and-inversions/description/
+// Timus
+// 1671. Anansi's Cobweb
+
+// Graph Component edge deletion
+
+// Offline 
+// As the edges are undirected, we can use union distjoint to count components
 
 #include <bits/stdc++.h>
-#define pc(x) putchar_unlocked(x);
-
 using namespace std;
-typedef long long ll;
-const int MAX = 100100;
 
+vector<int>u_list, u_set;
 
-struct BIT {
-    int tree[MAX];
-    int MaxVal;
-    
-    void init(int sz=1e7) {
-        MaxVal = sz+1;
+//u_list[x] contains the size of a set x
+//u_set[x] contains the root of x
+
+int unionRoot(int n) {
+    if(u_set[n] == n)
+        return n;
+    else
+        return u_set[n] = unionRoot(u_set[n]);
+}
+
+int makeUnion(int a, int b) {
+    int x = unionRoot(a);
+    int y = unionRoot(b);
+
+    if(x == y)
+        return x;
+    else if(u_list[x] > u_list[y]) {
+        u_set[y] = x;
+        u_list[x] += u_list[y];
+        return x;
     }
-
-    void update(int idx, ll val) {
-        for( ;idx <= MaxVal; idx += (idx & -idx))
-            tree[idx] += val;
+    else {
+        u_set[x] = y;
+        u_list[y] += u_list[x];
+        return y;
     }
-    
-    void update(int l, int r, ll val) {
-        if(l > r) swap(l, r);
-        update(l, val);
-        update(r+1, -val);
-    }
-
-    ll read(int idx) {
-        ll sum = 0;
-        for( ;idx > 0; idx -= (idx & -idx))
-            sum += tree[idx];
-        return sum;
-    }
-};
-
-struct query {
-    int l, r, id;
-} q[MAX];
-
-
-const int block = 320;
-BIT t1;
-unordered_map<int, int>Map;
-ll Ans = 0, ans[MAX];
-int val[MAX], LIM = 1;
-set<int>Set;
-
-
-inline void fastIn(int &num) {          // Fast IO, with space and new line ignoring
-    bool neg = false;
-    register int c;
-    num = 0;
-    c = getchar_unlocked();
-    for( ; c != '-' && (c < '0' || c > '9'); c = getchar_unlocked());
-    if (c == '-') {
-        neg = true;
-        c = getchar_unlocked();
-    }
-    for(; (c>47 && c<58); c=getchar_unlocked())
-        num = (num<<1) + (num<<3) + c - 48;
-    if(neg)
-        num *= -1;
 }
 
-inline void fastOut(long long n) {
-    long long N = n, rev, count = 0;
-    rev = N;
-    if (N == 0) { pc('0'); return ;}
-    while ((rev % 10) == 0) { count++; rev /= 10;}                  //obtain the count of the number of 0s
-    rev = 0;
-    while (N != 0) { rev = (rev<<3) + (rev<<1) + N % 10; N /= 10;}  //store reverse of N in rev
-    while (rev != 0) { pc(rev % 10 + '0'); rev /= 10;}
-    while (count--) pc('0');
+void unionInit(int len) {
+    u_list.resize(len+5, 1);
+    u_set.resize(len+5);
+
+    for(int i = 0; i <= len; i++)
+        u_set[i] = i;
 }
 
-
-bool cmp(query a, query b) {
-    int block_a = a.l/block, block_b = b.l/block;
-    if(block_a == block_b)
-        return a.r < b.r;
-    return block_a < block_b;
+bool isSameSet(int a, int b) {
+    if(unionRoot(a) == unionRoot(b))
+        return 1;
+    return 0;
 }
 
-// For adding left, found how many numbers are less than val[x]
-
-// t1 : for finding smaller
-// t2 : for finding greater
-
-void addLeft(int x) {
-    int idx = Map[val[x]];
-    ll smaller = t1.read(idx-1);
-    Ans += smaller;
-    t1.update(idx, 1);
-}
-
-
-void removeLeft(int x) {
-    int idx = Map[val[x]];
-    ll smaller = t1.read(idx-1);
-    Ans -= smaller;
-    t1.update(idx, -1);
-}
-
-
-// For adding right, found how many numbers are greater than val[x]
-
-void addRight(int x) {
-    int idx = Map[val[x]];
-    ll greater = t1.read(LIM) - t1.read(idx);
-    Ans += greater;
-    t1.update(idx, 1);
-}
-
-void removeRight(int x) {
-    int idx = Map[val[x]];
-    ll greater = t1.read(LIM) - t1.read(idx);
-    Ans -= greater;
-    t1.update(idx, -1);
-}
-
+vector<pair<int, int> >Edge;
+vector<int>Query;
+int ans[100100];
+bool Break[100100];
 
 int main() {
-    int n, Q;
+    int n, m, u, v, q, e;
     
-    fastIn(n), fastIn(Q);
-    for(int i = 0; i < n; ++i) {
-        fastIn(val[i]);
-        Set.insert(val[i]);
+    scanf("%d%d", &n, &m);
+    
+    for(int i = 0; i < m; ++i) {
+        scanf("%d%d", &u, &v);
+        Edge.push_back({u, v});
     }
     
-    for(auto it : Set)
-        Map[it] = ++LIM;
-    
-    t1.init(LIM+2);
-    
-    for(int i = 0; i < Q; ++i) {
-        fastIn(q[i].l), fastIn(q[i].r);
-        q[i].l--, q[i].r--;
-        q[i].id = i;
+    scanf("%d", &q);
+    for(int i = 0; i < q; ++i) {
+        scanf("%d", &e);
+        Query.push_back(e);
+        Break[e] = 1;
     }
     
-    sort(q, q+Q, cmp);
-    int l = 0, r = -1;
+    int comp = n;
+    unionInit(n);
     
-    for(int i = 0; i < Q; ++i) {
+    for(int i = 0; i < m; ++i)
+        if(!Break[i+1]) {
+            if(unionRoot(Edge[i].first) != unionRoot(Edge[i].second))
+                --comp;
+            makeUnion(Edge[i].first, Edge[i].second);
+        }
         
-        while(l > q[i].l)   addLeft(--l);
-        while(r < q[i].r)   addRight(++r);
-        while(l < q[i].l)   removeLeft(l++);
-        while(r > q[i].r)   removeRight(r--);
-        
-        ans[q[i].id] = Ans;
+    for(int i = q-1; i >= 0; --i) {
+        ans[i] = comp;
+        int j = Query[i]-1;
+        if(unionRoot(Edge[j].first) != unionRoot(Edge[j].second))
+            --comp;
+        makeUnion(Edge[j].first, Edge[j].second);
     }
     
-    for(int i = 0; i < Q; ++i) {
-        fastOut(ans[i]);
-        puts("");
-    }
+    printf("%d", ans[0]);
+    for(int i = 1; i < q; ++i)
+        printf(" %d", ans[i]);
+    
+    return 0;
 }
+
