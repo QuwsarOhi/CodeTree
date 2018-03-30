@@ -51,9 +51,12 @@ void err(istream_iterator<string> it, T a, Args... args) {                      
 	err(++it, args...);
 }
 
-//const int dx[4][2] = {{0,1}, {0,-1}, {1,0}, {-1,0}};                                                      // Four side 
-//const int dxx[8][2] = {{0,1}, {0,-1}, {1,0}, {-1,0}, {1,1}, {1,-1}, {-1,1}, {-1,-1}};                     // Eight side
+//int dx4[] = {-1, 0, 1, 0};
+//int dy4[] = {0, 1, 0, -1};
+//int dx8[] = {-1, -1, -1, 0, 0, 1, 1, 1};
+//int dy8[] = {-1, 0, 1, -1, 1, -1, 0, 1};
 //----------------------------------------------------------------------------------------------------------
+
 
 inline void fastIn(int &num) {          // Fast IO, with space and new line ignoring
     bool neg = false;

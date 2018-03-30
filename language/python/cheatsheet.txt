@@ -86,3 +86,28 @@ print(frac.numerator, frac.denominator)     # prints the fraction
 frac1 = Fraction(a, b).limit_denominator(k)     # will find such a fraction that has denominator less or equal to k
                                                 # and will be in the smallest distant to a/b
 
+
+String:
+
+str.lower()
+str.upper()
+
+''.join(p)              # p is a list of string, it will join together
+p.split(' ')            # p is a string containing spaces, this will split it in seperate strings
+str.replace('+', '')    # str contains '+' charechter, this will replace all of it with '' (remove it)
+
+
+
+Date And Time:
+
+from datetime import *
+
+Cal = date(year, month, day)        # creating a date object
+
+Cal.year
+Cal.month
+Cal.day
+
+delta = timedelta(year, month, day)     # time delta creates an object which can be used to negate from date & time
+Cal2 = Cal - delta                      # Going back 'delta' days
+

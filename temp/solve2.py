@@ -21,21 +21,35 @@ def inputGrab():
     for line in stdin:
         Input.extend(map(str, line.strip().split()))
 
-def main():
-    #inputGrab()
-    i = 0
+def rmvToks(s):
+    s = s.replace('-', '')
+    s = s.replace(';', '')
+    s = s.replace('_', '')
+    s = s.lower()
     
-    while(1):
-        #a = int(Input[i])
-        #b = int(Input[i+1])
-        #m = int(Input[i+2])
-        a, b, m = map(int, input().strip().split())
+    return s
+
+def main():
+    
+    s = []
+    for _ in range(3):
+        s.append(rmvToks(input()))
+    
+    Set = set()
+    for p in permutations(s):
+        Set.add(''.join(p))
+    
+    n = int(input())
+    
+    for _ in range(n):
+        st = rmvToks(input())
         
-        if(a == 0 and b == 0 and m == 0):
-            break
-        
-        print((a**b)%m)
-        i = i + 3
+        if st in Set:
+            print("ACC")
+        else:
+            print("WA")
+
+    
     
 if __name__ == '__main__':
     main()

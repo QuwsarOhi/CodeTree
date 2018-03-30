@@ -3,6 +3,7 @@ from bisect import *
 from collections import *
 from itertools import *
 from fractions import *
+from datetime import *
 
 Input = []
 
@@ -22,12 +23,26 @@ def inputGrab():
         Input.extend(map(str, line.strip().split()))
 '''--------------------------------------------------------------------------------'''
 
+def cal(x, y):
+    if(x == 1):
+        return 1
+    
+    if(y == 1):
+        return x
+    
+    #print(y, x-1)
+    return (y)*(x-1)+1
+
 def main():
-    x, y, k = map(int, In().split())
+    n = int(In())
+    l = list(map(int, In().split()))
     
-    ans = Fraction(x/y).limit_denominator(k)
-    
-    print(str(ans.numerator)+"/"+str(ans.denominator))
+    ans = 0
+    for i, x in enumerate(l, 1):
+        ans = ans + cal(x, i)
+        #print(ans)
+        
+    print(ans)
     
 if __name__ == '__main__':
     main()
