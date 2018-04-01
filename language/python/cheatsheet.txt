@@ -36,6 +36,7 @@ Data Structures:
 
 1D List: 
 arr = []
+arr = [0]*100                           # initializing array
 arr.append(val)                         # push_back
 a = list(map(int, In().split()))        # direct array input
 

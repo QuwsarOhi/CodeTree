@@ -49,76 +49,32 @@ void err(istream_iterator<string> it, T a, Args... args) {                      
 	err(++it, args...);
 }
 
-int dx[] = {-1, 0, 1, 0}, dy[] = {0, 1, 0, -1};
+//int dx[] = {-1, 0, 1, 0}, dy[] = {0, 1, 0, -1};
 //int dx[] = {-1, -1, -1, 0, 0, 1, 1, 1}, dy[] = {-1, 0, 1, -1, 1, -1, 0, 1};
 //----------------------------------------------------------------------------------------------------------
 
-char G[110][110];
-int dp[110][110], n, m;
-bool vis[110][110];
 
-int recur(int X, int Y, int cst) {
-    if(X == 0 or Y == 0 or X == n-1 or Y == m-1) {
-        //cout << X << " " << Y << " " << cst << endl;
-        return cst;
-    }
-    
-    if(dp[X][Y] != INF) {
-        //cout << "HIT" << endl;
-        return dp[X][Y]+cst;
-    }
-    
-    int ret = INF;
-    for(int i = 0; i < 4; ++i) {
-        int x = X + dx[i];
-        int y = Y + dy[i];
-        
-        if(x < 0 or y < 0 or x >= n or y >= m or G[x][y] == '*' or vis[x][y] == 1)
-            continue;
-        
-        vis[x][y] = 1;
-        ret = min(ret, recur(x, y, cst + (G[x][y] == '#')));
-        vis[x][y] = 0;
-    }
-    
-    if(ret != INF)
-        dp[X][Y] = ret-cst;
-    
-    return ret;
+char a[100010], b[100010];
+ll m = 1000000007;
+
+ll Pow(ll N, ll P, ll M) {
+	if(P==0)
+		return 1;
+	if(!(P&1)) {
+		ll ret = Pow(N, P/2, M)%M;
+		return (ret * ret)%M;
+	}
+    return ((N%M) * (Pow(N, P-1, M)%M))%M;
 }
 
-
-
 int main() {
-    int t, p, q;
-    
-    sf("%d", &t);
-    
-    for(int Case = 1; Case <= t; ++Case) {
-        sf("%d%d", &n, &m);
+    scanf("%s %s", a, b);
+    ll base = 0, ans = 1;
+    for(int i = 0; a[i] != '\0'; ++i)
+        base = (base*10LL + a[i] - '0')%m;
         
-        for(int i = 0; i < n; ++i)
-            for(int j = 0; j < m; ++j) {
-                sf(" %c", &G[i][j]);
-                if(G[i][j] == '$') {
-                    p = i;
-                    q = j;
-                }
-            }
+    for(int j = 0; b[j] != '\0'; ++j)
+        ans = (Pow(ans, 10, m) * Pow(base, b[j]-'0', m))%m;
         
-        for(int i = 0; i < 105; ++i)
-            for(int j = 0; j < 105; ++j)
-                dp[i][j] = INF;
-        
-        int ans = recur(p, q, 0);
-        
-        pf("Case %d: ", Case);
-        
-        if(ans == INF)
-            pf("Impossible\n");
-        else
-            pf("%d\n", ans);
-    }
-    
-    return 0;
+    printf("%lld\n", ans);
 }

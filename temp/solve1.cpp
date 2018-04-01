@@ -1,6 +1,6 @@
 #include <bits/stdc++.h>
 using namespace std;
-#define MAX                 200100
+#define MAX                 13333333
 #define EPS                 1e-9
 #define INF                 1e7
 #define MOD                 1000000007
@@ -49,77 +49,62 @@ void err(istream_iterator<string> it, T a, Args... args) {                      
 	err(++it, args...);
 }
 
-int dx[] = {-1, 0, 1, 0}, dy[] = {0, 1, 0, -1};
+//int dx[] = {-1, 0, 1, 0}, dy[] = {0, 1, 0, -1};
 //int dx[] = {-1, -1, -1, 0, 0, 1, 1, 1}, dy[] = {-1, 0, 1, -1, 1, -1, 0, 1};
 //----------------------------------------------------------------------------------------------------------
 
-int ans, n, m;
-bool vis[110][110];
-char G[110][110];
+// 13333333
 
-void dfs(int x, int y, int cnt) {
-    if(x == 0 or y == 0 or x == n-1 or y == m-1) {
-        //cout << "AT " << x << " " << y << " " << cnt << endl;
-        ans = min(ans, cnt);
-        return;
-    }
-    
-    if(cnt >= ans)
-        return;
-    
-    for(int i = 0; i < 4; ++i) {
-        int X = x+dx[i];
-        int Y = y+dy[i];
-        
-        if(X < 0 or Y < 0 or X >= n or Y >= m or G[X][Y] == '*' or vis[X][Y])
-            continue;
-        
-        vis[x][y] = 1;
-        dfs(X, Y, cnt+(G[X][Y] == '#'));
-        vis[x][y] = 0;
-    }
+bitset<MAX+10>isPrime;
+vector<ll>primes, v;
+
+void sieveGen(unsigned long long N) {
+    isPrime.set();
+	isPrime[0] = isPrime[1] = 0;
+	for(unsigned long long i = 2; i <= N; i++) {
+		if(isPrime[i]) {
+			for(unsigned long long j = i*i; j <= N; j+= i)
+                isPrime[j] = 0;
+            if(i != 2)
+                primes.push_back(i);
+		}
+	}
 }
 
-/*
 
-1
-4 4
-***#
-*$#*
-*##*
-*###
-
-*/
-        
+void Gen() {
+    for(register int i = 0; i < SIZE(primes)-2; ++i)
+        for(register int j = i+1; j < SIZE(primes)-1; ++j)
+            for(register int k = j+1; k < SIZE(primes); ++k)
+                v.pb(primes[i]*primes[j]*primes[k]);
+    
+    sort(v.begin(), v.end());
+}
 
 int main() {
-    int t, p, q;
+    sieveGen(MAX);
+    Gen();
     
-    sf("%d", &t);
+    //for(int i = 0; i < min(20, SIZE(v)); ++i)
+    //    cout << v[i] << " ";
+    //cout << endl;
+    
+    ll t, l, r;
+    sf("%lld", &t);
     
     for(int Case = 1; Case <= t; ++Case) {
-        sf("%d%d", &n, &m);
-        
-        for(int i = 0; i < n; ++i)
-            for(int j = 0; j < m; ++j) {
-                sf(" %c", &G[i][j]);
-                if(G[i][j] == '$') {
-                    p = i;
-                    q = j;
-                }
-            }
-        
-        memset(vis, 0, sizeof vis);
-        ans = 1e8;
-        
-        dfs(p, q, 0);
+        sf("%lld%lld", &l, &r);
+        auto L = lower_bound(v.begin(), v.end(), l);
+        auto R = lower_bound(v.begin(), v.end(), r);
         
         pf("Case %d: ", Case);
         
-        if(ans == 1e8)
-            pf("Impossible\n");
-        else
-            pf("%d\n", ans);
+        if(L == R)
+            pf("0\n");
+        else {
+            if(*R > r) --R;
+            pf("%d\n", (R-v.begin()) - (L-v.begin()) + 1);
+        }
     }
     
     return 0;
