@@ -1,81 +1,126 @@
-// Toph
-// https://toph.co/p/hardest-update-and-easiest-query
+#include <bits/stdc++.h>
+using namespace std;
+#define MAX                 200100
+#define EPS                 1e-9
+#define INF                 1e7
+#define MOD                 1000000007
+#define pb                  push_back
+#define mp                  make_pair
+#define fi                  first
+#define se                  second
+#define pi                  acos(-1)
+#define sf                  scanf
+#define pf                  printf
+#define SIZE(a)             ((int)a.size())
+#define All(S)              S.begin(), S.end()              
+#define Equal(a, b)         (abs(a-b) < EPS)
+#define Greater(a, b)       (a >= (b+EPS))
+#define GreaterEqual(a, b)  (a > (b-EPS))
+#define fr(i, a, b)         for(register int i = (a); i < (int)(b); i++)
+#define FastRead            ios_base::sync_with_stdio(false); cin.tie(NULL);
+#define fileRead(S)         freopen(S, "r", stdin);
+#define fileWrite(S)        freopen(S, "w", stdout);
+#define Unique(X)           X.erase(unique(X.begin(), X.end()), X.end())
+#define error(args...)      { string _s = #args; replace(_s.begin(), _s.end(), ',', ' '); stringstream _ss(_s); istream_iterator<string> _it(_ss); err(_it, args); }
 
-// Hardest Update and Easiest Query
-// Sum of pairs
-// Square Sum technique
+#define isOn(S, j)          (S & (1 << j))
+#define setBit(S, j)        (S |= (1 << j))
+#define clearBit(S, j)      (S &= ~(1 << j))
+#define toggleBit(S, j)     (S ^= (1 << j))
+#define lowBit(S)           (S & (-S))
+#define setAll(S, n)        (S = (1 << n) - 1)
 
-#include <stdio.h>
-#include <string.h>
-#define M 1000000007LL
-#define pf printf
+typedef unsigned long long ull;
 typedef long long ll;
+typedef map<int, int> mii;
+typedef map<ll, ll>mll;
+typedef map<string, int> msi;
+typedef vector<int> vi;
+typedef vector<long long>vl;
+typedef pair<int, int> pii;
+typedef pair<ll, ll> pll;
+typedef vector<pair<int, int> > vii;
+typedef vector<pair<ll, ll> >vll;
 
-inline void sf(ll &num) {          // Fast IO, with space and new line ignoring
-    bool neg = false;
-    register ll c;
-    num = 0;
-    c = getchar_unlocked();
-    for( ; c != '-' && (c < '0' || c > '9'); c = getchar_unlocked());
-    if (c == '-') {
-        neg = true;
-        c = getchar_unlocked();
-    }
-    for(; (c>47 && c<58); c=getchar_unlocked())
-        num = (num<<1) + (num<<3) + c - 48;
-    if(neg)
-        num *= -1;
+void err(istream_iterator<string> it) {}
+template<typename T, typename... Args>
+void err(istream_iterator<string> it, T a, Args... args) {                                                  // Debugger error(a, b, ....)
+	cerr << *it << " = " << a << "\n";
+	err(++it, args...);
 }
 
-struct BIT {
-    ll tree[100002], MX = 100000;
-    BIT(int n) {
-        MX = n;
-        memset(tree, 0, sizeof tree);
+int dx[] = {-1, 0, 1, 0}, dy[] = {0, 1, 0, -1};
+//int dx[] = {-1, -1, -1, 0, 0, 1, 1, 1}, dy[] = {-1, 0, 1, -1, 1, -1, 0, 1};
+//----------------------------------------------------------------------------------------------------------
+
+char G[110][110];
+int n, m;
+
+int bfs(int x, int y) {
+    priority_queue<pair<int, pii>>pq;
+    pq.push({0, {x, y}});
+    int ans = 1e8;
+    
+    bool vis[110][110];
+    memset(vis, 0, sizeof vis);
+    
+    while(!pq.empty()) {
+        int cst = -pq.top().fi;
+        x = pq.top().se.fi;
+        y = pq.top().se.se;
+        pq.pop();
+        
+        if(cst >= ans)
+            continue;
+        
+        if(x == 0 or y == 0 or x == n-1 or y == m-1) {
+            ans = min(cst, ans);
+            continue;
+        }
+        
+        for(int i = 0; i < 4; ++i) {
+            int X = x+dx[i];
+            int Y = y+dy[i];
+            
+            if(X < 0 or Y < 0 or X >= n or Y >= m or G[X][Y] == '*' or vis[X][Y])
+                continue;
+            
+            vis[X][Y] = 1;
+            pq.push({-(cst+(G[X][Y] == '#')), {X, Y}});
+        }
     }
-    void update(int idx, ll val) {
-        for( ;idx <= MX; idx += (idx & -idx))
-            tree[idx] = (tree[idx] + val + M)%M;
-    }
-    void upd(int idx, ll val) {
-        update(idx, (val - read(idx, idx) + M)%M);
-    }
-    ll read(int idx) {
-        ll sum = 0;
-        for( ;idx > 0; idx -= (idx & -idx))
-            sum = (sum + tree[idx] + M)%M;
-        return sum;
-    }
-    ll read(int l, int r) {
-        return ((read(r) - read(l-1) + M)%M);
-    }
-};
+    
+    return ans;
+}
+
 
 
 int main() {
-    ll r, n, t, l;
+    int t, p, q;
     
-    sf(n);
-    BIT sqSum(n), sum(n);
-    for(int i = 1; i <= n; ++i) {
-        sf(r);
-        sqSum.update(i, (r*r)%M);
-        sum.update(i, r);
+    sf("%d", &t);
+    
+    for(int Case = 1; Case <= t; ++Case) {
+        sf("%d%d", &n, &m);
+        
+        for(int i = 0; i < n; ++i)
+            for(int j = 0; j < m; ++j) {
+                sf(" %c", &G[i][j]);
+                if(G[i][j] == '$') {
+                    p = i;
+                    q = j;
+                }
+            }
+        
+        int ans = bfs(p, q);
+        
+        pf("Case %d: ", Case);
+        
+        if(ans == 1e8)
+            pf("Impossible\n");
+        else
+            pf("%d\n", ans);
     }
     
-    sf(n);
-    while(n--) {
-        sf(t), sf(l), sf(r);
-        if(t == 1) {
-            sqSum.upd(l, (r*r)%M);
-            sum.upd(l, r);
-        }
-        else {
-            ll tm = sum.read(l, r);
-            tm = ((tm*tm)%M - sqSum.read(l, r) + M)%M;
-            if(tm&1LL) tm += M;
-            tm /= 2;
-            pf("%lld\n", tm);
-        }
-    }
+    return 0;
 }

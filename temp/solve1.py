@@ -4,6 +4,7 @@ from collections import *
 from itertools import *
 from fractions import *
 from datetime import *
+from math import *
 
 Input = []
 
@@ -23,26 +24,33 @@ def inputGrab():
         Input.extend(map(str, line.strip().split()))
 '''--------------------------------------------------------------------------------'''
 
-def cal(x, y):
-    if(x == 1):
-        return 1
-    
-    if(y == 1):
-        return x
-    
-    #print(y, x-1)
-    return (y)*(x-1)+1
+def dist(x1, x2, y2):
+    x0 = x1-x2
+    x0 = x0 * x0
+    return sqrt(x0 + y2)
 
 def main():
-    n = int(In())
-    l = list(map(int, In().split()))
+    n, vb, vs = map(int, In().split())
     
-    ans = 0
-    for i, x in enumerate(l, 1):
-        ans = ans + cal(x, i)
-        #print(ans)
+    d = list(map(int, In().split()))
+    x, y = map(int, In().split())
+    
+    best = 100000000.0
+    ans = 100000000
+    
+    for i in range(1, n):
+        tmp = (d[i] / vs) +dist(d[i], x, y)*vs
         
-    print(ans)
+        #print("At", i, tmp)
+        
+        if(tmp < best):
+            #print("Best", tmp, i)
+            ans = i
+            best = tmp
+        
+        
+    print(ans+1)
+    
     
 if __name__ == '__main__':
     main()

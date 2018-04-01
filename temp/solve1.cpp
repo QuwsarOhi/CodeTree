@@ -1,50 +1,126 @@
 #include <bits/stdc++.h>
-#define MAX 1000
 using namespace std;
+#define MAX                 200100
+#define EPS                 1e-9
+#define INF                 1e7
+#define MOD                 1000000007
+#define pb                  push_back
+#define mp                  make_pair
+#define fi                  first
+#define se                  second
+#define pi                  acos(-1)
+#define sf                  scanf
+#define pf                  printf
+#define SIZE(a)             ((int)a.size())
+#define All(S)              S.begin(), S.end()              
+#define Equal(a, b)         (abs(a-b) < EPS)
+#define Greater(a, b)       (a >= (b+EPS))
+#define GreaterEqual(a, b)  (a > (b-EPS))
+#define fr(i, a, b)         for(register int i = (a); i < (int)(b); i++)
+#define FastRead            ios_base::sync_with_stdio(false); cin.tie(NULL);
+#define fileRead(S)         freopen(S, "r", stdin);
+#define fileWrite(S)        freopen(S, "w", stdout);
+#define Unique(X)           X.erase(unique(X.begin(), X.end()), X.end())
+#define error(args...)      { string _s = #args; replace(_s.begin(), _s.end(), ',', ' '); stringstream _ss(_s); istream_iterator<string> _it(_ss); err(_it, args); }
+
+#define isOn(S, j)          (S & (1 << j))
+#define setBit(S, j)        (S |= (1 << j))
+#define clearBit(S, j)      (S &= ~(1 << j))
+#define toggleBit(S, j)     (S ^= (1 << j))
+#define lowBit(S)           (S & (-S))
+#define setAll(S, n)        (S = (1 << n) - 1)
+
+typedef unsigned long long ull;
 typedef long long ll;
+typedef map<int, int> mii;
+typedef map<ll, ll>mll;
+typedef map<string, int> msi;
+typedef vector<int> vi;
+typedef vector<long long>vl;
+typedef pair<int, int> pii;
+typedef pair<ll, ll> pll;
+typedef vector<pair<int, int> > vii;
+typedef vector<pair<ll, ll> >vll;
 
-ll tree[320][MAX];
-int val[MAX], BlockSize, MaxVal;
-int pre[320][320], suff[320][320];
-
-void update(ll *tree, int idx, ll val, int MxVal) {
-    for( ; idx <= MxVal; idx += idx & -idx)
-        tree[idx] += val;
+void err(istream_iterator<string> it) {}
+template<typename T, typename... Args>
+void err(istream_iterator<string> it, T a, Args... args) {                                                  // Debugger error(a, b, ....)
+	cerr << *it << " = " << a << "\n";
+	err(++it, args...);
 }
 
+int dx[] = {-1, 0, 1, 0}, dy[] = {0, 1, 0, -1};
+//int dx[] = {-1, -1, -1, 0, 0, 1, 1, 1}, dy[] = {-1, 0, 1, -1, 1, -1, 0, 1};
+//----------------------------------------------------------------------------------------------------------
 
-ll read(ll *tree, int idx) {
-    ll sum = 0;
-    for( ; idx >= 1; idx -= idx & -idx)
-        sum += tree[idx];
-    return sum;
+int ans, n, m;
+bool vis[110][110];
+char G[110][110];
+
+void dfs(int x, int y, int cnt) {
+    if(x == 0 or y == 0 or x == n-1 or y == m-1) {
+        //cout << "AT " << x << " " << y << " " << cnt << endl;
+        ans = min(ans, cnt);
+        return;
+    }
+    
+    if(cnt >= ans)
+        return;
+    
+    for(int i = 0; i < 4; ++i) {
+        int X = x+dx[i];
+        int Y = y+dy[i];
+        
+        if(X < 0 or Y < 0 or X >= n or Y >= m or G[X][Y] == '*' or vis[X][Y])
+            continue;
+        
+        vis[x][y] = 1;
+        dfs(X, Y, cnt+(G[X][Y] == '#'));
+        vis[x][y] = 0;
+    }
 }
 
-ll readSingle(ll *tree, int idx) {             // Point read in log(n)
-    ll sum = tree[idx];
-    if(idx > 0) {
-        int z = idx - (idx & -idx);
-        --idx;
-        while(idx != z) {
-            sum -= tree[idx];
-            idx -= (idx & -idx);
-        }
-    }   
-    return sum;
-}
+/*
 
+1
+4 4
+***#
+*$#*
+*##*
+*###
 
-void Build(int n) {
-    BlockSize = sqrt(n)+1;
-    for(register int i = 1; i <= n; ++i)
-        update(tree[i/BlockSize], i%BlockSize+1, val[i], 200000);
-}
-
-void updateBlocks(int l, int r) {
-    int p = l;
-    while(l%BlockSize != 0 and l < r) {
-        int updateIdx = val[i]+
+*/
+        
 
 int main() {
+    int t, p, q;
+    
+    sf("%d", &t);
+    
+    for(int Case = 1; Case <= t; ++Case) {
+        sf("%d%d", &n, &m);
+        
+        for(int i = 0; i < n; ++i)
+            for(int j = 0; j < m; ++j) {
+                sf(" %c", &G[i][j]);
+                if(G[i][j] == '$') {
+                    p = i;
+                    q = j;
+                }
+            }
+        
+        memset(vis, 0, sizeof vis);
+        ans = 1e8;
+        
+        dfs(p, q, 0);
+        
+        pf("Case %d: ", Case);
+        
+        if(ans == 1e8)
+            pf("Impossible\n");
+        else
+            pf("%d\n", ans);
+    }
+    
     return 0;
 }

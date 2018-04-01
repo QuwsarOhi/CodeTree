@@ -1,8 +1,6 @@
-// Fast IO with Templates
-
 #include <bits/stdc++.h>
 using namespace std;
-#define MAX                 200100
+#define MAX                 110000
 #define EPS                 1e-9
 #define INF                 1e7
 #define MOD                 1000000007
@@ -25,12 +23,6 @@ using namespace std;
 #define Unique(X)           X.erase(unique(X.begin(), X.end()), X.end())
 #define error(args...)      { string _s = #args; replace(_s.begin(), _s.end(), ',', ' '); stringstream _ss(_s); istream_iterator<string> _it(_ss); err(_it, args); }
 
-#define isOn(S, j)          (S & (1 << j))
-#define setBit(S, j)        (S |= (1 << j))
-#define clearBit(S, j)      (S &= ~(1 << j))
-#define toggleBit(S, j)     (S ^= (1 << j))
-#define lowBit(S)           (S & (-S))
-#define setAll(S, n)        (S = (1 << n) - 1)
 
 typedef unsigned long long ull;
 typedef long long ll;
@@ -51,41 +43,6 @@ void err(istream_iterator<string> it, T a, Args... args) {                      
 	err(++it, args...);
 }
 
-//int dx[] = {-1, 0, 1, 0}, dy[] = {0, 1, 0, -1};
-//int dx[] = {-1, -1, -1, 0, 0, 1, 1, 1}, dy[] = {-1, 0, 1, -1, 1, -1, 0, 1};
-//----------------------------------------------------------------------------------------------------------
 
-
-inline void fastIn(int &num) {          // Fast IO, with space and new line ignoring
-    bool neg = false;
-    register int c;
-    num = 0;
-    c = getchar_unlocked();
-    for( ; c != '-' && (c < '0' || c > '9'); c = getchar_unlocked());
-    if (c == '-') {
-        neg = true;
-        c = getchar_unlocked();
-    }
-    for(; (c>47 && c<58); c=getchar_unlocked())
-        num = (num<<1) + (num<<3) + c - 48;
-    if(neg)
-        num *= -1;
-}
-
-
-inline void fastOut (long long n) {
-    long long N = n, rev, count = 0;
-    rev = N;
-    if (N == 0) { pc('0'); return ;}
-    while ((rev % 10) == 0) { count++; rev /= 10;}                  //obtain the count of the number of 0s
-    rev = 0;
-    while (N != 0) { rev = (rev<<3) + (rev<<1) + N % 10; N /= 10;}  //store reverse of N in rev
-    while (rev != 0) { pc(rev % 10 + '0'); rev /= 10;}
-    while (count--) pc('0');
-}
-
-
-int main() {
-    error("errors", 1, 2, 3, 4);
-    return 0;
-}
+void dfs(int x, int y) {
+    

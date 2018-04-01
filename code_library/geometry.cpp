@@ -78,7 +78,22 @@ bool doIntersectCircle(circle c1, circle c2) {
 	return 0;
 }
 
+bool isInside(circle c1, circle c2) {                   // Returns true if any one of the circle is fully into another circle
+    ll dis = Distance(c1.x, c1.y, c2.x, c2.y);
+    return ((sqrt(dis) <= max(c1.r, c2.r)) and (sqrt(dis) + min(c1.r, c2.r) < max(c1.r, c2.r)));
+}
 
+
+// ------------------ Point Orientation
+
+ll whichSide(pll p, pll q, pll r) {     // returns on which side point r is w.r.t pq line
+    // slope = 0 : linear
+    // slope > 0 : right
+    // slope < 0 : left
+    
+    ll slope = (p.y-q.y)*(q.x-r.x) - (q.y-r.y)*(p.x-q.x);
+    return slope;
+}
 
 int main() {
     return 0;

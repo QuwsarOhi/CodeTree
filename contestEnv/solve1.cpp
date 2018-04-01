@@ -1,5 +1,3 @@
-// Fast IO with Templates
-
 #include <bits/stdc++.h>
 using namespace std;
 #define MAX                 200100
@@ -51,41 +49,42 @@ void err(istream_iterator<string> it, T a, Args... args) {                      
 	err(++it, args...);
 }
 
-//int dx[] = {-1, 0, 1, 0}, dy[] = {0, 1, 0, -1};
-//int dx[] = {-1, -1, -1, 0, 0, 1, 1, 1}, dy[] = {-1, 0, 1, -1, 1, -1, 0, 1};
+//const int dx[4][2] = {{0,1}, {0,-1}, {1,0}, {-1,0}};                                                      // Four side 
+//const int dxx[8][2] = {{0,1}, {0,-1}, {1,0}, {-1,0}, {1,1}, {1,-1}, {-1,1}, {-1,-1}};                     // Eight side
 //----------------------------------------------------------------------------------------------------------
 
 
-inline void fastIn(int &num) {          // Fast IO, with space and new line ignoring
-    bool neg = false;
-    register int c;
-    num = 0;
-    c = getchar_unlocked();
-    for( ; c != '-' && (c < '0' || c > '9'); c = getchar_unlocked());
-    if (c == '-') {
-        neg = true;
-        c = getchar_unlocked();
-    }
-    for(; (c>47 && c<58); c=getchar_unlocked())
-        num = (num<<1) + (num<<3) + c - 48;
-    if(neg)
-        num *= -1;
-}
-
-
-inline void fastOut (long long n) {
-    long long N = n, rev, count = 0;
-    rev = N;
-    if (N == 0) { pc('0'); return ;}
-    while ((rev % 10) == 0) { count++; rev /= 10;}                  //obtain the count of the number of 0s
-    rev = 0;
-    while (N != 0) { rev = (rev<<3) + (rev<<1) + N % 10; N /= 10;}  //store reverse of N in rev
-    while (rev != 0) { pc(rev % 10 + '0'); rev /= 10;}
-    while (count--) pc('0');
-}
-
-
 int main() {
-    error("errors", 1, 2, 3, 4);
+    ll a, b, N, t;
+    string str;
+    
+    cin >> t;
+    
+    while(t--) {
+        cin >> a >> b >> N;
+        //cerr << "Guess input " << a << " " << b << " " << N << endl;
+        
+        ++a;
+        while(a <= b) {
+            ll mid = (a+b)>>1;
+            
+            cout << mid << endl;
+            cin >> str;
+            
+            if(str == "CORRECT") {
+                //cerr << "PASS " << mid << endl;
+                break;
+            }
+            else if(str == "TOO_SMALL") {
+                //cerr << str << " " << mid << endl;
+                a = mid + 1;
+            }
+            else {
+                //cerr << str << " " << mid <<  endl;
+                b = mid - 1;
+            }
+        }
+    }
+    
     return 0;
 }
