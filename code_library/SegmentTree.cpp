@@ -83,6 +83,7 @@ struct SegTreeProp {
 
 
 // Segment Tree Lazy with Propagation (MOD used)
+// Range Sum
 struct SegTreeRSQ {
     vector<ll>sum, prop;
 
@@ -145,6 +146,67 @@ struct SegTreeRSQ {
     }
 };
 
+
+// Dynamic Range Segment Tree (values can be deleted from right)
+// Resize the Segment Tree with the maximum length of value
+// Segment Tree Range Sum, Range Update, And Single point Value Change (If the last value was deleted)
+// http://codeforces.com/contest/283/problem/A
+
+// Range Sum with Carry Value
+struct SegSum {
+    vector<ll> tree, carry;
+    
+    SegSum(int sz) {
+        tree.resize(4*(sz+10), 0);
+        carry.resize(4*(sz+10), 0);
+    }
+    
+    // Update value at range/point
+    void Update(int pos, int l, int r, int x, int y, ll val) {
+        if(y < l || x > r)
+            return;
+	
+        if(x <= l && r <= y) {
+            tree[pos] += (r-l+1)*val;
+            carry[pos] += val;
+            return;
+        }
+	
+        int mid = (l+r)>>1;
+        Update(pos<<1, l, mid, x, y, val);
+        Update(pos<<1|1, mid+1, r, x, y, val);
+        tree[pos] = tree[pos<<1] + tree[pos<<1|1] + (r-l+1)*carry[pos];
+    }
+
+    // Read value at range/point
+    ll Read(int pos, int l, int r, int x, int y, ll Carry = 0) {
+        if(y < l || x > r)
+            return 0;
+	
+        if(x <= l && r <= y)
+            return tree[pos] + Carry * (r-l+1);
+
+        ll mid = (l+r)>>1;	
+        ll lft = Read(pos<<1, l, mid, x, y, Carry + carry[pos]);
+        ll rht = Read(pos<<1|1, mid+1, r, x, y, Carry + carry[pos]);
+        return lft + rht;
+    }
+
+    // Sets value at idx
+    void Set(int pos, int l, int r, int idx, ll val, ll Carry = 0) {
+        if(l == r) {
+            tree[pos] = val + (-1*Carry);   // Extra carry values are eleminated in such way
+            carry[pos] = 0;                 // that the subtraction is always the new value
+            return;
+        }
+        int mid = (l+r)>>1;
+        if(idx <= mid)
+            Set(pos<<1, l, mid, idx, val, Carry + carry[pos]);
+        else 
+            Set(pos<<1|1, mid+1, r, idx, val, Carry + carry[pos]);
+        tree[pos] = tree[pos<<1] + tree[pos<<1|1] + (r-l+1) * carry[pos];
+    }
+};
 
 
 // SegTree with Lazy Propagation (Flip Count in Range)

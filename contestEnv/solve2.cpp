@@ -1,6 +1,6 @@
 #include <bits/stdc++.h>
 using namespace std;
-#define MAX                 110000
+#define MAX                 13333333
 #define EPS                 1e-9
 #define INF                 1e7
 #define MOD                 1000000007
@@ -21,8 +21,13 @@ using namespace std;
 #define fileRead(S)         freopen(S, "r", stdin);
 #define fileWrite(S)        freopen(S, "w", stdout);
 #define Unique(X)           X.erase(unique(X.begin(), X.end()), X.end())
-#define error(args...)      { string _s = #args; replace(_s.begin(), _s.end(), ',', ' '); stringstream _ss(_s); istream_iterator<string> _it(_ss); err(_it, args); }
 
+#define isOn(S, j)          (S & (1 << j))
+#define setBit(S, j)        (S |= (1 << j))
+#define clearBit(S, j)      (S &= ~(1 << j))
+#define toggleBit(S, j)     (S ^= (1 << j))
+#define lowBit(S)           (S & (-S))
+#define setAll(S, n)        (S = (1 << n) - 1)
 
 typedef unsigned long long ull;
 typedef long long ll;
@@ -36,13 +41,62 @@ typedef pair<ll, ll> pll;
 typedef vector<pair<int, int> > vii;
 typedef vector<pair<ll, ll> >vll;
 
-void err(istream_iterator<string> it) {}
-template<typename T, typename... Args>
-void err(istream_iterator<string> it, T a, Args... args) {                                                  // Debugger error(a, b, ....)
-	cerr << *it << " = " << a << "\n";
-	err(++it, args...);
-}
 
+//int dx[] = {-1, 0, 1, 0}, dy[] = {0, 1, 0, -1};
+//int dx[] = {-1, -1, -1, 0, 0, 1, 1, 1}, dy[] = {-1, 0, 1, -1, 1, -1, 0, 1};
+//----------------------------------------------------------------------------------------------------------
 
-void dfs(int x, int y) {
+vl v1, v2, v;
+
+int main() {
+    ll n, k1, k2, x;
     
+    sf("%lld %lld %lld", &n, &k1, &k2);
+    
+    fr(i, 0, n) {
+        sf("%lld", &x);
+        v1.pb(x);
+    }
+    fr(i, 0, n) {
+        sf("%lld", &x);
+        v2.pb(x);
+    }
+    
+    fr(i, 0, n)
+        v.pb(abs(v1[i]-v2[i]));
+    
+    sort(v.begin(), v.end(), greater<ll>());
+    
+    ll Ans = 0;
+    fr(i, 0, n) {
+        if(k1 > 0 and v[i] > 0) {
+            ll t = min(k1, v[i]);
+            k1 -= t;
+            v[i] -= t;
+        }
+        if(k2 > 0 and v[i] > 0) {
+            ll t = min(k2, v[i]);
+            k2 -= t;
+            v[i] -= t;
+        }
+        Ans += v[i]*v[i];
+    }
+    
+    ll sK = k1+k2;
+    ll avg = sK/n;
+    
+    //cout << sK << " " << avg << endl;
+    
+    if(sK > 0) {
+        if(avg == 0)
+            Ans = sK;
+        else {
+            Ans = avg*avg*(n-1);
+            ll T = (avg + (sK%n));
+            Ans += T*T;
+        }
+    }
+    
+    pf("%lld\n", Ans);
+    return 0;
+}

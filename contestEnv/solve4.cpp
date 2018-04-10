@@ -1,6 +1,6 @@
 #include <bits/stdc++.h>
 using namespace std;
-#define MAX                 110000
+#define MAX                 13333333
 #define EPS                 1e-9
 #define INF                 1e7
 #define MOD                 1000000007
@@ -21,8 +21,13 @@ using namespace std;
 #define fileRead(S)         freopen(S, "r", stdin);
 #define fileWrite(S)        freopen(S, "w", stdout);
 #define Unique(X)           X.erase(unique(X.begin(), X.end()), X.end())
-#define error(args...)      { string _s = #args; replace(_s.begin(), _s.end(), ',', ' '); stringstream _ss(_s); istream_iterator<string> _it(_ss); err(_it, args); }
 
+#define isOn(S, j)          (S & (1 << j))
+#define setBit(S, j)        (S |= (1 << j))
+#define clearBit(S, j)      (S &= ~(1 << j))
+#define toggleBit(S, j)     (S ^= (1 << j))
+#define lowBit(S)           (S & (-S))
+#define setAll(S, n)        (S = (1 << n) - 1)
 
 typedef unsigned long long ull;
 typedef long long ll;
@@ -36,68 +41,73 @@ typedef pair<ll, ll> pll;
 typedef vector<pair<int, int> > vii;
 typedef vector<pair<ll, ll> >vll;
 
-void err(istream_iterator<string> it) {}
-template<typename T, typename... Args>
-void err(istream_iterator<string> it, T a, Args... args) {                                                  // Debugger error(a, b, ....)
-	cerr << *it << " = " << a << "\n";
-	err(++it, args...);
-}
 
-int dx[] = {-1, 0, 0, 1}, dy[] = {0, -1, 1, 0}, minCst, n, m;
-char g[110][110];
-bool vis[110][110];
+//int dx[] = {-1, 0, 1, 0}, dy[] = {0, 1, 0, -1};
+//int dx[] = {-1, -1, -1, 0, 0, 1, 1, 1}, dy[] = {-1, 0, 1, -1, 1, -1, 0, 1};
+//----------------------------------------------------------------------------------------------------------
 
-void dfs(int x, int y, int cst) {
-    vis[x][y] = 1;
-    
-    if(x == 0 or y == 0 or x == n-1 or y == m-1) {
-        minCst = min(cst, minCst);
-        return;
-    }
-    
-    for(int i = 0; i < 4; ++i) {
-        int X = x+dx[i];
-        int Y = y+dy[i];
-        
-        if(minCst <= cst)
-            return;
-        
-        if(X < 0 or Y < 0 or X >= n or Y >= m or vis[X][Y] or g[X][Y] == '*')
-            continue;
-        
-        if(g[X][Y] == '#')
-            dfs(X, Y, cst+1);
-        else
-            dfs(X, Y, cst);
-    }
-}
 
+vl v1, v2;
+priority_queue<ll>pq;
 
 int main() {
-    int t;
-    scanf("%d", &t);
+    ll x, n, k1, k2;
     
-    for(int Case = 1; Case <= t; ++Case) {
-        scanf("%d%d", &n, &m);
-        int p, q;
-        memset(vis, 0, sizeof vis);
-        
-        for(int i = 0; i < n; ++i)
-            for(int j = 0; j < m; ++j) {
-                sf(" %c", &g[i][j]);
-                if(g[i][j] == '$')
-                    p = i, q = j;
-            }
-        
-        minCst = 10000000;
-        dfs(p, q, 0);
-        
-        pf("Case %d: ", Case);
-        if(minCst == 10000000)
-            pf("Impossible\n");
-        else
-            pf("%d\n", minCst);
+    sf("%lld%lld%lld", &n, &k1, &k2);
+    
+    fr(i, 0, n) {
+        sf("%lld", &x);
+        v1.pb(x);
     }
+    
+    fr(i, 0, n) {
+        sf("%lld", &x);
+        v2.pb(x);
+    }
+    
+    fr(i, 0, n) {
+        ll T = abs(v1[i] - v2[i]);
+        if(T > 0) pq.push(T);
+    }
+    
+    ll TOT = k1+k2;
+    while(TOT > 0 and !pq.empty()) {
+        ll v = pq.top();
+        pq.pop();
+        
+        ll T = min(v, TOT);
+        TOT -= T;
+        v -= T;
+        
+        if(v != 0)
+            pq.push(v);
+    }
+    
+    ll Ans = 0;
+    
+    while(!pq.empty()) {
+        ll T = pq.top();
+        pq.pop();
+        Ans += T*T;
+    }
+    
+    //cout << "Ans " << Ans << endl;
+    
+    ll avg = TOT/n;
+    
+    
+    if(TOT > 0) {
+        if(avg == 0)
+            Ans = TOT;
+        else {
+            Ans = avg*avg*(n-1);
+            ll T = (avg + (TOT%n));
+            Ans += T*T;
+        }
+    }
+    
+    pf("%lld\n", Ans);
     
     return 0;
 }
+    

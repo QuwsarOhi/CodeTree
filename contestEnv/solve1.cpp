@@ -1,6 +1,6 @@
 #include <bits/stdc++.h>
 using namespace std;
-#define MAX                 200100
+#define MAX                 13333333
 #define EPS                 1e-9
 #define INF                 1e7
 #define MOD                 1000000007
@@ -21,7 +21,6 @@ using namespace std;
 #define fileRead(S)         freopen(S, "r", stdin);
 #define fileWrite(S)        freopen(S, "w", stdout);
 #define Unique(X)           X.erase(unique(X.begin(), X.end()), X.end())
-#define error(args...)      { string _s = #args; replace(_s.begin(), _s.end(), ',', ' '); stringstream _ss(_s); istream_iterator<string> _it(_ss); err(_it, args); }
 
 #define isOn(S, j)          (S & (1 << j))
 #define setBit(S, j)        (S |= (1 << j))
@@ -42,49 +41,57 @@ typedef pair<ll, ll> pll;
 typedef vector<pair<int, int> > vii;
 typedef vector<pair<ll, ll> >vll;
 
-void err(istream_iterator<string> it) {}
-template<typename T, typename... Args>
-void err(istream_iterator<string> it, T a, Args... args) {                                                  // Debugger error(a, b, ....)
-	cerr << *it << " = " << a << "\n";
-	err(++it, args...);
-}
 
-//const int dx[4][2] = {{0,1}, {0,-1}, {1,0}, {-1,0}};                                                      // Four side 
-//const int dxx[8][2] = {{0,1}, {0,-1}, {1,0}, {-1,0}, {1,1}, {1,-1}, {-1,1}, {-1,-1}};                     // Eight side
+//int dx[] = {-1, 0, 1, 0}, dy[] = {0, 1, 0, -1};
+//int dx[] = {-1, -1, -1, 0, 0, 1, 1, 1}, dy[] = {-1, 0, 1, -1, 1, -1, 0, 1};
 //----------------------------------------------------------------------------------------------------------
 
 
 int main() {
-    ll a, b, N, t;
     string str;
+    cin >> str;
     
-    cin >> t;
     
-    while(t--) {
-        cin >> a >> b >> N;
-        //cerr << "Guess input " << a << " " << b << " " << N << endl;
+    char p[] = {'a', 'b', 'c'};
+    int k = 0;
+    bool ok = true;
+    for(int i = 0; i < SIZE(str) and ok; ++i) {
         
-        ++a;
-        while(a <= b) {
-            ll mid = (a+b)>>1;
-            
-            cout << mid << endl;
-            cin >> str;
-            
-            if(str == "CORRECT") {
-                //cerr << "PASS " << mid << endl;
-                break;
-            }
-            else if(str == "TOO_SMALL") {
-                //cerr << str << " " << mid << endl;
-                a = mid + 1;
-            }
-            else {
-                //cerr << str << " " << mid <<  endl;
-                b = mid - 1;
-            }
-        }
+        
+        if(str[i] != p[k])
+            ++k;
+        
+        if(str[i] == 'a' and k != 0)
+            ok = false;
+        if(str[i] == 'b' and k != 1)
+            ok = false;
+        if(str[i] == 'c' and k != 2)
+            ok = false;
+        if(k >= 3)
+            ok = false;
     }
     
+    if(!ok) {
+        cout << "NO\n";
+        return 0;
+    }
+
+    int a= 0, b = 0, c = 0;
+    
+    for(auto it : str) {
+        if(it == 'a')
+            ++a;
+        else if(it == 'b')
+            ++b;
+        else
+            ++c;
+    }
+    
+    if((a == c or b == c) and c > 0 and a > 0 and b > 0)
+        cout << "YES\n";
+    else
+        cout << "NO\n";
+    
+    //main();
     return 0;
 }

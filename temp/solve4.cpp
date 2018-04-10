@@ -1,3 +1,9 @@
+// Codeforces
+// Sad Powers
+// http://codeforces.com/contest/955/problem/C
+
+// Number Theory
+
 #include <bits/stdc++.h>
 using namespace std;
 #define MAX                 200100
@@ -21,7 +27,6 @@ using namespace std;
 #define fileRead(S)         freopen(S, "r", stdin);
 #define fileWrite(S)        freopen(S, "w", stdout);
 #define Unique(X)           X.erase(unique(X.begin(), X.end()), X.end())
-#define error(args...)      { string _s = #args; replace(_s.begin(), _s.end(), ',', ' '); stringstream _ss(_s); istream_iterator<string> _it(_ss); err(_it, args); }
 
 #define isOn(S, j)          (S & (1 << j))
 #define setBit(S, j)        (S |= (1 << j))
@@ -42,15 +47,56 @@ typedef pair<ll, ll> pll;
 typedef vector<pair<int, int> > vii;
 typedef vector<pair<ll, ll> >vll;
 
-void err(istream_iterator<string> it) {}
-template<typename T, typename... Args>
-void err(istream_iterator<string> it, T a, Args... args) {                                                  // Debugger error(a, b, ....)
-	cerr << *it << " = " << a << "\n";
-	err(++it, args...);
-}
-
 //int dx[] = {-1, 0, 1, 0}, dy[] = {0, 1, 0, -1};
 //int dx[] = {-1, -1, -1, 0, 0, 1, 1, 1}, dy[] = {-1, 0, 1, -1, 1, -1, 0, 1};
 //----------------------------------------------------------------------------------------------------------
 
+set<ll>Set;
+vl val;
 
+void PreCal(ll lim) {
+    ll halfLim = pow(lim, 1/3.0);
+    
+    for(ll i = 2; i <= halfLim; ++i) {
+        ll T = sqrt(i);
+        
+        if(T*T == i)
+            continue;
+
+        ll L = log(1e18)/log(i);
+        T = i*i;
+        
+        for(ll p = 3, v = i*i*i; p <= L and v <= 1e18 and v > 0; v *= T, p += 2)
+            Set.insert(v);
+    }
+    
+    for(auto it : Set)
+        val.push_back(it);
+}
+
+
+ll floorSqrt(ll x) {
+    ll ret = sqrt(x);
+    if(ret*ret > x)
+        ret--;
+    return ret;
+}
+            
+
+int main() {
+    PreCal(1e18);
+    
+    ll q, l, r;
+    sf("%lld", &q);
+    
+    while(q--) {
+        sf("%lld%lld", &l, &r);
+        
+        ll pSqr = floorSqrt(r) - floorSqrt(l-1);
+        ll Ans = upper_bound(All(val), r) - lower_bound(All(val), l);
+        
+        pf("%lld\n", pSqr+Ans);
+    }
+    
+    return 0;
+}

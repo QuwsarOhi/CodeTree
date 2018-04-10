@@ -41,6 +41,19 @@ long long afterMod(string str, ll mod) {        // input as string, as it is big
 }
 
 
+// Exponent of Big numbers (N^P % M)
+// where N and P is bigger strings (both having length 10^5)
+long long bigExpo(char *N, char *P, long long M) {
+    long long base = 0, ans = 1;
+    for(int i = 0; N[i] != '\0'; ++i)
+        base = (base*10LL + N[i] - '0')%M;
+    
+    for(int j = 0; P[j] != '\0'; ++j)
+        ans = (powMod(ans, 10, M) * powMod(base, P[j]-'0', M))%M;
+    
+    return ans;
+}
+
 
 // Extended Euclud
 // a*x + b*y = gcd(a, b)

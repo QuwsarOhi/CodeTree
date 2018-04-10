@@ -1,6 +1,11 @@
+// Codeforces
+// Xor-tree
+// http://codeforces.com/problemset/problem/429/A
+// DFS
+
 #include <bits/stdc++.h>
 using namespace std;
-#define MAX                 200100
+#define MAX                 100100
 #define EPS                 1e-9
 #define INF                 1e7
 #define MOD                 1000000007
@@ -53,28 +58,56 @@ void err(istream_iterator<string> it, T a, Args... args) {                      
 //int dx[] = {-1, -1, -1, 0, 0, 1, 1, 1}, dy[] = {-1, 0, 1, -1, 1, -1, 0, 1};
 //----------------------------------------------------------------------------------------------------------
 
+vi G[MAX], Ans;
+bool cst[MAX], target[MAX];
 
-char a[100010], b[100010];
-ll m = 1000000007;
-
-ll Pow(ll N, ll P, ll M) {
-	if(P==0)
-		return 1;
-	if(!(P&1)) {
-		ll ret = Pow(N, P/2, M)%M;
-		return (ret * ret)%M;
-	}
-    return ((N%M) * (Pow(N, P-1, M)%M))%M;
+void dfs(int u, bool eFlip, bool oFlip, int level, int par) {
+    //cout << "AT " << u << endl;
+    
+    if(level%2 and oFlip)
+        cst[u] ^= 1;
+    
+    if(level%2 == 0 and eFlip)
+        cst[u] ^= 1;
+    
+    if(cst[u] != target[u]) {
+        cst[u] ^= 1;
+        Ans.pb(u);
+        if(level%2)
+            oFlip ^= 1;
+        else
+            eFlip ^= 1;
+    }
+    
+    for(auto v : G[u])
+        if(par != v)
+            dfs(v, eFlip, oFlip, level+1, u);
 }
 
 int main() {
-    scanf("%s %s", a, b);
-    ll base = 0, ans = 1;
-    for(int i = 0; a[i] != '\0'; ++i)
-        base = (base*10LL + a[i] - '0')%m;
-        
-    for(int j = 0; b[j] != '\0'; ++j)
-        ans = (Pow(ans, 10, m) * Pow(base, b[j]-'0', m))%m;
-        
-    printf("%lld\n", ans);
+    int n, u, v;
+    
+    cin >> n;
+    
+    fr(i, 1, n) {
+        cin >> u >> v;
+        G[u].pb(v);
+        G[v].pb(u);
+    }
+    
+    for(int i = 1; i <= n; ++i)
+        cin >> cst[i];
+    
+    for(int i = 1; i <= n; ++i)
+        cin >> target[i];
+    
+    dfs(1, 0, 0, 0, -1);
+    
+    
+    cout << Ans.size() << "\n";
+    for(auto it : Ans)
+        cout << it << "\n";
+    
+    return 0;
 }
+

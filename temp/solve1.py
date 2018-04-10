@@ -5,7 +5,6 @@ from itertools import *
 from fractions import *
 from datetime import *
 from math import *
-from statistics import *
 
 Input = []
 
@@ -25,39 +24,41 @@ def inputGrab():
         Input.extend(map(str, line.strip().split()))
 '''--------------------------------------------------------------------------------'''
 
+
+def Mid(l, r):
+    k = r - l
+    k = k / 2
+    return k
+
+def Cmp(elem):
+    return elem[1]
+
 def main():
-    n = int(In())
+    s = In()
+    l = Fraction(0, 1)
+    r = Fraction(1, 1)
     
-    v = []
-    for _ in range(n):
-        v.append(int(In()))
-        
-    Mode = mode(v)
-    cnt = 0
-    From = 0
-    To = 0
+    Ans = []
+    for i, d in enumerate(s):
+        #print("Present", l.numerator, l.denominator, r.numerator, r.denominator)
+        if d == 'l':
+            k = Mid(l, r)
+            r -= k
+            #print("K", k.numerator, k.denominator)
+            Ans.append((i, r))
+        else:
+            k = Mid(l, r)
+            l += k
+            #print("K", k.numerator, k.denominator)
+            Ans.append((i, l))
+        #print("New", l.numerator, l.denominator, r.numerator, r.denominator)
     
-    for i, val in enumerate(v, 1):
-        if val != Mode:
-            if val < Mode:
-                From = i
-            else:
-                To = i
-            cnt += 1
+    Ans.sort(key = Cmp)
     
-    if cnt == 2:
-        Amount = abs(v[From-1] - v[To-1])
-        if Amount%2 != 0:
-            cnt += 1
-    
-    if cnt > 2:
-        print("Unrecoverable configuration.")
-    elif cnt == 0:
-        print("Exemplary pages.")
-    else:
-        print("%d ml. from cup #%d to cup #%d." %(Amount//2, From, To))
-    
+    for x, y in Ans:
+        Out(x+1)
     
 
+    
 if __name__ == '__main__':
     main()
