@@ -113,8 +113,8 @@ bool MatchSubStr(int l, int r, vector<pll>&Hash, pll HashVal, int len) {
         pattHash.second = (HashVal.second*Power[Start].second)%mod2;
         
         pll strHash;
-        strHash.first = (Hash[End].first - Hash[Start-1].first + mod1)%mod1;
-        strHash.second = (Hash[End].second - Hash[Start-1].second + mod2)%mod2;
+        strHash.first = (Hash[End].first - (Start == 0 ? 0:Hash[Start-1].first) + mod1)%mod1;
+        strHash.second = (Hash[End].second - (Start == 0 ? 0:Hash[Start-1].second) + mod2)%mod2;
         
         if(strHash == pattHash)
             return 1;

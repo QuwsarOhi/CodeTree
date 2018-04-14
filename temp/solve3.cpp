@@ -1,8 +1,3 @@
-// Codeforces
-// Xor-tree
-// http://codeforces.com/problemset/problem/429/A
-// DFS
-
 #include <bits/stdc++.h>
 using namespace std;
 #define MAX                 100100
@@ -14,19 +9,20 @@ using namespace std;
 #define fi                  first
 #define se                  second
 #define pi                  acos(-1)
-#define sf                  scanf
 #define pf                  printf
+#define sf(XX)              scanf("%d", &XX)
+#define sfll(XX)            scanf("%lld", &XX)
 #define SIZE(a)             ((int)a.size())
 #define All(S)              S.begin(), S.end()              
 #define Equal(a, b)         (abs(a-b) < EPS)
 #define Greater(a, b)       (a >= (b+EPS))
 #define GreaterEqual(a, b)  (a > (b-EPS))
-#define fr(i, a, b)         for(register int i = (a); i < (int)(b); i++)
-#define FastRead            ios_base::sync_with_stdio(false); cin.tie(NULL);
-#define fileRead(S)         freopen(S, "r", stdin);
-#define fileWrite(S)        freopen(S, "w", stdout);
+#define FOR(i, a, b)        for(register int i = (a); i < (int)(b); i++)
+#define FastIO              ios_base::sync_with_stdio(false); cin.tie(NULL);
+#define FileRead(S)         freopen(S, "r", stdin);
+#define FileWrite(S)        freopen(S, "w", stdout);
 #define Unique(X)           X.erase(unique(X.begin(), X.end()), X.end())
-#define error(args...)      { string _s = #args; replace(_s.begin(), _s.end(), ',', ' '); stringstream _ss(_s); istream_iterator<string> _it(_ss); err(_it, args); }
+#define STOLL(X)            stoll(X, 0, 0)
 
 #define isOn(S, j)          (S & (1 << j))
 #define setBit(S, j)        (S |= (1 << j))
@@ -47,67 +43,75 @@ typedef pair<ll, ll> pll;
 typedef vector<pair<int, int> > vii;
 typedef vector<pair<ll, ll> >vll;
 
-void err(istream_iterator<string> it) {}
-template<typename T, typename... Args>
-void err(istream_iterator<string> it, T a, Args... args) {                                                  // Debugger error(a, b, ....)
-	cerr << *it << " = " << a << "\n";
-	err(++it, args...);
-}
-
 //int dx[] = {-1, 0, 1, 0}, dy[] = {0, 1, 0, -1};
 //int dx[] = {-1, -1, -1, 0, 0, 1, 1, 1}, dy[] = {-1, 0, 1, -1, 1, -1, 0, 1};
 //----------------------------------------------------------------------------------------------------------
 
-vi G[MAX], Ans;
-bool cst[MAX], target[MAX];
 
-void dfs(int u, bool eFlip, bool oFlip, int level, int par) {
-    //cout << "AT " << u << endl;
-    
-    if(level%2 and oFlip)
-        cst[u] ^= 1;
-    
-    if(level%2 == 0 and eFlip)
-        cst[u] ^= 1;
-    
-    if(cst[u] != target[u]) {
-        cst[u] ^= 1;
-        Ans.pb(u);
-        if(level%2)
-            oFlip ^= 1;
-        else
-            eFlip ^= 1;
-    }
+vi G[MAX], V;
+int Ans[MAX], dst[MAX], M[MAX];
+priority_queue<int>pq;
+
+void dfs(int u, int par) {
+    child[u] = 1;
     
     for(auto v : G[u])
-        if(par != v)
-            dfs(v, eFlip, oFlip, level+1, u);
+        if(v != par)
+            dfs(v, u);
+        
+        
 }
+
 
 int main() {
     int n, u, v;
+    sf(n);
     
-    cin >> n;
-    
-    fr(i, 1, n) {
-        cin >> u >> v;
+    int mx = -1, root = 1;
+    for(int i = 1; i < n; ++i) {
+        sf(u), sf(v);
         G[u].pb(v);
         G[v].pb(u);
+        M[v]++, M[u]++;
+        if(mx < max(M[u], M[v])) {
+            mx = max(M[u], M[v]);
+            root = (M[u] > M[v] ? u:v);
+        }
     }
     
-    for(int i = 1; i <= n; ++i)
-        cin >> cst[i];
+    dfs(root, -1, 0);
     
-    for(int i = 1; i <= n; ++i)
-        cin >> target[i];
+    cout << "ROOT " << root << endl;
+    for(auto it : V) {
+        cout << it << " = " << dst[it] << endl;
+        pq.push(dst[it]);
+    }
     
-    dfs(1, 0, 0, 0, -1);
+    Ans[1] = 1;
     
+    for(int i = 2; i <= n; ++i) {
+        int T = 0;
+        
+        if(!pq.empty()) {
+            T += pq.top();
+            pq.pop();
+            cout << i << " " << T << endl;
+        }
+        
+        if(i == 2 and !pq.empty()) {
+            T += pq.top();
+            pq.pop();
+            cout << i << " " << T << endl;
+        }
+        
+        Ans[i] = Ans[i-1]+T;
+    }
     
-    cout << Ans.size() << "\n";
-    for(auto it : Ans)
-        cout << it << "\n";
+    for(int i = 1; i <= n; ++i) {
+        pf("%d", Ans[i]);
+        if(n != i) pf(" ");
+    }
+    pf("\n");
     
     return 0;
 }
-

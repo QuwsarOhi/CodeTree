@@ -1,6 +1,6 @@
 #include <bits/stdc++.h>
 using namespace std;
-#define MAX                 200100
+#define MAX                 100100
 #define EPS                 1e-9
 #define INF                 1e7
 #define MOD                 1000000007
@@ -9,19 +9,20 @@ using namespace std;
 #define fi                  first
 #define se                  second
 #define pi                  acos(-1)
-#define sf                  scanf
 #define pf                  printf
+#define sf(XX)              scanf("%d", &XX)
+#define sfll(XX)            scanf("%lld", &XX)
 #define SIZE(a)             ((int)a.size())
 #define All(S)              S.begin(), S.end()              
 #define Equal(a, b)         (abs(a-b) < EPS)
 #define Greater(a, b)       (a >= (b+EPS))
 #define GreaterEqual(a, b)  (a > (b-EPS))
 #define fr(i, a, b)         for(register int i = (a); i < (int)(b); i++)
-#define FastRead            ios_base::sync_with_stdio(false); cin.tie(NULL);
-#define fileRead(S)         freopen(S, "r", stdin);
-#define fileWrite(S)        freopen(S, "w", stdout);
+#define FastIO              ios_base::sync_with_stdio(false); cin.tie(NULL);
+#define FileR(S)            freopen(S, "r", stdin);
+#define FileW(S)            freopen(S, "w", stdout);
 #define Unique(X)           X.erase(unique(X.begin(), X.end()), X.end())
-#define error(args...)      { string _s = #args; replace(_s.begin(), _s.end(), ',', ' '); stringstream _ss(_s); istream_iterator<string> _it(_ss); err(_it, args); }
+#define STOLL(X)            stoll(X, 0, 0)
 
 #define isOn(S, j)          (S & (1 << j))
 #define setBit(S, j)        (S |= (1 << j))
@@ -42,22 +43,53 @@ typedef pair<ll, ll> pll;
 typedef vector<pair<int, int> > vii;
 typedef vector<pair<ll, ll> >vll;
 
-void err(istream_iterator<string> it) {}
-template<typename T, typename... Args>
-void err(istream_iterator<string> it, T a, Args... args) {                                                  // Debugger error(a, b, ....)
-	cerr << *it << " = " << a << "\n";
-	err(++it, args...);
-}
-
 //int dx[] = {-1, 0, 1, 0}, dy[] = {0, 1, 0, -1};
 //int dx[] = {-1, -1, -1, 0, 0, 1, 1, 1}, dy[] = {-1, 0, 1, -1, 1, -1, 0, 1};
 //----------------------------------------------------------------------------------------------------------
 
+vi G[MAX];
+int dst[MAX];
+set<int>Leaf;
+
+int Dist(int u, int par) {
+    
+    if(dst[u] != -1)
+        return dst[u];
+    
+    int next = -1;
+    for(auto v : G[u])
+        if(par != v) {
+            int nodes = Dist(v, u);
+        
+            if(next == -1 or nodes > dst[next])
+                next = v;
+        }
+    
+    dst[u] = (next == -1 ? 1:dst[next]+1);
+    return dst[u];
+}
+
 
 int main() {
-    ll a, b;
+    int n, u, v;
     
-    cin >> a >> b;
-    cout << max(a, b) << endl;
+    sf(n);
+    
+    for(int i = 1; i < n; ++i) {
+        sf(u), sf(v);
+        G[u].pb(v);
+        G[v].pb(u);
+    }
+    
+    for(int i = 1; i <= n; ++i)
+        if(SIZE(G[i]) == 1)
+            Leaf.insert(i);
+    
+    memset(dst, -1, sizeof dst);
+    Dist(*Leaf.begin(), -1);
+    
+    for(int i = 1; i <= n; ++i)
+        cout << i << " : " << dst[i] << endl;
+    
     return 0;
 }
