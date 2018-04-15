@@ -1,6 +1,6 @@
 #include <bits/stdc++.h>
 using namespace std;
-#define MAX                 100100
+#define MAX                 510000
 #define EPS                 1e-9
 #define INF                 1e7
 #define MOD                 1000000007
@@ -17,10 +17,10 @@ using namespace std;
 #define Equal(a, b)         (abs(a-b) < EPS)
 #define Greater(a, b)       (a >= (b+EPS))
 #define GreaterEqual(a, b)  (a > (b-EPS))
-#define fr(i, a, b)         for(register int i = (a); i < (int)(b); i++)
+#define FOR(i, a, b)        for(register int i = (a); i < (int)(b); i++)
 #define FastIO              ios_base::sync_with_stdio(false); cin.tie(NULL);
-#define FileR(S)            freopen(S, "r", stdin);
-#define FileW(S)            freopen(S, "w", stdout);
+#define FileRead(S)         freopen(S, "r", stdin);
+#define FileWrite(S)        freopen(S, "w", stdout);
 #define Unique(X)           X.erase(unique(X.begin(), X.end()), X.end())
 #define STOLL(X)            stoll(X, 0, 0)
 
@@ -37,7 +37,7 @@ typedef map<int, int> mii;
 typedef map<ll, ll>mll;
 typedef map<string, int> msi;
 typedef vector<int> vi;
-typedef vector<long long>vl;
+typedef vector<ll>vl;
 typedef pair<int, int> pii;
 typedef pair<ll, ll> pll;
 typedef vector<pair<int, int> > vii;
@@ -47,49 +47,3 @@ typedef vector<pair<ll, ll> >vll;
 //int dx[] = {-1, -1, -1, 0, 0, 1, 1, 1}, dy[] = {-1, 0, 1, -1, 1, -1, 0, 1};
 //----------------------------------------------------------------------------------------------------------
 
-vi G[MAX];
-int dst[MAX];
-set<int>Leaf;
-
-int Dist(int u, int par) {
-    
-    if(dst[u] != -1)
-        return dst[u];
-    
-    int next = -1;
-    for(auto v : G[u])
-        if(par != v) {
-            int nodes = Dist(v, u);
-        
-            if(next == -1 or nodes > dst[next])
-                next = v;
-        }
-    
-    dst[u] = (next == -1 ? 1:dst[next]+1);
-    return dst[u];
-}
-
-
-int main() {
-    int n, u, v;
-    
-    sf(n);
-    
-    for(int i = 1; i < n; ++i) {
-        sf(u), sf(v);
-        G[u].pb(v);
-        G[v].pb(u);
-    }
-    
-    for(int i = 1; i <= n; ++i)
-        if(SIZE(G[i]) == 1)
-            Leaf.insert(i);
-    
-    memset(dst, -1, sizeof dst);
-    Dist(*Leaf.begin(), -1);
-    
-    for(int i = 1; i <= n; ++i)
-        cout << i << " : " << dst[i] << endl;
-    
-    return 0;
-}

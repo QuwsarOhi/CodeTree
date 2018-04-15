@@ -64,21 +64,6 @@ vector<pair<ll, ll> > doubleHash(char *s, int len, ll mod1 = 1e9+9, ll mod2 = 1e
 }
 
 
-pair<ll, ll> doubleHashPatt(string s, ll mod1 = 1e9+9, ll mod2 = 1e9+7) {
-    int p = 31;
-    ll hashVal1 = 0, hashVal2 = 0;
-    ll pPow1 = 1, pPow2 = 1;
-    
-    for(int i = 0; i < (int)s.size(); ++i) {
-        hashVal1 = (hashVal1 + (s[i] - 'a' + 1)* pPow1)%mod1;
-        hashVal2 = (hashVal2 + (s[i] - 'a' + 1)* pPow2)%mod2;
-        pPow1 = (pPow1 * p)%mod1;
-        pPow2 = (pPow2 * p)%mod2;
-    }
-    return {hashVal1, hashVal2};
-}
-
-
 // Genarates Powers
 void PowerGen(int n) {
     Power.resize(n+1);
@@ -91,7 +76,7 @@ void PowerGen(int n) {
 }
 
 // Returns Double Hash vector for a full string
-vector<pair<ll, ll> > doubleHash(string s, int len, ll mod1 = 1e9+9, ll mod2 = 1e9+7) {
+vector<pair<ll, ll> > doubleHash(string s, int len) {
     ll hashVal1 = 0, hashVal2 = 0;
     vector<pair<ll, ll> >v;
     
@@ -104,6 +89,16 @@ vector<pair<ll, ll> > doubleHash(string s, int len, ll mod1 = 1e9+9, ll mod2 = 1
     return v;
 }
 
+// Returns Double Hash
+pll doubleHashPatt(char s[], int len) {
+    ll hashVal1 = 0, hashVal2 = 0;
+    
+    for(int i = 0; i < len; ++i) {
+        hashVal1 = (hashVal1 + (s[i] - 'a' + 1)* Power[i].fi)%mod1;
+        hashVal2 = (hashVal2 + (s[i] - 'a' + 1)* Power[i].se)%mod2;
+    }
+    return {hashVal1, hashVal2};
+}
 
 // Returns True if the Hashval of length len exists in subrange [l, r] of Hash vector
 bool MatchSubStr(int l, int r, vector<pll>&Hash, pll HashVal, int len) {
