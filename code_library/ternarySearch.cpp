@@ -64,6 +64,36 @@ ll ternarySearch(ll low, ll high) {             // low must be lowest possible v
     return f((low + high)/2);
 }
 
+
+// Full Functional Ternary Search
+
+ll ternarySearch(ll low, ll high) {
+    ll ret = -INF;
+    
+    while ((high - low) > 2) {
+        ll mid1 = low + (high - low) / 3;
+        ll mid2 = high - (high - low) / 3;
+ 
+        ll cost1 = f(mid1);
+        ll cost2 = f(mid2);
+                
+        if (cost1 < cost2) {
+            low = mid1;
+            ret = max(cost2, ret);
+        }
+        else {
+            high = mid2;
+            ret = max(cost1, ret);
+        }
+    }
+
+    for(int i = low; i <= high; ++i)
+        ret = max(ret, f(i));
+    
+    return ret;
+}
+
+
 int main() {
 	return 0;
 }

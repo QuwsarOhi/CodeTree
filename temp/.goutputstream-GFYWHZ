@@ -47,27 +47,51 @@ typedef vector<pair<ll, ll> >vll;
 //int dx[] = {-1, -1, -1, 0, 0, 1, 1, 1}, dy[] = {-1, 0, 1, -1, 1, -1, 0, 1};
 //----------------------------------------------------------------------------------------------------------
 
-map<ll, ll>M;
-ll lim = 1e4;
-
-void GEN(int n) {
-    cout << n << endl;
-    srand(120);
-    FOR(i, 0, n) {
-        ll x = rand()%lim + 1;
-        if(M[x] >= 10) {
-            --i;
-            continue;
-        }
-        cout << x << " ";
-        M[x]++;
-    }
-    cout << endl;
-}
+ll dp[2][MAX], v[MAX], n;
 
 
 int main() {
-    FileWrite("out");
-    GEN(50000);
+    sf(n);
+    
+    FOR(i, 0, n)
+        sf(v[i]);
+    
+    v[n] = INF;
+    ll cnt = 0, Ans = min(2LL, n);
+    FOR(i, 0, n) {
+        if(v[i] < v[i+1])
+            dp[0][i] = ++cnt;
+        else
+            dp[0][i] = ++cnt, cnt = 0;
+        
+        cout << i << " " << dp[0][i] << endl;
+        Ans = max(Ans, dp[0][i]);
+    }
+    
+    cout << "-----------\n";
+    cnt = 0;
+    FORR(i, n-1, -1) {
+        if(v[i] < v[i+1])
+            dp[1][i] = ++cnt;
+        else
+            dp[1][i] = cnt = 1;
+        
+        cout << i << " " << dp[1][i] << endl;
+        Ans = max(Ans, dp[1][i]);
+    }
+    
+    cout << "-----------\n";
+    FOR(i, 1, n)
+        if(v[i-1]+1 < v[i+1]) {
+            Ans = max(Ans, dp[0][i-1] + dp[1][i+1] + 1);
+            //cout << i << " " << Ans << endl;
+        }
+        else
+            Ans = max(Ans, max(dp[0][i-1], dp[1][i+1])+1);
+
+        
+    pf("%lld\n", max(Ans, dp[1][1]+1));
+    main();
     return 0;
 }
+            

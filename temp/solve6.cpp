@@ -1,3 +1,6 @@
+// TO-DO LIST
+// http://codeforces.com/contest/964/problem/C
+
 #include <bits/stdc++.h>
 using namespace std;
 #define MAX                 510000
@@ -10,8 +13,7 @@ using namespace std;
 #define se                  second
 #define pi                  acos(-1)
 #define pf                  printf
-#define sf(XX)              scanf("%d", &XX)
-#define sfll(XX)            scanf("%lld", &XX)
+#define sf(XX)              scanf("%lld", &XX)
 #define SIZE(a)             ((int)a.size())
 #define All(S)              S.begin(), S.end()              
 #define Equal(a, b)         (abs(a-b) < EPS)
@@ -47,3 +49,68 @@ typedef vector<pair<ll, ll> >vll;
 //int dx[] = {-1, -1, -1, 0, 0, 1, 1, 1}, dy[] = {-1, 0, 1, -1, 1, -1, 0, 1};
 //----------------------------------------------------------------------------------------------------------
 
+ll v[MAX], n, a, b, k;
+char s[MAX];
+
+
+long long powMod(long long N, long long P, long long M) {
+	if(P==0)
+		return 1;
+	if(P%2==0) {
+		long long ret = powMod(N, P/2, M)%M;
+		return (ret * ret)%M;
+	}
+    return ((N%M) * (powMod(N, P-1, M)%M))%M;
+}
+
+
+unsigned long long Pow(unsigned long long N, unsigned long long P) {
+	if(P == 0)
+		return 1;
+	if(P % 2 == 0) {
+		unsigned long long ret = Pow(N, P/2);
+		return ret*ret;
+	}
+    return N * Pow(N, P-1);
+}
+
+
+ll F(ll i, ll N) {
+    return i + (N-1)*k;
+}
+
+
+ll BinarySearch(ll I) {
+    ll low = 0, hi = n/k+1, ret = -1;
+    
+    while(low <= hi) {
+        ll mid = (low+hi)/2;
+        
+        ll x = F(I, mid);
+        
+        if(x <= n) {
+            low = mid+1;
+            ret = max(mid, ret);
+        }
+        else
+            hi = mid-1;
+    }
+    
+    return ret;
+}
+    
+    
+
+int main() {
+    sf(n), sf(a), sf(b), sf(k);
+    
+    //scanf("%s", s);
+    
+    FOR(i, 1, k+1)
+        v[i] = BinarySearch(i);
+    
+    FOR(i, 1, k+1)
+        cout << v[i] << endl;
+    
+    return 0;
+}

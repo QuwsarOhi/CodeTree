@@ -24,23 +24,30 @@ ll hash(char *s,  int len, ll mod = 1e9+9) {
     return hashVal;
 }
 
-
-// Generates Continious single Hash Val
-vector<ll> ContHash(char *s, int len, ll mod = 1e9+9) {
-    int p = 31;
-    ll hashVal = 0;
-    ll pPow = 1;
-    vector<ll>v;
-    
-    for(int i = 0; i < len; ++i) {
-        hashVal = (hashVal + (s[i] - 'a' + 1) * pPow)%mod;
-        pPow = (pPow *p)%mod;
-        v.push_back(hashVal);
-    }
-    
-    return v;
+void PowerGen(int n) {
+    Power.resize(n);
+    Power[0] = 1;
+    for(int i = 1; i < n; ++i)
+        Power[i] = (Power[i-1] * p)%mod;
 }
 
+vl ContHash(vector<int> &s) {
+    vl H;
+    ll Hash = 0;
+    
+    for(int i = 0; i < (int)s.size(); ++i) {
+        Hash = (Hash + s[i] * Power[i])%mod;
+        H.pb(Hash);
+    }
+    return H;
+}
+
+ll SubHash(vl &Hash, ll l, ll r, ll LIM) {
+    ll H;
+    H = (Hash[r] - (l-1 >= 0 ? Hash[l-1]:0) + mod)%mod;
+    H = (H * Power[LIM-l])%mod;
+    return H;
+}
 
 // --------------- DOUBLE HASH GENERATORS ---------------
 
@@ -76,7 +83,7 @@ void PowerGen(int n) {
 }
 
 // Returns Double Hash vector for a full string
-vector<pair<ll, ll> > doubleHash(string s, int len) {
+vector<pair<ll, ll> > doubleHash(string &s, int len) {
     ll hashVal1 = 0, hashVal2 = 0;
     vector<pair<ll, ll> >v;
     
@@ -98,6 +105,17 @@ pll doubleHashPatt(char s[], int len) {
         hashVal2 = (hashVal2 + (s[i] - 'a' + 1)* Power[i].se)%mod2;
     }
     return {hashVal1, hashVal2};
+}
+
+// Produce SubString Hash
+pll SubHash(vll &Hash, ll l, ll r, ll LIM) {
+    pll H;
+    H.fi = (Hash[r].fi - (l-1 >= 0 ? Hash[l-1].fi:0) + mod1)%mod1;
+    H.se = (Hash[r].se - (l-1 >= 0 ? Hash[l-1].se:0) + mod2)%mod2;
+    
+    H.fi = (H.fi * Power[LIM-l].fi)%mod1;
+    H.se = (H.se * Power[LIM-l].se)%mod2;
+    return H;
 }
 
 // Returns True if the Hashval of length len exists in subrange [l, r] of Hash vector

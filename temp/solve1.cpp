@@ -1,6 +1,6 @@
 #include <bits/stdc++.h>
 using namespace std;
-#define MAX                 13333333
+#define MAX                 510000
 #define EPS                 1e-9
 #define INF                 1e7
 #define MOD                 1000000007
@@ -8,19 +8,21 @@ using namespace std;
 #define mp                  make_pair
 #define fi                  first
 #define se                  second
-#define PI                  acos(-1)
-#define sf                  scanf
+#define pi                  acos(-1)
 #define pf                  printf
-#define SIZE(a)             ((int)a.size())
-#define All(S)              S.begin(), S.end()              
+#define sf(XX)              scanf("%lld", &XX)
+#define SIZE(a)             ((ll)a.size())
+#define ALL(S)              S.begin(), S.end()              
 #define Equal(a, b)         (abs(a-b) < EPS)
 #define Greater(a, b)       (a >= (b+EPS))
 #define GreaterEqual(a, b)  (a > (b-EPS))
-#define fr(i, a, b)         for(register int i = (a); i < (int)(b); i++)
+#define FOR(i, a, b)        for(ll i = (a); i < (ll)(b); ++i)
+#define FORR(i, a, b)       for(ll i = (a); i > (ll)(b); --i)
 #define FastIO              ios_base::sync_with_stdio(false); cin.tie(NULL);
 #define FileRead(S)         freopen(S, "r", stdin);
 #define FileWrite(S)        freopen(S, "w", stdout);
 #define Unique(X)           X.erase(unique(X.begin(), X.end()), X.end())
+#define STOLL(X)            stoll(X, 0, 0)
 
 #define isOn(S, j)          (S & (1 << j))
 #define setBit(S, j)        (S |= (1 << j))
@@ -35,82 +37,102 @@ typedef map<int, int> mii;
 typedef map<ll, ll>mll;
 typedef map<string, int> msi;
 typedef vector<int> vi;
-typedef vector<long long>vl;
+typedef vector<ll>vl;
 typedef pair<int, int> pii;
 typedef pair<ll, ll> pll;
 typedef vector<pair<int, int> > vii;
 typedef vector<pair<ll, ll> >vll;
 
-
 //int dx[] = {-1, 0, 1, 0}, dy[] = {0, 1, 0, -1};
 //int dx[] = {-1, -1, -1, 0, 0, 1, 1, 1}, dy[] = {-1, 0, 1, -1, 1, -1, 0, 1};
 //----------------------------------------------------------------------------------------------------------
 
-vii v, o;
+const ll p = 31, mod = 1e9+7;
+vl Power, HASH;
+vi v;
+map<int, vi>IDX;
 
-pii pointRotate(pii p, pii origin) {
-    p = {p.fi - origin.fi, p.se - origin.se};
-    p = {-p.se, p.fi};
-    p = {p.fi + origin.fi, p.se + origin.se};
-    return p;
+void PowerGen(int n) {
+    Power.resize(n);
+    Power[0] = 1;
+    for(int i = 1; i < n; ++i)
+        Power[i] = (Power[i-1] * p)%mod;
 }
 
-bool isSquare(int p) {
-    int cnt = 0;
-    for(int i = p+1; i < p+4; ++i)
-        if(v[p].se == v[i].se)
-            ++cnt;
-        else if(v[p].fi == v[i].fi)
-            ++cnt;
-        else
-            cnt += ((abs(v[p].fi-v[i].fi) == abs(v[p].se - v[i].se)) || (abs(v[p].fi + v[p].se) == abs(v[i].fi + v[i].se)));
+vl ContHash(vector<int> &s) {
+    vl H;
+    ll Hash = 0;
     
-    if(cnt == 3)
-        cout << v[p].fi << " " << v[p].se << " " << v[p+1].fi << " " << v[p+1].se << " " << v[p+2].fi << " " << v[p+2].se << " " << v[p+3].fi << " " << v[p+3].se << endl;
-    return cnt == 3;
-}
-
-
-int recur(int pos, int r[]) {
-    int TOT = r[0]+r[1]+r[2]+r[3];
-    
-    if(isSquare(pos))
-        return TOT;
-    
-    if(TOT == 16)
-        return INF;
-    
-    int ret = INF;
-    for(int i = pos, j = 0; i < pos+4; ++i, ++j) {
-        for(int c = r[j]; c <= 4; ++c) {
-            pii TMP = v[pos];
-            v[pos] = pointRotate(v[pos], o[pos]);
-            r[pos]++;
-            ret = min(recur(pos, r), ret);
-            v[pos] = TMP;
-            r[pos]--;
-        }
+    for(int i = 0; i < (int)s.size(); ++i) {
+        Hash = (Hash + s[i] * Power[i])%mod;
+        H.pb(Hash);
     }
-    
-    return ret;
+    return H;
+}
+
+ll SubHash(vl &Hash, ll l, ll r, ll LIM) {
+    ll H;
+    H = (Hash[r] - (l-1 >= 0 ? Hash[l-1]:0) + mod)%mod;
+    H = (H * Power[LIM-l])%mod;
+    return H;
 }
 
 int main() {
-    int n, x, y, a, b;
-    sf("%d", &n);
+    //FileRead("out");
+    //FileWrite("out2");
+    int n, x;
     
-    for(int i = 0; i < 4*n; ++i) {
-        sf("%d%d%d%d", &x, &y, &a, &b);
-        v.pb({x, y});
-        o.pb({a, b});
+    scanf("%d", &n);
+    
+    int LIM = n+100;
+    
+    PowerGen(n+1000);
+    
+    for(int i = 0; i < n; ++i) {
+        scanf("%d", &x);
+        v.push_back(x);
+        IDX[x].push_back(i);
     }
     
+    int mx = -1;
+    for(auto it : IDX) mx = max(mx, (int)SIZE(it.se));
     
-    for(int i = 0; i < 4*n; i += 4) {
-        int T[] = {0, 0, 0, 0};
-        int ret = recur(i, T);
-        pf("%d\n", (ret == INF ? -1:ret));
+    //cout << "MAX " << mx << " " << SIZE(IDX) << endl;  
+    
+    HASH = ContHash(v);
+    priority_queue<pii>pq;
+    
+    
+    //cout << "PRECAL DONE\n";
+    
+    ll CNT = 0;
+    for(auto it = IDX.begin(); it != IDX.end(); it++) {
+        vi V = (it->se);
+        //cout << it->fi << " " << SIZE(V) << endl;
+        for(int i = 0; i < SIZE(V); ++i)
+            for(int j = i+1; j < SIZE(V); ++j) {
+                int l = V[i], r = V[j];
+                //cout << "Boundary " << l << " " << r << " CNT " << CNT << endl;
+                ++CNT;
+                if(r+r-l-1 < n and SubHash(HASH, l, r-1, LIM) == SubHash(HASH, r, r+r-l-1, LIM)) {
+                    //cout << "PB " << l << " " << r << endl;
+                    pq.push({-(r-l), -l});
+                }
+            }
     }
     
+    //cout << "PAIR DONE " << CNT << endl;
+    
+    int b = 0;
+    while(!pq.empty()) {
+        if(-pq.top().se >= b)
+            b = -pq.top().fi-pq.top().se;
+        pq.pop();
+    }
+    
+    pf("%d\n", n-b);
+    for(int i = b; i < n; ++i)
+        pf("%d ", v[i]);
+    pf("\n");
     return 0;
 }

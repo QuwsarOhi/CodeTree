@@ -2,7 +2,7 @@
 
 #include <bits/stdc++.h>
 using namespace std;
-#define MAX                 100100
+#define MAX                 510000
 #define EPS                 1e-9
 #define INF                 1e7
 #define MOD                 1000000007
@@ -12,14 +12,14 @@ using namespace std;
 #define se                  second
 #define pi                  acos(-1)
 #define pf                  printf
-#define sf(XX)              scanf("%d", &XX)
-#define sfll(XX)            scanf("%lld", &XX)
-#define SIZE(a)             ((int)a.size())
-#define All(S)              S.begin(), S.end()              
+#define sf(XX)              scanf("%lld", &XX)
+#define SIZE(a)             ((ll)a.size())
+#define ALL(S)              S.begin(), S.end()              
 #define Equal(a, b)         (abs(a-b) < EPS)
 #define Greater(a, b)       (a >= (b+EPS))
 #define GreaterEqual(a, b)  (a > (b-EPS))
-#define FOR(i, a, b)        for(register int i = (a); i < (int)(b); i++)
+#define FOR(i, a, b)        for(register int i = (a); i < (int)(b); ++i)
+#define FORR(i, a, b)       for(register int i = (a); i > (int)(b); --i)
 #define FastIO              ios_base::sync_with_stdio(false); cin.tie(NULL);
 #define FileRead(S)         freopen(S, "r", stdin);
 #define FileWrite(S)        freopen(S, "w", stdout);
@@ -39,7 +39,7 @@ typedef map<int, int> mii;
 typedef map<ll, ll>mll;
 typedef map<string, int> msi;
 typedef vector<int> vi;
-typedef vector<long long>vl;
+typedef vector<ll>vl;
 typedef pair<int, int> pii;
 typedef pair<ll, ll> pll;
 typedef vector<pair<int, int> > vii;
@@ -48,7 +48,6 @@ typedef vector<pair<ll, ll> >vll;
 //int dx[] = {-1, 0, 1, 0}, dy[] = {0, 1, 0, -1};
 //int dx[] = {-1, -1, -1, 0, 0, 1, 1, 1}, dy[] = {-1, 0, 1, -1, 1, -1, 0, 1};
 //----------------------------------------------------------------------------------------------------------
-
 
 inline void fastIn(int &num) {          // Fast IO, with space and new line ignoring
     bool neg = false;
