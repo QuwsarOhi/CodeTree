@@ -11,7 +11,6 @@ void dfs(ll node) {
     
     ll lft = node<<1, rht = node<<1|1;
     dfs(lft), dfs(rht);
-    
     ll lftSize = v[lft].size(), rhtSize = v[rht].size();
     ll nodeSize = lftSize+rhtSize+1;
     v[node].resize(nodeSize);
@@ -72,6 +71,5 @@ int main() {
         cin >> node >> k;
         cout << query(node, k) << endl;
     }
-    
     return 0;
 }
