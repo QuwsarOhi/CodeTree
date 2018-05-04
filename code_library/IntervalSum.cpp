@@ -8,11 +8,10 @@ int main() {
     sf("%lld %lld", &lim, &q);
     while(q--) {
         sf("%lld %lld %lld", &l, &r, &k);         // k is the set or remove segment command
-        //first remove the overlapping segments;
+        // first remove the overlapping segments;
         // set contains : r', l'
         // Search boundary : l, r
         // because we need to find l' and r' such that l <= r'
-        // inserting r' as first pair element because lower_bound will return first l <= r'
         // also checking l' <= r
         
         auto it = Set.lower_bound(make_pair(l, 0LL));
@@ -23,9 +22,8 @@ int main() {
             
             ll L = max(segL, l);
             ll R = min(segR, r);
-            
             sum -= (R-L+1);
-            
+      
             if(segL < l)                          // l'----l-----r----r'  or  l'----l-----r'---r
                 Set.insert({l-1, segL});
             if(segR > r)                          // l'----l-----r----r'  or  l----l'----r-----r'
@@ -34,7 +32,7 @@ int main() {
         
         if(k == 1) {                // Insertion
             sum += (r-l+1);
-            Set.insert({r, l});
+            Set.insert({r, l});     // inserting r' as first pair element because lower_bound will return first l <= r'
         }
         pf("%lld\n", lim - sum);
     }
