@@ -5,8 +5,7 @@
 #include<bits/stdc++.h>
 using namespace std;
 
-int main()
-{
+int main() {
     int n;
 
     scanf("%d", &n);
@@ -15,7 +14,6 @@ int main()
         scanf("%d", &A[i]);
 
     //Main part of the code
-
     int sum = 0, ans = 0;
     for(int i = 0; i < 9; i++) {
         sum += A[i];
