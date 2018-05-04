@@ -1,22 +1,16 @@
 // Aho-Corasick
 // Complexity : O(n+m+z)
-
 // n : Length of text
 // m : total length of all keywords
 // z : total number of occurance of word in text
 
-#include <bits/stdc++.h>
-using namespace std;
 
 const int TOTKEY = 505;                 // Total number of keywords
 const int KEYLEN = 505;                 // Size of maximum keyword
-
 const int MAXS = TOTKEY*KEYLEN + 10;    // Max number of states in the matching machine.
                                         // Should be equal to the sum of the length of all keywords.
 const int MAXC = 26;                    // Number of characters in the alphabet.
-
 bitset<TOTKEY> out[MAXS];               // Output for each state, as a bitwise mask.
-
 int f[MAXS];                            // Failure function
 int g[MAXS][MAXC];                      // Goto function, or -1 if fail.
  
@@ -36,7 +30,7 @@ int buildMatchingMachine(const vector<string> &words, char lowestChar = 'a', cha
                 g[currentState][c] = states++;
             currentState = g[currentState][c];
         }
-        out[currentState].set(i);                      // There's a match of keywords[i] at node currentState.
+        out[currentState].set(i);                           // There's a match of keywords[i] at node currentState.
     }
 
     for(int c = 0; c < MAXC; ++c)                           // State 0 should have an outgoing edge for all characters.
@@ -64,13 +58,9 @@ int buildMatchingMachine(const vector<string> &words, char lowestChar = 'a', cha
                 f[g[state][c]] = failure;
                 out[g[state][c]] |= out[failure];               // Merge out values
                 q.push(g[state][c]);
-            }
-        }
-    }
- 
+            } } }
     return states;
 }
-
 
 int findNextState(int currentState, char nextInput, char lowestChar = 'a') {
     int answer = currentState;
@@ -79,7 +69,6 @@ int findNextState(int currentState, char nextInput, char lowestChar = 'a') {
         answer = f[answer];
     return g[answer][c];
 }
-
 
 int cnt[TOTKEY];
 void Matcher(vector<string> &keywords, string &text) {
@@ -102,30 +91,22 @@ vector<string>keywords;
 
 // RETURN NUMBER OF MATHCES FOR EACH WORD APPEARING IN "KEYWORD" VECTOR
 // INPUT STRING IS "TEXT"
-
 int main() {
     int t, n;
     cin >> t;
-    
     for(int Case = 1; Case <= t; ++Case) {
-        cin >> n;
-        cin >> text;
-        
+        cin >> n >> text;
         while(n--) {
             cin >> str;
             keywords.push_back(str);
         }
-        
         buildMatchingMachine(keywords);
-
         cout << "Case " << Case << ":\n";
         Matcher(keywords, text);
         for(int i = 0; i < (int)keywords.size(); ++i)
             cout << cnt[i] << "\n";
-        
         keywords.clear();
     }
-    
     return 0;
 }
 
