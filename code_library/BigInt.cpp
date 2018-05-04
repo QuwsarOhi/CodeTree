@@ -1,36 +1,30 @@
-#include <bits/stdc++.h>
-using namespace std;
+// BigInteger By Jane Alam Jan
 
 struct Bigint {
     string a;                   // to store the digits
     int sign;                   // sign = -1 for negative numbers, sign = 1 otherwise
-
     Bigint() {}                 // default constructor
     Bigint( string b ) { (*this) = b; }           // constructor for string
 
     int size() {                // returns number of digits
         return a.size();
     }
-
     Bigint inverseSign() {      // changes the sign
         sign *= -1;
         return (*this);
     }
-
     Bigint normalize( int newSign ) {               // removes leading 0, fixes sign
         for( int i = a.size() - 1; i > 0 && a[i] == '0'; i-- )
             a.erase(a.begin() + i);
         sign = ( a.size() == 1 && a[0] == '0' ) ? 1 : newSign;
         return (*this);
     }
- 
     //--------- assignment operator
     void operator = ( string b ) {                  // assigns a string to Bigint
         a = b[0] == '-' ? b.substr(1) : b;
         reverse( a.begin(), a.end() );
         this->normalize( b[0] == '-' ? -1 : 1 );
     }
-
     //---------- conditional operators
     bool operator < ( const Bigint &b ) const {     // less than operator
         if( sign != b.sign ) return sign < b.sign;
@@ -41,11 +35,9 @@ struct Bigint {
         return false;
 
     }
-
     bool operator == ( const Bigint &b ) const {          // operator for equality
         return a == b.a && sign == b.sign;
     }
-
     // mathematical operators
     Bigint operator + ( Bigint b ) {                      // addition operator overloading
         if( sign != b.sign ) return (*this) - b.inverseSign();
@@ -57,7 +49,6 @@ struct Bigint {
         }
         return c.normalize(sign);
     }
-
     Bigint operator - ( Bigint b ) {                    // subtraction operator overloading
         if( sign != b.sign ) return (*this) + b.inverseSign();
         int s = sign; sign = b.sign = 1;
@@ -70,8 +61,7 @@ struct Bigint {
         }
         return c.normalize(s);
     }
-    
-    Bigint operator * ( Bigint b ) {                    // multiplication operator overloading
+    Bigint operator * (Bigint b) {                      // multiplication operator overloading
         Bigint c("0");
         for( int i = 0, k = a[i] - 48; i < a.size(); i++, k = a[i] - 48 ) {
             while(k--) c = c + b;                       // ith digit is k, so, we add k times
@@ -79,7 +69,6 @@ struct Bigint {
         }
         return c.normalize(sign * b.sign);
     }
-
     Bigint operator / ( Bigint b ) {                    // division operator overloading
         if( b.size() == 1 && b.a[0] == '0' ) b.a[0] /= ( b.a[0] - 48 );
         Bigint c("0"), d;
@@ -92,8 +81,7 @@ struct Bigint {
         }
         return d.normalize(dSign);
     }
-
-    Bigint operator % ( Bigint b ) { // modulo operator overloading
+    Bigint operator % ( Bigint b ) {                    // modulo operator overloading
         if( b.size() == 1 && b.a[0] == '0' ) b.a[0] /= ( b.a[0] - 48 );
         Bigint c("0");
         b.sign = 1;
@@ -104,59 +92,24 @@ struct Bigint {
         }
         return c.normalize(sign);
     }
-
     //---------------output method
     void print() {
         if( sign == -1 ) putchar('-');
         for( int i = a.size() - 1; i >= 0; i-- ) putchar(a[i]);
-    }
-
-};
-
-
+}};
 
 int main() {
     Bigint a, b, c;         // declared some Bigint variables
- 
-
     // taking Bigint input
     string input;           // string to take input
     cin >> input;           // take the Big integer as string
     a = input;              // assign the string to Bigint a
-
     cin >> input;           // take the Big integer as string
     b = input;              // assign the string to Bigint b
-
- 
+    
     // Using mathematical operators
     c = a + b;            // adding a and b
     c.print();            // printing the Bigint
     puts("");             // newline
-
-    c = a - b;            // subtracting b from a
-    c.print();            // printing the Bigint
-    puts("");             // newline
-
-    c = a * b;            // multiplying a and b
-    c.print();            // printing the Bigint
-    puts("");             // newline
-
-    c = a / b;            // dividing a by b
-    c.print();            // printing the Bigint
-    puts("");             // newline
-
-    c = a % b;            // a modulo b
-    c.print();            // printing the Bigint
-
-    puts("");             // newline
-
-    // Using conditional operators
-    if( a == b )          // checking equality
-      puts("equal");    
-    else
-      puts("not equal");
- 
-    if( a < b )           // checking less than operator
-      puts("a is smaller than b"); 
     return 0;
 }
