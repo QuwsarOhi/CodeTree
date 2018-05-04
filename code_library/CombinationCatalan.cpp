@@ -1,7 +1,7 @@
-#include<bits/stdc++.h>
-using namespace std;
+// Combination
+// Complexity O(k)
 
-long long C(int n, int k) { //Complexity O(k)
+long long C(int n, int k) { 
     long long c = 1;
     if(k > n - k)
         k = n-k;
@@ -12,9 +12,7 @@ long long C(int n, int k) { //Complexity O(k)
     return c;
 }
 
-long long catalan(int n) {    //Cat(n) = C(2*n, n)/(n+1);
+long long catalan(int n) {    // Cat(n) = C(2*n, n)/(n+1);
     long long c = C(2*n, n);
     return c/(n+1);
 }
-
-int main() {}
