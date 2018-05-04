@@ -65,20 +65,13 @@ inline void fastIn(int &num) {          // Fast IO, with space and new line igno
         num *= -1;
 }
 
-
 inline void fastOut (long long n) {
     long long N = n, rev, count = 0;
     rev = N;
-    if (N == 0) { pc('0'); return ;}
+    if (N == 0) { putchar('0'); return ;}
     while ((rev % 10) == 0) { count++; rev /= 10;}                  //obtain the count of the number of 0s
     rev = 0;
     while (N != 0) { rev = (rev<<3) + (rev<<1) + N % 10; N /= 10;}  //store reverse of N in rev
-    while (rev != 0) { pc(rev % 10 + '0'); rev /= 10;}
-    while (count--) pc('0');
-}
-
-
-int main() {
-    error("errors", 1, 2, 3, 4);
-    return 0;
+    while (rev != 0) { putchar(rev % 10 + '0'); rev /= 10;}
+    while (count--) putchar('0');
 }
