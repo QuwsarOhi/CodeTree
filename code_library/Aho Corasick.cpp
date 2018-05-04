@@ -4,7 +4,6 @@
 // m : total length of all keywords
 // z : total number of occurance of word in text
 
-
 const int TOTKEY = 505;                 // Total number of keywords
 const int KEYLEN = 505;                 // Size of maximum keyword
 const int MAXS = TOTKEY*KEYLEN + 10;    // Max number of states in the matching machine.
@@ -88,7 +87,6 @@ void Matcher(vector<string> &keywords, string &text) {
 
 string text, str;
 vector<string>keywords;
-
 // RETURN NUMBER OF MATHCES FOR EACH WORD APPEARING IN "KEYWORD" VECTOR
 // INPUT STRING IS "TEXT"
 int main() {
@@ -109,4 +107,3 @@ int main() {
     }
     return 0;
 }
-
