@@ -1,19 +1,13 @@
 // 2D KMP
 
-#include <bits/stdc++.h>
-using namespace std;
-
 unordered_map<string, int>patt;     // Clear after each Kmp2D call
 int flag = 0;                       // Set to zero before calling PrefixTable
-
-// r : Pattern row
-// c : Pattern column
+// r : Pattern row, c : Pattern column
 // table : prefix table (1D array)
 // s : Pattern String (C++ string)
-
+// Followed Felix-Halim KMP
 vector<int> PrefixTable2D(int r, int c, int table[], string s[]) {
     vector<int>Row;                 // Contains Row mapped string index
-    
     for(int i = 0; i < r; ++i) {
         if(patt.find(s[i]) == patt.end()) {
             patt[s[i]] = ++flag;
@@ -22,7 +16,6 @@ vector<int> PrefixTable2D(int r, int c, int table[], string s[]) {
         else
             Row.push_back(patt[s[i]]);
     }
-    
     table[0] = -1;
     int i = 0, j = -1;
     while(i < r) {
@@ -39,7 +32,6 @@ vector<int> PrefixTable2D(int r, int c, int table[], string s[]) {
 // Str : String (C++ String)
 // Patt : Pattern (C++ String)
 // table : Prefix table of pattern (1D array)
-
 vector<pair<int, int> > Kmp2D(int StrR, int StrC, int PattR, int PattC, string Str[], string Patt[], int table[]) {
     int mat[StrR][StrC];
     int limC = StrC - PattC;
@@ -55,7 +47,6 @@ vector<pair<int, int> > Kmp2D(int StrR, int StrC, int PattR, int PattC, string S
             else
                 mat[i][j] = patt[tmp];
         }
-    
     vector<pair<int, int> >match;                       // This will contain the starting Row & Column of matched string
     for(int c = 0; c <= limC; ++c) {                    // Scan columnwise
         int i = 0, j = 0;
@@ -69,5 +60,3 @@ vector<pair<int, int> > Kmp2D(int StrR, int StrC, int PattR, int PattC, string S
     }
     return match;
 }
-
-
