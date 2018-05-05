@@ -15,7 +15,6 @@ void dfs(int u, int par, int lvl, ll d) {           // Tracks distance as well (
             dfs(G[u][i], u, lvl+1, d+W[u][i]);
 }
 
-
 void LCAinit(int V) {
     // DFS first
     memset(parent, -1, sizeof parent);
@@ -32,11 +31,9 @@ void LCAinit(int V) {
                 sparse[u][p] = sparse[v][p-1];
 }
 
-
 int LCA(int u, int v) {
     if(level[u] > level[v])     // v is deeper
-        swap(u, v);
-    
+        swap(u, v); 
     int p = ceil(log2(level[v]));
     // Pull up v to same level as u
     for(int i = p ; i >= 0; --i)
