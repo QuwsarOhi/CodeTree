@@ -54,13 +54,11 @@ struct PalinTree {
             tmp = tree[tmp].suffixEdg;
         }
         tree[currNode].suffixEdg = tree[tmp].edge[s[idx]-'a'];
-    }
-    
+    }    
     void buildTree() {          // Builds Palindrome Tree of string s
         for(int i = 0; i < (int)s.length(); ++i)
             insert(i);
-    }
-    
+    }  
     void CalMaxLen() {
         for(int i = 3; i <= ptr; ++i)
             mxLen = max(mxLen, tree[i].end - tree[i].start);
@@ -70,8 +68,7 @@ int main() {
     PalinTree pt;
     cin >> pt.s;
     pt.buildTree();
-    
-	cout << "All distinct palindromic substring for "
+    cout << "All distinct palindromic substring for "
 		<< pt.s << " : \n";
 	for(int i=3; i<=pt.ptr; i++) {
 		cout << i-2 << ") ";
