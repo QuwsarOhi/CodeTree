@@ -1,6 +1,6 @@
 // N'th Permutation
-long long per[30] = {0};
 
+long long per[30] = {0};
 long long permute(int freq[]) {
     int cnt = 0;    
     for(int i = 0; i < 26; ++i)
@@ -12,13 +12,12 @@ long long permute(int freq[]) {
     return permutation;
 }
 
-
-string NthPermutation(string str, int n) {
+string NthPermutation(string str, int n) {    // string and numbet of permutation
     string s;
     int freq[30] = {0};    
     for(int i = 0; i < (int)str.size(); ++i)
         freq[str[i]-'a']++;   
-    if(per[0] == 0) {       // if not initialized
+    if(per[0] == 0) {                         // if not initialized
         per[0] = 1;
         for(int i = 1; i <= 25; ++i)
             per[i] = per[i-1]*i;
@@ -27,8 +26,7 @@ string NthPermutation(string str, int n) {
         return s; 
     for(int i = 0; i < (int)str.size(); ++i) {
         for(int j = 0; j < 26; ++j) {
-            if(freq[j] <= 0)
-                continue;
+            if(freq[j] <= 0) continue;
             freq[j]--;
             long long P = permute(freq);
             if(P >= n) {
@@ -39,5 +37,5 @@ string NthPermutation(string str, int n) {
                 n -= P;
                 freq[j]++;
             }}}    
-    return s;
+    return s;        // Returns empty string if not possible
 }
