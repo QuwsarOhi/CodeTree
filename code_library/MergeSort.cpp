@@ -1,16 +1,12 @@
 // MergeSort
 
-#include <bits/stdc++.h>
-using namespace std;
-
 void MergeSort(long long arr[], int l, int mid, int r) {
     int lftArrSize = mid-l+1;
     int rhtArrSize = r-mid;
     int lftArr[lftArrSize+2], rhtArr[rhtArrSize+2];
-
-    for(int i = l, j = 0; i <= mid; ++i, ++j)
-        lftArr[j] = arr[i];
     
+    for(int i = l, j = 0; i <= mid; ++i, ++j)
+        lftArr[j] = arr[i];  
     for(int i = mid+1, j = 0; i <= r; ++i, ++j)
         rhtArr[j] = arr[i];
     
