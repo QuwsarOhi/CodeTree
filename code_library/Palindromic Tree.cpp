@@ -70,10 +70,10 @@ int main() {
     pt.buildTree();
     cout << "All distinct palindromic substring for " << pt.s << " : \n";
     for(int i=3; i<=pt.ptr; i++) {
-	out << i-2 << ") ";
-		for (int j=pt.tree[i].start; j<=pt.tree[i].end; j++)
-			cout << pt.s[j];
-		cout << endl;
+	cout << i-2 << ") ";
+	for (int j=pt.tree[i].start; j<=pt.tree[i].end; j++)
+		cout << pt.s[j];
+	    cout << endl;
 	}
 	return 0;
 }
