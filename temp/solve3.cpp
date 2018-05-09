@@ -2,24 +2,21 @@
 using namespace std;
 
 string g[102];
-int cnt = 0, n, TOT;
-bool p[102][102], vis[102][102];
+int cnt = 0, n, TOT, p[102][102];
+bool vis[102][102];
 
 vector<pair<int, int> > Ans, V;
 
 void SET(int x, int y, bool v) {
     vis[x][y] = v;
     for(int i = 0; i < n; ++i) {
-        if(p[x][i] != v) {
-            if(v) cnt += 1; //cout << "ADD " << x << " " << i << endl; }
-            else cnt -= 1;
-            p[x][i] = v;
-        }
-        if(p[i][y] != v) {
-            if(v) cnt += 1; //cout << "ADD " << i << " " << y << endl; }
-            else cnt -= 1;
-            p[i][y] = v;
-        }
+        if(v and !p[x][i]) cnt += 1; //cout << "ADD " << x << " " << i << endl; }
+        else if(!v and p[x][i] == 1) cnt -= 1;
+        p[x][i] += (v ? 1:-1);
+
+        if(v and !p[i][y]) cnt += 1; //cout << "ADD " << i << " " << y << endl; }
+        else if(!v and p[i][y] == 1) cnt -= 1;
+        p[i][y] += (v ? 1:-1);
     }
 }
 
@@ -37,8 +34,11 @@ void recur(int x, int y) {
         return;
     }
     
-    if(not Ans.empty() and Ans.size() < V.size())
+    if(not Ans.empty() and Ans.size() < V.size()) {
+        V.pop_back();
+        SET(x, y, 0);
         return;
+    }
     
     for(int i = 0; i < n; ++i)
         for(int j = 0; j < n; ++j)
