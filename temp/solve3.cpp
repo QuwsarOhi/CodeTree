@@ -1,73 +1,71 @@
 #include <bits/stdc++.h>
 using namespace std;
-#define MAX                 510000
-#define EPS                 1e-9
-#define INF                 1e7
-#define MOD                 1000000007
-#define pb                  push_back
-#define mp                  make_pair
-#define fi                  first
-#define se                  second
-#define pi                  acos(-1)
-#define pf                  printf
-#define sf(XX)              scanf("%lld", &XX)
-#define SIZE(a)             ((ll)a.size())
-#define ALL(S)              S.begin(), S.end()              
-#define Equal(a, b)         (abs(a-b) < EPS)
-#define Greater(a, b)       (a >= (b+EPS))
-#define GreaterEqual(a, b)  (a > (b-EPS))
-#define FOR(i, a, b)        for(register int i = (a); i < (int)(b); ++i)
-#define FORR(i, a, b)       for(register int i = (a); i > (int)(b); --i)
-#define FastIO              ios_base::sync_with_stdio(false); cin.tie(NULL);
-#define FileRead(S)         freopen(S, "r", stdin);
-#define FileWrite(S)        freopen(S, "w", stdout);
-#define Unique(X)           X.erase(unique(X.begin(), X.end()), X.end())
-#define STOLL(X)            stoll(X, 0, 0)
 
-#define isOn(S, j)          (S & (1 << j))
-#define setBit(S, j)        (S |= (1 << j))
-#define clearBit(S, j)      (S &= ~(1 << j))
-#define toggleBit(S, j)     (S ^= (1 << j))
-#define lowBit(S)           (S & (-S))
-#define setAll(S, n)        (S = (1 << n) - 1)
+string g[102];
+int cnt = 0, n, TOT;
+bool p[102][102];
 
-typedef unsigned long long ull;
-typedef long long ll;
-typedef map<int, int> mii;
-typedef map<ll, ll>mll;
-typedef map<string, int> msi;
-typedef vector<int> vi;
-typedef vector<ll>vl;
-typedef pair<int, int> pii;
-typedef pair<ll, ll> pll;
-typedef vector<pair<int, int> > vii;
-typedef vector<pair<ll, ll> >vll;
+vector<pair<int, int> > Ans, V;
 
-//int dx[] = {-1, 0, 1, 0}, dy[] = {0, 1, 0, -1};
-//int dx[] = {-1, -1, -1, 0, 0, 1, 1, 1}, dy[] = {-1, 0, 1, -1, 1, -1, 0, 1};
-//----------------------------------------------------------------------------------------------------------
-
-map<ll, ll>M;
-ll lim = 1e4;
-
-void GEN(int n) {
-    cout << n << endl;
-    srand(120);
-    FOR(i, 0, n) {
-        ll x = rand()%lim + 1;
-        if(M[x] >= 10) {
-            --i;
-            continue;
+void SET(int x, int y, bool v) {
+    for(int i = 0; i < n; ++i) {
+        if(p[x][i] != v) {
+            if(v) cnt += 1;
+            else cnt -= 1;
+            p[x][i] = v;
         }
-        cout << x << " ";
-        M[x]++;
+        if(p[i][y] != v) {
+            if(v) cnt += 1;
+            else cnt -= 1;
+            p[i][y] = v;
+        }
     }
-    cout << endl;
 }
 
 
+void recur(int x, int y) {
+    cout << x << " " << y << " " << cnt << endl;
+     
+    if(cnt == TOT) {
+        cout << "ANS SIZE " << V.size() << endl;
+        if(Ans.empty() or Ans.size() > V.size())
+            Ans = V;
+        return;
+    }
+    
+    if(not Ans.empty() and Ans.size() < V.size())
+        return;
+    
+    V.push_back({x, y});
+    SET(x, y, 1);
+    
+    for(int i = 0; i < n; ++i)
+        for(int j = 0; j < n; ++j)
+            if(!p[i][j] and g[i][j] != 'E')
+                recur(i, j);
+    
+    V.pop_back();
+    SET(x, y, 0);
+    
+    cout << "Fall\n";
+    getchar();
+}
+
 int main() {
-    FileWrite("out");
-    GEN(50000);
+    cin >> n;
+    TOT = n*n;
+    
+    for(int i = 0; i < n; ++i)
+        cin >> g[i];
+    
+    for(int i = 0; i < n; ++i)
+        for(int j = 0; j < n; ++j)
+            if(g[i][j] != 'E') {
+                cout << "NEW START " << i << " " << j << endl;
+                recur(i, j);
+            }
+    
+    for(auto it : Ans)
+        cout << it.first << " " << it.second << endl;
     return 0;
 }

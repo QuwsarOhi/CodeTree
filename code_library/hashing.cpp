@@ -24,28 +24,40 @@ ll hash(char *s,  int len, ll mod = 1e9+9) {
     return hashVal;
 }
 
+vl Hash(char *s, int len) {
+    ll hashVal = 0;
+    vector<ll>v;
+    
+    for(int i = 0; i < len; ++i) {
+        hashVal = (hashVal + (s[i] - 'a' + 1)* Power[i])%mod;
+        v.push_back(hashVal);
+    }
+    return v;
+}
+
+bool MATCH(pll a, pll b) {
+    while(a.fi <= a.se) {
+        if(s1[a.fi] != s2[b.fi])
+            return 0;
+        a.fi++, b.fi++;
+    }
+    return 1;
+}
+
 void PowerGen(int n) {
-    Power.resize(n);
+    Power.resize(n+1);
     Power[0] = 1;
+    
     for(int i = 1; i < n; ++i)
         Power[i] = (Power[i-1] * p)%mod;
 }
 
-vl ContHash(vector<int> &s) {
-    vl H;
-    ll Hash = 0;
-    
-    for(int i = 0; i < (int)s.size(); ++i) {
-        Hash = (Hash + s[i] * Power[i])%mod;
-        H.pb(Hash);
-    }
-    return H;
-}
 
 ll SubHash(vl &Hash, ll l, ll r, ll LIM) {
     ll H;
     H = (Hash[r] - (l-1 >= 0 ? Hash[l-1]:0) + mod)%mod;
     H = (H * Power[LIM-l])%mod;
+    
     return H;
 }
 
@@ -53,7 +65,7 @@ ll SubHash(vl &Hash, ll l, ll r, ll LIM) {
 
 
 // Generates Hash of entire string without PowerGen func
-vector<pair<ll, ll> > doubleHash(char *s, int len, ll mod1 = 1e9+9, ll mod2 = 1e9+7) {
+vector<pair<ll, ll> > doubleHash(char *s, int len, ll mod1 = 1e9+7, ll mod2 = 1e9+9) {
     int p = 31;
     ll hashVal1 = 0, hashVal2 = 0;
     ll pPow1 = 1, pPow2 = 1;
@@ -83,28 +95,16 @@ void PowerGen(int n) {
 }
 
 // Returns Double Hash vector for a full string
-vector<pair<ll, ll> > doubleHash(string &s, int len) {
+vll doubleHash(char *s, int len) {
     ll hashVal1 = 0, hashVal2 = 0;
-    vector<pair<ll, ll> >v;
-    
-    for(int i = 0; i < len; ++i) {
-        hashVal1 = (hashVal1 + (s[i] - 'a' + 1)* Power[i].first)%mod1;
-        hashVal2 = (hashVal2 + (s[i] - 'a' + 1)* Power[i].second)%mod2;
-        v.push_back({hashVal1, hashVal2});
-    }
-    
-    return v;
-}
-
-// Returns Double Hash
-pll doubleHashPatt(char s[], int len) {
-    ll hashVal1 = 0, hashVal2 = 0;
+    vector<pll>v;
     
     for(int i = 0; i < len; ++i) {
         hashVal1 = (hashVal1 + (s[i] - 'a' + 1)* Power[i].fi)%mod1;
         hashVal2 = (hashVal2 + (s[i] - 'a' + 1)* Power[i].se)%mod2;
+        v.push_back({hashVal1, hashVal2});
     }
-    return {hashVal1, hashVal2};
+    return v;
 }
 
 // Produce SubString Hash
