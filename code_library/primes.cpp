@@ -8,7 +8,6 @@ vector<long long>primes;
 void sieve(unsigned long long N) {
     isPrime.set();
     isPrime[0] = isPrime[1] = 0;
-
     unsigned long long lim = sqrt(N) + 5;
     for(unsigned long long i = 2; i <= lim; i++) {      // change lim to N, if all primes in range N is needed
         if(isPrime[i])
@@ -41,9 +40,8 @@ vector<pair<ull, ull> > primeFactor(ull n) {
 	return factor;
 }
 
-// Returns the divisors
-vector<unsigned long long>divisor;
-void divisors(unsigned long long n) {
+vector<unsigned long long>divisor;		
+void divisors(unsigned long long n) {					// Returns the divisors
     unsigned long long lim = sqrt(n);
     for(unsigned long long i = 2; i <= lim; i++) {		//deal with 1 and n manually
         if(n % i == 0) {
