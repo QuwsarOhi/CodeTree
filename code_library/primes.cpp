@@ -105,9 +105,7 @@ unsigned long long sumPF(long long n) {		//returns sum of prime factors
 	return sum;
 }
 
-
-//-------------------------------------------------------------
-// Fast Factorization using Sieve-Like algorithm
+//---------------------------Fast Factorization using Sieve-Like algorithm----------------------------------
 bitset<10001000>isPrime;
 int divisor[10000100];
 
@@ -131,4 +129,4 @@ vector<int> factorize(long long x) {    // This function only iterates over the 
     }}
     return factor;
 }
-//-------------------------------------------------------------
+//-----------------------------------------------------------------------------------------------------------
