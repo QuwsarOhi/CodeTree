@@ -1,35 +1,38 @@
 #include <bits/stdc++.h>
+#define M 1000000009
 using namespace std;
+typedef unsigned long long ull;
 
-int N, K, P, v[20100];
+ull dp[1000010];
 
-int V(int l, int r) {
-    if(l)
-        return v[r] - v[l-1];
-    return v[r];
-}
-
-int recur(int k, int i) {
-    if(k == 0)
-        return V(0, i);
-    
-    int ret = -1;
-    for(int j = 0; j < i; ++j)
-        ret = max(recur(k-1, j) + V(j+1, i), ret);
-    
-    return ret;
-}
+map<ull, int>Map;
 
 int main() {
-    cin >> N >> K >> P;
+    ull n, cnt = 0;
     
-    for(int i = 0; i < N; ++i) {
-        cin >> v[i];
-        v[i] %= P;
-        if(i) v[i] = (v[i] + v[i-1])%P;
-        cout << v[i] << endl;
+    dp[1] = 0, dp[2] = 1, dp[3] = 2;
+    for(int i = 4; i < 1000000; ++i) {
+        dp[i] = (dp[i-1]%M + dp[i-2]%M + dp[i-3]%M) % M;
+        cout << dp[i] << " " << i << endl;
+        if(Map.find(dp[i]) != Map.end()) {
+            ++cnt;
+            if(cnt == 10) {
+                cout << "Same on " << Map[dp[i]] << endl;
+                getchar();
+            }
+        }
+        else {
+            cnt = 0;
+            Map[dp[i]] = i;
+        }
+        //getchar();
+    }
+        
+    while(scanf("%llu", &n)) {
+        if(!n) break;
+        
+        cout << dp[n] << endl;
     }
     
-    cout << recur(K, N-1) << endl;
     return 0;
 }
