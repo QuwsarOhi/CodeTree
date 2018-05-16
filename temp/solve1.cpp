@@ -1,104 +1,85 @@
-// UVa
-// 164 - String Computer
 #include <bits/stdc++.h>
-#define INF 1e7
 #define mp make_pair
 using namespace std;
 
-int dp[30][30], l1, l2;
-char s1[30], s2[30];
+map<string, int>Map;
+vector<string>Remap;
+
+int cnt = 0, p = 0, v[2][120], dp[120][120], l[2];
+
+int Mapper(string str) {
+    if(Map.find(str) == Map.end()) {
+        Remap.push_back(str); 
+        return Map[str] = cnt++;
+    }
+    return Map[str];
+}
+
+void grabber() {
+    string str;
+    int i = 0;
+    while(1) {
+        getline(cin, str);
+        stringstream ss;
+        ss << str;
+        
+        while(ss >> str) {
+            if(str[0] == '#') {
+                l[p] = i;
+                cout << endl;
+                return;
+            }
+            v[p][i++] = Mapper(str);
+            cout << v[p][i-1] << " ";
+        }
+    }
+}
 
 int recur(int p1, int p2) {
-    if(dp[p1][p2] != INF)
+    if(p1 == l[0] or p2 == l[1])
+        return dp[p1][p2] = 0;
+    
+    if(dp[p1][p2] != -1)
         return dp[p1][p2];
     
-    if(p1 == l1 or p2 == l2) {
-        if(p1 < l1) return dp[p1][p2] = recur(p1+1, p2)+1;
-        if(p2 < l2) return dp[p1][p2] = recur(p1, p2+1)+1;
-        return dp[p1][p2] = 0;
-    }
+    if(v[0][p1] == v[1][p2])
+        return dp[p1][p2] = recur(p1+1, p2+1)+1;
     
-    if(s1[p1] == s2[p2])
-        return dp[p1][p2] = recur(p1+1, p2+1);
-    
-    return dp[p1][p2] = min(recur(p1+1, p2+1), min(recur(p1+1, p2), recur(p1, p2+1)))+1;    // change, delete, insert
+    return dp[p1][p2] = max(recur(p1+1, p2), recur(p1, p2+1));
 }
 
-
-void dpPrint(int r, int c) {
-    for(int i = 0; i < r; ++i, printf("\n"))
-        for(int j = 0; j < c; ++j)
-            printf("%3d", dp[i][j]);
-    printf("\n");
-}
-
-
-void dPrint(int d) {
-    ++d;
-    if(d < 10)
-        printf("0%d", d);
-    else
-        printf("%d", d);
-}
-
-
+bool first = 1;
 void dfs(int p1, int p2) {
-    if(dp[p1][p2] == 0) {
-        printf("E\n");
+    cout << "\nAT " << p1 << " " << p2 << " " << dp[p1][p2] << endl;
+    if(dp[p1][p2] <= 0)
         return;
-    }
-    if(s1[p1] == s2[p2]) {
+    
+    if(!first) cout << " ";
+    if(v[0][p1] == v[1][p2]) {
+        first = 0;
+        cout << Remap[v[0][p1]];
         dfs(p1+1, p2+1);
         return;
     }
     
-    
-    int P = min(mp(dp[p1+1][p2], 1), min(mp(dp[p1][p2+1], 2), mp(dp[p1+1][p2+1], 3))).second;
-    
-    
-    if(P == 1) {        // delete
-        printf("D%c", s1[p1]);
-        dPrint(p2);
+    int P = max(mp(dp[p1+1][p2+1], 1), min(mp(dp[p1+1][p2], 2), mp(dp[p1][p2+1], 3))).second;
+    if(P == 1)
+        dfs(p1+1, p2+1);
+    else if(P == 2)
         dfs(p1+1, p2);
-    }
-    else if(P == 2) {   // insert
-        printf("I%c", s2[p2]);
-        dPrint(p2);
+    else
         dfs(p1, p2+1);
-    }
-    else {              // match, change
-        if(s1[p1] != s2[p2]) {
-            printf("C%c", s2[p2]);
-            dPrint(p2);
-        }
-        dfs(p1+1, p2+1);
-    }
 }
 
 
 int main() {
-    //freopen("in", "r", stdin);
-    //freopen("out", "w", stdout);
+    grabber();
+    ++p;
+    grabber();
     
-    while(1) {
-        scanf("%s", s1);
-        l1 = strlen(s1);
-        
-        if(l1 == 1 and s1[0] == '#')
-            break;
-        
-        scanf("%s", s2);
-        l2 = strlen(s2);
-    
-        for(int i = 0; i < 30; ++i)
-            for(int j = 0; j < 30; ++j)
-                dp[i][j] = INF;
-    
-        
-        recur(0, 0);
-        //printf("COST %d\n", recur(0, 0));
-        //dpPrint(6, 6);
-        dfs(0, 0);
-    }
+    memset(dp, -1, sizeof dp);
+    cout << l[0] << " " << l[1] << endl;
+    cout << recur(0, 0) << endl;
+    dfs(0, 0);
     return 0;
 }
