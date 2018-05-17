@@ -1,3 +1,6 @@
+// UVa
+// 531 - Compromise
+
 #include <bits/stdc++.h>
 #define mp make_pair
 using namespace std;
@@ -18,17 +21,12 @@ int Mapper(string str) {
 int grabber() {
     string str;
     int i = 0;
-    while(getline(cin, str)) {
-        stringstream ss;
-        ss << str;
-        
-        while(ss >> str) {
-            if(str[0] == '#') {
-                l[p] = i;
-                return 1;
-            }
-            v[p][i++] = Mapper(str);
+    while(cin >> str) {
+        if(str == "#") {
+            l[p] = i;
+            return 1;
         }
+        v[p][i++] = Mapper(str);
     }
     return 0;
 }
@@ -47,7 +45,6 @@ int recur(int p1, int p2) {
 }
 
 void dfs(int p1, int p2, bool first) {
-    //cout << "\nAT " << p1 << " " << p2 << " " << dp[p1][p2] << endl;
     if(dp[p1][p2] <= 0)
         return;
     
@@ -70,16 +67,16 @@ void dfs(int p1, int p2, bool first) {
 
 
 int main() {
-    //freopen("in", "r", stdin);
-    //freopen("out", "w", stdout);
-    
     while(grabber()) {
         ++p;
-        grabber();
+        if(!grabber())
+            break;
+        
         memset(dp, -1, sizeof dp);
         recur(0, 0);
         dfs(0, 0, 1);
-        p = 0;
+
+        cnt = p = l[0] = l[1] = 0;
         Map.clear();
         Remap.clear();
         cout << "\n";

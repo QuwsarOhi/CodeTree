@@ -1,35 +1,34 @@
 #include <bits/stdc++.h>
 using namespace std;
 
+char s[2000];
+int dp[1010][1010];
+
+int recur(int l, int r) {
+    if(l > r)
+        return 1e7;
+    
+    if(dp[l][r] != -1)
+        return dp[l][r];
+    if(l == r)
+        return 0;
+    else if(l+1 == r)
+        return s[l] != s[r];
+    else if(s[l] == s[r])
+        return dp[l][r] = recur(l+1, r-1);
+    else
+        return dp[l][r] = min(recur(l+1, r), min(recur(l, r-1), recur(l+1, r-1)))+1;
+}
+
+
 int main() {
-    //freopen("in", "r", stdin);
+    int t;
+    scanf("%d", &t);
     
-    int N, K, M, v[20100];
-    scanf("%d%d%d", &N, &K, &M);
-    
-    for(int i = 1; i <= N; ++i) {
-        scanf("%d", &v[i]);
-        v[i] %= M;
+    for(int Case = 1; Case <= t; ++Case) {
+        scanf("%s", s);
+        memset(dp, -1, sizeof dp);
+        printf("Case %d: %d\n", Case, recur(0, strlen(s)-1));
     }
-    
-    
-    int pst = 1, Ans = 0;
-    for(int k = 1; k <= K; ++k) {
-        int sum = 0, best = 0, pos = -1;
-        
-        cout << "PST " << pst << " LIM " << N-K+k << endl;
-        
-        for(int i = pst; i <= N-K+k; ++i) {
-            sum = (sum + v[i]) % M;
-            if(sum > best or k == K)
-                pos = i, best = sum;
-        }
-        
-        Ans += best;
-        cout << pst << " to " << pos << endl;
-        pst = pos+1;
-    }
-    
-    printf("%d\n", Ans);
     return 0;
 }
