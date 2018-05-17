@@ -15,24 +15,22 @@ int Mapper(string str) {
     return Map[str];
 }
 
-void grabber() {
+int grabber() {
     string str;
     int i = 0;
-    while(1) {
-        getline(cin, str);
+    while(getline(cin, str)) {
         stringstream ss;
         ss << str;
         
         while(ss >> str) {
             if(str[0] == '#') {
                 l[p] = i;
-                cout << endl;
-                return;
+                return 1;
             }
             v[p][i++] = Mapper(str);
-            cout << v[p][i-1] << " ";
         }
     }
+    return 0;
 }
 
 int recur(int p1, int p2) {
@@ -48,38 +46,44 @@ int recur(int p1, int p2) {
     return dp[p1][p2] = max(recur(p1+1, p2), recur(p1, p2+1));
 }
 
-bool first = 1;
-void dfs(int p1, int p2) {
-    cout << "\nAT " << p1 << " " << p2 << " " << dp[p1][p2] << endl;
+void dfs(int p1, int p2, bool first) {
+    //cout << "\nAT " << p1 << " " << p2 << " " << dp[p1][p2] << endl;
     if(dp[p1][p2] <= 0)
         return;
     
-    if(!first) cout << " ";
     if(v[0][p1] == v[1][p2]) {
+        if(!first) cout << " ";
         first = 0;
         cout << Remap[v[0][p1]];
-        dfs(p1+1, p2+1);
+        dfs(p1+1, p2+1, 0);
         return;
     }
     
-    int P = max(mp(dp[p1+1][p2+1], 1), min(mp(dp[p1+1][p2], 2), mp(dp[p1][p2+1], 3))).second;
+    int P = max(mp(dp[p1+1][p2+1], 1), max(mp(dp[p1+1][p2], 2), mp(dp[p1][p2+1], 3))).second;
     if(P == 1)
-        dfs(p1+1, p2+1);
+        dfs(p1+1, p2+1, first);
     else if(P == 2)
-        dfs(p1+1, p2);
+        dfs(p1+1, p2, first);
     else
-        dfs(p1, p2+1);
+        dfs(p1, p2+1, first);
 }
 
 
 int main() {
-    grabber();
-    ++p;
-    grabber();
+    //freopen("in", "r", stdin);
+    //freopen("out", "w", stdout);
     
-    memset(dp, -1, sizeof dp);
-    cout << l[0] << " " << l[1] << endl;
-    cout << recur(0, 0) << endl;
-    dfs(0, 0);
+    while(grabber()) {
+        ++p;
+        grabber();
+        memset(dp, -1, sizeof dp);
+        recur(0, 0);
+        dfs(0, 0, 1);
+        p = 0;
+        Map.clear();
+        Remap.clear();
+        cout << "\n";
+    }
+    
     return 0;
 }
