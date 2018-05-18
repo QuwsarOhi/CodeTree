@@ -1,23 +1,31 @@
 //-----------------------String DP-----------------------
-int palindrom(int l, int r) {       // Find size of longest palindrome
-    if(dp[l][r] != -1)
-        return dp[l][r];
-    else if(l == r)                 //if the middle point reached (odd length of a string)
-        return dp[l][r] = 1;
-    else if(l+1 == r) {             //if the two points are middle (even length of a string)
-        if(S[l] == S[r])
-            return dp[l][r] = 2;    //if matches, we can take them both
-        else
-            return dp[l][r] = 1;    //else we can take only one of them
+int recur(int l, int r) {               // Building Palindrome in minimum move
+    if(dp[l][r] != INF) return dp[l][r];
+    if(l >= r)          return dp[l][r] = 0;
+    if(l+1 == r)        return dp[l][r] = (s[l] != s[r]);
+    if(s[l] == s[r])    return dp[l][r] = recur(l+1, r-1);
+    return dp[l][r] = min(recur(l+1, r), recur(l, r-1))+1;      // Adding a alphabet on right, left
+}
+
+void dfs(int l, int r) {                // Palindrome printing, for above DP function
+    if(l > r) return;
+    if(s[l] == s[r]) {
+        Palin.push_back(s[l]);
+        dfs(l+1, r-1);
+        if(l != r) Palin.push_back(s[l]);
+        return;
+    }
+    int P = min(make_pair(dp[l+1][r], 1), make_pair(dp[l][r-1], 2)).second;
+    if(P == 1) {
+        Palin.push_back(s[l]);
+        dfs(l+1, r);
+        Palin.push_back(s[l]);
     }
     else {
-        if(S[l] == S[r])            //if the first and the last character is matched, then we can take them both and go deeper
-            dp[l][r] = 2 + palindrom(l+1, r-1);
-        else                        //else we will search for the best choice
-            dp[l][r] = max(palindrom(l+1, r), palindrom(l, r-1));
-    }
-    return dp[l][r];
-}
+        Palin.push_back(s[r]);
+        dfs(l, r-1);
+        Palin.push_back(s[r]);
+}}
 
 int recur(int p1, int p2) {         // make string s1 like s2, in minimum move
     if(dp[p1][p2] != INF)
