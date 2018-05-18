@@ -1,38 +1,39 @@
 #include <bits/stdc++.h>
-#define M 1000000009
 using namespace std;
-typedef unsigned long long ull;
 
-ull dp[1000010];
+char s[100];
+long long dp[61][61], len;
 
-map<ull, int>Map;
-
-int main() {
-    ull n, cnt = 0;
+long long palinCount(int l, int r) {
+    //cout << l << " -- " << r << endl;
+    if(l == r)
+        return 1;
     
-    dp[1] = 0, dp[2] = 1, dp[3] = 2;
-    for(int i = 4; i < 1000000; ++i) {
-        dp[i] = (dp[i-1]%M + dp[i-2]%M + dp[i-3]%M) % M;
-        cout << dp[i] << " " << i << endl;
-        if(Map.find(dp[i]) != Map.end()) {
-            ++cnt;
-            if(cnt == 10) {
-                cout << "Same on " << Map[dp[i]] << endl;
-                getchar();
+    if(dp[l][r] != -1) {
+        //cout << "HIT" << endl;
+        return dp[l][r];
+    }
+    
+    int ret = 0;
+    for(int i = l; i <= r; ++i)
+        for(int j = r; j >= i; --j)
+            if(s[i] == s[j]) {
+                if(i+1 <= j-1)
+                    ret += palinCount(i+1, j-1)+1;
+                else
+                    ret += 1;
             }
-        }
-        else {
-            cnt = 0;
-            Map[dp[i]] = i;
-        }
-        //getchar();
-    }
-        
-    while(scanf("%llu", &n)) {
-        if(!n) break;
-        
-        cout << dp[n] << endl;
-    }
+    return dp[l][r] = ret;
+}
     
+int main() {
+    int t;
+    scanf("%d", &t);
+    while(t--) {
+        scanf("%s", s);
+        len = strlen(s);
+        memset(dp, -1, sizeof dp);
+        printf("%lld\n", palinCount(0, len-1));
+    }
     return 0;
 }
