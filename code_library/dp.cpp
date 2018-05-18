@@ -22,7 +22,7 @@ int palindrom(int l, int r) {       // Find size of longest palindrome
 int recur(int p1, int p2) {         // make string s1 like s2, in minimum move
     if(dp[p1][p2] != INF)
         return dp[p1][p2];
-    if(p1 == l1 or p2 == l2) {
+    if(p1 == l1 or p2 == l2) {      // reached end of string s1 or s2
         if(p1 < l1) return dp[p1][p2] = recur(p1+1, p2)+1;
         if(p2 < l2) return dp[p1][p2] = recur(p1, p2+1)+1;
         return dp[p1][p2] = 0;
