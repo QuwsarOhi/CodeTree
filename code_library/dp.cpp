@@ -1,10 +1,10 @@
 //-----------------------String DP-----------------------
-int recur(int l, int r) {               // Building Palindrome in minimum move
+int Palindrome(int l, int r) {               // Building Palindrome in minimum move
     if(dp[l][r] != INF) return dp[l][r];
     if(l >= r)          return dp[l][r] = 0;
     if(l+1 == r)        return dp[l][r] = (s[l] != s[r]);
-    if(s[l] == s[r])    return dp[l][r] = recur(l+1, r-1);
-    return dp[l][r] = min(recur(l+1, r), recur(l, r-1))+1;      // Adding a alphabet on right, left
+    if(s[l] == s[r])    return dp[l][r] = Palindrome(l+1, r-1);
+    return dp[l][r] =   min(Palindrome(l+1, r), Palindrome(l, r-1))+1;      // Adding a alphabet on right, left
 }
 
 void dfs(int l, int r) {                // Palindrome printing, for above DP function
@@ -26,6 +26,13 @@ void dfs(int l, int r) {                // Palindrome printing, for above DP fun
         dfs(l, r-1);
         Palin.push_back(s[r]);
 }}
+
+bool isPalindrome(int l, int r) {       // Checks if substring l-r is palindrome
+    if(l == r || l > r)     return 1;
+    if(dp[l][r] != -1)      return dp[l][r];
+    if(s[l] == s[r])        return dp[l][r] = isPalindrome(l+1, r-1);
+    return 0;
+}
 
 int recur(int p1, int p2) {         // make string s1 like s2, in minimum move
     if(dp[p1][p2] != INF)
