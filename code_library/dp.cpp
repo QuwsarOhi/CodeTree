@@ -61,6 +61,26 @@ void dfs(int p1, int p2) {          // printing function for above dp
     else            dfs(p1+1, p2+1);            // change s1[p2] to s2[p2] on position p2 of string s1       
 }
 
+int reduce(int l, int r) {              // Reduce string AXDOODOO (len : 8) to AX(DO^2)^2 (len : 4)
+    if(l > r)           return INF;
+    if(l == r)          return 1;
+    if(dp[l][r] != -1)  return dp[l][r];
+    int ret = r-l+1;
+    int len = ret;
+    for(int i = l; i < r; ++i)          // A B D O O D O O   remove A X substring
+        ret = min(ret, reduce(l, i)+reduce(i+1, r));
+    for(int d = 1; d < len; ++d) {      // D O O D O O  to check all divisable length substring
+        if(len%d != 0)  continue;
+        for(int i = l+d; i <= r; i += d)
+            for(int k = 0; k < d; ++k)
+                if(s[l+k] != s[i+k])
+                    goto pass;
+        ret = min(ret, reduce(l, l+d-1));
+        pass:;
+    }
+    return dp[l][r] = ret;
+}
+
 //-----------------------Digit DP-----------------------
 
 // Complexity : O(10*idx*sum*tight)     : LightOJ 1068
