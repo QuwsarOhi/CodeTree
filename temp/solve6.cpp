@@ -1,3 +1,7 @@
+// UVa
+// 186 - Trip Routing
+// All pair shortest path / Single source shortest path
+
 #include <bits/stdc++.h>
 #define MAX 150
 using namespace std;
@@ -34,14 +38,11 @@ int ConvRoute(string &s) {
 
 void Parse(string &s) {
     string ss;
-    //cout << "GOT " << s << endl;
     int w = 0, PP = 0, u = -1, v = -1, r = -1;
     for(auto it : s) {
         if(it == ',') {
-            if(PP == 0) {
-                //cout << ss << endl;
+            if(PP == 0)
                 u = ConvName(ss);
-            }
             else if(PP == 1)
                 v = ConvName(ss);
             else
@@ -55,12 +56,9 @@ void Parse(string &s) {
             w = w*10 + (it-'0');
     }
     
-    //cout << "NODES " << u << " " << v << " " << w << endl;
-    
-    // w isn't processed
-    //if(u > v) swap(u, v);
+    if(u > v) swap(u, v);
     pair<int, int> p = make_pair(u, v);
-    //if(Route.find(p) == Route.end()) {
+    if(Route.find(p) == Route.end()) {
         G[u].push_back(v);
         G[v].push_back(u);
         
@@ -71,14 +69,13 @@ void Parse(string &s) {
         W[v].push_back(w);
         RR[p].first = W[u].size();
         RR[p].second = W[v].size();
-    //}
-    //else if(W[u][RR[p].first-1] > w){
+    }
+    else if(W[u][RR[p].first-1] > w){
         //cout << "OLD EDGE\n";
-        //cout << RR[p].first-1 << " " << RR[p].second-1 << endl;
-    //    Route[p] = r;
-    //    W[u][RR[p].first-1] = w;
-    //    W[v][RR[p].second-1] = w;
-    //}
+        Route[p] = r;
+        W[u][RR[p].first-1] = w;
+        W[v][RR[p].second-1] = w;
+    }
 }
 
 int bfs(int from, int to) {
@@ -114,10 +111,8 @@ int bfs(int from, int to) {
 
 void pathPrint(int u, int child) {
     if(par[u] == -1) {
-        //if(u > child) swap(u, child);
-        pair<int, int> p = {u, child};
-        cout << u << " " << child << endl;
-        printf("%-21s%-21s%-11s%5d\n", NameReMap[u].c_str(), NameReMap[child].c_str(), RouteReMap[Route[p]].c_str(), W[u][RR[p].first-1]);
+        pair<int, int> p = {min(u, child), max(u, child)};
+        printf("%-21s%-21s%-11s%5d\n", NameReMap[u].c_str(), NameReMap[child].c_str(), RouteReMap[Route[p]].c_str(), W[min(u, child)][RR[p].first-1]);
         return;
     }
     
@@ -125,14 +120,13 @@ void pathPrint(int u, int child) {
     if(child == -1)
         return;
     
-    //if(u > child) swap(u, child);
-    pair<int, int> p = {u, child};
-    printf("%-21s%-21s%-11s%5d\n", NameReMap[u].c_str(), NameReMap[child].c_str(), RouteReMap[Route[p]].c_str(), W[u][RR[p].first-1]);
+    pair<int, int> p = {min(u, child), max(u, child)};
+    printf("%-21s%-21s%-11s%5d\n", NameReMap[u].c_str(), NameReMap[child].c_str(), RouteReMap[Route[p]].c_str(), W[min(u, child)][RR[p].first-1]);
 }
 
 int main() {
-    freopen("in", "r", stdin);
-    freopen("out", "w", stdout);
+    //freopen("in", "r", stdin);
+    //freopen("out", "w", stdout);
     
     string str, ss;
     bool done = 0;
@@ -141,8 +135,8 @@ int main() {
             //cout << "PROCESS CHANGED\n";
             done = 1;
             
-            for(auto it : NameMap)
-                cout << it.first << " " << it.second << endl;
+            //for(auto it : NameMap)
+            //    cout << it.first << " " << it.second << endl;
             
             continue;
         }
