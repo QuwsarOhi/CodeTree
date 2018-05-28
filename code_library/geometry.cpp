@@ -64,12 +64,12 @@ struct line {
     double a, b, c;
 };
 
-void pointsToLine(point p1, point p2, line &l) {
-    if (fabs(p1.x - p2.x) < EPS)                // vertical line is fine
-        l.a = 1.0, l.b = 0.0, l.c = -p1.x;      // default values
+void pointsToLine(point p1, point p2, line &l) {    // ax + by + c = 0  [comes from y = mx + c]
+    if (fabs(p1.x - p2.x) < EPS)                    // vertical line is fine
+        l.a = 1.0, l.b = 0.0, l.c = -p1.x;          // default values
     else {
         l.a = -(double)(p1.y - p2.y) / (p1.x - p2.x);
-        l.b = 1.0;                              // IMPORTANT: we fix the value of b to 1.0
+        l.b = 1.0;                                  // IMPORTANT: we fix the value of b to 1.0
         l.c = -(double)(l.a * p1.x) - p1.y;
     } 
 }
@@ -81,7 +81,6 @@ bool areParallel(line l1, line l2) {            // check coefficients a & b
 bool areSame(line l1, line l2) {                // also check coefficient c
     return areParallel(l1 ,l2) && (fabs(l1.c - l2.c) < EPS);
 }
-
 
 bool areIntersect(line l1, line l2, point &p) {
     if(areParallel(l1, l2)) return 0;                                   // no intersection

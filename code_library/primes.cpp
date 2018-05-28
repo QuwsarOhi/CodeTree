@@ -91,7 +91,7 @@ long long numDIFPF(long long n) {		// returns number of different prime factors
 	return diff_num;
 }
 
-unsigned long long sumPF(long long n) {		//returns sum of prime factors
+unsigned long long sumPF(long long n) {		// returns sum of prime factors
 	unsigned long long sum = 0;
 	for(long long i = 0; primes[i] * primes[i] <= n; i++)
 		while(n % primes[i] == 0) {
@@ -100,6 +100,18 @@ unsigned long long sumPF(long long n) {		//returns sum of prime factors
 		}
 	if(n > 1) sum+= n;
 	return sum;
+}
+
+int NumberOfDivisors(long long n) {       // if n = p1^a1 * p2^a2,... then NOD = (a1+1)*(a2+1)*... 
+    if(n <= MAX and isPrime[n]) return 2;
+    int NOD = 1;
+    for(int i = 0, a = 0; i < (int)primes.size() and primes[i] <= n; ++i, a = 0) {
+        while(n % primes[i] == 0)
+            ++a, n /= primes[i];
+        NOD *= (a+1);
+    }
+    if(n != 1) NOD *= 2;
+    return NOD;
 }
 
 //------Fast Factorization using Sieve-Like algorithm-------

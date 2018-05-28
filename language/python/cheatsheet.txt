@@ -5,6 +5,7 @@ from bisect import *
 from collections import *
 from itertools import *
 from fractions import *
+from decimal import *
 
 Input = []
 
@@ -86,6 +87,11 @@ print(frac.numerator, frac.denominator)     # prints the fraction
 
 frac1 = Fraction(a, b).limit_denominator(k)     # will find such a fraction that has denominator less or equal to k
                                                 # and will be in the smallest distant to a/b
+Decimals :
+                            # is used for accurate result
+from decimal import *
+x = Decimal(s)              # s can be string or other data type
+x.as_tuple()                # returns sign, decimal value and size of decimal as tuple
 
 
 String:
