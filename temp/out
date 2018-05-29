@@ -1,0 +1,7 @@
+00000000 is incorrect.
+00 00 00 00 0 is incorrect.
+00 00 00 00 000 is incorrect.
+0000000000 is correct.
+XXXXXXXXXX is incorrect.
+1111111111 is correct.
+9999999999 is correct.
