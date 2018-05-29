@@ -6,12 +6,12 @@ using namespace std;
 typedef long long ll;
 struct BaseInt {
     string val;
-    int base;
+    ll base;
     
     BaseInt() {}
     
-    BaseInt(string _val, int _base = 10) {
-        val = _val;
+    BaseInt(string _val, int _base = 10) {          // Do check if any value if val is greater than base
+        val = _val;                                 // Which is impossible
         base = _base;
     }
     
@@ -28,36 +28,34 @@ struct BaseInt {
     }
     
     void DecimalTo(int _base) {
-        int v = stoi(val);
+        ll v = stoll(val);
         base = _base;
         val.clear();
-        
         while(v) {
             val.push_back(reVal(v%base));
             v /= base;
         }
         reverse(val.begin(), val.end());
+        if(val.empty()) val.push_back('0');
     }
     
     bool ToDecimal() {
         ll ret = 0;
-        
         for(int i = 0; i < (int)val.size(); ++i) {
             int v = getVal(val[i]);
-            if(v >= base)      return 0;
+            if(v >= base)       return 0;
             if(i)               ret *= base;
             ret += v;
         }
-        
         val = to_string(ret);
         base = 10;
         return 1;
     }
     
     void ChangeBase(int to) {
-        if(base == to)  return;
-        if(base != 10)  ToDecimal();
-        if(to != 10)    DecimalTo(to);
+        if(base == to)  return;             // If input is "000", then output will also be "000" (if base remains same)
+        if(base != 10)  ToDecimal();        // remove the if statements to recover
+        if(to != 10)    DecimalTo(to);      
     }
     
     void Reverse() {
