@@ -1,19 +1,22 @@
+// UVa
+// 409 - Excuses, Excuses!
+
 #include <bits/stdc++.h>
 using namespace std;
 
 set<string>Set;
 
 string sep(string &s) {
-    bool punc = 0;
+    bool alpha = 0;
     string ret;
     
     for(auto it : s) {
-        if(not punc and ispunct(it))
+        if(not alpha and isalpha(it))
             ret.push_back(' ');
-        else if(punc and not ispunct(it))
+        else if(alpha and not isalpha(it))
             ret.push_back(' ');
         ret.push_back(it);
-        punc = ispunct(it);
+        alpha = isalpha(it);
     }
     return ret;
 }
@@ -26,8 +29,8 @@ void toLower(string &s) {
 vector<pair<string, int> > v;
 
 int main() {
-    freopen("in", "r", stdin);
-    freopen("out", "w", stdout);
+    //freopen("in", "r", stdin);
+    //freopen("out", "w", stdout);
     
     int n, m, Case = 1;
     string str;
@@ -39,11 +42,9 @@ int main() {
             Set.insert(str);
         }
         int mx = -1, cnt;
-        //cout << "DONE " << str << endl;
         getline(cin, str);
         while(m--) {
             getline(cin, str);
-            //cout << str << endl;
             v.push_back({str, 0});
             str = sep(str);
             stringstream ss;
@@ -55,11 +56,9 @@ int main() {
                     ++cnt;
             }
             mx = max(mx, cnt);
-            //cout << cnt << endl;
             v.back().second = cnt;
         }
-        
-        //cout << "ANS\n";
+
         for(auto it : v)
             if(it.second == mx)
                 cout << it.first << "\n";
