@@ -1,59 +1,59 @@
 // UVa
-// 347 - Run
+// 406 - Prime Cuts
 
 #include <bits/stdc++.h>
-#define isOn(XX, II) (XX & (1<<II))
+#define MAX 1500
 using namespace std;
 
-inline bool allUnique(int i) {
-    int mask = 0;
-    if(!i) return 0; 
-    while(i) {
-        int x = i%10;
-        if(x == 0 or isOn(mask, x))
-            return 0;
-        mask |= (1 << x);
-        i /= 10;
-    }
-    return 1;
+bitset<MAX+100>isPrime;
+vector<long long>primes;
+
+void sieveGen(unsigned long long N = MAX) {
+    isPrime.set();
+	isPrime[0] = isPrime[1] = 0;
+    primes.push_back(1);
+	for(unsigned long long i = 2; i <= N; i++) {		//Note, N isn't square rooted!
+		if(isPrime[i]) {
+			for(unsigned long long j = i*i; j <= N; j+= i)
+                isPrime[j] = 0;
+			primes.push_back(i);
+}}}
+
+// 1 2 3 4 5 6
+
+void PRINT(int l, int r) {
+    if(l > r) swap(l, r);
+    --l, --r;
+    if(l < 0) l = 0;
+    for(int i = l; i <= r; ++i)
+        printf(" %lld", primes[i]);
 }
 
-inline bool Check(int n) {
-    string s = to_string(n);
-    int mask = 0;
-    register int t, start = s[0]-'0';
-    
-    for(register int i = 0; ; i += t) {
-        if(i >= (int)s.size())
-            i %= s.size();
-        t = s[i] - '0';
-        if(isOn(mask, t))
-            return ((t == start) and __builtin_popcount(mask) == s.size());
-        mask |= (1 << t);
-    }
-    return 1;
-}
-
-vector<int>v;
-    
 int main() {
     //freopen("in", "r", stdin);
     //freopen("out", "w", stdout);
     
-    for(int i = 12; i <= 9876543; ++i)
-        if(allUnique(i))
-            if(Check(i)) {
-                //cout << i << endl;
-                v.push_back(i);
-            }
+    sieveGen();
+    int n, c;
     
-    //return 0;
-    
-    int n, Case = 1;
-    while(scanf("%d", &n) and n) {
-        auto it = lower_bound(v.begin(), v.end(), n);
-        printf("Case %d: %d\n", Case++, *it);
+    while(scanf("%d%d", &n, &c) == 2) {
+        auto it = upper_bound(primes.begin(), primes.end(), n);
+        int len = (it - primes.begin());
+        
+        printf("%d %d:", n, c);
+        if(len%2) {
+            if(c == 1)  PRINT(len/2+1, len/2+1);
+            else if(2*c-1 >= len) PRINT(1, len);
+            else        PRINT(len/2-c+2, len/2+c);
+        }
+        else {
+            if(2*c >= len) PRINT(1, len);
+            else {
+                PRINT(len/2-c+1, len/2);
+                PRINT(len/2+1, len/2+c);
+            }   
+        }
+        printf("\n\n");
     }
-    
     return 0;
 }

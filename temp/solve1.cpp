@@ -1,67 +1,87 @@
 // UVa
-// 341 - Non-Stop Travel
+// 383 - Shipping Routes
 
 #include <bits/stdc++.h>
+#define INF 1e6
 #define isOn(XX, II) (XX & (1<<II))
 using namespace std;
 
-vector<int>G[12], W[12], T, ANS;
-int MIN;
+int MapCnt;
+map<string, int>Map;
+vector<int>G[35];
 
-void dfs(int u, int destination, int cost, int mask) {
-    if(u == destination) {
-        if(cost < MIN) {
-            ANS = T;
-            MIN = cost;
-        }
-        else if(cost == MIN and T.size() < ANS.size())
-            ANS = T;
-        return;
+int Conv(char ss[]) {
+    string s = string(ss);
+    if(Map.find(s) == Map.end()) {
+        Map[s] = MapCnt;
+        return MapCnt++;
+    }
+    return Map[s];
+}
+
+bitset<35>vis;
+int bfs(int u, int to) {
+    vis.reset();
+    vis[u] = 1;
+    queue<pair<int, int> >q;
+    q.push({u, 0});
+    
+    while(!q.empty()) {
+        u = q.front().first;
+        int w = q.front().second;
+        q.pop();
+        
+        if(u == to)
+            return w;
+        
+        for(auto v : G[u])
+            if(not vis[v]) {
+                vis[v] = 1;
+                q.push({v, w+1});
+            }
     }
     
-    for(int i = 0; i < (int)G[u].size(); ++i) {
-        int v = G[u][i];
-        if(not isOn(mask, v)) {
-            //cout << "FROM " << u << " TO " << v << " : " << W[u][i] << endl;
-            T.push_back(v);
-            dfs(v, destination, cost + W[u][i], mask | (1<<v));
-            T.pop_back();
-        }
-    }
+    return -1;
 }
-                
-        
+    
 
 int main() {
     //freopen("in", "r", stdin);
     //freopen("out", "w", stdout);
     
-    int n, u, v, w, E, Case = 1;
+    int V, E, q, t, u, v, w;
+    char s1[5], s2[5];
+    scanf("%d", &t);
+    printf("SHIPPING ROUTES OUTPUT\n\n");
     
-    while(scanf("%d", &n) and n) {
-        for(u = 1; u <= n; ++u) {
-            scanf("%d", &E);
-            while(E--) {
-                //cout << u << " TO " << v << endl;
-                scanf("%d%d", &v, &w);
-                G[u].push_back(v);
-                W[u].push_back(w);
-            }
+    for(int Case = 1; Case <= t; ++Case) {
+        scanf("%d%d%d", &V, &E, &q);
+        printf("DATA SET  %d\n\n", Case);
+        
+        while(V--) {
+            scanf("%s", s1);
+            Conv(s1);
         }
-        MIN = 1e8;
-        scanf("%d%d", &u, &v);
-        T.push_back(u);
-        dfs(u, v, 0, 0);
         
-        printf("Case %d: Path =", Case++);
-        for(auto it : ANS) printf(" %d", it);
-        printf("; %d second delay\n", MIN);
+        while(E--) {
+            scanf("%s%s", s1, s2);
+            u = Conv(s1), v = Conv(s2);
+            G[u].push_back(v);
+            G[v].push_back(u);
+        }
         
+        while(q--) {
+            scanf("%d%s%s", &w, s1, s2);
+            int ret = bfs(Conv(s1), Conv(s2));
+            if(ret == -1) printf("NO SHIPMENT POSSIBLE\n");
+            else printf("$%d\n", w*ret*100);
+        }
         
-        for(int i = 1; i <= 10; ++i)
-            G[i].clear(), W[i].clear();
-        T.clear();
-        ANS.clear();
+        MapCnt = 0;
+        Map.clear();
+        for(int i = 0; i <= 30; ++i) G[i].clear();
+        printf("\n");
     }
+    printf("END OF OUTPUT\n");
     return 0;
 }
