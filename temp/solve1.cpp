@@ -1,87 +1,41 @@
 // UVa
-// 383 - Shipping Routes
+// 438 - The Circumference of the Circle
 
 #include <bits/stdc++.h>
-#define INF 1e6
-#define isOn(XX, II) (XX & (1<<II))
+#define PI  3.141592653589793
 using namespace std;
 
-int MapCnt;
-map<string, int>Map;
-vector<int>G[35];
+struct point {          // In Double
+    double x, y;
+    point() { x = y = 0.0; }
+    point(double _x, double _y) : x(_x), y(_y) {}
+};
 
-int Conv(char ss[]) {
-    string s = string(ss);
-    if(Map.find(s) == Map.end()) {
-        Map[s] = MapCnt;
-        return MapCnt++;
-    }
-    return Map[s];
+double dist(point p1, point p2) {
+	double x = p1.x-p2.x;
+	double y = p1.y-p2.y;
+	return sqrt(x*x + y*y);
 }
 
-bitset<35>vis;
-int bfs(int u, int to) {
-    vis.reset();
-    vis[u] = 1;
-    queue<pair<int, int> >q;
-    q.push({u, 0});
-    
-    while(!q.empty()) {
-        u = q.front().first;
-        int w = q.front().second;
-        q.pop();
-        
-        if(u == to)
-            return w;
-        
-        for(auto v : G[u])
-            if(not vis[v]) {
-                vis[v] = 1;
-                q.push({v, w+1});
-            }
-    }
-    
-    return -1;
+double TriangleArea(double AB, double BC, double CA) {
+	double s = (AB + BC + CA)/2.0;
+	return sqrt(s*(s-AB)*(s-BC)*(s-CA));
 }
-    
+
+// radius of Circle Outside of a Triangle
+double rCircumCircle(double ab, double bc, double ca) {     // ab, ac, ad are sides of triangle
+    return ab * bc * ca / (4.0 * TriangleArea(ab, bc, ca));
+}
+
 
 int main() {
     //freopen("in", "r", stdin);
     //freopen("out", "w", stdout);
-    
-    int V, E, q, t, u, v, w;
-    char s1[5], s2[5];
-    scanf("%d", &t);
-    printf("SHIPPING ROUTES OUTPUT\n\n");
-    
-    for(int Case = 1; Case <= t; ++Case) {
-        scanf("%d%d%d", &V, &E, &q);
-        printf("DATA SET  %d\n\n", Case);
-        
-        while(V--) {
-            scanf("%s", s1);
-            Conv(s1);
-        }
-        
-        while(E--) {
-            scanf("%s%s", s1, s2);
-            u = Conv(s1), v = Conv(s2);
-            G[u].push_back(v);
-            G[v].push_back(u);
-        }
-        
-        while(q--) {
-            scanf("%d%s%s", &w, s1, s2);
-            int ret = bfs(Conv(s1), Conv(s2));
-            if(ret == -1) printf("NO SHIPMENT POSSIBLE\n");
-            else printf("$%d\n", w*ret*100);
-        }
-        
-        MapCnt = 0;
-        Map.clear();
-        for(int i = 0; i <= 30; ++i) G[i].clear();
-        printf("\n");
+
+    point a, b, c;
+    while(scanf("%lf%lf%lf%lf%lf%lf", &a.x, &a.y, &b.x, &b.y, &c.x, &c.y) == 6) {
+        double r = rCircumCircle(dist(a, b), dist(b, c), dist(c, a));
+        printf("%.2lf\n", 2*r*PI);
     }
-    printf("END OF OUTPUT\n");
     return 0;
 }

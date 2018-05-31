@@ -1,71 +1,61 @@
-// UVa
-// 409 - Excuses, Excuses!
+// LightOJ
+// 1056 - Olympics
 
 #include <bits/stdc++.h>
+#define Target 400
+#define PI acos(-1)
+#define EPS 1e-8
 using namespace std;
 
-set<string>Set;
+double DEG_to_RAD(double deg) {             // Converts Degree to Radian
+    return (deg*PI)/180;
+}
 
-string sep(string &s) {
-    bool alpha = 0;
-    string ret;
+double RAD_to_DEG(double rad) {
+    return (180/PI)*rad;
+}
+
+double TriangleAngle(double a, double b, double c) {    // Returns angle(IN RADIAN) between side a and b (opposite of c)
+    return acos((a*a + b*b - c*c)/(2*a*b));
+}
+
+double CircleArcLength(double r, double theta) {		// Circle Radius, Center Angle(degree)
+	return r * DEG_to_RAD(theta);
+}
+
+double Area(double l, int x, int y) {
+    double w = (l*y)/x;
+    double r = sqrt(w*w+l*l)/2;
+    double theta = RAD_to_DEG(TriangleAngle(r, r, w));
+    double arc = CircleArcLength(r, theta);
+    return 2*l+arc*2;
+}
     
-    for(auto it : s) {
-        if(not alpha and isalpha(it))
-            ret.push_back(' ');
-        else if(alpha and not isalpha(it))
-            ret.push_back(' ');
-        ret.push_back(it);
-        alpha = isalpha(it);
-    }
-    return ret;
-}
-
-void toLower(string &s) {
-    for(int i = 0; i < (int)s.size(); ++i)
-        s[i] = tolower(s[i]);
-}
-
-vector<pair<string, int> > v;
-
 int main() {
     //freopen("in", "r", stdin);
     //freopen("out", "w", stdout);
     
-    int n, m, Case = 1;
-    string str;
+    int x, y, t;
+    char c;
     
-    while(cin >> n >> m) {
-        cout << "Excuse Set #" << Case++ << "\n";
-        while(n--) {
-            cin >> str;
-            Set.insert(str);
-        }
-        int mx = -1, cnt;
-        getline(cin, str);
-        while(m--) {
-            getline(cin, str);
-            v.push_back({str, 0});
-            str = sep(str);
-            stringstream ss;
-            ss << str;
-            cnt = 0;
-            while(ss >> str) {
-                toLower(str);
-                if(Set.count(str))
-                    ++cnt;
-            }
-            mx = max(mx, cnt);
-            v.back().second = cnt;
-        }
-
-        for(auto it : v)
-            if(it.second == mx)
-                cout << it.first << "\n";
+    scanf("%d", &t);
+    for(int Case = 1; Case <= t; ++Case) {
+        scanf("%d", &x);
+        scanf(" %c", &c);
+        scanf("%d", &y);
         
-        v.clear();
-        Set.clear();
-        cout << "\n";
+        double lo = 0, hi = 500, l, A;
+        for(int i = 0; i < 200; ++i) {
+            l = (lo+hi)/2;
+            A = Area(l, x, y);
+            if(A - Target >= EPS)
+                hi = l - 1;
+            else
+                lo = l + 1;
+        }
+        
+        double w = (l*y)/x;
+        printf("Case %d: %.6lf %.6lf\n", Case, l, w);
     }
     return 0;
 }

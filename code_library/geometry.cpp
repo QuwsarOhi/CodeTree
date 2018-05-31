@@ -34,14 +34,28 @@ struct point {          // In Double
     }
 };
 
-int dist(point p1, point p2) {			// Distance of two point without sqrt
-	int x = p1.x-p2.x;
-	int y = p1.y-p2.y;
-	return x*x + y*y;
+bool Equal(double a, double b) {
+    return (fabs(a-b) <= EPS);
 }
 
-double DEG_to_RAD(double deg) {         // Converts Degree to Radin
+int hypot(point p1, point p2) {
+    int x = p1.x-p2.x;
+	int y = p1.y-p2.y;
+    return x*x + y*y;
+}
+    
+double dist(point p1, point p2) {
+	int x = p1.x-p2.x;
+	int y = p1.y-p2.y;
+	return sqrt(x*x + y*y);
+}
+
+double DEG_to_RAD(double deg) {             // Converts Degree to Radian
     return (deg*PI)/180;
+}
+
+double RAD_to_DEG(double rad) {
+    return (180/PI)*rad;
 }
 
 point rotate(point p, double theta) {       // Rotates point p w.r.t. origin.  (theta is in degree)
@@ -90,6 +104,19 @@ bool areIntersect(line l1, line l2, point &p) {
     return 1;
 }
 
+line perpendicularLine(line l, point p) {           // returns a perpendicular line on l which goes throuth
+    line ret;                                       // point p
+    ret.a = l.b, ret.b = -l.a;
+    ret.c = -(ret.a*p.x + ret.b*p.y);
+    if(ret.b < 0) ret.a *= -1, ret.b *= -1, ret.c *= -1;    // as line must contain b = 1.0 by default
+    if(ret.b != 0) {
+        ret.a /= ret.b;
+        ret.c /= ret.b;
+        ret.b = 1;
+    }
+    return ret;
+}
+
 // Vectors ------------------------------
 
 struct vec { 
@@ -119,7 +146,6 @@ double norm_sq(vec v) {
 
 // Returns the distance from p to the line defined by  two points a and b (a and b must be different)
 // the closest point is stored in the 4th parameter (byref)
-
 double distToLine(point p, point a, point b, point &c) {        // formula: c = a + u * ab
     vec ap = toVec(a, p), ab = toVec(a, b);
     double u = dot(ap, ab) / norm_sq(ab);
@@ -228,20 +254,12 @@ double TriangleArea(double AB, double BC, double CA) {
 	return sqrt(s*(s-AB)*(s-BC)*(s-CA));
 }
 
-double getAngle(double AB, double BC, double CA) {		// Returns the angle opposide of side CA
+double getAngle(double AB, double BC, double CA) {		// Returns the angle(IN RADIAN) opposide of side CA
 	return acos((AB*AB + BC*BC - CA*CA)/(2*AB*BC));
 }
 
-// Circle Inside Triangle
-// returns 1 if there is an inCircle center, returns 0 otherwise
-// if this function returns 1, ctr will be the inCircle center
-// and r is the same as rInCircle
-
-double rInCircle(double ab, double bc, double ca) {
+double rInCircle(double ab, double bc, double ca) {     // Returns radius of inCircle of a triangle
     return TriangleArea(ab, bc, ca) / (0.5 * (ab + bc+ ca));
-}
-double rInCircle(point a, point b, point c) {
-    return rInCircle(dist(a, b), dist(b, c), dist(c, a));
 }
 
 int inCircle(point p1, point p2, point p3, point &ctr, double &r) {
@@ -260,8 +278,23 @@ int inCircle(point p1, point p2, point p3, point &ctr, double &r) {
 
 // radius of Circle Outside of a Triangle
 double rCircumCircle(double ab, double bc, double ca) {     // ab, ac, ad are sides of triangle
-    return ab * bc * ca / (4.0 * TriangleArea(ab, bc, ca)); }
+    return ab * bc * ca / (4.0 * TriangleArea(ab, bc, ca));
+}
 
-double rCircumCircle(point a, point b, point c) {           // a, b, c are points of triangle
-    return rCircumCircle(dist(a, b), dist(b, c), dist(c, a));
+point CircumCircleCenter(point a, point b, point c, double &r) {    // returns certer and radius of circumcircle
+    double ab = dist(a, b);
+    double bc = dist(b, c);
+    double ca = dist(c, a);
+    r = rCircumCircle(ab, bc, ca);
+    if(Equal(r, ab))    return point((a.x+b.x)/2, (a.y+b.y)/2);
+    if(Equal(r, bc))    return point((b.x+c.x)/2, (b.y+c.y)/2);
+    if(Equal(r, ca))    return point((c.x+a.x)/2, (c.y+a.y)/2);
+    line AB, BC;
+    pointsToLine(a, b, AB);
+    pointsToLine(b, c, BC);
+    line perpenAB = perpendicularLine(AB, point((a.x+b.x)/2, (a.y+b.y)/2));
+    line perpenBC = perpendicularLine(BC, point((b.x+c.x)/2, (b.y+c.y)/2));
+    point center;
+    areIntersect(perpenAB, perpenBC, center);
+    return center;
 }
