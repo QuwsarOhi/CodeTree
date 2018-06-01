@@ -1,22 +1,41 @@
+// LightOJ
+// 1062 - Crossed Ladders
+
 #include <bits/stdc++.h>
+#define EPS 1e-8
 using namespace std;
 
+double x, y, c;
+
+double getHeight(double base) {
+    double x0 = sqrt(x*x - base*base);
+    double y0 = sqrt(y*y - base*base);
+    return (x0*y0) / (x0+y0);
+}
 
 int main() {
-    int t;
-    cin >> t;
-    while(t--) {
-        string a, b, op;
-        cin >> a >> op >> b;
-        long long x = stoll(a, 0, 16);
-        long long y = stoll(b, 0, 16);
-        bitset<13>X(x);
-        bitset<13>Y(y);
+    //freopen("in", "r", stdin);
+    //freopen("out", "w", stdout);
     
-        if(op[0] == '+')
-            cout << X << " + " << Y << " = " << x+y << "\n";
-        else
-            cout << X << " - " << Y << " = " << x-y << "\n";
+    int t;
+    scanf("%d", &t);
+    
+    for(int Case = 1; Case <= t; ++Case) {
+        scanf("%lf%lf%lf", &x, &y, &c);
+        
+        double lo = 0, hi = min(x, y), mid, h;
+        for(int i = 0; i < 150; ++i) {
+            mid = (lo+hi)/2;
+            
+            h = getHeight(mid);
+            
+            if(c - h >= EPS)
+                hi = mid;
+            else
+                lo = mid;
+        }
+
+        printf("Case %d: %.6lf\n", Case, mid);
     }
     return 0;
 }
