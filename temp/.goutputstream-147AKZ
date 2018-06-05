@@ -1,0 +1,77 @@
+#include <bits/stdc++.h>
+#define INF 1
+#define EPS 1e-5
+using namespace std;
+
+double lim;
+int n;
+vector<pair<int, double> > V;
+double dp[102][10000];
+
+double recur(int pos, int needed, double prob) {
+    if(prob - lim > EPS)
+        return INF;
+    if(needed == 0) {
+        //cout << "**GOT " << needed << " prob " << prob << endl; 
+        return prob;
+    }
+    if(pos >= n || V[pos].first > needed)
+        return INF;
+    
+    if(dp[pos][needed] != 0) {
+        cerr << "HIT " << endl;
+        return dp[pos][needed];
+    }
+    
+    double ret = recur(pos+1, needed, prob);
+    cout << "Taking " << needed-V[pos].first << " Prob " << prob+(1-prob)*V[pos].second << endl; 
+    ret = min(ret, recur(pos+1, needed-V[pos].first, prob+(1-prob)*V[pos].second));
+    return dp[pos][needed] = ret;
+}
+    
+bool canTake(int val) {
+    cout << "TRYING FOR " << val << endl;
+    double ret = recur(0, val, 0);
+    cout << "For " << val << " Prob " << ret << endl;
+    return (ret - lim) <= EPS;
+}
+
+int binarySearch(int low, int hi) {
+    int ans = -1, mid;
+    while(low <= hi) {
+        mid = (low+hi)>>1;
+        if(canTake(mid)) {
+            cout << "Can Take " << mid << endl;
+            ans = mid;
+            low = mid+1;
+        }
+        else
+            hi = mid-1;
+    }
+    return ans;
+}
+
+int main() {
+    freopen("in", "r", stdin);
+    //freopen("out", "w", stdout);
+    
+    int t, g;
+    double p;
+    scanf("%d", &t);
+    
+    for(int Case = 1; Case <= t; ++Case) {
+        scanf("%lf%d", &lim, &n);
+        int hi = 0;
+        for(int i = 0; i < n; ++i) {
+            scanf("%d%lf", &g, &p);
+            V.push_back(make_pair(g, p));
+            hi += g;
+        }
+        sort(V.begin(), V.end());
+        memset(dp, 0, sizeof dp);
+        
+        printf("Case %d: %d\n", Case, binarySearch(0, hi));
+        V.clear();
+    }
+    return 0;
+}
