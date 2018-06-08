@@ -75,3 +75,13 @@ inline void fastOut (long long n) {
     while (rev != 0) { putchar(rev % 10 + '0'); rev /= 10;}
     while (count--) putchar('0');
 }
+
+
+// Scanf Trick
+// input: (alpha+omega)^2
+// scanf(" %*[(] %[^+] %*[+] %[^)] %s", a, b, n);
+// %* is used for skipping
+// %*[(] skipping (
+// %[^+] take input until +
+// %*[+] skipping +
+// %*[^)] skipping ^ and )

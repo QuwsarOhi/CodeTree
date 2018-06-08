@@ -1,100 +1,56 @@
-// LightOJ
-// 1074 - Extended Traffic
-
 #include <bits/stdc++.h>
-#define MAX 250
-#define INF 1e16
+#define INF 1e7
 using namespace std;
 
-vector<int>G[MAX];
-long long W[MAX], dist[MAX];
-int V, E;
+int W[55][55], T[55][55], C[60000], dp[55], n, t;
+bitset<55>vis;
 
-void bellmanFord(int source) {                      // Works in directed & undirected graph
-    for(int i = 0; i < V; ++i)
-        dist[i] = INF;
-    dist[source] = 0;
-    for(int i = 0; i < V-1; ++i)
-        for(int u = 0; u < V; ++u)
-            for(int j = 0; j < (int)G[u].size(); ++j) {
-                int v = G[u][j];
-                long long w = (W[v] - W[u]);
-                w = w*w*w;
-                if(dist[u] != INF)
-                    dist[v] = min(dist[v], dist[u]+w);
-            }
-}
-
-bool hasNegativeCycle() {                           // Works in directed graph
-    for(int u = 0; u < V; ++u)
-        for(int i = 0; i < (int)G[u].size(); ++i) {
-            int v = G[u][i];
-            long long w = (W[v] - W[u]);
-            w = w*w*w;
-            if(dist[v] > dist[u] + w)
-                return 1;
+int dfs(int u, int Cost, int Time) {
+    if(Time >= t)
+        return INF;
+    
+    if(u == n-1) {
+        C[Cost] = min(Time, C[Cost]);
+        return 0;
+    }
+    
+    if(dp[u] != -1)
+        return dp[u];
+    
+    int ret = INF;
+    for(int v = 0; v < n; ++v)
+        if(!vis[v]) {
+            cout << "FROM " << u << " TO " << v << endl;
+            vis[v] = 1;
+            ret = min(ret, dfs(v, Cost+W[u][v], Time+T[u][v])+W[u][v]);
+            vis[v] = 0;
         }
-    return 0;
+        else
+            cout << "SKIP FROM " << u << " TO " << v << endl;
+    
+    return dp[u] = ret;
 }
-
-bool vis[MAX][2];
-void negativePoint(int u) {                         // Works in undirected graph
-    queue<pair<int, bool> >q;                       // if vis[v][1] == 1 then there exists an negative cycle
-    q.push(make_pair(u, 0));                        // on one/more path from u to v
-    memset(vis, 0, sizeof vis);
-    vis[u][0] = 1;
-        
-    while(!q.empty()) {
-        u = q.front().first;
-        bool neg = q.front().second;
-        q.pop();
-        for(int i = 0; i < (int)G[u].size(); ++i) {
-            int v = G[u][i];
-            int w = W[v] - W[u];
-            w = w*w*w;
-            if(dist[v] > dist[u] + w)
-                neg = 1;
-            if(vis[v][neg])
-                continue;
-            vis[v][neg] = 1;
-            
-            q.push(make_pair(v, neg));
-}}}
 
 int main() {
-    //freopen("in", "r", stdin);
-    //freopen("out", "w", stdout);
     
-    int t, q, u, v;
-    scanf("%d", &t);
-
-    for(int Case = 1; Case <= t; ++Case) {
-        scanf("%d", &V);
-        for(int i = 0; i < V; ++i)
-            scanf("%lld", &W[i]);
+    while(scanf("%d%d", &n, &t) && n && t) {
+    
+        for(int i = 0; i < n; ++i)
+            for(int j = 0; j < n; ++j)
+                scanf("%d", &W[i][j]);
+    
+        for(int i = 0; i < n; ++i)
+            for(int j = 0; j < n; ++j)
+                scanf("%d", &T[i][j]);
         
-        scanf("%d", &E);
-        for(int i = 0; i < E; ++i) {
-            scanf("%d%d", &u, &v);
-            --u, --v;
-            G[u].push_back(v);
-        }
+        vis.reset();
+        memset(dp, -1, sizeof dp);
+        for(int i = 0; i <= 50000; ++i)
+            C[i] = INF;
         
-        bellmanFord(0);
-        negativePoint(0);
-        scanf("%d", &q);
-        printf("Case %d:\n", Case);
-        while(q--) {
-            scanf("%d", &v);
-            --v;
-            if(vis[v][1] || dist[v] < 3 || dist[v] == INF)
-                printf("?\n");
-            else
-                printf("%lld\n", dist[v]);
-        }
-        
-        for(int i = 0; i < V; ++i)
-            G[i].clear();
+        vis[0] = 1;
+        int cst = dfs(0, 0, 0);
+        printf("%d %d\n", cst, C[cst]);
     }
     
     return 0;

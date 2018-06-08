@@ -81,6 +81,66 @@ int reduce(int l, int r) {              // Reduce string AXDOODOO (len : 8) to A
     return dp[l][r] = ret;
 }
 
+// Light OJ 1073 - DNA Sequence
+// FIND and PRINT shortest string after merging multiple string together 
+
+int matchDP[20][20];                    
+int TryMatch(int x, int y) {            // Finds First overlap of two string
+    if(matchDP[x][y] != -1)             // ABAAB + AAB : Match at 2
+        return matchDP[x][y];
+    for(size_t i = 0; i < v[x].size(); ++i) {
+        for(size_t j = i, k = 0; j < v[x].size() && k < v[y].size(); ++j, ++k)
+            if(v[x][j] != v[y][k])
+                goto pass;
+        return matchDP[x][y] = i;
+        pass:;
+    }
+    return matchDP[x][y] = v[x].size();
+}
+
+int dp[16][(1<<15)+100];
+int recur(int mask, int last) {                 // DP part of LIGHT OJ
+    if(dp[last][mask] != -1)                    // eleminate all substrings from n string first in main function!
+        return dp[last][mask];                  // it's not handeled here
+    if(mask == (1<<n)-1)
+        return dp[last][mask] = v[last].size();
+    int ret = INF, cost;
+    for(int i = 0; i < n; ++i) {
+        if(isOn(mask, i))
+            continue;
+        int mPos = TryMatch(last, i);
+        if(mPos < (int)v[last].size())
+            cost = (int)v[last].size() - ((int)v[last].size() - mPos);
+        else
+            cost = v[last].size();
+        ret = min(ret, recur(mask | (1 << i), i) + cost);
+    }
+    return dp[last][mask] = ret;
+}
+
+string ans;
+void dfs(int mask, int last, string ret) {          // PRINTING part of LIGHT OJ   
+    if(!ret.empty() && ans < ret)
+        return;
+    if(mask == (1<<n)-1) {
+        ret += v[last];
+        if(ret < ans)
+            ans = ret;
+        return;
+    }
+    for(int i = 0; i < n; ++i) {
+        if(isOn(mask, i))
+            continue;
+        int mPos = TryMatch(last, i);
+        int cost;
+        if(mPos < (int)v[last].size())
+            cost = (int)v[last].size() - ((int)v[last].size() - mPos);
+        else
+            cost = v[last].size();
+        if(dp[last][mask] - cost == dp[i][mask | (1<<i)])
+            dfs(mask | (1<<i), i, ret + v[last].substr(0, cost));
+}}
+
 //-----------------------Digit DP-----------------------
 
 // Complexity : O(10*idx*sum*tight)     : LightOJ 1068
