@@ -1,58 +1,41 @@
+// LightOJ
+// 1094 - Farthest Nodes in a Tree
+
 #include <bits/stdc++.h>
-#define INF 1e7
 using namespace std;
+typedef pair<int, int>pii;
 
-int W[55][55], T[55][55], C[60000], dp[55], n, t;
-bitset<55>vis;
+vector<int>G[30010], W[30010];
 
-int dfs(int u, int Cost, int Time) {
-    if(Time >= t)
-        return INF;
-    
-    if(u == n-1) {
-        C[Cost] = min(Time, C[Cost]);
-        return 0;
-    }
-    
-    if(dp[u] != -1)
-        return dp[u];
-    
-    int ret = INF;
-    for(int v = 0; v < n; ++v)
-        if(!vis[v]) {
-            cout << "FROM " << u << " TO " << v << endl;
-            vis[v] = 1;
-            ret = min(ret, dfs(v, Cost+W[u][v], Time+T[u][v])+W[u][v]);
-            vis[v] = 0;
-        }
-        else
-            cout << "SKIP FROM " << u << " TO " << v << endl;
-    
-    return dp[u] = ret;
+pii dfs(int u, int par, int d) {
+    pii ret(d, u);                                      // {distance, node}
+    for(int i = 0; i < (int)G[u].size(); ++i)
+        if(G[u][i] != par)
+            ret = max(ret, dfs(G[u][i], u, d+W[u][i]));
+    return ret;
 }
 
 int main() {
+    int t, n, u, v, w;
+    scanf("%d", &t);
     
-    while(scanf("%d%d", &n, &t) && n && t) {
-    
-        for(int i = 0; i < n; ++i)
-            for(int j = 0; j < n; ++j)
-                scanf("%d", &W[i][j]);
-    
-        for(int i = 0; i < n; ++i)
-            for(int j = 0; j < n; ++j)
-                scanf("%d", &T[i][j]);
+    for(int Case = 1; Case <= t; ++Case) {
+        scanf("%d", &n);
         
-        vis.reset();
-        memset(dp, -1, sizeof dp);
-        for(int i = 0; i <= 50000; ++i)
-            C[i] = INF;
+        for(int i = 1; i < n; ++i) {
+            scanf("%d%d%d", &u, &v, &w);
+            G[u].push_back(v);
+            G[v].push_back(u);
+            W[u].push_back(w);
+            W[v].push_back(w);
+        }
         
-        vis[0] = 1;
-        int cst = dfs(0, 0, 0);
-        printf("%d %d\n", cst, C[cst]);
+        pii left = dfs(0, -1, 0);
+        pii right = dfs(left.second, -1, 0);
+        printf("Case %d: %d\n", Case, right.first);
+        
+        for(int i = 0; i < n; ++i)
+            G[i].clear(), W[i].clear();
     }
-    
     return 0;
 }
-
