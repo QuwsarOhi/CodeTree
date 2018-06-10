@@ -1,9 +1,6 @@
 // LightOJ
 // 1094 - Farthest Nodes in a Tree
 
-// SOLUTION SAVED
-// ADD TO TEMPLATE
-
 #include <bits/stdc++.h>
 using namespace std;
 typedef pair<int, int>pii;
