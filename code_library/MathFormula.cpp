@@ -18,6 +18,29 @@ int rangeDivisor(int m, int n, int a, int b) {
     return ans;
 }
 
+int CountDivisible(int a, int b, int n) {   // Returns the number of divisible value in range [a, b] by n (NOT TESTED)
+    if(a > b) swap(a, b);
+    a += n - a%n;
+    b -= b%n;
+    if(a > b) return 0;
+    return ceil((b-a+1)/(double)n);
+}
+
+int FactorialCount(int n, int p = 5) {      // Returns how many value of p is present in n!
+    int ret = 0, r = p;                     // returns number of trailing zero of n! if p = 5
+    while(n/r != 0) {
+        ret += n/r;
+        r *= p;
+    }
+    return ret;
+}
+
+int TrailingZero(int n, int p = 1) {        // Returns Trailing Zero of n^p
+    int cnt = 0;                            // Trailing Zero for any number : min(count_2_as_prime_factor, count_5_as_prime_factor)
+    while(n%5 == 0 && n%2 == 0)
+        n /= 5, n /= 2, ++cnt;
+    return cnt*p;
+}
 
 //Building Pascle of 50 rows
 long long p[55][54];
