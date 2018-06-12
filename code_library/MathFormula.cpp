@@ -18,6 +18,16 @@ int rangeDivisor(int m, int n, int a, int b) {
     return ans;
 }
 
+ll CSOD(ll n) {                             // Cumulative Sum of Divisors in sqrt(n)
+    ll ans = 0;
+    for(ll i = 2; i * i <= n; ++i) {
+        ll j = n / i;
+        ans += (i + j) * (j - i + 1) / 2;
+        ans += i * (j - i);
+    }
+    return ans;
+}
+
 int CountDivisible(int a, int b, int n) {   // Returns the number of divisible value in range [a, b] by n (NOT TESTED)
     if(a > b) swap(a, b);
     a += n - a%n;
@@ -40,6 +50,14 @@ int TrailingZero(int n, int p = 1) {        // Returns Trailing Zero of n^p
     while(n%5 == 0 && n%2 == 0)
         n /= 5, n /= 2, ++cnt;
     return cnt*p;
+}
+
+int BirthdayParadox(int days, int targetPercent = 50) {         // Returns Number of people required so that probability is >= target
+    int people = 0;                                             // Formula : 1 - (365/365) * (364/365) * (363/365) * .....
+    double percent = targetPercent/100.0, gotPercent = 1;
+    for( ; gotPercent > percent; ++people)
+        gotPercent *= (days-people-1)/(double)days;
+    return people;
 }
 
 //Building Pascle of 50 rows
