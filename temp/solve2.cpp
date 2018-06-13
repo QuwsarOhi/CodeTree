@@ -1,50 +1,57 @@
 // LightOJ
-// 1090 - Trailing Zeroes (II)
+// 1105 - Fi Binary Number
 
 #include <bits/stdc++.h>
 using namespace std;
-typedef pair<int, int>pii;
+typedef long long ll;
 
-int FactorialCount(int n, int p = 5) {      // Returns how many value of p is present in n!
-    int ret = 0, r = p;                     // returns number of trailing zero of n! if p = 5
-    while(n/r != 0) {
-        ret += n/r;
-        r *= p;
+//
+// 1, 10, 100, 101, 1000, 1001, 1010, 10000, 10001, 10010, 10100, 10101
+// 1   2    3    4     5     6     7      8      9     10     11     12
+// 
+
+ll f[60];
+void GenFib() {
+    f[1] = 1;
+    f[2] = 2;
+    //cerr << "1 : 1\n2 : 2\n";
+    for(int i = 3; ; ++i) {
+        f[i] = f[i-1] + f[i-2];
+        //cerr << i << " : " << f[i] << endl;
+        if(f[i] > 1e9)
+            break;
     }
-    return ret;
 }
 
-
-pii C(int n, int k) {
-    pii cnt(0, 0);          // count_2_as_prime_factor, count_5_as_prime_factor
-    cnt.first += FactorialCount(n, 2);
-    cnt.second += FactorialCount(n, 5);
-    cnt.first -= FactorialCount(k, 2) + FactorialCount(n-k, 2);
-    cnt.second -= FactorialCount(k, 5) + FactorialCount(n-k, 5);
-    return cnt;
-}
-
-pii P(int n, int p) {
-    pii cnt(0, 0);
-    while(n%2 == 0) n/=2, ++cnt.first;
-    while(n%5 == 0) n/=5, ++cnt.second;
-    cnt.first *= p, cnt.second *= p;
-    return cnt;
+int getLen(int Nth) {
+    for(int i = 1; i < 60; ++i)
+        if(Nth < f[i])
+            return i-1;
+    return -1;
 }
 
 int main() {
     //freopen("in", "r", stdin);
     //freopen("out", "w", stdout);
     
-    int t, n, r, p, q;
+    GenFib();
+    int n, t;
     scanf("%d", &t);
     
     for(int Case = 1; Case <= t; ++Case) {
-        scanf("%d%d%d%d", &n, &r, &p, &q);
-        pii a = C(n, r);
-        pii b = P(p, q);
-        a.first += b.first, a.second += b.second;
-        printf("Case %d: %d\n", Case, min(a.first, a.second));
+        scanf("%d", &n);
+        int idx = getLen(n);
+        string ans;
+    
+        for(int i = idx; i >= 1; --i) {
+            if(n >= f[i]) {
+                n -= f[i];
+                ans.push_back('1');
+            }
+            else
+                ans.push_back('0');
+        }
+        printf("Case %d: %s\n", Case, ans.c_str());
     }
     return 0;
 }
