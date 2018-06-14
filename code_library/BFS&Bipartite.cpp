@@ -45,9 +45,7 @@ void Bipartite(int u) {     // Bipartite Check
 		for(int i = 0; i < (int)G[u].size(); ++i) {
 			int v = G[u][i];
 			if(color[v] == -1) {
-				if(color[u] == 1)
-					color[v] = 2;
-				else
-					color[v] = 1;
+				if(color[u] == 1) 	color[v] = 2;
+				else 				color[v] = 1;
 				q.push(v);
 }}}}
