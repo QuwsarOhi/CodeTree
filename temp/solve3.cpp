@@ -1,3 +1,6 @@
+// LightOJ
+// 1111 - Best Picnic Ever
+
 #include <bits/stdc++.h>
 using namespace std;
 
