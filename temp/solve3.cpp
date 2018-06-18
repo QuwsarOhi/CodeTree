@@ -1,53 +1,54 @@
 // LightOJ
-// 1111 - Best Picnic Ever
+// 1122 - Digit Count
 
 #include <bits/stdc++.h>
 using namespace std;
 
-vector<bitset<101> >vis;
-vector<int>G[1001];
-int k[101];
+int n, m, v[10], dp[10][10];
 
-void dfs(int u, int idx) {
-    vis[u-1][idx] = 1;
-    for(int i = 0; i < (int)G[u].size(); ++i)
-        if(!vis[G[u][i]-1][idx])
-            dfs(G[u][i], idx);
+int recur(int lastVal, int len) {
+    if(len == m)
+        return 1;
+    
+    int &ret = dp[lastVal][len];
+    if(ret != -1)
+        return ret;
+    
+    ret = 0;
+    if(lastVal == 0) {
+        for(int i = 1; i <= 9; ++i)
+            if(v[i]) ret += recur(i, len+1);
+        return ret;
+    }
+    
+    for(int i = lastVal-2; i <= lastVal+2; ++i) {
+        if(i < 1 || i > 9 || !v[i]) continue;
+        ret += recur(i, len+1);
+    }
+    
+    return ret;
 }
-
+    
 int main() {
     //freopen("in", "r", stdin);
     //freopen("out", "w", stdout);
     
-    int t, K, V, E, u, v;
+    int t, x;
     scanf("%d", &t);
     
+    
     for(int Case = 1; Case <= t; ++Case) {
-        scanf("%d%d%d", &K, &V, &E);
+        scanf("%d%d", &n, &m);
         
-        for(int i = 0; i < K; ++i)
-            scanf("%d", &k[i]);
-        
-        for(int i = 0; i < E; ++i) {
-            scanf("%d%d", &u, &v);
-            G[u].push_back(v);
+        memset(v, 0, sizeof v);
+        for(int i = 0; i < n; ++i) {
+            scanf("%d", &x);
+            v[x] = 1;
         }
         
-        vis.clear();
-        vis.resize(V, 0);
-        
-        for(int i = 0; i < K; ++i)
-            dfs(k[i], i);
-        
-        int cnt = 0;
-        for(int i = 0; i < V; ++i)
-            if((int)vis[i].count() == K)
-                ++cnt;
-        
-        printf("Case %d: %d\n", Case, cnt);
-        
-        for(int i = 0; i <= V; ++i)
-            G[i].clear();
+        memset(dp, -1, sizeof dp);
+        printf("Case %d: %d\n", Case, recur(0, 0));
     }
+    
     return 0;
 }

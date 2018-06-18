@@ -1,4 +1,5 @@
 // MST Kruskal + Union Find Disjoint Set
+// Complexity of MST : O(E logV)
 
 vector<int>u_list, u_set;               // u_list[x] contains the size of a set x
                                         // u_set[x] contains the root of x
@@ -39,7 +40,27 @@ bool isSameSet(int a, int b) {
     return 0;
 }
 
-vector<pair<int, pair<int, int> > > Edge;
+// Let a graph be G1, and the MST of the graph is MST1
+// and a graph G2, where G2 contains same edges as G1 with some new edges
+// then the new MST of graph G2 will be :
+// MST2 = MST(of the edges used in M1 (MST of G1) + new added edges)
+
+vector<pair<int, pair<int, int> > > Edge;               // If edges are inserted frequently, use STL SET
+
+int MST(int V) {
+    sort(Edge.begin(), Edge.end());                     // Not needed if C++ SET is used
+	int mst_cost = 0, selected_edge = 0;                // There exists no MST if, Selected Edges < V-1
+	unionInit(V);
+	for(int i = 0; i < (int)Edge.size() && selected_edge < V; i++) {
+		u = Edge[i].second.first;
+		v = Edge[i].second.second;
+		w = Edge[i].first;
+		if(!isSameSet(u, v))
+			selected_edge++, mst_cost += w, makeUnion(u, v);
+    }}
+    return mst_cost;
+}
+
 int main() {
 	int V, E, u, v, w;
 	scanf("%d %d", &V, &E);
@@ -47,20 +68,7 @@ int main() {
 		scanf("%d %d %d", &u, &v, &w);
 		Edge.push_back(make_pair(w, make_pair(u, v)));
 	}
-	sort(Edge.begin(), Edge.end());
-	int mst_cost = 0, selected_edge = 0;
-	unionInit(V);
-	for(int i = 0; i < E && selected_edge < V; i++) {
-		u = Edge[i].second.first;
-		v = Edge[i].second.second;
-		w = Edge[i].first;
-		if(!isSameSet(u, v)) {
-			selected_edge++;
-			mst_cost += w;
-			makeUnion(u, v);
-		}
-	}
-	printf("MST in Kruskal : %d\n", mst_cost);
+	printf("MST in Kruskal : %d\n", MST(V));
 	Edge.clear();
 	return 0;
 }

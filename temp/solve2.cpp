@@ -1,57 +1,55 @@
 // LightOJ
-// 1105 - Fi Binary Number
+// 1119 - Pimp My Ride
 
 #include <bits/stdc++.h>
 using namespace std;
-typedef long long ll;
 
-//
-// 1, 10, 100, 101, 1000, 1001, 1010, 10000, 10001, 10010, 10100, 10101
-// 1   2    3    4     5     6     7      8      9     10     11     12
-// 
+int c[20][20], sum[15][(1 << 15)+10], dp[(1 << 15)+10], n;
 
-ll f[60];
-void GenFib() {
-    f[1] = 1;
-    f[2] = 2;
-    //cerr << "1 : 1\n2 : 2\n";
-    for(int i = 3; ; ++i) {
-        f[i] = f[i-1] + f[i-2];
-        //cerr << i << " : " << f[i] << endl;
-        if(f[i] > 1e9)
-            break;
+void GenSumDP() {
+    for(int i = 0; i < n; ++i) {
+        sum[i][0] = 0;
+        
+        for(int j = 0; j < n; ++j)
+            for(int mask = (1<<j); mask < (1<<(j+1)); ++mask) {
+                sum[i][mask] = sum[i][mask ^ (1<<j)] + c[i][j];
+            }
     }
 }
 
-int getLen(int Nth) {
-    for(int i = 1; i < 60; ++i)
-        if(Nth < f[i])
-            return i-1;
-    return -1;
+int recur(int mask) {
+    if(mask == (1<<n)-1)
+        return 0;
+    int &ret = dp[mask];
+    
+    if(ret != -1)
+        return ret;
+    ret = 1e8;
+    for(int i = 0; i < n; ++i) {
+        if(mask & (1<<i))
+            continue;
+        int newMask = mask | (1<<i);
+        ret = min(ret, recur(newMask)+sum[i][newMask]);
+    }
+    
+    return ret;
 }
 
 int main() {
     //freopen("in", "r", stdin);
     //freopen("out", "w", stdout);
     
-    GenFib();
-    int n, t;
+    int t;
     scanf("%d", &t);
     
     for(int Case = 1; Case <= t; ++Case) {
         scanf("%d", &n);
-        int idx = getLen(n);
-        string ans;
-    
-        for(int i = idx; i >= 1; --i) {
-            if(n >= f[i]) {
-                n -= f[i];
-                ans.push_back('1');
-            }
-            else
-                ans.push_back('0');
-        }
-        printf("Case %d: %s\n", Case, ans.c_str());
+        for(int i = 0; i < n; ++i)
+            for(int j = 0; j < n; ++j)
+                scanf("%d", &c[i][j]);
+        GenSumDP();
+        memset(dp, -1, sizeof dp);
+        printf("Case %d: %d\n", Case, recur(0));
     }
     return 0;
 }

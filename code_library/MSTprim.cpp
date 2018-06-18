@@ -8,7 +8,7 @@ bitset<MAX>taken;
 
 void process(int u) {
     taken[u] = 1;
-    for(int i = 0; i < G[u].size(); i++) {
+    for(int i = 0; i < (int)G[u].size(); i++) {
         int v = G[u][i];
         int w = W[u][i];
         if(!taken[v])
