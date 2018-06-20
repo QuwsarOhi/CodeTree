@@ -1,47 +1,39 @@
 // LightOJ
-// 1094 - Farthest Nodes in a Tree
-
-// SOLUTION SAVED
-// ADD TO TEMPLATE (DFS)
-
-// Finding farthest pair of node of a tree
+// 1125 - Divisible Group Sums
 
 #include <bits/stdc++.h>
 using namespace std;
-typedef pair<int, int>pii;
 
-vector<int>G[30010], W[30010];
+long long d, m, n, v[210], dp[201][20][11];
 
-pii dfs(int u, int par, int d) {
-    pii ret(d, u);                                      // {distance, node}
-    for(int i = 0; i < (int)G[u].size(); ++i)
-        if(G[u][i] != par)
-            ret = max(ret, dfs(G[u][i], u, d+W[u][i]));
+long long recur(int pos, int taken, int sum) {
+    if(pos >= n || taken == m) {
+        if(taken == m) return (sum == 0);
+        return 0;
+    }
+    long long &ret = dp[pos][sum][taken];
+    
+    if(ret != -1) 
+        return ret;
+    
+    ret = recur(pos+1, taken+1, (d+(sum+v[pos])%d)%d) + recur(pos+1, taken, sum);
     return ret;
 }
-
+    
 int main() {
-    int t, n, u, v, w;
+    int t, q;
     scanf("%d", &t);
     
     for(int Case = 1; Case <= t; ++Case) {
-        scanf("%d", &n);
+        scanf("%lld%d", &n, &q);
+        for(int i = 0; i < n; ++i) scanf("%lld", &v[i]);
         
-        for(int i = 1; i < n; ++i) {
-            scanf("%d%d%d", &u, &v, &w);
-            G[u].push_back(v);
-            G[v].push_back(u);
-            W[u].push_back(w);
-            W[v].push_back(w);
+        printf("Case %d:\n", Case);
+        while(q--) {
+            scanf("%lld%lld", &d, &m);
+            memset(dp, -1, sizeof dp);
+            printf("%lld\n", recur(0, 0, 0));
         }
-        
-        pii left = dfs(0, -1, 0);
-        pii right = dfs(left.second, -1, 0);
-        printf("Case %d: %d\n", Case, right.first);
-        
-        for(int i = 0; i < n; ++i)
-            G[i].clear(), W[i].clear();
     }
     return 0;
 }
-

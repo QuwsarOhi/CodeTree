@@ -1,11 +1,8 @@
-//Complexity : O(logN)
-#include <bits/stdc++.h>
-using namespace std;
+// Modular Arithmatic
 
 // (2^10 % 5) = powMod(2, 10, 5)
 long long powMod(long long N, long long P, long long M) {
-	if(P==0)
-		return 1;
+	if(P==0) return 1;
 	if(P%2==0) {
 		long long ret = powMod(N, P/2, M)%M;
 		return (ret * ret)%M;
@@ -15,8 +12,7 @@ long long powMod(long long N, long long P, long long M) {
 
 // 2^100 = Pow(2, 100)
 unsigned long long Pow(unsigned long long N, unsigned long long P) {
-	if(P == 0)
-		return 1;
+	if(P == 0) return 1;
 	if(P % 2 == 0) {
 		unsigned long long ret = Pow(N, P/2);
 		return ret*ret;
@@ -26,7 +22,6 @@ unsigned long long Pow(unsigned long long N, unsigned long long P) {
 
 // calculate A mod B, where A : 0<A<(10^100000) (or greater)
 // take input as string and process with aftermod
-
 // calculate A^B mod M, where B : 0<A<(10^100000) (or greater)
 // take input as string and process with aftermod : afterMod(inputAsString, Mod-1)      due to fermat theorem
 
@@ -36,10 +31,8 @@ long long afterMod(string str, ll mod) {        // input as string, as it is big
     
 	for(it = str.begin(); it != str.end(); it++)        // mod from first to last
 		ans = (ans*10 + (*it -'0')) % mod;
-	
     return ans;
 }
-
 
 // Exponent of Big numbers (N^P % M)
 // where N and P is bigger strings (both having length 10^5)
@@ -50,10 +43,8 @@ long long bigExpo(char *N, char *P, long long M) {
     
     for(int j = 0; P[j] != '\0'; ++j)
         ans = (powMod(ans, 10, M) * powMod(base, P[j]-'0', M))%M;
-    
     return ans;
 }
-
 
 // Extended Euclud
 // a*x + b*y = gcd(a, b)
@@ -62,14 +53,12 @@ long long bigExpo(char *N, char *P, long long M) {
 // y_ans = y − (a/d)n
 // where n is an integer
 
-
 // Solution only exists if d | c (i.e : c is divisable by d)
 ll gcdExtended(ll a, ll b, ll *x, ll *y) {          // C function for extended Euclidean Algorithm
     if (a == 0) {                                   // Base Case
         *x = 0, *y = 1;
         return b;
     }
- 
     ll x1, y1;                                     // To store results of recursive call
     ll gcd = gcdExtended(b%a, a, &x1, &y1);
     *x = y1 - (b/a) * x1;
@@ -80,13 +69,7 @@ ll gcdExtended(ll a, ll b, ll *x, ll *y) {          // C function for extended E
 ll modInverse(ll a, ll mod) {
     ll x, y;
     ll g = gcdExtended(a, mod, &x, &y);
-    if (g != 1)                             // ModInverse doesnt exist
-        return -1;
+    if(g != 1) return -1;                   // ModInverse doesnt exist
     ll res = (x%mod + mod) % mod;           // m is added to handle negative x
     return res;
-}
-
-
-int main() {
-    return 0;
 }
