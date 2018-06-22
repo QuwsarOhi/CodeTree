@@ -40,16 +40,18 @@ vector<pair<ull, ull> > primeFactor(ull n) {
 	return factor;
 }
 
-vector<unsigned long long>divisor;		
-void divisors(unsigned long long n) {					// Returns the divisors
-    unsigned long long lim = sqrt(n);
-    for(unsigned long long i = 2; i <= lim; i++) {		//deal with 1 and n manually
+vector<ll> Divisors(ll n) {					// Returns the divisors
+    ll lim = sqrt(n);
+    vector<ll>divisor;
+    for(ll i = 2; i <= lim; i++) {		    // deal with 1 and n manually
         if(n % i == 0) {
-            unsigned long long tmp = n/i;
+            ll tmp = n/i;
             divisor.push_back(tmp);
             if(i != tmp)
                 divisor.push_back(i);
-}}}
+    }}
+    return divisor;
+}
 
 vector<pair<long long, long long> > factorialFactorization(long long n) {	//prime factorization of factorials (n!)
 	vector<pair<long long, long long> >V;

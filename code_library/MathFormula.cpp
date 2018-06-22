@@ -139,8 +139,8 @@ ll C(ll n, ll r) {                          // Usable if MOD value is present
     return (fa[n] * modInverse(b, MOD)) %MOD;
 }
 
-long long catalan(int n) {    // Cat(n) = C(2*n, n)/(n+1);
-    long long c = C(2*n, n);
+ll Catalan(int n) {    // Cat(n) = C(2*n, n)/(n+1);
+    ll c = C(2*n, n);
     return c/(n+1);
 }
 
@@ -178,4 +178,18 @@ ll StarsAndBarsInRange(ll l[], ll r[], ll n, ll k) {
             ret %= MOD;
         }
     return (ret+MOD)%MOD;
+}
+
+vll GetSameMOD(vector<ll>&v) {      // Given an array v, find values k (k > 1), for which v[0]%k = v[1]%k ... = v[n]%k
+    ll gcd;                         // If a number K, leaves the same remainder with 2 numbers, then it must divide their difference.
+    sort(v.begin(), v.end());       // Find all numbers K which divide all the consecutive differences of all elements in the array.       
+    
+    for(int i = 0; i+1 < (int)v.size(); ++i) {      // And it we will take the GCD of all consecutive differences
+        if(i == 0)  gcd = v[i+1] - v[i];
+        else        gcd = __gcd(gcd, v[i+1] - v[i]);
+    }
+    vector<ll> ret = Divisors(gcd);         // GCD is the maximum value of k
+    ret.push_back(gcd);                     // All other values are the divisors of k
+    sort(ret.begin(), ret.end());           // NOTE : 1 is not added in the answer
+    return ret;
 }
