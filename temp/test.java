@@ -69,7 +69,5 @@ public class test {
             first.clear();
             second.clear();
 		}
-        
-        //output.close();
     }
 }
