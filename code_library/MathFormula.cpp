@@ -193,3 +193,17 @@ vll GetSameMOD(vector<ll>&v) {      // Given an array v, find values k (k > 1), 
     sort(ret.begin(), ret.end());           // NOTE : 1 is not added in the answer
     return ret;
 }
+
+ll CountZerosInRangeZeroTo(string n) {              // Returns number of zeros from 0 to n
+    ll x = 0, fx = 0, gx = 0;
+    for(int i = 0; i < (int)n.size(); ++i){
+        ll y = n[i] - '0';
+        fx = 10LL * fx + x - gx * (9LL - y);        // Our formula
+        //fx += MOD;                                // If ans is to be returned in moded value
+        //fx %= MOD;
+        x = 10LL * x + y;                           // Now calculate the new x and g(x)
+        //x %= MOD;
+        if(y == 0LL) gx++;
+    }
+    return fx+1;
+}

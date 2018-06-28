@@ -120,6 +120,10 @@ public class JavaManual {
             System.out.println(T.get(i));
         
         System.out.printf("%d, %d\n", Math.min(10, 11), Math.max(10, 11));
+        
+        Vector<Stack<Integer>> st = new Vector<Stack<Integer>>();                   // Array of stack is not possible, using vector
+        st.setSize(26);                                                             // Declaring size by default (all unused are null)
+        System.out.println(st.get(0) == null);                                      // check if empty/null
     }
     
     public static void main(String[] args) throws IOException {             // exception is for fileIO

@@ -1,1024 +1,816 @@
-Case 1: impossible
-Case 2: impossible
-Case 3: 1875
-Case 4: 1950
-Case 5: impossible
-Case 6: impossible
-Case 7: 1305
-Case 8: 185
-Case 9: 290
-Case 10: 1685
-Case 11: 635
-Case 12: 805
-Case 13: 2050
-Case 14: impossible
-Case 15: 385
-Case 16: 1465
-Case 17: 1330
-Case 18: 130
-Case 19: 1165
-Case 20: impossible
-Case 21: 1430
-Case 22: impossible
-Case 23: 1180
-Case 24: 1365
-Case 25: 765
-Case 26: 1930
-Case 27: impossible
-Case 28: 1355
-Case 29: 1125
-Case 30: 1545
-Case 31: 670
-Case 32: 250
-Case 33: 1890
-Case 34: impossible
-Case 35: impossible
-Case 36: 445
-Case 37: impossible
-Case 38: 490
-Case 39: 1410
-Case 40: 1140
-Case 41: 2020
-Case 42: 1595
-Case 43: 1820
-Case 44: 1905
-Case 45: 725
-Case 46: 780
-Case 47: 280
-Case 48: 160
-Case 49: impossible
-Case 50: 470
-Case 51: 5
-Case 52: 1390
-Case 53: impossible
-Case 54: 1100
-Case 55: impossible
-Case 56: 1320
-Case 57: 1570
-Case 58: 570
-Case 59: 835
-Case 60: 770
-Case 61: 1580
-Case 62: impossible
-Case 63: 1315
-Case 64: 320
-Case 65: 1800
-Case 66: 815
-Case 67: 515
-Case 68: impossible
-Case 69: 345
-Case 70: impossible
-Case 71: 1705
-Case 72: 1735
-Case 73: 710
-Case 74: 1030
-Case 75: 2040
-Case 76: 795
-Case 77: 75
-Case 78: 685
-Case 79: 1265
-Case 80: 1230
-Case 81: 800
-Case 82: 1290
-Case 83: 200
-Case 84: 960
-Case 85: impossible
-Case 86: 985
-Case 87: impossible
-Case 88: 560
-Case 89: 1645
-Case 90: 1575
-Case 91: impossible
-Case 92: 1010
-Case 93: impossible
-Case 94: impossible
-Case 95: impossible
-Case 96: 840
-Case 97: impossible
-Case 98: 460
-Case 99: 1995
-Case 100: 265
-Case 101: 1025
-Case 102: 945
-Case 103: 395
-Case 104: 2015
-Case 105: 1720
-Case 106: 1555
-Case 107: 1990
-Case 108: impossible
-Case 109: 590
-Case 110: 170
-Case 111: impossible
-Case 112: 660
-Case 113: 890
-Case 114: 1590
-Case 115: 925
-Case 116: 155
-Case 117: 350
-Case 118: impossible
-Case 119: impossible
-Case 120: 295
-Case 121: impossible
-Case 122: 65
-Case 123: impossible
-Case 124: 760
-Case 125: 150
-Case 126: 745
-Case 127: 205
-Case 128: 125
-Case 129: impossible
-Case 130: 1840
-Case 131: 180
-Case 132: 440
-Case 133: 1540
-Case 134: 640
-Case 135: impossible
-Case 136: 1965
-Case 137: impossible
-Case 138: 1255
-Case 139: 45
-Case 140: 1060
-Case 141: 495
-Case 142: 915
-Case 143: impossible
-Case 144: 1370
-Case 145: 1445
-Case 146: impossible
-Case 147: 705
-Case 148: 830
-Case 149: 1275
-Case 150: impossible
-Case 151: 1440
-Case 152: 480
-Case 153: 275
-Case 154: 1150
-Case 155: 1815
-Case 156: 255
-Case 157: impossible
-Case 158: 1190
-Case 159: 430
-Case 160: 715
-Case 161: 1600
-Case 162: impossible
-Case 163: 895
-Case 164: 260
-Case 165: 1260
-Case 166: 1185
-Case 167: 465
-Case 168: impossible
-Case 169: 175
-Case 170: 1680
-Case 171: impossible
-Case 172: 240
-Case 173: 1825
-Case 174: 315
-Case 175: 420
-Case 176: 40
-Case 177: 1005
-Case 178: 1515
-Case 179: 450
-Case 180: impossible
-Case 181: impossible
-Case 182: 950
-Case 183: 1770
-Case 184: 1130
-Case 185: 210
-Case 186: 1175
-Case 187: 810
-Case 188: 865
-Case 189: 2035
-Case 190: 920
-Case 191: 15
-Case 192: 550
-Case 193: 555
-Case 194: 870
-Case 195: impossible
-Case 196: 1730
-Case 197: 505
-Case 198: 1860
-Case 199: impossible
-Case 200: impossible
-Case 201: 1200
-Case 202: 1560
-Case 203: 1940
-Case 204: impossible
-Case 205: impossible
-Case 206: impossible
-Case 207: impossible
-Case 208: 880
-Case 209: 500
-Case 210: 2045
-Case 211: 970
-Case 212: impossible
-Case 213: 655
-Case 214: 910
-Case 215: 90
-Case 216: impossible
-Case 217: 1505
-Case 218: 400
-Case 219: 1205
-Case 220: 545
-Case 221: 900
-Case 222: 1790
-Case 223: 1525
-Case 224: 995
-Case 225: 360
-Case 226: 510
-Case 227: 1345
-Case 228: 940
-Case 229: impossible
-Case 230: 1095
-Case 231: 1110
-Case 232: impossible
-Case 233: 1240
-Case 234: 605
-Case 235: 750
-Case 236: 1400
-Case 237: 630
-Case 238: 955
-Case 239: impossible
-Case 240: 1020
-Case 241: 1880
-Case 242: impossible
-Case 243: 485
-Case 244: 1425
-Case 245: 1805
-Case 246: impossible
-Case 247: 1120
-Case 248: impossible
-Case 249: 1760
-Case 250: 1980
-Case 251: 825
-Case 252: impossible
-Case 253: 1985
-Case 254: 1535
-Case 255: 965
-Case 256: 1855
-Case 257: 540
-Case 258: impossible
-Case 259: impossible
-Case 260: 1280
-Case 261: 1160
-Case 262: impossible
-Case 263: 1765
-Case 264: 1835
-Case 265: 680
-Case 266: 120
-Case 267: 1795
-Case 268: 1375
-Case 269: 165
-Case 270: 980
-Case 271: impossible
-Case 272: 675
-Case 273: 215
-Case 274: 85
-Case 275: 740
-Case 276: 1520
-Case 277: 1785
-Case 278: 1380
-Case 279: 775
-Case 280: 380
-Case 281: 140
-Case 282: 1750
-Case 283: 1970
-Case 284: 115
-Case 285: 30
-Case 286: 1895
-Case 287: impossible
-Case 288: 110
-Case 289: 665
-Case 290: 885
-Case 291: 1070
-Case 292: 1635
-Case 293: 790
-Case 294: 1490
-Case 295: impossible
-Case 296: impossible
-Case 297: 55
-Case 298: 1245
-Case 299: 520
-Case 300: 2030
-Case 301: 375
-Case 302: 425
-Case 303: 1360
-Case 304: 35
-Case 305: 650
-Case 306: 1220
-Case 307: 1195
-Case 308: 730
-Case 309: impossible
-Case 310: 1925
-Case 311: 1920
-Case 312: impossible
-Case 313: 1955
-Case 314: 225
-Case 315: 1495
-Case 316: 610
-Case 317: 1665
-Case 318: 1065
-Case 319: 1550
-Case 320: 615
-Case 321: 1500
-Case 322: impossible
-Case 323: 330
-Case 324: 1295
-Case 325: 1485
-Case 326: 595
-Case 327: impossible
-Case 328: 190
-Case 329: 1350
-Case 330: 645
-Case 331: 1510
-Case 332: 415
-Case 333: 10
-Case 334: 95
-Case 335: 335
-Case 336: 355
-Case 337: 310
-Case 338: 1650
-Case 339: impossible
-Case 340: 1615
-Case 341: 2005
-Case 342: 565
-Case 343: 1250
-Case 344: 1135
-Case 345: 990
-Case 346: 1435
-Case 347: 2010
-Case 348: 1690
-Case 349: 695
-Case 350: 1725
-Case 351: 700
-Case 352: 1055
-Case 353: 535
-Case 354: 1830
-Case 355: 1695
-Case 356: 1000
-Case 357: 690
-Case 358: 1715
-Case 359: 195
-Case 360: 1035
-Case 361: 620
-Case 362: 625
-Case 363: 1310
-Case 364: 1670
-Case 365: impossible
-Case 366: 585
-Case 367: 435
-Case 368: 1530
-Case 369: 1565
-Case 370: 1935
-Case 371: 1270
-Case 372: 1900
-Case 373: 1660
-Case 374: impossible
-Case 375: 235
-Case 376: 785
-Case 377: impossible
-Case 378: 365
-Case 379: impossible
-Case 380: 405
-Case 381: 1910
-Case 382: 2000
-Case 383: 1080
-Case 384: 1045
-Case 385: 410
-Case 386: impossible
-Case 387: 455
-Case 388: 575
-Case 389: 1415
-Case 390: 1755
-Case 391: 1480
-Case 392: impossible
-Case 393: 1285
-Case 394: 1420
-Case 395: 1475
-Case 396: 1975
-Case 397: 1115
-Case 398: 1640
-Case 399: impossible
-Case 400: 860
-Case 401: impossible
-Case 402: 20
-Case 403: 1085
-Case 404: 1850
-Case 405: 1710
-Case 406: impossible
-Case 407: 1040
-Case 408: 1585
-Case 409: 1450
-Case 410: 1395
-Case 411: 875
-Case 412: 530
-Case 413: impossible
-Case 414: 25
-Case 415: 1455
-Case 416: 905
-Case 417: 1470
-Case 418: 1630
-Case 419: impossible
-Case 420: 1075
-Case 421: impossible
-Case 422: impossible
-Case 423: 245
-Case 424: impossible
-Case 425: 1170
-Case 426: 720
-Case 427: 1775
-Case 428: impossible
-Case 429: 60
-Case 430: impossible
-Case 431: 135
-Case 432: 820
-Case 433: impossible
-Case 434: 1340
-Case 435: 735
-Case 436: 50
-Case 437: 1620
-Case 438: 1945
-Case 439: 1335
-Case 440: 475
-Case 441: 850
-Case 442: impossible
-Case 443: 370
-Case 444: impossible
-Case 445: 975
-Case 446: 145
-Case 447: impossible
-Case 448: 525
-Case 449: impossible
-Case 450: 845
-Case 451: 1605
-Case 452: 1745
-Case 453: impossible
-Case 454: impossible
-Case 455: 1050
-Case 456: 1915
-Case 457: impossible
-Case 458: impossible
-Case 459: 1870
-Case 460: 1625
-Case 461: impossible
-Case 462: impossible
-Case 463: 105
-Case 464: 390
-Case 465: 1780
-Case 466: 1210
-Case 467: 1090
-Case 468: 2025
-Case 469: 1235
-Case 470: 1015
-Case 471: 230
-Case 472: 2055
-Case 473: 270
-Case 474: impossible
-Case 475: 1655
-Case 476: 1885
-Case 477: 1740
-Case 478: impossible
-Case 479: 930
-Case 480: 1145
-Case 481: 855
-Case 482: 1215
-Case 483: 220
-Case 484: 1225
-Case 485: 325
-Case 486: 1700
-Case 487: 1385
-Case 488: 1610
-Case 489: 580
-Case 490: impossible
-Case 491: 935
-Case 492: 1105
-Case 493: 70
-Case 494: 1300
-Case 495: 340
-Case 496: 305
-Case 497: 1675
-Case 498: 100
-Case 499: 1865
-Case 500: 285
-Case 501: 300
-Case 502: 1845
-Case 503: impossible
-Case 504: 1810
-Case 505: 80
-Case 506: 1960
-Case 507: 755
-Case 508: 1460
-Case 509: 1405
-Case 510: 1325
-Case 511: 1155
-Case 512: 600
-Case 513: 494025
-Case 514: 246130
-Case 515: 433925
-Case 516: impossible
-Case 517: 58265
-Case 518: 243290
-Case 519: impossible
-Case 520: impossible
-Case 521: 371605
-Case 522: impossible
-Case 523: impossible
-Case 524: 153075
-Case 525: impossible
-Case 526: 118930
-Case 527: 206335
-Case 528: impossible
-Case 529: impossible
-Case 530: 79480
-Case 531: impossible
-Case 532: 468885
-Case 533: 252565
-Case 534: 306695
-Case 535: impossible
-Case 536: 83375
-Case 537: 55930
-Case 538: 316615
-Case 539: 88650
-Case 540: 329360
-Case 541: 357855
-Case 542: 164830
-Case 543: impossible
-Case 544: impossible
-Case 545: 310245
-Case 546: 220255
-Case 547: 130505
-Case 548: 63115
-Case 549: 174305
-Case 550: impossible
-Case 551: 432525
-Case 552: 488005
-Case 553: 167985
-Case 554: impossible
-Case 555: 449315
-Case 556: 498860
-Case 557: 49450
-Case 558: 195075
-Case 559: 139090
-Case 560: 3030
-Case 561: 231610
-Case 562: 8095
-Case 563: impossible
-Case 564: impossible
-Case 565: 122190
-Case 566: 104440
-Case 567: 351770
-Case 568: 102065
-Case 569: 293660
-Case 570: 473230
-Case 571: 180690
-Case 572: impossible
-Case 573: 397165
-Case 574: 152745
-Case 575: impossible
-Case 576: 251525
-Case 577: 289770
-Case 578: 251205
-Case 579: impossible
-Case 580: 422890
-Case 581: 486615
-Case 582: impossible
-Case 583: 67485
-Case 584: 254495
-Case 585: impossible
-Case 586: 210175
-Case 587: 394095
-Case 588: 85885
-Case 589: 20645
-Case 590: 311835
-Case 591: impossible
-Case 592: 74920
-Case 593: 104215
-Case 594: 20200
-Case 595: 423665
-Case 596: 172840
-Case 597: impossible
-Case 598: 161615
-Case 599: 382315
-Case 600: 437795
-Case 601: 461585
-Case 602: 145030
-Case 603: 406435
-Case 604: 251220
-Case 605: impossible
-Case 606: 44975
-Case 607: 388005
-Case 608: 387435
-Case 609: 206995
-Case 610: 470055
-Case 611: 319085
-Case 612: 412135
-Case 613: 145080
-Case 614: 16605
-Case 615: 451080
-Case 616: 132415
-Case 617: impossible
-Case 618: 106450
-Case 619: 487385
-Case 620: 421925
-Case 621: 400595
-Case 622: 149055
-Case 623: 129440
-Case 624: 424540
-Case 625: 272835
-Case 626: impossible
-Case 627: 23250
-Case 628: 125700
-Case 629: 165385
-Case 630: 380280
-Case 631: 288585
-Case 632: 119295
-Case 633: 15250
-Case 634: 469765
-Case 635: impossible
-Case 636: impossible
-Case 637: 102085
-Case 638: 388085
-Case 639: 384630
-Case 640: 400700
-Case 641: 466115
-Case 642: 230735
-Case 643: impossible
-Case 644: impossible
-Case 645: impossible
-Case 646: 152755
-Case 647: 1920
-Case 648: 458865
-Case 649: 513410
-Case 650: impossible
-Case 651: 288550
-Case 652: 405715
-Case 653: 248290
-Case 654: 486845
-Case 655: impossible
-Case 656: 250400
-Case 657: 80775
-Case 658: 107815
-Case 659: 502695
-Case 660: impossible
-Case 661: 17495
-Case 662: 200750
-Case 663: 430275
-Case 664: 105060
-Case 665: impossible
-Case 666: impossible
-Case 667: 95450
-Case 668: 241755
-Case 669: 286075
-Case 670: 258180
-Case 671: 243660
-Case 672: 489675
-Case 673: 14895
-Case 674: 359265
-Case 675: 239160
-Case 676: 104835
-Case 677: 107995
-Case 678: 353290
-Case 679: 227605
-Case 680: 254300
-Case 681: 288760
-Case 682: impossible
-Case 683: 80450
-Case 684: 464580
-Case 685: 360740
-Case 686: 305310
-Case 687: 448970
-Case 688: 24105
-Case 689: 403880
-Case 690: 108075
-Case 691: 218825
-Case 692: 163340
-Case 693: 328820
-Case 694: impossible
-Case 695: 519755
-Case 696: impossible
-Case 697: 304180
-Case 698: 144970
-Case 699: 55935
-Case 700: 191750
-Case 701: impossible
-Case 702: impossible
-Case 703: 451810
-Case 704: 238300
-Case 705: impossible
-Case 706: 730
-Case 707: 502180
-Case 708: 369655
-Case 709: 312665
-Case 710: 344030
-Case 711: 204250
-Case 712: 87105
-Case 713: 286960
-Case 714: 481170
-Case 715: 76135
-Case 716: 100465
-Case 717: impossible
-Case 718: 496475
-Case 719: impossible
-Case 720: 297785
-Case 721: 251315
-Case 722: 372670
-Case 723: impossible
-Case 724: 409305
-Case 725: impossible
-Case 726: 287295
-Case 727: impossible
-Case 728: 446145
-Case 729: 127950
-Case 730: impossible
-Case 731: impossible
-Case 732: 315690
-Case 733: 21345
-Case 734: 184655
-Case 735: 416170
-Case 736: impossible
-Case 737: 345800
-Case 738: 521360
-Case 739: 364195
-Case 740: 195950
-Case 741: impossible
-Case 742: 301870
-Case 743: 167110
-Case 744: 115435
-Case 745: 220790
-Case 746: 209595
-Case 747: 59675
-Case 748: 399360
-Case 749: impossible
-Case 750: 446185
-Case 751: 310365
-Case 752: 383380
-Case 753: 270400
-Case 754: 258885
-Case 755: 375860
-Case 756: 259715
-Case 757: impossible
-Case 758: 248260
-Case 759: 363550
-Case 760: impossible
-Case 761: 201265
-Case 762: 385955
-Case 763: 256115
-Case 764: 442705
-Case 765: 209145
-Case 766: impossible
-Case 767: 187005
-Case 768: 432475
-Case 769: 55175685
-Case 770: 143300115
-Case 771: 23682340
-Case 772: impossible
-Case 773: 61763785
-Case 774: 259199370
-Case 775: 15159610
-Case 776: 258915815
-Case 777: 229434695
-Case 778: 262229405
-Case 779: 20451305
-Case 780: 191403970
-Case 781: 109673320
-Case 782: impossible
-Case 783: 189916030
-Case 784: 45071370
-Case 785: impossible
-Case 786: 132699010
-Case 787: 106286945
-Case 788: 198824525
-Case 789: impossible
-Case 790: impossible
-Case 791: impossible
-Case 792: 53058735
-Case 793: 184452235
-Case 794: impossible
-Case 795: 53254960
-Case 796: 120081780
-Case 797: 126727260
-Case 798: 3863465
-Case 799: 47806520
-Case 800: 136157375
-Case 801: 68289630
-Case 802: 117480435
-Case 803: 230691780
-Case 804: 98720720
-Case 805: 198258905
-Case 806: 52183215
-Case 807: 35477820
-Case 808: 49721550
-Case 809: 211331240
-Case 810: 26270975
-Case 811: 27527090
-Case 812: 20436720
-Case 813: impossible
-Case 814: 118299440
-Case 815: impossible
-Case 816: 20857170
-Case 817: 29068750
-Case 818: 23178735
-Case 819: 267465510
-Case 820: impossible
-Case 821: 95730170
-Case 822: impossible
-Case 823: 37862375
-Case 824: 67610845
-Case 825: 67025435
-Case 826: 159893740
-Case 827: 38192800
-Case 828: 259903335
-Case 829: impossible
-Case 830: 188984045
-Case 831: 96319420
-Case 832: impossible
-Case 833: impossible
-Case 834: 32080015
-Case 835: 212019625
-Case 836: 98195725
-Case 837: 114561855
-Case 838: 212236030
-Case 839: 34372585
-Case 840: 180532390
-Case 841: 245408175
-Case 842: 30302525
-Case 843: 19852465
-Case 844: 158550565
-Case 845: 120319935
-Case 846: 208951250
-Case 847: 246546290
-Case 848: 152460540
-Case 849: 177014305
-Case 850: 262737655
-Case 851: 195579290
-Case 852: 72857155
-Case 853: 50157300
-Case 854: impossible
-Case 855: 199027635
-Case 856: 244119950
-Case 857: impossible
-Case 858: 137997785
-Case 859: 4540340
-Case 860: impossible
-Case 861: 171631055
-Case 862: 266057155
-Case 863: 110384775
-Case 864: impossible
-Case 865: 21649910
-Case 866: impossible
-Case 867: 251047945
-Case 868: 70356165
-Case 869: 1308345
-Case 870: 67072425
-Case 871: 203192510
-Case 872: 55171750
-Case 873: 202916520
-Case 874: 97545275
-Case 875: 94034600
-Case 876: 172306500
-Case 877: 168499815
-Case 878: 58282645
-Case 879: 267440330
-Case 880: 246001760
-Case 881: 193007345
-Case 882: 35422465
-Case 883: 219349050
-Case 884: impossible
-Case 885: 52903395
-Case 886: 203047375
-Case 887: 113070190
-Case 888: 216993070
-Case 889: 43269920
-Case 890: impossible
-Case 891: 48223350
-Case 892: 239498090
-Case 893: 118853200
-Case 894: 130649235
-Case 895: 242945735
-Case 896: 260716110
-Case 897: 178398545
-Case 898: 147667585
-Case 899: impossible
-Case 900: 120187145
-Case 901: 154617800
-Case 902: 101339180
-Case 903: 106662905
-Case 904: 9038215
-Case 905: 226212240
-Case 906: impossible
-Case 907: 154989885
-Case 908: 100730715
-Case 909: 265966170
-Case 910: impossible
-Case 911: 39480735
-Case 912: 200923500
-Case 913: impossible
-Case 914: 237759000
-Case 915: impossible
-Case 916: 129020250
-Case 917: 267646770
-Case 918: impossible
-Case 919: impossible
-Case 920: 10816030
-Case 921: 243609030
-Case 922: 123727060
-Case 923: impossible
-Case 924: 83798060
-Case 925: 5040060
-Case 926: 39713420
-Case 927: impossible
-Case 928: 46354165
-Case 929: 174245790
-Case 930: 213229040
-Case 931: 183010455
-Case 932: impossible
-Case 933: 93609425
-Case 934: 152004170
-Case 935: impossible
-Case 936: 103925815
-Case 937: impossible
-Case 938: 214673200
-Case 939: 228726760
-Case 940: 218632970
-Case 941: 119226135
-Case 942: impossible
-Case 943: impossible
-Case 944: 201790030
-Case 945: 232172875
-Case 946: 193133145
-Case 947: 139833505
-Case 948: 30091410
-Case 949: 71464880
-Case 950: 250923600
-Case 951: 115876745
-Case 952: 133786735
-Case 953: 77839720
-Case 954: 220420075
-Case 955: 177421655
-Case 956: 37334235
-Case 957: 23648055
-Case 958: 106746615
-Case 959: impossible
-Case 960: 249061255
-Case 961: 208692330
-Case 962: 131820610
-Case 963: 165836305
-Case 964: 245120050
-Case 965: 226143515
-Case 966: 45429575
-Case 967: 106708575
-Case 968: impossible
-Case 969: 10370910
-Case 970: 133364420
-Case 971: 152010125
-Case 972: impossible
-Case 973: 217215945
-Case 974: impossible
-Case 975: 153928770
-Case 976: 88748210
-Case 977: 134859270
-Case 978: 127623820
-Case 979: impossible
-Case 980: 50124870
-Case 981: 259720840
-Case 982: 40353815
-Case 983: 239814395
-Case 984: impossible
-Case 985: 207355450
-Case 986: 100640910
-Case 987: impossible
-Case 988: impossible
-Case 989: impossible
-Case 990: 150337210
-Case 991: 109472790
-Case 992: 31143715
-Case 993: 38741410
-Case 994: 10916730
-Case 995: 75877340
-Case 996: 117414970
-Case 997: impossible
-Case 998: 160009350
-Case 999: 72822030
-Case 1000: 79652045
-Case 1001: 117051770
-Case 1002: 152371410
-Case 1003: impossible
-Case 1004: 121459850
-Case 1005: 79337680
-Case 1006: 163221450
-Case 1007: 119777190
-Case 1008: 192224915
-Case 1009: 236032710
-Case 1010: 16508220
-Case 1011: 63399635
-Case 1012: impossible
-Case 1013: 182096290
-Case 1014: 176578000
-Case 1015: 214511575
-Case 1016: 171289835
-Case 1017: 24836120
-Case 1018: 239767240
-Case 1019: 164608855
-Case 1020: 163136005
-Case 1021: 135032825
-Case 1022: impossible
-Case 1023: 75606410
-Case 1024: 400000015
+y
+n
+n
+y
+n
+n
+y
+n
+y
+y
+n
+y
+n
+y
+n
+n
+y
+y
+n
+y
+y
+y
+n
+n
+y
+y
+n
+n
+y
+n
+n
+y
+n
+y
+n
+y
+n
+y
+n
+y
+y
+y
+n
+n
+y
+n
+n
+y
+n
+n
+n
+n
+n
+y
+y
+n
+y
+y
+n
+y
+n
+y
+y
+y
+n
+y
+y
+y
+y
+y
+y
+n
+y
+y
+y
+y
+y
+n
+n
+n
+n
+y
+n
+y
+y
+n
+n
+y
+y
+y
+y
+y
+y
+n
+y
+n
+y
+y
+n
+y
+y
+y
+y
+n
+y
+y
+y
+y
+n
+n
+y
+y
+n
+y
+y
+y
+y
+y
+n
+n
+n
+y
+y
+y
+y
+n
+y
+y
+y
+n
+n
+y
+n
+y
+y
+y
+y
+n
+n
+y
+n
+n
+y
+y
+n
+y
+y
+y
+y
+y
+y
+y
+y
+y
+y
+n
+n
+n
+y
+y
+y
+n
+n
+y
+y
+y
+y
+n
+n
+y
+n
+y
+n
+n
+y
+y
+n
+y
+n
+y
+n
+n
+y
+n
+y
+y
+n
+y
+y
+y
+n
+y
+y
+y
+y
+n
+n
+n
+n
+y
+n
+y
+n
+n
+y
+n
+y
+y
+y
+n
+n
+n
+n
+y
+y
+n
+n
+n
+y
+n
+y
+n
+y
+y
+y
+n
+y
+y
+n
+y
+n
+n
+y
+y
+n
+n
+y
+n
+y
+n
+y
+n
+n
+n
+y
+n
+y
+n
+n
+y
+n
+y
+n
+n
+y
+y
+n
+y
+n
+y
+y
+n
+n
+n
+n
+n
+n
+n
+y
+n
+n
+y
+n
+n
+y
+y
+y
+n
+n
+n
+y
+n
+n
+n
+n
+y
+y
+n
+y
+n
+n
+n
+n
+y
+y
+y
+n
+n
+y
+y
+n
+y
+y
+n
+n
+y
+n
+n
+y
+n
+y
+y
+y
+n
+y
+y
+n
+y
+n
+n
+n
+n
+n
+y
+n
+n
+n
+n
+y
+n
+y
+y
+n
+n
+y
+n
+n
+y
+y
+y
+n
+y
+y
+y
+n
+y
+y
+y
+y
+n
+n
+n
+n
+n
+n
+n
+y
+n
+n
+y
+y
+y
+n
+y
+y
+y
+y
+n
+n
+y
+y
+y
+y
+y
+n
+n
+n
+n
+y
+y
+n
+y
+n
+y
+y
+y
+y
+n
+n
+y
+n
+n
+n
+y
+n
+y
+n
+n
+y
+n
+n
+n
+n
+y
+y
+n
+n
+n
+n
+n
+y
+y
+y
+y
+n
+n
+n
+n
+y
+n
+y
+n
+y
+n
+n
+y
+y
+y
+n
+y
+n
+y
+n
+n
+n
+n
+y
+y
+n
+n
+y
+y
+y
+y
+n
+n
+n
+y
+n
+y
+n
+n
+y
+y
+y
+n
+n
+n
+n
+y
+n
+n
+n
+y
+n
+y
+n
+n
+n
+y
+n
+n
+n
+y
+n
+y
+n
+n
+n
+n
+n
+y
+y
+y
+n
+y
+n
+n
+n
+n
+n
+n
+n
+n
+n
+n
+y
+n
+n
+y
+n
+y
+y
+y
+n
+n
+n
+n
+n
+n
+y
+n
+n
+n
+y
+n
+n
+n
+y
+n
+n
+y
+n
+n
+n
+n
+n
+n
+n
+n
+y
+y
+y
+n
+n
+y
+y
+y
+n
+n
+n
+y
+y
+n
+y
+y
+y
+y
+n
+y
+n
+y
+n
+y
+y
+n
+y
+n
+n
+y
+n
+n
+n
+y
+y
+n
+n
+y
+n
+y
+n
+n
+n
+n
+n
+n
+y
+y
+n
+y
+n
+n
+n
+n
+n
+n
+y
+y
+n
+n
+n
+y
+y
+n
+n
+y
+n
+y
+y
+n
+y
+y
+y
+n
+n
+n
+n
+n
+y
+n
+y
+n
+y
+y
+y
+y
+n
+y
+y
+y
+y
+n
+y
+y
+y
+n
+n
+y
+n
+y
+n
+y
+y
+y
+y
+y
+y
+y
+y
+y
+y
+n
+y
+y
+n
+y
+y
+n
+y
+y
+n
+y
+y
+n
+y
+n
+y
+y
+y
+y
+y
+y
+y
+y
+n
+n
+y
+y
+n
+y
+y
+y
+n
+n
+n
+y
+y
+y
+y
+y
+y
+y
+y
+n
+n
+y
+y
+y
+y
+n
+y
+n
+y
+y
+y
+y
+y
+y
+n
+y
+y
+y
+y
+n
+y
+y
+y
+n
+n
+n
+y
+y
+y
+y
+y
+y
+y
+y
+y
+y
+y
+y
+y
+y
+n
+y
+y
+y
+n
+y
+y
+y
+y
+y
+n
+n
+y
+y
+y
+n
+n
+y
+n
+y
+y
+y
+n
+y
+n
+n
+n
+y
+n
+y
+y
+n
+y
+y
+y
+y
+y
+y
+y
+n
+y
+y
+y
+n
+y
+y
+y
+y
+y
+n
+n
+y
+y
+y
+y
+y
+y
+y
+n
+y
+n
+y
+n
+y
+n
+y
+y
+y
+y
+y
+y
+n
+y
+y
+y
+y
+y
+n
+y
+n
+n
+y
+y
+y
+y
+n
+y
+y
+y
+y
+y
+n
