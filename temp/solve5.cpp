@@ -1,31 +1,60 @@
 #include <bits/stdc++.h>
+#define LL long long
 using namespace std;
-typedef unsigned long long ll;
 
+const int M = 998244353;
+const int N = 1000+7;
 
-vector<ll> CountInterval(int n) {                       // returns number of overlaps of all inclusive points
-    vector<pair<ll, int> >v;                            // segments start/end and marker (segments are l - r inclusive)
-    vector<ll>ret(n+1);                                 // returns : ret[number_of_overlaps] = total_number_of_points
-    ll l, r;
-    while(n--) {
-        cin >> l >> r;                                  // input
-        v.push_back({l, 1}), v.push_back({r+1, -1});    // r+1 as l - r is segment boundary
-    }
-    sort(v.begin(), v.end());
-    for(int i = 0, cnt = v[0].second; i < (int)v.size(); ++i, cnt += v[i].second)       // cnt contains the overlaps
-        if(i+1 < (int)v.size() and v[i].first != v[i+1].first)                          // v[i].first == v[i+1].first then 
-            ret[cnt] += v[i+1].first - v[i].first;                      // there may exist more points at front, so take them first
-    return ret;
+int a[N];
+LL CC[N][N];
+
+void build()
+{
+    for (int i=0; i<N; i++)
+        CC[i][0] = 1;
+
+    for (int i=1; i<N; i++)
+        for (int j=1; j<N; j++)
+            CC[i][j] = (CC[i-1][j-1] + CC[i-1][j])%M;
 }
 
-int main() {
+LL C(int n, int r)
+{
+    if (r<0 || r>n) return 0;
+    return CC[n][r];
+}
+
+LL dp[N];
+
+int main()
+{
+    build();
     int n;
-    cin >> n;
-    
-    vector<ll> ret = CountSegment(n);
-    
-    for(int i = 1; i < (int)ret.size()-1; ++i)
-        cout << ret[i] << " ";
-    cout << ret[n] << "\n";
-    return 0;
+    cin>>n;
+
+    for (int i=0; i<n; i++)
+        cin>>a[i];
+
+    dp[n] = 1;
+    for (int i=n-1; i>=0; i--) {
+        if (a[i] == 0)      continue;
+
+        for (int j=i+1; j<=n; j++) {
+            
+            int opt = j-i-1;
+            //cout<<i<<" "<<j<<" "<<opt<<" "<<a[i] << endl;
+            printf("( dp[%d] (%lld) + C(%d, %d) (%lld) )* dp[%d] (%lld) = ", i, dp[i], opt, a[i], C(opt, a[i]), j, dp[j]);
+            dp[i] = (dp[i] + C(opt, a[i]) * dp[j])%M;
+            printf("%lld\n", dp[i]);
+        }
+        cout << "\n";
+    }
+
+    LL ans = 0;
+    for (int i=0; i<n; i++)
+    {
+        ans = (ans + dp[i])%M;
+        //cout<<i<<" "<<dp[i]<<endl;
+    }
+    cout<<ans<<endl;
 }

@@ -60,28 +60,6 @@ int BirthdayParadox(int days, int targetPercent = 50) {         // Returns Numbe
     return people;
 }
 
-//Building Pascle of 50 rows
-long long p[55][54];
-void buildPascle() {                                // This Contains values of nCr : p[n][r] 
-    p[0][0] = 1;
-    p[1][0] = p[1][1] = 1;
-    for(int i = 2; i <= 50; i++)
-        for(int j = 0; j <= i; j++) {
-            if(j == 0 || j == i)
-                p[i][j] = 1;
-            else
-                p[i][j] = p[i-1][j-1] + p[i-1][j];
-        }
-    /*for(int i = 0; i <= 50; i++) {                // Uncomment this if you want to see the full triangle
-        for(int j = 0; j <=i; j++)
-            printf("%lld ", p[i][j]);
-        printf("\n");
-    }
-    */
-    return;
-}
-
-
 /* Euler’s Totient function Φ(n) for an input n is count of numbers in {1, 2, 3, …, n} 
  * that are relatively prime to n, i.e., the numbers whose GCD (Greatest Common Divisor) with n is 1.
  * Phi(4) :  GCD(1, 4) = 1,  GCD(3, 4)
@@ -142,6 +120,24 @@ ll C(ll n, ll r) {                          // Usable if MOD value is present
 ll Catalan(int n) {    // Cat(n) = C(2*n, n)/(n+1);
     ll c = C(2*n, n);
     return c/(n+1);
+}
+
+// Building Pascle C(n, r)
+ll p[MAX][MAX];
+void buildPascle() {                                // This Contains values of nCr : p[n][r] 
+    p[0][0] = 1;
+    p[1][0] = p[1][1] = 1;
+    for(int i = 2; i <= 50; i++)
+        for(int j = 0; j <= i; j++) {
+            if(j == 0 || j == i)
+                p[i][j] = 1;
+            else
+                p[i][j] = p[i-1][j-1] + p[i-1][j];
+}}
+
+ll C(int n, int r) {
+    if (r<0 || r>n) return 0;
+    return p[n][r];
 }
 
 // STARS AND BARS THEOREM with Principle of Inclusion Exclution
