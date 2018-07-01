@@ -1,92 +1,60 @@
-// F. One Occurrence
-
 #include <bits/stdc++.h>
-#define MAX 500010
+#define MAX 300010
 using namespace std;
 
-struct query {
-    int l, r, id;
-};
+vector<int> G[MAX];
+vector<pair<int, int> >ans;
+int dfs_num[MAX], dfs_low[MAX], parent[MAX], dfsCounter;
 
-const int block = 800;          // For 500000
-query q[MAX];
-int ans[MAX];
-int v[MAX];
-int cnt[MAX];
-set<int>Set;
+void bridge(int u)
+{
+    //dfs_num[u] is the dfs counter of u node
+    //dfs_low[u] is the minimum dfs counter of u node (it is minimum if a backedge exists)
 
-int T;
+    dfs_num[u] = dfs_low[u] = ++dfsCounter;
+    for(int i = 0; i < (int)G[u].size(); i++) {
+        int v = G[u][i];
+        if(dfs_num[v] == 0) {
+            parent[v] = u;
 
-bool cmp(query &a, query &b) {
-    int block_a = a.l/block, block_b = b.l/block;
-    if(block_a == block_b)
-        return a.r < b.r;
-    return block_a < block_b;
+            bridge(v);
+            //if dfs_num[u] is lower than dfs_low[v], then there is no back edge on u node
+            //so u - v can be a bridge
+            if(dfs_num[u] < dfs_low[v])
+                ans.push_back(make_pair(min(u, v), max(u, v)));
+
+            //obtainig lower dfs counter (if found) from child nodes
+            dfs_low[u] = min(dfs_low[u], dfs_low[v]);
+        }
+        //if v is not parent of u then it is a back edge
+        //also dfs_num[v] must be less than dfs_low[u]
+        //so we update it
+
+        else if(parent[u] != v)
+            dfs_low[u] = min(dfs_low[u], dfs_num[v]);
+    }
 }
 
-bool cmp2(query &a,query &b){
-	if(a.l/block !=b.l/block)   return a.l < b.l;
-	if((a.l/block)&1)           return a.r < b.r;
-	return a.r > b.r;
+
+void FindBridge(int V){                             //Bridge finding code
+    memset(dfs_num, 0, sizeof(dfs_num));
+    dfsCounter = 0;
+    for(int i = 1; i <= V; i++)
+        if(dfs_num[i] == 0)
+            bridge(i);
 }
-
-void add(int x) {       // Add x'th value in range
-    T = v[x];
-    ++cnt[T];
-    if(cnt[T] == 1)
-        Set.insert(T);
-    else if(Set.count(T))
-        Set.erase(T);
-}
-
-
-void remove(int x) {    // Remove x'th value from range
-    int T = v[x];
-    --cnt[T];
-    if(cnt[T] == 1)
-        Set.insert(T);
-    else if(Set.count(T))
-        Set.erase(T);
-}
-
 
 int main() {
-    int n, Q;
-
-    scanf("%d", &n);
-    for(int i = 0; i < n; ++i)
-        scanf("%d", &v[i]);
-
-    scanf("%d", &Q);
-    for(int i = 0; i < Q; ++i) {
-        scanf("%d%d", &q[i].l, &q[i].r);
-        --q[i].l, --q[i].r;
-        q[i].id = i;
-    }
-
-    sort(q, q+Q, cmp2);
-    int l = 0, r = -1;
+    int V, E, u, v;
+    scanf("%d%d", &V, &E);
     
-    //cerr << "DONE\n";
-    
-    for(int i = 0; i < Q; ++i) {
-        while(l > q[i].l)   add(--l);
-        while(r < q[i].r)   add(++r);
-        while(l < q[i].l)   remove(l++);
-        while(r > q[i].r)   remove(r--);
-        
-        /*for(int i = 0; i < 10; ++i)
-            cerr << i << " : " << cnt[i] << endl;
-        cerr << "--------------\n";
-        for(auto it : Set)
-            cerr << it << " ";
-        cerr << endl;*/
-        
-        ans[q[i].id] = (Set.empty() ? 0:*Set.begin());                     // Add Constraints
+    for(int i = 0; i < E; ++i) {
+        scanf("%d%d", &u, &v);
+        G[u].push_back(v);
+        G[v].push_back(u);
     }
-
-    for(int i = 0; i < Q; ++i)
-        printf("%d\n", ans[i]);
-
+    
+    FindBridge(V);
+    printf("%d\n", (int)ans.size());
     return 0;
 }

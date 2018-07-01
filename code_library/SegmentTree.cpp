@@ -321,11 +321,12 @@ struct SegTreeRMS {
 
 // Merge Sort Tree
 struct MergeSortTree {
-    vector<int>tree(MAX);
+    vector<int>tree[MAX];
 
     void init(int pos, int l, int r, ll val[]) {
+        tree[pos].clear();                              // Clears past values
         if(l == r) {
-            tree[pos].pb(val[l]);
+            tree[pos].push_back(val[l]);
             return;
         }
     
@@ -340,12 +341,11 @@ struct MergeSortTree {
             return 0;
     
         if(L <= l && r <= R)
-            return (int)tree[pos].size() - (upper_bound(tree[pos].begin(), tree[pos].end(), k) - tree[pos].begin());
+            return (int)tree[pos].size() - (upper_bound(tree[pos].begin(), tree[pos].end(), k) - tree[pos].begin());        // MODIFY
     
         int mid = (l+r)>>1;
         return query(pos<<1, l, mid, L, R, k) + query(pos<<1|1, mid+1, r, L, R, k);
-    }
-};
+}};
 
 
 

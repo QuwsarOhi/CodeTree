@@ -1,21 +1,16 @@
 //Complexity : O(V+E)
 //Finding Bridges (Graph)
 
-#include<bits/stdc++.h>
-#define MAX 150
-using namespace std;
-
 vector<int> G[MAX];
 vector<pair<int, int> >ans;
 int dfs_num[MAX], dfs_low[MAX], parent[MAX], dfsCounter;
 
-void bridge(int u)
-{
+void bridge(int u) {
     //dfs_num[u] is the dfs counter of u node
     //dfs_low[u] is the minimum dfs counter of u node (it is minimum if a backedge exists)
 
     dfs_num[u] = dfs_low[u] = ++dfsCounter;
-    for(int i = 0; i < G[u].size(); i++) {
+    for(int i = 0; i < (int)G[u].size(); i++) {
         int v = G[u][i];
         if(dfs_num[v] == 0) {
             parent[v] = u;
@@ -35,23 +30,22 @@ void bridge(int u)
 
         else if(parent[u] != v)
             dfs_low[u] = min(dfs_low[u], dfs_num[v]);
-    }
+}}
+
+void FindBridge(int V){                             //Bridge finding code
+    memset(dfs_num, 0, sizeof(dfs_num));
+    dfsCounter = 0;
+    for(int i = 0; i < V; i++)
+        if(dfs_num[i] == 0)
+            bridge(i);
 }
 
-
-int main()
-{
-        //Bridge finding code
-        memset(dfs_num, 0, sizeof(dfs_num));
-        dfsCounter = 0;
-        for(int i = 0; i < n; i++)
-            if(dfs_num[i] == 0)
-                bridge(i);
-
-        //Output
-        sort(ans.begin(), ans.end());
-        for(int i = 0; i < ans.size(); i++)
-            printf("%d - %d\n", ans[i].first, ans[i].second);
-        printf("\n");
+int main() {
+    FindBridge(100);
+    //Output
+    sort(ans.begin(), ans.end());
+    for(int i = 0; i < ans.size(); i++)
+        printf("%d - %d\n", ans[i].first, ans[i].second);
+    printf("\n");
     return 0;
 }
