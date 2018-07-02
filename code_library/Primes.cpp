@@ -53,7 +53,7 @@ vector<ll> Divisors(ll n) {					// Returns the divisors
     return divisor;
 }
 
-vector<pair<long long, long long> > factorialFactorization(long long n) {	//prime factorization of factorials (n!)
+vector<pair<long long, long long> > factorialFactorization(long long n) {	// prime factorization of factorials (n!)
 	vector<pair<long long, long long> >V;
 	for(long long i = 0; i < (int)primes.size() && primes[i] <= n; i++) {
 		long long tmp = n, power = 0;
@@ -117,8 +117,8 @@ int NumberOfDivisors(long long n) {       // if n = p1^a1 * p2^a2,... then NOD =
 }
 
 //------Fast Factorization using Sieve-Like algorithm-------
-bitset<10001000>isPrime;
-int divisor[10000100];
+bitset<MAX>isPrime;
+int divisor[MAX];
 
 void sieve(long long lim) {             // Prime numbers for the limit should be sieved, otherwise WA
     isPrime.set();

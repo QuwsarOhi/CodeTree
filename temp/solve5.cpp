@@ -55,6 +55,13 @@ int main() {
     }
     
     FindBridge(V);
+    
+    int ActualBridge = 0;
+    sort(ans.begin(), ans.end());
+    
+    for(int i = 1; i < (int)ans.size(); ++i) {
+        if(ans[i-1].)
+    
     printf("%d\n", (int)ans.size());
     return 0;
 }
