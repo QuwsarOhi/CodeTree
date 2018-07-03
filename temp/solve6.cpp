@@ -1,84 +1,58 @@
-// LightOJ
-// http://lightoj.com/volume_showproblem.php?problem=1141
-
 #include <bits/stdc++.h>
-#define MAX 1010
 using namespace std;
 
-bitset<MAX>isPrime;
-int divisor[MAX];
+struct point {          // In Integer
+    int x, y;
+    point() { x = y = 0; }
+    point(int _x, int _y) : x(_x), y(_y) {}
 
-void sieve(long long lim = 1001) {             // Prime numbers for the limit should be sieved, otherwise WA
-    isPrime.set();
-    isPrime[0] = isPrime[1] = 0;
-    for(int i = 0; i <= lim; ++i) {
-        if(isPrime[i]) {
-            for(long long j = i; j <= lim; j += i) {
-                isPrime[j] = 0;
-                divisor[j] = i;
-}}}}
-
-vector<int> factorize(long long x) {    // This function only iterates over the prime numbers
-    vector<int>factor;
-    while(x > 1) {
-        if(divisor[x] != 0) {
-            factor.push_back(divisor[x]);
-            x /= divisor[x];            // now x would be reduced by factor of divisor[x]
-    }}
-    return factor;
-}
-
-vector<int>PF[MAX];
-void FactorINIT(int lim = 1000) {
-    for(int i = 1; i <= lim; ++i) {
-        PF[i] = factorize(i);
-        if(!PF[i].empty() && PF[i].back() == i)
-            PF[i].pop_back();
+    bool operator < (point other) const {
+        if(x != other.x)
+            return x < other.x;
+        return y < other.y;
     }
+    
+    bool operator == (point other) const {
+        return (x == other.x) && (y == other.y);
+    }
+};
+
+struct ParaLine {       // Line in Parametric Form
+    point a, point b;
+    ParaLine() { a.x  = a.y = b.x = b.y = 0; }
+    ParaLine(point _a, point _b) : a(_a), b(_b) {}
+
+    point getPoint(double t) {      // Parametric Line : a + t * (b - a)    t = [-inf, +inf]
+        return point(a.x + t*(b.x-a.x), a.y + t*(b.y-a.y));
+}};
+
+
+int hypot(point p1, point p2) {
+    int x = p1.x-p2.x;
+	int y = p1.y-p2.y;
+    return x*x + y*y;
 }
 
-bitset<MAX>vis;
-int BFS(int u, int t) {
-    vis.reset();
-    vis[u] = 1;
-    priority_queue<pair<int, int> > pq;
-    pq.push(make_pair(0, u));
-    
-    while(!pq.empty()) {
-        int d = -pq.top().first;
-        u = pq.top().second;
-        pq.pop();
-        
-        if(u == t)
-            return d;
-        
-        ++d;
-        for(int i = 0; i < (int)PF[u].size(); ++i) {
-            //cerr << "FROM " << u << " GOT " << PF[u][i] << endl;
-            int v = u+PF[u][i];
-            if(vis[v] || v > t)
-                continue;
-            vis[v] = 1;
-            pq.push(make_pair(-d, v));
+double ternarySearch(double low, double high) {
+    for(int i = 0; i < 70; ++i) {
+        double mid1 = low + (high - low) / 3.0;
+        double mid2 = high - (high - low) / 3.0;
+ 
+        double cost1 = hypot(getPoint(a, mid1), getPoint(b, mid1));
+        double cost2 = hypot(getPoint(a, mid2), getPoint(b, mid2));
+                
+        if(cost1 < cost2) {
+            high = mid1;
+            //ret = min(cost2, ret);
+        }
+        else {
+            low = mid2;
+            //ret = min(cost1, ret);
     }}
-    return -1;
+    
+    return (high+low)/2.0;
 }
+
 
 int main() {
-    //freopen("in", "r", stdin);
-    //freopen("out", "w", stdout);
     
-    int t, S, T;
-    scanf("%d", &t);
-    sieve();
-    FactorINIT();
-    
-    //cerr << PF[2][0] << endl;
-    
-    for(int Case = 1; Case <= t; ++Case) {
-        scanf("%d%d", &S, &T);
-        printf("Case %d: %d\n", Case, BFS(S, T));
-    }
-    return 0;
-}
-        

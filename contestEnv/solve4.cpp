@@ -47,67 +47,16 @@ typedef vector<pair<ll, ll> >vll;
 //----------------------------------------------------------------------------------------------------------
 
 
-vl v1, v2;
-priority_queue<ll>pq;
-
 int main() {
-    ll x, n, k1, k2;
+    cin >> n >> d >> k;
     
-    sf("%lld%lld%lld", &n, &k1, &k2);
-    
-    fr(i, 0, n) {
-        sf("%lld", &x);
-        v1.pb(x);
+    if(n-1 < d) {
+        cout << "NO\n";
+        return 0;
     }
     
-    fr(i, 0, n) {
-        sf("%lld", &x);
-        v2.pb(x);
-    }
+    cout << "YES\n";
     
-    fr(i, 0, n) {
-        ll T = abs(v1[i] - v2[i]);
-        if(T > 0) pq.push(T);
-    }
-    
-    ll TOT = k1+k2;
-    while(TOT > 0 and !pq.empty()) {
-        ll v = pq.top();
-        pq.pop();
-        
-        ll T = min(v, TOT);
-        TOT -= T;
-        v -= T;
-        
-        if(v != 0)
-            pq.push(v);
-    }
-    
-    ll Ans = 0;
-    
-    while(!pq.empty()) {
-        ll T = pq.top();
-        pq.pop();
-        Ans += T*T;
-    }
-    
-    //cout << "Ans " << Ans << endl;
-    
-    ll avg = TOT/n;
-    
-    
-    if(TOT > 0) {
-        if(avg == 0)
-            Ans = TOT;
-        else {
-            Ans = avg*avg*(n-1);
-            ll T = (avg + (TOT%n));
-            Ans += T*T;
-        }
-    }
-    
-    pf("%lld\n", Ans);
     
     return 0;
 }
-    

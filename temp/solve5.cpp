@@ -1,67 +1,85 @@
+// LightOJ
+// http://lightoj.com/volume_showproblem.php?problem=1141
+
 #include <bits/stdc++.h>
-#define MAX 300010
+#define MAX 1010
 using namespace std;
 
-vector<int> G[MAX];
-vector<pair<int, int> >ans;
-int dfs_num[MAX], dfs_low[MAX], parent[MAX], dfsCounter;
+bitset<MAX>isPrime;
+int divisor[MAX];
 
-void bridge(int u)
-{
-    //dfs_num[u] is the dfs counter of u node
-    //dfs_low[u] is the minimum dfs counter of u node (it is minimum if a backedge exists)
+void sieve(long long lim = 1001) {             // Prime numbers for the limit should be sieved, otherwise WA
+    isPrime.set();
+    isPrime[0] = isPrime[1] = 0;
+    for(int i = 0; i <= lim; ++i) {
+        if(isPrime[i]) {
+            for(long long j = i; j <= lim; j += i) {
+                isPrime[j] = 0;
+                divisor[j] = i;
+}}}}
 
-    dfs_num[u] = dfs_low[u] = ++dfsCounter;
-    for(int i = 0; i < (int)G[u].size(); i++) {
-        int v = G[u][i];
-        if(dfs_num[v] == 0) {
-            parent[v] = u;
+vector<int> factorize(long long x) {    // This function only iterates over the prime numbers
+    vector<int>factor;
+    while(x > 1) {
+        if(divisor[x] != 0) {
+            factor.push_back(divisor[x]);
+            x /= divisor[x];            // now x would be reduced by factor of divisor[x]
+    }}
+    return factor;
+}
 
-            bridge(v);
-            //if dfs_num[u] is lower than dfs_low[v], then there is no back edge on u node
-            //so u - v can be a bridge
-            if(dfs_num[u] < dfs_low[v])
-                ans.push_back(make_pair(min(u, v), max(u, v)));
-
-            //obtainig lower dfs counter (if found) from child nodes
-            dfs_low[u] = min(dfs_low[u], dfs_low[v]);
-        }
-        //if v is not parent of u then it is a back edge
-        //also dfs_num[v] must be less than dfs_low[u]
-        //so we update it
-
-        else if(parent[u] != v)
-            dfs_low[u] = min(dfs_low[u], dfs_num[v]);
+vector<int>PF[MAX];
+void FactorINIT(int lim = 1000) {
+    for(int i = 1; i <= lim; ++i) {
+        PF[i] = factorize(i);
+        if(!PF[i].empty() && PF[i].back() == i)
+            PF[i].pop_back();
     }
 }
 
-
-void FindBridge(int V){                             //Bridge finding code
-    memset(dfs_num, 0, sizeof(dfs_num));
-    dfsCounter = 0;
-    for(int i = 1; i <= V; i++)
-        if(dfs_num[i] == 0)
-            bridge(i);
+bitset<MAX>vis;
+int BFS(int u, int t) {
+    vis.reset();
+    vis[u] = 1;
+    priority_queue<pair<int, int> > pq;
+    pq.push(make_pair(0, u));
+    
+    while(!pq.empty()) {
+        int d = -pq.top().first;
+        u = pq.top().second;
+        pq.pop();
+        
+        if(u == t)
+            return d;
+        
+        ++d;
+        for(int i = 0; i < (int)PF[u].size(); ++i) {
+            //cerr << "FROM " << u << " GOT " << PF[u][i] << endl;
+            int v = u+PF[u][i];
+            if(vis[v] || v > t)
+                continue;
+            vis[v] = 1;
+            pq.push(make_pair(-d, v));
+    }}
+    return -1;
 }
 
 int main() {
-    int V, E, u, v;
-    scanf("%d%d", &V, &E);
+    //freopen("in", "r", stdin);
+    //freopen("out", "w", stdout);
     
-    for(int i = 0; i < E; ++i) {
-        scanf("%d%d", &u, &v);
-        G[u].push_back(v);
-        G[v].push_back(u);
+    int t, S, T;
+    scanf("%d", &t);
+    sieve();
+    FactorINIT();
+    
+    //cerr << PF[2][0] << endl;
+    
+    for(int Case = 1; Case <= t; ++Case) {
+        scanf("%d%d", &S, &T);
+        printf("Case %d: %d\n", Case, BFS(S, T));
     }
-    
-    FindBridge(V);
-    
-    int ActualBridge = 0;
-    sort(ans.begin(), ans.end());
-    
-    for(int i = 1; i < (int)ans.size(); ++i) {
-        if(ans[i-1].)
-    
-    printf("%d\n", (int)ans.size());
     return 0;
 }
+        
+
