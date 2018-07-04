@@ -16,8 +16,7 @@ struct point {          // In Integer
     
     bool operator == (point other) const {
         return (x == other.x) && (y == other.y);
-    }
-};
+}};
 
 struct point {          // In Double
     double x, y;
@@ -31,8 +30,7 @@ struct point {          // In Double
     }
     bool operator == (point other) const {
         return (fabs(x - other.x) < EPS && (fabs(y - other.y) < EPS));
-    }
-};
+}};
 
 bool Equal(double a, double b) {
     return (fabs(a-b) <= EPS);
@@ -143,6 +141,17 @@ double dot(vec a, vec b) {
 double norm_sq(vec v) {
     return v.x * v.x + v.y * v.y;
 }
+
+// Parametric Line ------------------------------
+
+struct ParaLine {                                       // Line in Parametric Form
+    point a, b;                                         // points must be in DOUBLE
+    ParaLine() { a.x  = a.y = b.x = b.y = 0; }
+    ParaLine(point _a, point _b) : a(_a), b(_b) {}      // {Start, Finish} or {from, to}
+
+    point getPoint(double t) {                          // Parametric Line : a + t * (b - a)    t = [-inf, +inf]
+        return point(a.x + t*(b.x-a.x), a.y + t*(b.y-a.y));
+}};
 
 // Returns the distance from p to the line defined by  two points a and b (a and b must be different)
 // the closest point is stored in the 4th parameter (byref)

@@ -186,3 +186,23 @@ ll bitDP(int pos, int mask, int pairs, bool prevOn, bool tight) {
         ans += bitDP(pos-1, On(mask, pos), pairs + prevOn, 1, tight && isOn(mask, pos)); 
     return dp[pos][pairs][prevOn][tight] = ans;
 }
+
+// Memory Optimized DP + Bottom Up solution (LOJ : 1126 - Building Twin Towers)
+// given array v of n elements, make two value x1 and x2 where x1 == x2, output maximum of it 
+ 
+int dp[2][500010], n;                                   // present dp table and past dp table
+int BottomUp(int TOT) {                                 // TOT = (Cumulative Sum of v)/2
+    memset(dp, -1, sizeof dp);
+    dp[0][0] = 0;
+    bool present = 0, past = 1;
+    for(int i = 0; i < n; ++i) {
+        present ^= 1, past ^= 1;                        // Swapping present and past dp table
+        for(int diff = 0; diff <= TOT; ++diff)
+            if(dp[past][diff] != -1) {
+                int moreDiff = diff + v[i], lessDiff = abs(diff - v[i]);
+                dp[present][diff] = max(dp[present][diff], dp[past][diff]);
+                dp[present][lessDiff] = max(dp[present][lessDiff], max(dp[past][lessDiff], dp[past][diff] + v[i]));
+                dp[present][moreDiff] = max(dp[present][moreDiff], max(dp[past][moreDiff], dp[past][diff] + v[i]));
+    }}
+    return (max(dp[0][0], dp[1][0]))/2;                 // Returns the maximum possible answer
+}

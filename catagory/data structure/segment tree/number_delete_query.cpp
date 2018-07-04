@@ -3,7 +3,7 @@
 
 #include <bits/stdc++.h>
 using namespace std;
-#define MAX                 1e6
+#define MAX                 100100
 #define EPS                 1e-9
 #define INF                 1e9+10
 #define MOD                 1000000007
@@ -43,40 +43,38 @@ typedef pair<ll, ll> pll;
 typedef vector<pair<int, int> > vii;
 typedef vector<pair<ll, ll> >vll;
 
-int tree[500100], v[100100];
 
-void init(int pos, int L, int R) {
-    if(L == R) {
-        tree[pos] = 1;
-        return;
+struct SegTreeInsertRemove {                    // Finds/Deletes I'th value from array/SegTree
+    int tree[MAX*4];
+    void init(int pos, int L, int R) {
+        if(L == R) {
+            tree[pos] = 1;
+            return;
+        }
+        int mid = (L+R)>>1;
+        init(pos<<1, L, mid);
+        init(pos<<1|1, mid+1, R);
+        tree[pos] = tree[pos<<1]+tree[pos<<1|1];
     }
-    
-    int mid = (L+R)>>1;
-    init(pos<<1, L, mid);
-    init(pos<<1|1, mid+1, R);
-    
-    tree[pos] = tree[pos<<1]+tree[pos<<1|1];
-}
+    int SearchVal(int pos, int L, int R, int I, bool removeVal = 0) {         // Find I'th value in Segment Tree, removes it if removeVal = 1 
+        if(L == R) {
+            tree[pos] = (removeVal ? 0:1);
+            return L;
+        }
+        int mid = (L+R)>>1;
+        if(I <= tree[pos<<1]) {
+            int idx = SearchVal(pos<<1, L, mid, I, removeVal);
+            if(removeVal) tree[pos] = tree[pos<<1] + tree[pos<<1|1];
+            return idx;
+        }
+        else {
+            int idx = SearchVal(pos<<1|1, mid+1, R, I-tree[pos<<1], removeVal);
+            if(removeVal) tree[pos] = tree[pos<<1] + tree[pos<<1|1];
+            return idx;
+}}};
 
-int SearchVal(int pos, int L, int R, int val) {
-    if(L == R) {
-        tree[pos] = 0;
-        return L;
-    }
-    
-    int mid = (L+R)>>1;
-    
-    if(val <= tree[pos<<1]) {
-        int idx = SearchVal(pos<<1, L, mid, val);
-        tree[pos] = tree[pos<<1] + tree[pos<<1|1];
-        return idx;
-    }
-    else {
-        int idx = SearchVal(pos<<1|1, mid+1, R, val-tree[pos<<1]);
-        tree[pos] = tree[pos<<1] + tree[pos<<1|1];
-        return idx;
-    }
-}
+int v[MAX];
+SegTreeInsertRemove ST;
 
 int main() {
     //fileRead("in");
@@ -88,11 +86,11 @@ int main() {
     for(int Case = 1; Case <= t; ++Case) {
         sf("%d", &n);
         pf("Case %d: ", Case);
-        init(1, 1, n);
+        ST.init(1, 1, n);
         for(int i = 1; i <= n; ++i)
             sf("%d", &v[i]);
         for(int i = n; i >= 1; --i) {
-            idx = SearchVal(1, 1, n, i-v[i]);
+            idx = ST.SearchVal(1, 1, n, i-v[i], 1);
             if(i == 1)
                 pf("%d\n", idx);
         }

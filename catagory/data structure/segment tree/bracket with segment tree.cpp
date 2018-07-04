@@ -1,11 +1,10 @@
 // CodeForces
 // http://codeforces.com/contest/380/problem/C
-
 // Right Max Bracket Sequence in Range
 
 #include <bits/stdc++.h>
 using namespace std;
-#define MAX                 200100
+#define MAX                 1000100
 #define EPS                 1e-9
 #define INF                 1e7
 #define MOD                 1000000007
@@ -58,77 +57,63 @@ void err(istream_iterator<string> it, T a, Args... args) {                      
 //const int dxx[8][2] = {{0,1}, {0,-1}, {1,0}, {-1,0}, {1,1}, {1,-1}, {-1,1}, {-1,-1}};                     // Eight side
 //----------------------------------------------------------------------------------------------------------
 
-
-
-struct node {
-    ll lftBracket, rhtBracket, Max;
+// Outputs Largest Balanced Bracket Sequence in range [L, R]
+struct MaxBracketSeq {
+    struct node {
+        ll lftBracket, rhtBracket, Max;
+        node(ll lft=0, ll rht=0, ll Max=0) {
+            this->lftBracket = lft;
+            this->rhtBracket = rht;
+            this->Max = Max;
+    }};
     
-    node(ll lft=0, ll rht=0, ll Max=0) {
-        this->lftBracket = lft;
-        this->rhtBracket = rht;
-        this->Max = Max;
-    }
-};
-
-
-string str;
-node tree[5000100];
-
-node Merge(const node &lft, const node &rht) {
-    ll common = min(lft.lftBracket, rht.rhtBracket);
-    ll lftBracket = lft.lftBracket + rht.lftBracket - common;
-    ll rhtBracket = lft.rhtBracket + rht.rhtBracket - common;
-    return node(lftBracket, rhtBracket, lft.Max+rht.Max+common);
-}
-
-
-void init(ll pos, ll l, ll r) {
-    //cout << l << " --- " << r << endl; 
-    if(l == r) {
-        if(str[l-1] == '(')
-            tree[pos] = node(1, 0, 0);
-        else
-            tree[pos] = node(0, 1, 0);
-        return;
+    node tree[MAX*4];
+    node Merge(const node &lft, const node &rht) {
+        ll common = min(lft.lftBracket, rht.rhtBracket);
+        ll lftBracket = lft.lftBracket + rht.lftBracket - common;
+        ll rhtBracket = lft.rhtBracket + rht.rhtBracket - common;
+        return node(lftBracket, rhtBracket, lft.Max+rht.Max+common);
     }
     
-    ll mid = (l+r)>>1;
-    init(pos<<1, l, mid);
-    init(pos<<1|1, mid+1, r);
-    
-    tree[pos] = Merge(tree[pos<<1], tree[pos<<1|1]);
-}
+    void init(ll pos, ll l, ll r, char s[]) {
+        if(l == r) {
+            if(s[l-1] == '(')   tree[pos] = node(1, 0, 0);
+            else                tree[pos] = node(0, 1, 0);
+            return;
+        }
+        ll mid = (l+r)>>1;
+        init(pos<<1, l, mid, s);
+        init(pos<<1|1, mid+1, r, s);
+        tree[pos] = Merge(tree[pos<<1], tree[pos<<1|1]);
+    }
 
+    node query(ll pos, ll l, ll r, ll L, ll R) {
+        if(r < L || R < l)      return node();
+        if(L <= l && r <= R)    return tree[pos];
+        ll mid = (l+r)>>1;
+        node lft = query(pos<<1, l, mid, L, R);
+        node rht = query(pos<<1|1, mid+1, r, L, R);
+        return Merge(lft, rht);
+    }
+    
+    int MaxSequence(int SEQ_SIZE, int l, int r) {
+        return 2*query(1, 1, SEQ_SIZE, l, r).Max;
+}};
 
-node query(ll pos, ll l, ll r, ll L, ll R) {
-    if(r < L || R < l)
-        return node();
-    
-    if(L <= l && r <= R)
-        return tree[pos];
-    
-    ll mid = (l+r)>>1;
-    
-    node lft = query(pos<<1, l, mid, L, R);
-    node rht = query(pos<<1|1, mid+1, r, L, R);
-    
-    return Merge(lft, rht);
-}
-
+char str[MAX];
+MaxBracketSeq ST;
 
 int main() {
     ll q, l, r;
     FastRead;
-    
     cin >> str;
-    
     cin >> q;
-    
-    init(1, 1, SIZE(str));
-    
+    int len = strlen(str);
+    ST.init(1, 1, len, str);
     while(q--) {
         cin >> l >> r;
-        cout << 2*query(1, 1, SIZE(str), l, r).Max << "\n";
+        //cout << 2*query(1, 1, SIZE(str), l, r).Max << "\n";
+        cout << ST.MaxSequence(len, l, r) << "\n";
     }
     
     return 0;

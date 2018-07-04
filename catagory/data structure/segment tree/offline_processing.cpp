@@ -52,95 +52,89 @@ typedef pair<ll, ll> pll;
 typedef vector<pair<int, int> > vii;
 typedef vector<pair<ll, ll> >vll;
 
-int tree[5*MAX], prop[5*MAX], v[MAX], IDX[MAX];
-map<int, vi>Map;
-map<pii, int>Ans;
-vii Query;
 
-void update(int pos, int L, int R, int idx, int val) {
-    if(idx < L || R < idx)
-        return;
+struct FindUnique {
+    int tree[4*MAX], prop[4*MAX], v[MAX], IDX[MAX];
+    map<int, vector<int> >Map;
+    map<pair<int, int>, int>Ans;
+    vector<pair<int, int> > Query;
     
-    if(L == R) {
-        tree[pos]+= val;
-        return;
+    void init() {
+        memset(IDX, -1, sizeof IDX);
+        memset(tree, 0, sizeof tree);
+        Ans.clear(), Map.clear(), Query.clear();
     }
-    
-    int mid = (L+R)>>1;
-    update(pos<<1, L, mid, idx, val);
-    update(pos<<1|1, mid+1, R, idx, val);
-    
-    tree[pos] = tree[pos<<1] + tree[pos<<1|1];
-}
+    void update(int pos, int L, int R, int idx, int val) {
+        if(idx < L || R < idx) return;
+        if(L == R) {
+            tree[pos]+= val;
+            return;
+        }
+        int mid = (L+R)>>1;
+        update(pos<<1, L, mid, idx, val);
+        update(pos<<1|1, mid+1, R, idx, val);
+        tree[pos] = tree[pos<<1] + tree[pos<<1|1];
+    }
+    int query(int pos, int L, int R, int l, int r) {
+        if(r < L || R < l)      return 0;
+        if(l <= L && R <= r)    return tree[pos];
+        int mid = (L+R)>>1;
+        int lft = query(pos<<1, L, mid, l, r);
+        int rht = query(pos<<1|1, mid+1, R, l, r);
+        return lft+rht;
+    }
+    void ArrayInput(int SZ) {
+        for(int i = 1; i <= SZ; ++i) scanf("%d", &v[i]);
+    }
+    void QueryInput(int q) {
+        int l, r;
+        while(q--) {
+            scanf("%d %d", &l, &r);
+            Query.push_back(make_pair(l, r));
+            Map[r].push_back(l);                        // Used for sorting
+    }}
+    void GenAns(int SZ) {
+        map<int, vi> :: iterator it;
+        int lPos = 0;
+        for(it = Map.begin(); it != Map.end(); ++it) {      // For each query's right points
+            while(lPos < it->first) {                       // Update from last left position to this queries right position
+                lPos++;
+                if(IDX[v[lPos]] == -1) {
+                    IDX[v[lPos]] = lPos;
+                    update(1, 1, SZ, lPos, 1);              // if new value found, increment 1 to the
+                }
+                else {
+                    int pastIDX = IDX[v[lPos]];
+                    IDX[v[lPos]] = lPos;
+                    update(1, 1, SZ, pastIDX, -1);           // if value found previous, then remove 1 from previous index (add -1)
+                    update(1, 1, SZ, lPos, 1);               // add 1 to the new position
+            }}
+            for(int i = 0; i < (int)(it->second).size(); ++i)       // Range sum query for all queries that ends on this point
+                Ans[make_pair(it->second[i], it->first)] = query(1, 1, SZ, it->second[i], it->first);       
+    }}
+    void PrintAns() {
+        for(int i = 0; i < (int)Query.size(); ++i)                    // Output according to input query
+            printf("%d\n", Ans[mp(Query[i].first, Query[i].second)]);
+}};
 
-int query(int pos, int L, int R, int l, int r) {
-    if(r < L || R < l)
-        return 0;
-    
-    if(l <= L && R <= r)
-        return tree[pos];
-    
-    int mid = (L+R)>>1;
-    int lft = query(pos<<1, L, mid, l, r);
-    int rht = query(pos<<1|1, mid+1, R, l, r);
-    
-    return lft+rht;
-}
+FindUnique ST;
 
 int main() {
     //fileRead("in");
     //fileWrite("out");
     
-    int t, n, q, l, r;
+    int t, n, q;
     sf("%d", &t);
     
     for(int Case = 1; Case <= t; ++Case) {
         sf("%d %d", &n, &q);
-        memset(IDX, -1, sizeof IDX);
-        memset(tree, 0, sizeof tree);
         pf("Case %d:\n", Case);
         
-        for(int i = 1; i <= n; ++i)
-            sf("%d", &v[i]);
-            
-        while(q--) {
-            sf("%d %d", &l, &r);
-            Query.pb(mp(l, r));
-            Map[r].pb(l);               // Used for sorting
-        }
-        
-        map<int, vi> :: iterator it;
-        int lPos = 0;
-        for(it = Map.begin(); it != Map.end(); ++it) {      // For each query's right points
-            //pf("NewPos : %d\n", it->first);
-            while(lPos < it->first) {                       // Update from last left position to this queries right position
-                lPos++;
-                //pf("Check New Pos %d\n", lPos);
-                if(IDX[v[lPos]] == -1) {
-                    IDX[v[lPos]] = lPos;
-                    update(1, 1, n, lPos, 1);               // if new value found, increment 1 to the
-                    //pf("newVal : %d(%d)\n", lPos, v[lPos]);
-                }
-                else {
-                    int pastIDX = IDX[v[lPos]];
-                    IDX[v[lPos]] = lPos;
-                    update(1, 1, n, pastIDX, -1);           // if value found previous, then remove 1 from previous index (add -1)
-                    update(1, 1, n, lPos, 1);               // add 1 to the new position
-                    //pf("ReplaceVal %d->%d (%d)\n", pastIDX, lPos, v[lPos]);
-                }
-            }
-            for(int i = 0; i < SIZE(it->second); ++i) {
-                //pf("Range Q : %d - %d = %d\n", it->second[i], it->first, query(1, 1, n, it->second[i], it->first));
-                Ans[mp(it->second[i], it->first)] = query(1, 1, n, it->second[i], it->first);       // Range sum query for all queries that ends on this point
-            }
-        }
-        
-        for(int i = 0; i < SIZE(Query); ++i)                    // Output according to input query
-            printf("%d\n", Ans[mp(Query[i].first, Query[i].second)]);
-        
-        Ans.clear();
-        Map.clear();
-        Query.clear();
+        ST.init();
+        ST.ArrayInput(n);
+        ST.QueryInput(q);
+        ST.GenAns(n);
+        ST.PrintAns();
     }
     
     return 0;
