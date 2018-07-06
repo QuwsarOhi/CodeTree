@@ -31,9 +31,17 @@ struct DSU {
         u_list.resize(len+5);
         u_set.resize(len+5);
         for(int i = 0; i <= len+3; i++)
-            u_set[i] = i, u_list[i] = 0;
+            u_set[i] = i, u_list[i] = 1;
     }
-
+    
+    bool isRoot(int x) {
+        return u_set[x] == x;
+    }
+    
+    bool isRootContainsMany(int x) {
+        return (isRoot(x) && (u_list[x] > 1));
+    }
+    
     bool isSameSet(int a, int b) {
         return (unionRoot(a) == unionRoot(b));
     }

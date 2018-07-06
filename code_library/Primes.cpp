@@ -1,6 +1,10 @@
-#include<bits/stdc++.h>
-#define MAX 1e5
-using namespace std;
+// Limit --------- No. of Primes
+// 100             25
+// 1000            168
+// 10,000          1229
+// 100,000         9592
+// 1,000,000       78498
+// 10,000,000      664579         
 
 bitset<10000000>isPrime;
 vector<long long>primes;

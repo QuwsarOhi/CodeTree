@@ -1,5 +1,5 @@
 // LightOJ
-//  1027 - A Dangerous Maze
+// 1027 - A Dangerous Maze
 
 // Ex = (Time[i] + Ex)/n +    (Time[i+1])/n    + ....    (Time[n] + Ex)/n
 //            ^                         ^

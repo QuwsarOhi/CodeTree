@@ -203,3 +203,18 @@ ll CountZerosInRangeZeroTo(string n) {              // Returns number of zeros f
     }
     return fx+1;
 }
+
+
+int cnt[MAX];                                                   // cnt[x] : how many times x occures in input
+vector<int> genGCD(int mx) {                                    // Counts how many number are there of gcd x
+    vector<int>sameGCD(mx+1);                                   // input the MAXIMUM value        
+    for(int gcd = mx; gcd >= 2; --gcd) {                        // Complexity : mx log_mx
+        int gcdCNT = cnt[gcd];
+        
+        for(int mul = gcd+gcd; mul <= mx; mul += gcd)
+            gcdCNT += cnt[mul];
+    
+        sameGCD[gcd] = gcdCNT;
+    }
+    return sameGCD;
+}
