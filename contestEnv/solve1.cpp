@@ -47,5 +47,27 @@ typedef vector<pair<ll, ll> >vll;
 //----------------------------------------------------------------------------------------------------------
 
 int main() {
+    int t, n;
+    scanf("%d", &t);
+    
+    while(t--) {
+        scanf("%d", &n);
+        
+        int a = n/2 + (n&1 ? 1:0);
+        //if(a == 0) a = 1;
+        
+        int b = n;
+        int gcd = min(a, b);
+        
+        //cerr << a << " " << b << " " << gcd << endl;
+        
+        printf("1");
+        for(int i = 1; i <= a-gcd; ++i)
+            printf("0");
+        printf(" 1");
+        for(int i = 1; i <= b-gcd; ++i)
+            printf("0");
+        printf("\n");
+    }
     return 0;
 }

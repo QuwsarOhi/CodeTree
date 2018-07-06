@@ -1,19 +1,44 @@
-import sys
+from sys import *
+#from bisect import *
+#from collections import *
+#from itertools import *
+from fractions import *
+#from datetime import *
 
-#sys.stdin = open('in', 'r')
-#sys.stdout = open('out', 'w')
+Input = []
 
+#stdin = open('in', 'r')
+#stdout = open('out', 'w')
+
+## for i, val in enumerate(array, start_i_value)
 
 def Out(x):
-    sys.stdout.write(str(x) + '\n')
+    stdout.write(str(x) + '\n')
 
 def In():
-    return sys.stdin.readline().strip()
+    return stdin.readline().strip()
 
-Input = []              # This list contains inputs index by index
 def inputGrab():
-    for line in sys.stdin:
+    for line in stdin:
         Input.extend(map(str, line.strip().split()))
+
+inputIDX = 0
+def hasNext():
+    global inputIDX
+    return (inputIDX < len(Input))
+
+def nextInt():
+    global inputIDX
+    inputIDX += 1
+    return int(Input[inputIDX-1])
+
+def nextString():
+    global inputIDX
+    inputIDX += 1
+    return Input[inputIDX-1]
+
+'''--------------------------------------------------------------------------------'''
+
 
 def main():
     #inputGrab()     # Grabs input from inputstream, so that newline spaces doesn't causes runtime errors
