@@ -62,7 +62,7 @@ a / b = ( a * (1/b) ) (mod m)       (1/b is modular inverse of m, described belo
 ````
 Modular Operation on exponentiation
 ````
-(a ^ b) (mod m) = ( a ^ (b (mod-1)) ) (mod m)           (According to Fermat Theorem)
+(a ^ b) (mod m) = ( a ^ (b (mod mod-1)) ) (mod m)           (According to Fermat Theorem)
 ````
 
 ## Modular Inverse:
