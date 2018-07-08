@@ -1,6 +1,6 @@
 #include <bits/stdc++.h>
 using namespace std;
-#define MAX                 100100
+#define MAX                 100010
 #define EPS                 1e-9
 #define INF                 1e7
 #define MOD                 1000000007
@@ -48,10 +48,37 @@ typedef vector<pair<ll, ll> >vll;
 
 
 int main() {
-    int t;
+    fileWrite("out");
+    
+    ll t, n, m;
+    ll a[6000];
+    vector<ll>T;
     cin >> t;
     
     while(t--) {
-        cin >> n;
+        cin >> n >> m;
         
+        for(int i = 0; i < n; ++i) cin >> a[i];
         
+        ll ANS = 1;
+        for(int i = 1; i < (1<<n); ++i) {
+            if(__builtin_popcount(i) != m) continue;
+            
+            T.clear();
+            for(int j = 0; j < n; ++j)
+                if(i&(1<<j))
+                    T.push_back(a[j]);
+            
+            sort(T.begin(), T.end());
+            
+            for(auto it : T) cout << it << " ";
+            cout << endl;
+            
+            for(int j = 1; j < m-1; ++j)
+                ANS = (T[j] * ANS)%MOD;
+        }
+        
+        cout << ANS%MOD << endl;
+    }
+    return 0;
+}

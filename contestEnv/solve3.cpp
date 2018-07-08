@@ -45,3 +45,32 @@ typedef vector<pair<ll, ll> >vll;
 //int dx[] = {-1, 0, 1, 0}, dy[] = {0, 1, 0, -1};
 //int dx[] = {-1, -1, -1, 0, 0, 1, 1, 1}, dy[] = {-1, 0, 1, -1, 1, -1, 0, 1};
 //----------------------------------------------------------------------------------------------------------
+
+double fact[100];
+void genFact(ll lim) {
+    fact[0] = 1;
+    for(ll i = 1; i <= lim; ++i)
+        fact[i] = fact[i-1]*i;
+}
+
+double probGen(ll N, ll M) {
+    double prob = fact[M];
+    prob /= (1 << M);
+    prob /= fact[N];
+    if(M-N >= 0)
+        prob /= fact[M-N];
+    return prob;
+}
+
+
+int main() {
+    genFact(32);
+    int a, b, t, m;
+    
+    scanf("%d", &t);
+    while(t--) {
+        scanf("%d%d%d", &m, &a, &b);
+        printf("%.6lf\n", probGen(a, m)+probGen(b, m));
+    }
+    return 0;
+}

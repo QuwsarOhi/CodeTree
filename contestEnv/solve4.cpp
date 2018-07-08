@@ -45,3 +45,52 @@ typedef vector<pair<ll, ll> >vll;
 //int dx[] = {-1, 0, 1, 0}, dy[] = {0, 1, 0, -1};
 //int dx[] = {-1, -1, -1, 0, 0, 1, 1, 1}, dy[] = {-1, 0, 1, -1, 1, -1, 0, 1};
 //----------------------------------------------------------------------------------------------------------
+
+int CC(int n, int r) {
+    int ret1 = 0;
+    int ret2 = 0;
+    
+    for(int i = 0; i < (1<<n); ++i) {
+        if(__builtin_popcount(i) != r) continue;
+        
+        for(int j = 0; j < n; ++j)
+            if(i&(1<<j)) {
+                ret1 += j==0;
+                ret2 += j==1;
+            }
+        
+    }
+    
+    if(ret1 != ret2) cerr << "ERROR----------------\n";
+    return ret1;
+}
+
+// Combination
+// Complexity O(k)
+long long C(int n, int k) { 
+    long long c = 1;
+    if(k > n - k)
+        k = n-k;
+    for(int i = 0; i < k; i++) {
+        c *= (n-i);
+        c /= (i+1);
+    }
+    return c;
+}
+
+
+ll F(int n, int c) {
+    n = c + abs(n-c);
+    return C(n-1, c-1);
+}
+
+
+int main() {
+    int n, c;
+    while(1) {
+        cin >> n >> c;
+        cout << CC(n, c) << endl;
+        cout << F(n, c) << endl;
+    }
+    return 0;
+}

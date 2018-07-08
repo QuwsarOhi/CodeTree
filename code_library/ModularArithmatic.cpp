@@ -10,6 +10,16 @@ long long powMod(long long N, long long P, long long M) {
     return ((N%M) * (powMod(N, P-1, M)%M))%M;
 }
 
+ll powerMOD(ll x, ll y) {                   // Can find modular inverse by a^(MOD-2),  a and MOD must be co-prime
+    ll res = 1;
+    x %= MOD;
+    while(y > 0) {
+        if(y&1) res = (res*x)%MOD;          // If y is odd, multiply x with result
+        y = y >> 1, x = (x * x)%MOD;
+    }
+    return res%MOD;
+}
+
 // 2^100 = Pow(2, 100)
 unsigned long long Pow(unsigned long long N, unsigned long long P) {
 	if(P == 0) return 1;

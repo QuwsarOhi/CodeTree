@@ -393,7 +393,7 @@ struct RangeBitQuery {
 
 // Merge Sort Tree
 struct MergeSortTree {
-    vector<int>tree[MAX];
+    vector<int>tree[MAX*4];
 
     void init(int pos, int l, int r, ll val[]) {
         tree[pos].clear();                              // Clears past values
