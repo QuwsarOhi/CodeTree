@@ -46,58 +46,35 @@ typedef vector<pair<ll, ll> >vll;
 //int dx[] = {-1, -1, -1, 0, 0, 1, 1, 1}, dy[] = {-1, 0, 1, -1, 1, -1, 0, 1};
 //----------------------------------------------------------------------------------------------------------
 
-
-deque<int>dq;
-pii CNT;
-bool FOUND = 0;
-
-bool isMedian() {
-    if(not FOUND) return 0;
-    if(CNT.first == CNT.second)
-        return 1;
-    if((CNT.first + CNT.second + FOUND)%2 == 0)
-        return CNT.first == CNT.second-1;
-    return 0;
-}
-
-void ADD(ll x, ll m) {
-    if(x < m)
-        CNT.first++;
-    else if(x > m)
-        CNT.second++;
-    else
-        FOUND = 1;
-}
-
-void REMOVE(ll x, ll m) {
-    if(x < m)
-        CNT.first--;
-    else if(x > m)
-        CNT.second--;
-    else
-        FOUND = 0;
-}
+string v;
+int dp[200001][3][2];
 
 
-
-int main() {
-    ll n, m, ans = 0;
-    cin >> n >> m;
+int recur(int pos, int val, bool skipped) {
+    if(pos == SIZE(v)) {
+        cout << "RET " << ((val == 0) and not skipped) << " " << pos << " " << val << " " << skipped << endl;
+        return ((val == 0) and not skipped);
+    }
+    int &ret = dp[pos][val][skipped];
+    if(ret != -1) return ret;
     
-    for(int i = 0; i < n; ++i) {
-        cin >> v[i];
+    if(val == 0 and not skipped) {
+        cout << "at " << pos << " " << val << " " << skipped << endl;
+        ret = max(ret, recur(pos+1, (v[pos]-'0')%3, 0)+1);
+    }
+    else {
+        ret = max(ret, recur(pos+1, (v[pos]-'0')%3, 1));
+        ret = max(ret, recur(pos+1, (val+v[pos]-'0')%3, 0));
     }
     
-    for(int i = 0; i < n; ++i) {
-        dq.push_front(i);
-        ADD(v[i], m):
-        
-        if(isMedian())
-            ++ans;
-        else if(FOUND) {
-            // REMOVE LFT
-            while (CNT.first < CNT.second and v[dq.back()] < m) {   
+    return ret;
+}
     
+    
+
+int main() {
+    cin >> v;
+    memset(dp, -1, sizeof dp);
+    cout << recur(0, (v[0]-'0')%3, 0) << endl;
     return 0;
 }
-        
