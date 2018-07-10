@@ -46,35 +46,84 @@ typedef vector<pair<ll, ll> >vll;
 //int dx[] = {-1, -1, -1, 0, 0, 1, 1, 1}, dy[] = {-1, 0, 1, -1, 1, -1, 0, 1};
 //----------------------------------------------------------------------------------------------------------
 
-string v;
-int dp[200001][3][2];
 
+struct DSU {
+    vector<int>u_list, u_set;        // u_list[x] : the size of a set x,  u_set[x] : the root of x
+    
+    DSU() {}
+    DSU(int SZ) { init(SZ); }
+    
+    int unionRoot(int n) {
+        if(u_set[n] == n) return n;
+        return u_set[n] = unionRoot(u_set[n]);
+    }
 
-int recur(int pos, int val, bool skipped) {
-    if(pos == SIZE(v)) {
-        cout << "RET " << ((val == 0) and not skipped) << " " << pos << " " << val << " " << skipped << endl;
-        return ((val == 0) and not skipped);
+    int makeUnion(int a, int b) {
+        int x = unionRoot(a), y = unionRoot(b);
+        if(x == y)
+            return x;
+        else if(u_list[x] > u_list[y]) {
+            u_set[y] = x;
+            u_list[x] += u_list[y];
+            return x;
+        }
+        else {
+            u_set[x] = y;
+            u_list[y] += u_list[x];
+            return y;
+    }}
+
+    void init(int len) {
+        u_list.resize(len+5);
+        u_set.resize(len+5);
+        for(int i = 0; i <= len+3; i++)
+            u_set[i] = i, u_list[i] = 1;
     }
-    int &ret = dp[pos][val][skipped];
-    if(ret != -1) return ret;
     
-    if(val == 0 and not skipped) {
-        cout << "at " << pos << " " << val << " " << skipped << endl;
-        ret = max(ret, recur(pos+1, (v[pos]-'0')%3, 0)+1);
-    }
-    else {
-        ret = max(ret, recur(pos+1, (v[pos]-'0')%3, 1));
-        ret = max(ret, recur(pos+1, (val+v[pos]-'0')%3, 0));
+    bool isRoot(int x) {
+        return u_set[x] == x;
     }
     
-    return ret;
-}
+    bool isRootContainsMany(int x) {
+        return (isRoot(x) && (u_list[x] > 1));
+    }
     
-    
+    bool isSameSet(int a, int b) {
+        return (unionRoot(a) == unionRoot(b));
+}};
+
+DSU dsu;
+
 
 int main() {
-    cin >> v;
-    memset(dp, -1, sizeof dp);
-    cout << recur(0, (v[0]-'0')%3, 0) << endl;
+    scanf("%d%d", &n, &m);
+    
+    for(int i = 1; i <= n; ++i)
+        scanf("%lld", &a[i]);
+    
+    while(m--) {
+        scanf("%d", &t);
+        
+        if(t == 1) {
+            scanf("%lld%lld", &x, &y);
+            a[x] = y;
+        }
+        else if(t == 2) {
+            scanf("%lld%lld", &x, &y);
+            if(not dsu.isSameSet(x, y))
+                dsu.makeUnion(x, y);
+        }
+        else {
+            scanf("%lld%lld%lld", &x, &y, &v);
+            if(dsu.isSameSet(x, y) and u_list[dsu.unionRoot(x)] == 2) {
+                x = v*a[x], y = a[y];
+                ll gcd = __gcd(x, y);
+                x /= gcd, y /= gcd;
+                
+            }
+            else
+                printf("0\n");
+        }
+    }
     return 0;
 }

@@ -204,6 +204,11 @@ ll CountZerosInRangeZeroTo(string n) {              // Returns number of zeros f
     return fx+1;
 }
 
+ll NumOfSameValueInCombination(int n, int r) {          // Returns number of same value in a set of nCr combination
+    if(n < r) return 0;
+    n = r + abs(n-r);
+    return C(n-1, r-1);
+}
 
 int cnt[MAX];                                                   // cnt[x] : how many times x occures in input
 vector<int> genGCD(int mx) {                                    // Counts how many number are there of gcd x

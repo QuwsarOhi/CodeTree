@@ -1,6 +1,4 @@
-#include <cstdio>
-#include <algorithm>
-#include <cstring>
+#include <bits/stdc++.h>
 using namespace std;
 #define MAX                 5010
 #define MOD                 1000000007
@@ -98,36 +96,7 @@ int main() {
     
     while(t--) {
         scanf("%d%lld", &n, &m);
-        
-        a[0] = 1;
-        for(int i = 1; i <= n; ++i)
-            scanf("%lld", &a[i]);
-        
-        if(n < m) {
-            printf("0\n");
-            continue;
-        }
-        
-        BT.init();
-        ll T[MAX] = {0};
-        for(int l = 1; l <= n-m+1; ++l) {
-            for(int r = l+m-1; r <= n; ++r) {
-                ll c = r-l-1;
-                ll p = F(c, m-2);
-                BT.update(l+1, r-1, p);
-                T[l+1] += p;
-                T[l+1] %= MOD-1;
-            }
-        }
-        
-        ll ANS = 1, CSUM = 0;
-        sort(a+1, a+n+1);
-        for(int i = 1; i < n; ++i) {
-            printf("%d : %lld %lld\n", i, BT.read(i), T[i]+CSUM);
-            ANS = (ANS * powerMOD(a[i], BT.read(i)))%MOD;
-            CSUM += T[i];
-        }
-        printf("%lld\n", ANS);
+        cout << F(n, m) << endl;
     }
     return 0;
 }

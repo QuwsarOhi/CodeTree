@@ -40,13 +40,14 @@ void buildPascle() {                                // This Contains values of n
 }}
 
 ll C(int n, int r) {
-    if (r<0 || r>n) return 0;
+    if (r<0 || r>n || n<0) return 0;
     return p[n][r];
 }
 
 //------------------------------------------------------------------
 
-ll F(int n, int r) {
+ll NumOfSameValueInCombination(int n, int r) {          // Returns number of same value in a set of nCr combination
+    if(n < r) return 0;
     n = r + abs(n-r);
     return C(n-1, r-1);
 }
@@ -76,36 +77,46 @@ int main() {
         
         
         memset(Fsum, 0, sizeof Fsum);
-        for(int i = 0; i <= 5000; ++i)
-            Fsum[i+1] = (F(m-2+i, m-2) + Fsum[i]) % (MOD - 1);
+        //for(int i = 0; i <= 5000; ++i)
+        //    Fsum[i+1] = (F(m-2+i, m-2) + Fsum[i]) % (MOD - 1);
         
-        for(int i = m-2, j = 1; i <= n; ++i, ++j)
-            cout << i << " , " << m-2 <<  " " << j << " : " << Fsum[j] << endl;
+        for(int i = 1; i <= 5000; ++i)
+            Fsum[i] = (F(i, m-2) + Fsum[i-1]) % (MOD - 1);
+        
+        //for(int j = 0; j <= n; ++j)
+        //    cout << j << " : " << Fsum[j] << endl;
+        //cout << endl;
         
         sort(a+1, a+n+1);
         memset(CNT, 0, sizeof CNT);
         for(int l = 1; l <= n-m+1; ++l) {
             int pos = l+1, KK = n-l-m+2;
-            cout << "L " << l << " " << KK << endl;
+            //cout << "L " << l << " " << KK << endl;
             
             for( ; pos <= l+m-2; ++pos) {
-                ll T = Fsum[KK];
-                cout << pos << " : " << m-2 << " " << T << endl; 
+                ll rightPoints = n-(l+m-2);
+                ll T = Fsum[rightPoints+m-3];
+                //cout << pos << " : " << rightPoints << " " << T << endl; 
                 CNT[pos] += T;
                 CNT[pos] %= MOD-1;
             }
             
+            //cout << "EXTRA\n";
             for( ; pos <= n-1; ++pos) {
-                ll T = Fsum[--KK];
-                cout << pos << " : " << KK << " * " << T << endl;
+                ll rightPoints = n-pos;
+                ll minElem = pos - l;
+                ll T = Fsum[rightPoints+minElem-1]-Fsum[minElem-1];
+                //cout << pos << " : " << rightPoints+minElem-1 << " * " << T << " " << minElem-1 << endl;
+                //cout << Fsum[rightPoints+minElem-1] << " - " << Fsum[minElem-1] << endl;
                 CNT[pos] += T;
                 CNT[pos] %= MOD-1;
             }
+            cout << endl;
         }
         
-        cerr << "DONE\n";
-        for(int i = 1; i <= n; ++i)
-            cout << i << " : " << CNT[i] << endl;
+        //cerr << "DONE\n";
+        //for(int i = 1; i <= n; ++i)
+        //    cout << i << " : " << CNT[i] << endl;
         
         ll ANS = 1;
         for(int i = 1; i <= n; ++i)
