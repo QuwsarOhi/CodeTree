@@ -105,16 +105,16 @@ long long C(int n, int k) {
     return c;
 }
 
-ll fa[MAX];                                 // fa must be in global
-ll C(ll n, ll r) {                          // Usable if MOD value is present
-    if(fa[0] == 0) {                        // Auto initialize
-        fa[0] = 1;
-        for(int i = 1; i < MAX; ++i)
-            fa[i] = (fa[i-1]*i) % MOD;      // Constant MOD
-    }
-    if(n < 0 || r < 0 || n-r < 0) return 0;     // Exceptional Cases
-    ll b = (fa[r] * fa[n-r]) % MOD;
-    return (fa[n] * modInverse(b, MOD)) %MOD;
+ll fa[MAX], fainv[MAX];                             // fa and fainv must be in global
+ll C(ll n, ll r) {                                  // Usable if MOD value is present
+    if(fa[0] == 0) {                                // Auto initialize
+        fa[0] = 1, fainv[0] = powerMOD(1, MOD-2);
+        for(int i = 1; i < MAX; ++i) {
+            fa[i] = (fa[i-1]*i) % MOD;              // Constant MOD
+            fainv[i] = powerMOD(fa[i], MOD-2);
+    }}
+    if(n < 0 || r < 0 || n-r < 0) return 0;         // Exceptional Cases
+    return ((fa[n] * fainv[r])%MOD * fainv[n-r])%MOD;
 }
 
 ll Catalan(int n) {    // Cat(n) = C(2*n, n)/(n+1);

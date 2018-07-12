@@ -1,102 +1,46 @@
-#include <bits/stdc++.h>
+#include <algorithm>
+#include <iostream>
 using namespace std;
-#define MAX                 5010
-#define MOD                 1000000007
-typedef long long ll;
-
-
-struct BIT {
-    ll tree[MAX];
-    int MaxVal;
-    
-    void init(int sz=1e7) {
-        memset(tree, 0, sizeof tree);
-        MaxVal = 5000;
-    }
-
-    void update(int idx, ll val) {
-        for( ;idx <= MaxVal; idx += (idx & -idx)) {
-            tree[idx] += val + MOD - 1;
-            tree[idx] %= (MOD-1);
-        }
-    }
-    
-    void update(int l, int r, ll val) {
-        if(l > r) swap(l, r);
-        update(l, val);
-        update(r+1, -val);
-    }
-
-    ll read(int idx) {
-        ll sum = 0;
-        for( ;idx > 0; idx -= (idx & -idx)) {
-            sum += tree[idx] + MOD - 1;
-            sum %= (MOD-1);
-        }
-        return sum;
-    }
-    
-    ll read(int l, int r) {
-        ll ret = (read(r) - read(l-1) + MOD - 1) % (MOD-1);
-        return ret;
-}};
-
-BIT BT;
-
-ll powerMOD(ll x, ll y) {                   // Can find modular inverse by a^(MOD-2),  a and MOD must be co-prime
-    ll res = 1;
-
-    while(y > 0) {
-        if(y&1) {
-            res = res*x;          // If y is odd, multiply x with result
-            if(res > MOD) res %= MOD;
-        }
-        y = y >> 1;
-        x = (x * x);
-        if(x > MOD) x %= MOD;
-    }
-    
-    //MAP[{x, y}] = res;
-    return res;
+int h,w,n,i,j,x,y,f[2005];
+pair<int,int> a[2005];
+long long xxx[200005],yyy[200005];
+long long pw(long long a,int b)
+{
+	if(b==0) return 1LL;
+	if(b&1) return (a*pw(a,b-1))%1000000007;
+	long long x=pw(a,b/2);
+	return (x*x)%1000000007;
 }
-
-
-// Building Pascle C(n, r)
-ll p[MAX][MAX];
-void buildPascle() {                                // This Contains values of nCr : p[n][r] 
-    p[0][0] = 1;
-    p[1][0] = p[1][1] = 1;
-    for(int i = 2; i <= 5001; i++)
-        for(int j = 0; j <= i; j++) {
-            if(j == 0 || j == i)
-                p[i][j] = 1;
-            else
-                p[i][j] = (p[i-1][j-1] + p[i-1][j]) % (MOD-1);
-}}
-
-ll C(int n, int r) {
-    if (r<0 || r>n) return 0;
-    return p[n][r];
+long long check(int x,int y)
+{
+	return (((xxx[x]*yyy[y])%1000000007)*yyy[x-y])%1000000007;
 }
-
-//------------------------------------------------------------------
-
-ll F(int n, int r) {
-    n = r + abs(n-r);
-    return C(n-1, r-1);
+int main()
+{
+	for (xxx[0]=yyy[0]=i=1;i<200005;i++)
+	{
+		xxx[i]=(xxx[i-1]*i)%1000000007;
+    	yyy[i]=pw(xxx[i],1000000007-2);
+	}
+	cin>>h>>w>>n;
+	for (i=0;i<n;i++) cin>>a[i].first>>a[i].second;
+	sort(a,a+n);
+	a[n]=make_pair(h,w);
+	for (i=0;i<=n;i++)
+	{
+    	x=a[i].first;
+    	y=a[i].second;
+    	f[i]=check(x+y-2,x-1);
+        cout << x << " " << y << " " << f[i] << endl;
+    	for (j=0;j<i;j++)
+		{
+			if (a[j].first<=x&&a[j].second<=y)
+			{
+				f[i]=(f[i]+1000000007-(f[j]*check(x-a[j].first+y-a[j].second,x-a[j].first))%1000000007)%1000000007;
+			}
+		}
+  	}
+	cout<<f[n];
+	return 0;
 }
-
-ll a[MAX];
-
-int main() {
-    buildPascle();
-    int t, n;
-    ll m;
-    scanf("%d", &t);
-    
-    while(t--) {
-        scanf("%d%lld", &n, &m);
-        cout << F(n, m) << endl;
-    }
-    return 0;
-}
+	  	     			  		 				 			  	 	

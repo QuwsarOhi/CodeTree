@@ -46,84 +46,41 @@ typedef vector<pair<ll, ll> >vll;
 //int dx[] = {-1, -1, -1, 0, 0, 1, 1, 1}, dy[] = {-1, 0, 1, -1, 1, -1, 0, 1};
 //----------------------------------------------------------------------------------------------------------
 
-
-struct DSU {
-    vector<int>u_list, u_set;        // u_list[x] : the size of a set x,  u_set[x] : the root of x
+ll getNumberofSequence(int v[], int n) {        // Returns number of subsequence for which median is m
+    bool found = 0;                             // all values are unique
+    map<int, ll>CNT = {{0, 1}};
+    ll ret = 0, sum = 0;
     
-    DSU() {}
-    DSU(int SZ) { init(SZ); }
-    
-    int unionRoot(int n) {
-        if(u_set[n] == n) return n;
-        return u_set[n] = unionRoot(u_set[n]);
+    for(int i = 0; i < n; ++i) {
+        if(v[i] < m)    --sum;
+        if(v[i] > m)    ++sum;
+        if(v[i] == m)   found = 1;
+        if(found)   ret += CNT[sum] + CNT[sum-1];
+        else        CNT[sum]++;
     }
-
-    int makeUnion(int a, int b) {
-        int x = unionRoot(a), y = unionRoot(b);
-        if(x == y)
-            return x;
-        else if(u_list[x] > u_list[y]) {
-            u_set[y] = x;
-            u_list[x] += u_list[y];
-            return x;
-        }
-        else {
-            u_set[x] = y;
-            u_list[y] += u_list[x];
-            return y;
-    }}
-
-    void init(int len) {
-        u_list.resize(len+5);
-        u_set.resize(len+5);
-        for(int i = 0; i <= len+3; i++)
-            u_set[i] = i, u_list[i] = 1;
-    }
-    
-    bool isRoot(int x) {
-        return u_set[x] == x;
-    }
-    
-    bool isRootContainsMany(int x) {
-        return (isRoot(x) && (u_list[x] > 1));
-    }
-    
-    bool isSameSet(int a, int b) {
-        return (unionRoot(a) == unionRoot(b));
-}};
-
-DSU dsu;
-
+    return ret;
+}
 
 int main() {
-    scanf("%d%d", &n, &m);
+    int n, m;
+    cin >> n >> m;
+    int v[n+2];
     
-    for(int i = 1; i <= n; ++i)
-        scanf("%lld", &a[i]);
+    for(int i = 0; i < n; ++i)
+        cin >> v[i];
     
-    while(m--) {
-        scanf("%d", &t);
-        
-        if(t == 1) {
-            scanf("%lld%lld", &x, &y);
-            a[x] = y;
-        }
-        else if(t == 2) {
-            scanf("%lld%lld", &x, &y);
-            if(not dsu.isSameSet(x, y))
-                dsu.makeUnion(x, y);
-        }
-        else {
-            scanf("%lld%lld%lld", &x, &y, &v);
-            if(dsu.isSameSet(x, y) and u_list[dsu.unionRoot(x)] == 2) {
-                x = v*a[x], y = a[y];
-                ll gcd = __gcd(x, y);
-                x /= gcd, y /= gcd;
-                
-            }
-            else
-                printf("0\n");
-        }
+    bool found = 0;
+    map<int, ll>CNT = {{0, 1}};
+    ll ret = 0, sum = 0;
+    
+    for(int i = 0; i < n; ++i) {
+        if(v[i] < m)    --sum;
+        if(v[i] > m)    ++sum;
+        if(v[i] == m)   found = 1;
+        if(found)   ret += CNT[sum] + CNT[sum-1];
+        else        CNT[sum]++;
     }
+    
+    cout << ans << endl;
     return 0;
 }
