@@ -206,3 +206,17 @@ int BottomUp(int TOT) {                                 // TOT = (Cumulative Sum
     }}
     return (max(dp[0][0], dp[1][0]))/2;                 // Returns the maximum possible answer
 }
+
+// Count Number of ways to go from (1, 1) to (r, c) if there exists n unassassable points (only eight and down is valid move)
+
+ll CountNumberofWays(int r, int c, int n) {
+    v[n] = {r, c};                                  // also add the last point as unaccessable point, to find how many
+    sort(v.begin(), v.end());                       // ways we can come to this point, which is the answer
+    for(int i = 0; i <= n; ++i) {
+        dp[i] = CountWay(1, 1, v[i].first, v[i].second);               // Number of ways we can come from starting square
+        for(int j = 0; j < i; ++j)
+            if(v[j].first <= v[i].first and v[j].second <= v[i].second)
+                dp[i] = (dp[i] - (dp[j] * CountWay(v[j].first, v[j].second, v[i].first, v[i].second))%MOD + MOD)%MOD;
+    }                                               // Number of ways we can reach from (1, 1) to (r, c)
+    return dp[n];                                   // The last state is always (r, c), which is the answer                   
+}
