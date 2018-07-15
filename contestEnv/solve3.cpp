@@ -1,92 +1,70 @@
+// Directed Minimum Spanning Tree (Edmonds' algorithm)
+// Complexity : O(E*V) ~ O(E + VlogV)                           [ works in O(E + VlogV) for almost all cases ]
+// https://en.wikipedia.org/wiki/Edmonds%27_algorithm
+
 #include <bits/stdc++.h>
 using namespace std;
-#define MAX                 400100
-#define EPS                 1e-9
-#define INF                 1e7
-#define MOD                 1000000007
-#define pb                  push_back
-#define mp                  make_pair
-#define fi                  first
-#define se                  second
-#define pi                  acos(-1)
-#define sf                  scanf
-#define pf                  printf
-#define SIZE(a)             ((int)a.size())
-#define All(S)              S.begin(), S.end()              
-#define Equal(a, b)         (abs(a-b) < EPS)
-#define Greater(a, b)       (a >= (b+EPS))
-#define GreaterEqual(a, b)  (a > (b-EPS))
-#define fr(i, a, b)         for(register int i = (a); i < (int)(b); i++)
-#define FastRead            ios_base::sync_with_stdio(false); cin.tie(NULL);
-#define fileRead(S)         freopen(S, "r", stdin);
-#define fileWrite(S)        freopen(S, "w", stdout);
-#define Unique(X)           X.erase(unique(X.begin(), X.end()), X.end())
+const int INF = 1e8;
 
-#define isOn(S, j)          (S & (1 << j))
-#define setBit(S, j)        (S |= (1 << j))
-#define clearBit(S, j)      (S &= ~(1 << j))
-#define toggleBit(S, j)     (S ^= (1 << j))
-#define lowBit(S)           (S & (-S))
-#define setAll(S, n)        (S = (1 << n) - 1)
+struct edge {
+    int u, v, w;
+    edge() {}
+    edge(int a,int b,int c) : u(a), v(b), w(c) {}
+};
 
-typedef unsigned long long ull;
-typedef long long ll;
-typedef map<int, int> mii;
-typedef map<ll, ll>mll;
-typedef map<string, int> msi;
-typedef vector<int> vi;
-typedef vector<long long>vl;
-typedef pair<int, int> pii;
-typedef pair<ll, ll> pll;
-typedef vector<pair<int, int> > vii;
-typedef vector<pair<ll, ll> >vll;
+int dmst(vector<edge> &edges, int root, int n) {
+    int ans = 0;
+    int cur_nodes = n;
+    while(1) {
+        vector<int> lo(cur_nodes, INF), pi(cur_nodes, INF);     // lo[v] : contains minimum weight to go to node v              (for an edge u -> v)
+                                                                // pi[v] : contains the minimum weight edge's starting node u
+        for(int i = 0; i < (int)edges.size(); ++i) {
+            int u = edges[i].u, v = edges[i].v, w = edges[i].w;
+            if(w < lo[v] and u != v)
+                lo[v] = w, pi[v] = u;
+        }
 
-
-//int dx[] = {-1, 0, 1, 0}, dy[] = {0, 1, 0, -1};
-//int dx[] = {-1, -1, -1, 0, 0, 1, 1, 1}, dy[] = {-1, 0, 1, -1, 1, -1, 0, 1};
-//----------------------------------------------------------------------------------------------------------
-
-int v[300], n, k;
-int dp[202];
-vii T;
-
-int recur(int pos, int lastLen, int lstTaken) {
-    if(pos >= n) {
-        for(auto it : T)
-            cout << it.first << " " << it.second << endl;
-        cout << endl;
-        return 1;
-    }
+        lo[root] = 0;                                           // by default the weight to go to root node is 0
+        for(int i = 0; i < (int)lo.size(); ++i) {
+            if(i == root) continue;
+            if(lo[i] == INF) return -1;                         // if there is no way to visit a node v, then Directed MST doesn't exist
+        }
         
-    int &ret = dp[pos];
-    //if(ret != -1) return ret;
-    
-    int lim = upper_bound(v, v+n, v[pos]+k) - v;
-    //if(v[lim] <= v[pos]+k) ++lim;
-    
-    cout << "From " << pos << " to " << lim << endl;
-    
-    ret = 0;
-    for(int i = pos; i < lim; ++i) {
-        T.push_back({pos, i});
-        ret += recur(i+1, i-pos+1, lstTaken+1);
-        T.pop_back();
+        int cur_id = 0;
+        vector<int> id(cur_nodes, -1), mark(cur_nodes, -1);
+        
+        for(int i = 0; i < cur_nodes; ++i) {
+            ans += lo[i];                                       // adding node i's minimum weight to answer
+            
+            int u;
+            for(u = i; u != root && id[u] < 0 && mark[u] != i; u = pi[u])       // marking minimum weighted path from root to node i
+                mark[u] = i;
+                //u = pi[u];
+            //}
+        
+            if(u != root && id[u] < 0) {                            // Contains cycle, as a result u can not reach to i
+                for(int v = pi[u]; v != u; v = pi[v])               // mark all cycle nodes with id
+                    id[v] = cur_id;
+                id[u] = cur_id++;                                   // ??
+        }}
+
+        if(cur_id == 0) break;
+        for(int i = 0; i < cur_nodes; ++i)
+            if(id[i] < 0) id[i] = cur_id++;
+
+        for(int i = 0; i < (int)edges.size(); ++i) {
+            int u = edges[i].u, v = edges[i].v;
+            edges[i].u = id[u];
+            edges[i].v = id[v];
+            if(id[u] != id[v]) edges[i].w -= lo[v];
+        }
+        
+        cur_nodes = cur_id;
+        root = id[root];
     }
-    
-    return ret;
+    return ans;
 }
 
 int main() {
-    cin >> n >> k;
-    for(int i = 0; i < n; ++i)
-        cin >> v[i];
-    sort(v, v+n);
-    v[n] = 10000;
-    memset(dp, -1, sizeof dp);
-    
-    cout << recur(0, 0, 0) << endl;
-    
-    for(int i = 0; i < n; ++i)
-        cout << dp[i] << endl;
     return 0;
 }

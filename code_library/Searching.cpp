@@ -53,14 +53,14 @@ to find the point which produces the maximum value f(x).
 
 ll ternarySearch(ll low, ll high) {
     ll ret = -INF;
-    while ((high - low) > 2) {
+    while((high - low) > 2) {
         ll mid1 = low + (high - low) / 3;
         ll mid2 = high - (high - low) / 3;
  
         ll cost1 = f(mid1);
         ll cost2 = f(mid2);
                 
-        if (cost1 < cost2) {
+        if(cost1 < cost2) {
             low = mid1;
             ret = max(cost2, ret);
         }
