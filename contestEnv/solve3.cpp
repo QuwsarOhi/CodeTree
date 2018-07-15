@@ -48,7 +48,7 @@ int dmst(vector<edge> &edges, int root, int n) {
                 id[u] = cur_id++;                                   // ??
         }}
 
-        if(cur_id == 0) break;
+        if(cur_id == 0) break;                                      // there is no cycle, so all node is possibly visited
         for(int i = 0; i < cur_nodes; ++i)
             if(id[i] < 0) id[i] = cur_id++;
 
