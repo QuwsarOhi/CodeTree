@@ -2,13 +2,6 @@
 // Complexity : O(E*V) ~ O(E + VlogV)                           [ works in O(E + VlogV) for almost all cases ]
 // https://en.wikipedia.org/wiki/Edmonds%27_algorithm
 
-// LightOJ
-// 1380 - Teleport
-
-#include <bits/stdc++.h>
-using namespace std;
-const int INF = 1e8;
-
 struct edge {
     int u, v, w;
     edge() {}
@@ -63,28 +56,5 @@ int DMST(vector<edge> &edges, int root, int V) {
         cur_nodes = cur_id;
         root = id[root];
     }
-    return ans;
-}
-
-vector<edge>edges;
-
-int main() {
-    int t, V, E, w, u, v, Root;
-    scanf("%d", &t);
-    
-    for(int Case = 1; Case <= t; ++Case) {
-        scanf("%d%d%d", &V, &E, &Root);
-        
-        for(int i = 0; i < E; ++i) {
-            scanf("%d%d%d", &u, &v, &w);
-            edges.push_back(edge(u, v, w));
-        }
-        
-        long long ans = DMST(edges, Root, V);
-        printf("Case %d: ", Case);
-        if(ans != -1) printf("%lld\n", ans);
-        else printf("impossible\n");
-        edges.clear();
-    }
-    return 0;
+    return ans;                                                     // returns total cost of MST
 }
