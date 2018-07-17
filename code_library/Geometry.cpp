@@ -307,3 +307,12 @@ point CircumCircleCenter(point a, point b, point c, double &r) {    // returns c
     areIntersect(perpenAB, perpenBC, center);
     return center;
 }
+
+// --------- Trapizoid ---------
+
+double TrapiziodArea(double a, double b, double c, double d) {      // a and c are parallel
+    double BASE = fabs(a-c);
+    double AREA = TriangleArea(d, b, BASE);
+    double h = (AREA*2)/BASE;
+    return ((a+c)/2)*h;
+}
