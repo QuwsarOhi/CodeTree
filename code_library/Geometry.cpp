@@ -1,3 +1,4 @@
+// The trig functions of C++ take radian exclusively
 #define EPS 1e-9
 #define PI  acos(-1)
 
