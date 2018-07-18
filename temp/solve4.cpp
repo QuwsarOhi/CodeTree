@@ -1,95 +1,48 @@
+// LightOJ
+// 1200 - Thief
+
 #include <bits/stdc++.h>
 using namespace std;
 
-#define pb push_back
-#define mp make_pair
-#define sz(a) (ll)(a).size()
+int dp[10005], p[101], c[101], w[101], n, W;
 
-typedef long long ll;
-typedef pair<ll,ll> pii;
-
-const ll lt=100005;
-ll mod=1000000007;
-vector<ll> a(100005);
-vector<ll> dist(100005,0);
-vector<ll> p(100005,-1);
-vector<ll> c(100005,1);
-vector<ll> blocked(100005,0);
-
-pii parent(ll x)
-{
-	if(p[x]==-1)
-		return mp(x,dist[x]);
-
-	pii tmp=parent(p[x]);
+int recur(int weight) {
+    if(weight >= W)
+        return 0;
     
-	if(blocked[p[x]]==1 || blocked[x]==1)
-		blocked[x]=1,blocked[p[x]]=1;
-	else
-		dist[x]=(tmp.second+dist[x]);
-
-	p[x]=tmp.first;
-	
-    cout << "AT " << x << " " << p[x] << " " << dist[x] << endl;
-    return mp(p[x],dist[x]);
+    int &ret = dp[weight];
+    if(ret != -1) return ret;
+    
+    ret = 0;
+    for(int i = 0; i < n; ++i)
+        if(weight+w[i] <= W)
+            ret = max(ret, recur(weight+w[i])+p[i]);
+    return ret;
 }
-
-void dsu(ll v1,ll v2)
-{
-	ll x1=parent(v1).first;
-	ll x2=parent(v2).first;
-	//if(x1==x2)
-	//{
-	//	if((dist[v1]+dist[v2])%2==0)
-	//		blocked[x1]=1;
-	//}
-	//else
-	//{
-		if(blocked[x1]==1 || blocked[x2]==1)
-		{
-			blocked[x1]=1;
-			blocked[x2]=1;
-		}
-		if(c[x1]<c[x2])
-		{
-			p[x1]=x2;
-			c[x1]+=c[x2];
-			dist[x1]=(dist[v1]+dist[v2]+1);
-		}
-		else
-		{
-			p[x2]=x1;
-			c[x2]+=c[x1];
-			dist[x2]=(dist[v1]+dist[v2]+1);
-		}
-	//}
-	return;
-}
-
 
 int main() {
-    while(1) {
-        int u, v, t;
-        cin >> t;
-        if(t == 1) {
-            cin >> u >> v;
-            dsu(u, v);
+    //freopen("in", "r", stdin);
+    //freopen("out", "w", stdout);
+    
+    int t;
+    scanf("%d", &t);
+    
+    for(int Case = 1; Case <= t; ++Case) {
+        scanf("%d%d", &n, &W);
         
-            for(int i = 1; i < 5; ++i)
-                cout << p[i] << " ";
-            cout << endl;
-            for(int i = 1; i < 5; ++i)
-                cout << c[i] << " ";
-            cout << endl;
-            for(int i = 1; i < 5; ++i)
-                cout << dist[i] << " ";
-            cout << endl;
+        int preW = 0, preCst = 0;
+        for(int i = 0; i < n; ++i) {
+            scanf("%d%d%d", &p[i], &c[i], &w[i]);
+            preW += c[i]*w[i];
+            preCst += c[i]*p[i];
         }
-        else {
-            cin >> u;
-            pii x = parent(u);
-            cout << x.first << " " << x.second << endl;
-        }
+        
+        memset(dp, -1, sizeof dp);
+        if(preW > W)
+            printf("Case %d: Impossible\n", Case);
+        else
+            printf("Case %d: %d\n", Case, recur(preW));
     }
+    
     return 0;
 }

@@ -1,5 +1,3 @@
-// LightOJ
-// 1384 - Stream My Contest
 
 // Directed Minimum Spanning Tree (Edmonds' algorithm)
 // Complexity : O(E*V) ~ O(E + VlogV)                           [ works in O(E + VlogV) for almost all cases ]
@@ -16,17 +14,21 @@ struct edge {
     edge(ll a,ll b,ll c,ll d) : u(a), v(b), w(c), b(d) {}
 };
 
-ll DMST(vector<edge> edges, int root, int V, ll lim) {
+vector<int>TAKEN;
+
+ll DMST(vector<edge> &edges, int root, int V) {
     ll ans = 0;
     ll cur_nodes = V;
     while(1) {
         vector<int> lo(cur_nodes, INF), pi(cur_nodes, INF);     // lo[v] : contains minimum weight to go to node v              (for an edge u -> v)
+        vector<int> band(cur_nodes, -1);
                                                                 // pi[v] : contains the minimum weight edge's starting node u
         for(int i = 0; i < (int)edges.size(); ++i) {
             int u = edges[i].u, v = edges[i].v, w = edges[i].w, b = edges[i].b;
-            if(b < lim) continue;
             if(w < lo[v] && u != v)
-                lo[v] = w, pi[v] = u;
+                lo[v] = w, pi[v] = u, band[v] = b;
+            else if(w == lo[v] && u != v && b > band[v])        // if weight is same 
+                lo[v] = w, pi[v] = u, band[v] = b;
         }
 
         lo[root] = 0;                                           // by default the weight to go to root node is 0
@@ -40,6 +42,8 @@ ll DMST(vector<edge> edges, int root, int V, ll lim) {
         
         for(int i = 0; i < cur_nodes; ++i) {
             ans += lo[i];                                       // adding node i's minimum weight to answer
+            TAKEN.push_back(band[i]);
+            
             int u;
             for(u = i; u != root && id[u] < 0 && mark[u] != i; u = pi[u])       // marking minimum weighted path from root to node i
                 mark[u] = i;
@@ -69,46 +73,21 @@ ll DMST(vector<edge> edges, int root, int V, ll lim) {
 
 vector<edge>EDGES;
 
-ll binarySearch(ll lo, ll hi, ll V, ll C) {
-    ll ret = -1;
-    while(lo <= hi) {
-        ll mid = (lo+hi)/2;
-        ll cst = DMST(EDGES, 0, V, mid);
-
-        if(cst == -1 || cst > C)
-            hi = mid-1;
-        else {
-            ret = max(mid, ret);
-            lo = mid+1;
-        }
-    }
-    return ret;
-}
-
 int main() {
     int t;
     scanf("%d", &t);
-    ll V, E, u, v, b, w, C;
+    ll V, E, u, v, b, w, C, c;
     
     for(int Case = 1; Case <= t; ++Case) {
         scanf("%lld%lld%lld", &V, &E, &C);
-        EDGES.clear();
-        ll LIM = 0;
+        
         for(int i = 0; i < E; ++i) {
             scanf("%lld%lld%lld%lld", &u, &v, &b, &w);
             EDGES.push_back(edge(u, v, w, b));
-            LIM = max(LIM, b);
         }
         
-        ll ans = binarySearch(0, LIM+10, V, C);
-
-        printf("Case %d: ", Case);
-        if(ans == -1)
-            printf("impossible\n");
-        else
-            printf("%lld kbps\n", ans);
-
-    }
+        ll ans = DMST(EDGES, 0, V);
+        printf("")
     
     return 0;
 }
