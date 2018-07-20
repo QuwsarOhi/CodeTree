@@ -46,10 +46,41 @@ typedef vector<pair<ll, ll> >vll;
 //int dx[] = {-1, -1, -1, 0, 0, 1, 1, 1}, dy[] = {-1, 0, 1, -1, 1, -1, 0, 1};
 //----------------------------------------------------------------------------------------------------------
 
+vector<ll>ret;                          // returns : ret[number_of_overlaps] = total_number_of_points
+
+void CountInterval(int n) {                       // returns number of overlaps of all inclusive points
+    vector<pair<ll, int> >v;                            // segments start/end and marker (segments are l - r inclusive)
+    ll l, r;
+    while(n--) {
+        scanf("%lld%lld", &l, &r);
+        v.push_back({l, 1}), v.push_back({r+1, -1});    // r+1 as l - r is segment boundary
+    }
+    sort(v.begin(), v.end());
+    for(int i = 0, cnt = v[0].second; i < (int)v.size(); ++i, cnt += v[i].second)       // cnt contains the overlaps
+        if(i+1 < (int)v.size() and v[i].first != v[i+1].first) {                          // v[i].first == v[i+1].first then 
+            ret[cnt] = min(ll(v[i+1].first - v[i].first), ret[cnt]);                      // there may exist more points at front, so take them first
+            cout << "CNT " << cnt << " " << v[i+1].first << " " <<  v[i].first << endl;
+        }
+}
+
 
 int main() {
-    int t;
+    int t, n, m;
     scanf("%d", &t);
     
     for(int Case = 1; Case <= t; ++Case) {
+        scanf("%d%d", &n, &m);
         
+        ret.clear();
+        ret.resize(n+1, INF);
+        
+        CountInterval(n);
+        
+        ll ans = INF;
+        for(int i = m; i < n; ++i)
+            ans = min(ans, ret[i]);
+        
+        cout << ans << endl;
+    }
+    return 0;
+}

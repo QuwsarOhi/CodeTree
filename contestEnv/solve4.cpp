@@ -46,3 +46,38 @@ typedef vector<pair<ll, ll> >vll;
 //int dx[] = {-1, -1, -1, 0, 0, 1, 1, 1}, dy[] = {-1, 0, 1, -1, 1, -1, 0, 1};
 //----------------------------------------------------------------------------------------------------------
 
+ll gcd(ll a, ll b, ll c) {
+    ll t = __gcd(a, b);
+    return __gcd(t, c);
+}
+
+ll lcm(ll a, ll b, ll c) {
+    ll t = a*b*c;
+    return t/ gcd(a, b, c);
+}
+
+
+int main() {
+    int t, f, g;
+    scanf("%d", &t);
+    
+    while(t--) {
+        scanf("%d%d", &f, &g);
+        int lim = f*g;
+        
+        int cnt = 0;
+        for(int a = 1; a <= lim; ++a) {
+            if(lim%a != 0) continue;
+            for(int b = lim/a; b < lim; ++b) {
+                
+                if(lim%(a*b) != 0) continue;
+                int c = lim / (a*b);
+                cerr << a << " " << b << " " << c << endl;
+                cnt += (g == gcd(a, b, c));
+            }
+        }
+        
+        printf("%d\n", cnt);
+    }
+    return 0;
+}

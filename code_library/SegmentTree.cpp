@@ -647,3 +647,55 @@ struct FindUnique {
         for(int i = 0; i < (int)Query.size(); ++i)                    // Output according to input query
             printf("%d\n", Ans[mp(Query[i].first, Query[i].second)]);
 }};
+
+struct STreeMultipleOf3 {
+    int tree[4*MAX][3], prop[4*MAX];
+    void init(int pos, int L, int R) {
+        if(L == R) {
+            tree[pos][0] = 1, tree[pos][1] = tree[pos][2] = 0;
+            return;
+        }
+        int mid = (L+R)>>1;
+        init(pos<<1, L, mid);
+        init(pos<<1|1, mid+1, R);
+        for(int i = 0; i < 3; ++i)
+            tree[pos][i] = tree[pos<<1][i] + tree[pos<<1|1][i];
+    }
+    void shiftVal(int pos, int step) {
+        step %= 3;
+        if(step == 0) return;
+        swap(tree[pos][2], tree[pos][1]);
+        swap(tree[pos][1], tree[pos][0]);
+        if(step == 2) {
+            swap(tree[pos][2], tree[pos][1]);
+            swap(tree[pos][1], tree[pos][0]);
+    }}
+    void propagate(int pos, int L, int R) {
+        if(L == R || prop[pos] == 0) return;
+        shiftVal(pos<<1, prop[pos]), shiftVal(pos<<1|1, prop[pos]);
+        prop[pos<<1] += prop[pos], prop[pos<<1|1] += prop[pos];
+        prop[pos] = 0;
+    }
+    void update(int pos, int L, int R, int l, int r) {              // update l to r by 1
+        if(r < L || R < l) return;
+        if(prop[pos] != 0) propagate(pos, L, R);
+        if(l <= L && R <= r) {
+            shiftVal(pos, 1);
+            prop[pos] += 1;
+            return;
+        }
+        int mid = (L+R)>>1;
+        update(pos<<1, L, mid, l, r);
+        update(pos<<1|1, mid+1, R, l, r);
+        for(int i = 0; i < 3; ++i)
+            tree[pos][i] = tree[pos<<1][i] + tree[pos<<1|1][i];
+    }
+    int query(int pos, int L, int R, int l, int r) {                // return number of multiple of 3 in range l to r
+        if(r < L || R < l) return 0;
+        propagate(pos, L, R);
+        if(l <= L && R <= r) return tree[pos][0];
+        int mid = (L+R)>>1;
+        int lft = query(pos<<1, L, mid, l, r);
+        int rht = query(pos<<1|1, mid+1, R, l, r);
+        return lft+rht;
+}};

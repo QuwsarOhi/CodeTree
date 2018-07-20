@@ -16,7 +16,8 @@ int BFS(int source_node, int finish_node, int vertices) {
     queue<int>Q;
     Q.push(source_node);
     parent.resize(vertices+5, -1);                  //for path printing
-
+    dist[source_node] = 0;
+    
     while(!Q.empty()) {
         int u = Q.front();
         Q.pop();
