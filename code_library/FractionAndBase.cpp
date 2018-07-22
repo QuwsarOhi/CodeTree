@@ -1,45 +1,71 @@
-// Number Base Conversions
+struct fraction {                   // Fraction Calculation Template
+    int a, b;
+    fraction() {
+        a = 1;
+        b = 1;
+    }
+    fraction(int x, int y) : a(x), b(y) {}
+    flip() {swap(a, b);}
+    fraction operator + (fraction other) {
+        fraction temp;
+        temp.b = ((b)*(other.b))/(__gcd((b), other.b));
+        temp.a = (temp.b/b)*a + (temp.b/other.b)*other.a;
+        int x = __gcd(temp.a, temp.b);
+        if(x != 1) {temp.a/=x; temp.b/=x;}
+        return temp;
+    }
+    fraction operator - (fraction other) {
+        fraction temp;
+        temp.b = (b*other.b)/__gcd(b, other.b);
+        temp.a = (temp.b/b)*a - (temp.b/other.b)*other.a;
+        int x = __gcd(temp.a, temp.b);
+        if(x != 1) {temp.a/=x; temp.b/=x;}
+        return temp;
+    }
+    fraction operator / (fraction other) {
+        fraction temp;
+        temp.a = a*other.b;
+        temp.b = b*other.a;
+        int x = __gcd(temp.a, temp.b);
+        if(x != 1) {temp.a/=x; temp.b/=x;}
+        return temp;
+    }
+    fraction operator * (fraction other) {
+        fraction temp;
+        temp.a = a*other.a;
+        temp.b = b*other.b;
+        int x = __gcd(temp.a, temp.b);
+        if(x != 1) {temp.a/=x; temp.b/=x;}
+        return temp;
+}};
 
-#include <bits/stdc++.h>
-using namespace std;
-
-typedef long long ll;
-struct BaseInt {
+struct BaseInt {                                    // Number Base Conversions
     string val;
     ll base;
-    
     BaseInt() {}
-    
     BaseInt(string _val, int _base = 10) {          // Do check if any value if val is greater than base
         val = _val;                                 // Which is impossible
         base = _base;
     }
-    
     char reVal(int num) {
-        if(num >= 0 && num <= 9)
-            return (char)(num + '0');
+        if(num >= 0 && num <= 9) return (char)(num + '0');
         return (char)(num - 10 + 'A');
     }
-    
     int getVal(char c) {
-        if(c <= '9' && c >= '0')
-            return c-'0';
+        if(c <= '9' && c >= '0') return c-'0';
         return c-'A'+10;
     }
-    
     void DecimalTo(int _base) {
         ll v = stoll(val);
         base = _base;
         val.clear();
         while(v) {
-            cerr << v << " " << base << endl;
             val.push_back(reVal(v%base));
             v /= base;
         }
         reverse(val.begin(), val.end());
         if(val.empty()) val.push_back('0');
     }
-    
     bool ToDecimal() {
         ll ret = 0;
         for(int i = 0; i < (int)val.size(); ++i) {
@@ -48,36 +74,22 @@ struct BaseInt {
             if(i)               ret *= base;
             ret += v;
         }
-        val = to_string(ret);
-        base = 10;
+        val = to_string(ret), base = 10;
         return 1;
     }
-    
     void ChangeBase(int to) {
         if(base == to)  return;             // If input is "000", then output will also be "000" (if base remains same)
         if(base != 10)  ToDecimal();        // remove the if statements to recover
         if(to != 10)    DecimalTo(to);      
     }
-    
     void Reverse() {
         reverse(val.begin(), val.end());
-    }
-    
+    }    
     BaseInt operator + (BaseInt other) const {
         BaseInt a(val, base), b = other;
-        a.ToDecimal();
-        b.ToDecimal();
+        a.ToDecimal(), b.ToDecimal();
         string sum = to_string(stoi(a.val, 0) + stoi(b.val, 0));
-        
         BaseInt ret(sum);
         ret.ChangeBase(base);
         return ret;
-    }
-};
-
-int main() {
-    BaseInt x(to_string(11), 10);
-    x.ChangeBase(10);
-    cout << x.val << endl;
-    return 0;
-}
+}};

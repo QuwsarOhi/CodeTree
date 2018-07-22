@@ -1,6 +1,6 @@
 #include <bits/stdc++.h>
 using namespace std;
-#define MAX                 13333333
+#define MAX                 1000010
 #define EPS                 1e-9
 #define INF                 1e7
 #define MOD                 1000000007
@@ -46,10 +46,3 @@ typedef vector<pair<ll, ll> >vll;
 //int dx[] = {-1, -1, -1, 0, 0, 1, 1, 1}, dy[] = {-1, 0, 1, -1, 1, -1, 0, 1};
 //----------------------------------------------------------------------------------------------------------
 
-
-int main() {
-    int t;
-    scanf("%d", &t);
-    
-    for(int Case = 1; Case <= t; ++Case) {
-        

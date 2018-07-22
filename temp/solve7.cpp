@@ -46,44 +46,4 @@ typedef vector<pair<ll, ll> >vll;
 //int dx[] = {-1, -1, -1, 0, 0, 1, 1, 1}, dy[] = {-1, 0, 1, -1, 1, -1, 0, 1};
 //----------------------------------------------------------------------------------------------------------
 
-ll BS(ll lo, ll hi, ll lim, ll base) {
-    ll ret = -1;
-    while(lo <= hi) {
-        ll mid = (lo+hi)>>1;
-        
-        ll T = base*mid;
-        if(T <= lim) {
-            ret = max(ret, T);
-            lo = mid+1;
-        }
-        else
-            hi = mid-1;
-    }
-    return ret;
-}
 
-int main() {
-    ll t, a, b, x, y;
-    cin >> t;
-    
-    while(t--) {
-        cin >> a >> b >> x >> y;
-        
-        ll ans = abs(a-b);
-        for(int i = 0; i <= 100; ++i) {
-            ll newA = a + i*x;
-            ll newB = newA-b;
-            
-            if(newB < 0) continue;
-            
-            ll mxB = BS(1, 100, newB, y);
-            
-            //cout << "GOT " << newA << " " << mxB << " " << newB << endl;
-            
-            ans = min(abs(mxB - newB),  ans);;
-        }
-        
-        cout << ans << endl;
-    }
-    return 0;
-}

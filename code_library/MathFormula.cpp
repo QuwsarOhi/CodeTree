@@ -206,7 +206,6 @@ ll CountZerosInRangeZeroTo(string n) {              // Returns number of zeros f
 
 ll NumOfSameValueInCombination(int n, int r) {          // Returns number of same value in a set of nCr combination
     if(n < r) return 0;
-    n = r + abs(n-r);
     return C(n-1, r-1);
 }
 
@@ -222,4 +221,32 @@ vector<int> genGCD(int mx) {                                    // Counts how ma
         sameGCD[gcd] = gcdCNT;
     }
     return sameGCD;
+}
+
+
+// Multinomial : nC(k1,k2,k3,..km)    is such that k1+k2+k3+....km = n and ki == kj and ki != kj both can be possible.
+// Here Multinomial can be described as : nC(k1, k2, .. km) = nCk1 * (n-k1)Ck2 * (n-k1-k2)Ck3 * ..... (n-k1-k2-...)Ckm
+// Let (a+b+c)^3 = a^3 + b^3 + c^3 + 3a^2b + 3b^c + 3b^2a + 3b^2c + 3c^2a + 3c^2b + 6abc
+// The coefficient can be retrieved as : 6abc = 3C(1, 1, 1) = 6     3b^2c = 3C(0, 2, 1) = 3
+// In general terms it tells how many ways we can place k1, k2, k3, k4 people in 3 unique teams such that k1+k2+k3
+// NOTE: if k1=k2=k3 = 2 and n = 6, and players numberd from 1 to 6, then 1,2|3,4|5,6 and 3,4|1,2|5,6 are considered to be different
+
+ll fa[MAX] = {0};                                       // fa and fainv must be in global
+ll Multinomial(ll N, vector<ll>& K) {                   // K contains all k1, k2, k3,  if k1=k2=k3, then just push k1 once!!
+    if(fa[0] == 0) {                                    // Auto initialize
+        fa[0] = 1; //fainv[0] = powerMOD(1, MOD-2);
+        for(int i = 1; i < MAX; ++i) {
+            fa[i] = (fa[i-1]*i) % MOD;                  // Constant MOD
+            //fainv[i] = powerMOD(fa[i], MOD-2);        // Use factorial inverse if required
+    }}
+    ll k = 1;
+    if((int)K.size() == 1)  k = powerMOD(fa[K[0]], N/K[0]);         // k1 = k2 = .. = km, so k occurs N/K time
+    else for(auto it : K)   k = (k*fa[it])%MOD;
+    return (fa[N]*powerMOD(k, MOD-2))%MOD;                          // Inverse mod
+}
+
+ll NumOfWaysToPlace(ll N, ll K) {                                   // Number of ways to make N/K teams from N people so that each team contais K people
+    vector<ll>v;                                                    // If N = 6, then 1,2|3,4|5,6  and  3,4|1,2|5,6 is considered same
+    v.push_back(K);
+    return (Multinomial(N, v)*powerMOD(fa[N/K], MOD-2))%MOD;        // divide by k!, as 1,2|3,4|5,6  and  3,4|1,2|5,6 is considered same
 }
