@@ -138,14 +138,16 @@ ll C(int n, int r) {
     return p[n][r];
 }
 
-// STARS AND BARS THEOREM with Principle of Inclusion Exclution
+// STARS AND BARS THEOREM / Ball and Urn theorem
 // If We have to Make x1+x2+x3+x4 = 12
 // Then, the solution can be expressed as : {*|*****|****|**} = {1+5+4+2}, {|*****|***|****} = {0+5+3+4}
 // The summation is presented as total value, and the stars represanted as 1, we use bars to seperate values
 // Number of ways we can produce the summation n, with k unknowns : C(n+k-1, n) = C(n+k-1, k-1)
 
 // If numbers have lower limits, like x1 >= 3, x2 >= 2, x3 >= 1, x4 >= 1   (Let, the lower limits be l[i])
-// Then the solution is : C(n-l1-l2-l3-l4+k-1, k-1)
+// Then the solution is : C(n-l1-l2-l3-l4+k-1, k-1) 
+
+// Ball & Urn : how many ways you can put 1 to n number in k sized array so that ther are non decreasing?
 
 ll StarsAndBars(vector<int> &l, int n, int k) {
     if(!l.empty()) for(int i = 0; i < k; ++i) n -= l[i];        // If l is empty, then there is no lower limit
