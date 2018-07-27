@@ -250,3 +250,15 @@ ll NumOfWaysToPlace(ll N, ll K) {                                   // Number of
     v.push_back(K);
     return (Multinomial(N, v)*powerMOD(fa[N/K], MOD-2))%MOD;        // divide by k!, as 1,2|3,4|5,6  and  3,4|1,2|5,6 is considered same
 }
+
+ull partial_derangement(int n, int r) {			// Finds out how many ways we can place n numbers where r of them are not in their initial place
+    ull ans = f[n];								// Factorial of n!
+    for(int i = 1; i <= r; ++i) {				
+        if(i & 1)						// Formula: n! - C(n, 1)*(n-1)! + C(n, 2)*(n-2)! ..... + (-1)^r * C(n,r)*(n-r)!
+            ans = (ans%MOD - (C(r, i) * f[n-i])%MOD)%MOD;	// Here C(r, i) is because we only have to choose from r elements, not n elements
+        else 												// So, this is not the exact formula
+            ans = (ans%MOD + (C(r, i) *f[n-i])%MOD)%MOD;
+        ans = (ans + MOD)%MOD;
+    }
+    return ans%MOD;
+}
