@@ -253,11 +253,9 @@ ll NumOfWaysToPlace(ll N, ll K) {                                   // Number of
 
 ull partial_derangement(int n, int r) {			// Finds out how many ways we can place n numbers where r of them are not in their initial place
     ull ans = f[n];								// Factorial of n!
-    for(int i = 1; i <= r; ++i) {				
-        if(i & 1)						// Formula: n! - C(n, 1)*(n-1)! + C(n, 2)*(n-2)! ..... + (-1)^r * C(n,r)*(n-r)!
-            ans = (ans%MOD - (C(r, i) * f[n-i])%MOD)%MOD;	// Here C(r, i) is because we only have to choose from r elements, not n elements
-        else 												// So, this is not the exact formula
-            ans = (ans%MOD + (C(r, i) *f[n-i])%MOD)%MOD;
+    for(int i = 1; i <= r; ++i) {            	// Formula: n! - C(n, 1)*(n-1)! + C(n, 2)*(n-2)! ..... + (-1)^r * C(n,r)*(n-r)!			
+        if(i & 1) ans = (ans%MOD - (C(r, i) * f[n-i])%MOD)%MOD;	// Here C(r, i) is because we only have to choose from r elements, not n elements
+        else 	  ans = (ans%MOD + (C(r, i) *f[n-i])%MOD)%MOD;
         ans = (ans + MOD)%MOD;
     }
     return ans%MOD;
