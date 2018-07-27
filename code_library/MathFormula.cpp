@@ -73,8 +73,7 @@ int Phi(int n) {                        // Computes phi of n
             while (n % p == 0)			// eleminate all p factors from n 
                 n /= p;
             result -= result / p;
-        }
-    }
+    }}
     if(n > 1)							// if n is still greater than 1, then it is also a prime
         result -= result / n;
     return result;
@@ -87,7 +86,6 @@ void computeTotient(int n) {            // Computes phi or Euler Phi 1 to n
     for (int p=2; p<=n; p++) {	        // Computation
         if (phi[p] == p) {		        // if phi is not computed
             phi[p] = p-1;		        // p is prime and phi(prime) = prime-1;
- 
             for (int i = 2*p; i<=n; i += p) { 	    // Sieve like implementation
                phi[i] = (phi[i]/p) * (p-1);         // Add contribution of p to its multiple i by multiplying with (1 - 1/p)
 }}}}
@@ -209,20 +207,17 @@ ll NumOfSameValueInCombination(int n, int r) {          // Returns number of sam
     return C(n-1, r-1);
 }
 
-int cnt[MAX];                                                   // cnt[x] : how many times x occures in input
-vector<int> genGCD(int mx) {                                    // Counts how many number are there of gcd x
-    vector<int>sameGCD(mx+1);                                   // input the MAXIMUM value        
-    for(int gcd = mx; gcd >= 2; --gcd) {                        // Complexity : mx log_mx
-        int gcdCNT = cnt[gcd];
-        
+int cnt[MAX];                                           // cnt[x] : how many times x occures in input
+vector<int> genGCD(int mx) {                            // Counts how many number are there of gcd x
+    vector<int>sameGCD(mx+1);                           // input the MAXIMUM value        
+    for(int gcd = mx; gcd >= 2; --gcd) {                // Complexity : mx log_mx
+        int gcdCNT = cnt[gcd];    
         for(int mul = gcd+gcd; mul <= mx; mul += gcd)
             gcdCNT += cnt[mul];
-    
         sameGCD[gcd] = gcdCNT;
     }
     return sameGCD;
 }
-
 
 // Multinomial : nC(k1,k2,k3,..km)    is such that k1+k2+k3+....km = n and ki == kj and ki != kj both can be possible.
 // Here Multinomial can be described as : nC(k1, k2, .. km) = nCk1 * (n-k1)Ck2 * (n-k1-k2)Ck3 * ..... (n-k1-k2-...)Ckm
@@ -231,9 +226,9 @@ vector<int> genGCD(int mx) {                                    // Counts how ma
 // In general terms it tells how many ways we can place k1, k2, k3, k4 people in 3 unique teams such that k1+k2+k3
 // NOTE: if k1=k2=k3 = 2 and n = 6, and players numberd from 1 to 6, then 1,2|3,4|5,6 and 3,4|1,2|5,6 are considered to be different
 
-ll fa[MAX] = {0};                                       // fa and fainv must be in global
-ll Multinomial(ll N, vector<ll>& K) {                   // K contains all k1, k2, k3,  if k1=k2=k3, then just push k1 once!!
-    if(fa[0] == 0) {                                    // Auto initialize
+ll fa[MAX] = {0};                           // fa and fainv must be in global
+ll Multinomial(ll N, vector<ll>& K) {       // K contains all k1, k2, k3,  if k1=k2=k3, then just push k1 once!!
+    if(fa[0] == 0) {                        // Auto initialize
         fa[0] = 1; //fainv[0] = powerMOD(1, MOD-2);
         for(int i = 1; i < MAX; ++i) {
             fa[i] = (fa[i-1]*i) % MOD;                  // Constant MOD
@@ -253,7 +248,7 @@ ll NumOfWaysToPlace(ll N, ll K) {                                   // Number of
 
 ull partial_derangement(int n, int r) {			// Finds out how many ways we can place n numbers where r of them are not in their initial place
     ull ans = f[n];								// Factorial of n!
-    for(int i = 1; i <= r; ++i) {            	// Formula: n! - C(n, 1)*(n-1)! + C(n, 2)*(n-2)! ..... + (-1)^r * C(n,r)*(n-r)!			
+    for(int i = 1; i <= r; ++i) {     // Formula: n! - C(n, 1)*(n-1)! + C(n, 2)*(n-2)! ..... + (-1)^r * C(n,r)*(n-r)!			
         if(i & 1) ans = (ans%MOD - (C(r, i) * f[n-i])%MOD)%MOD;	// Here C(r, i) is because we only have to choose from r elements, not n elements
         else 	  ans = (ans%MOD + (C(r, i) *f[n-i])%MOD)%MOD;
         ans = (ans + MOD)%MOD;
