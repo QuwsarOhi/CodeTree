@@ -3,35 +3,29 @@
 struct BIT {
     ll tree[MAX];
     int MaxVal;
-    
     void init(int sz=1e7) {
         memset(tree, 0, sizeof tree);
         MaxVal = sz+1;
     }
-
     void update(int idx, ll val) {
         for( ;idx <= MaxVal; idx += (idx & -idx))
             tree[idx] += val;
     }
-    
     void update(int l, int r, ll val) {
         if(l > r) swap(l, r);
         update(l, val);
         update(r+1, -val);
     }
-
     ll read(int idx) {
         ll sum = 0;
         for( ;idx > 0; idx -= (idx & -idx))
             sum += tree[idx];
         return sum;
     }
-    
     ll read(int l, int r) {
         ll ret = read(r) - read(l-1);
         return ret;
     }
-
     ll readSingle(int idx) {             // Point read in log(n)
         ll sum = tree[idx];
         if(idx > 0) {
@@ -40,11 +34,9 @@ struct BIT {
             while(idx != z) {
                 sum -= tree[idx];
                 idx -= (idx & -idx);
-            }
-        }   
+        }}   
         return sum;
     }
-
     int search(int cSum) {
         int pos = -1, lo = 1, hi = MaxVal, mid;
         while(lo <= hi) {
@@ -58,35 +50,25 @@ struct BIT {
         }
         return pos;
     }
-    
     ll size() {
         return read(MaxVal);
     }
-    
     // Modified BIT, this section can be used to add/remove/read 1 to all elements from 1 to pos
     // all of the inverse functions must be used, for any manipulation
-    
     ll invRead(int idx) {           // gives summation from 1 to idx
         return read(MaxVal-idx);
     }
-    
     void invInsert(int idx) {       // adds 1 to all index less than idx
         update(MaxVal-idx, 1);
     }
-    
     void invRemove(int idx) {       // removes 1 from idx
         update(MaxVal-idx, -1);
     }
-    
     void invUpdate(int idx, ll val) {
         update(MaxVal-idx, val);
-    }
-};
-
+}};
 // --------------------------- 2D Fenwick Tree -------------------------
-
-/*
-    /\
+/* /\
  y  |
     |   (x1,y2) -------- (x2,y2)
     |          |       |
@@ -96,12 +78,10 @@ struct BIT {
     |   (x1,y1)			(x2, y1)
     |
     |___________________________
-   (0, 0)                   x-->
-*/
+   (0, 0)                   x-->		*/
 
 ull tree[2510][2510];
 int xMax = 2505, yMax = 2505;
-
 // Updates from min point to MAX LIMIT
 void update(int x, int y, ll val) {
 	int y1;
@@ -112,11 +92,8 @@ void update(int x, int y, ll val) {
 			y1 += (y1 & -y1);
 		}
 		x += (x & -x);
-	}
-}
-
-// Reads from (0, 0) to (x, y)
-ll read(int x, int y) {
+}}
+ll read(int x, int y) {			// Reads from (0, 0) to (x, y)
 	ll sum = 0;
 	int y1;
 	while(x > 0) {
@@ -129,19 +106,15 @@ ll read(int x, int y) {
 	}
 	return sum;
 }
-
 ll readSingle(int x, int y) {
     return read(x, y) + read(x-1, y-1) - read(x-1, y) - read(x, y-1);
 }
-
 void updateSquare(pii p1, pii p2, ll val) {     // p1 : lower left point, p2 : upper right point
     update(p1.first, p1.second, val);
     update(p1.first, p2.second+1, -val);
     update(p2.first+1, p1.second, -val);
     update(p2.first+1, p2.second+1, val);
 }
-
-
 ll readSquare(pii p1, pii p2) {                // p1 : lower left point, p2 : upper right point
     ll ans = read(p2.first, p2.second);
     ans -= read(p1.first-1, p2.second);
@@ -167,9 +140,7 @@ void update(int x, int y, int z, ll val) {
             y1 += (y1 & -y1);
         }
         x += (x & -x);
-    }
-}
- 
+}}
 ll read(int x, int y, int z) {
     ll sum = 0;
     int y1, z1;
@@ -187,22 +158,12 @@ ll read(int x, int y, int z) {
     }
     return sum;
 }
-
-
 ll readRange(ll x1, ll y1, ll z1, ll x2, ll y2, ll z2) {
     --x1, --y1, --z1;
-    return  read(x2, y2, z2) 
-    - read(x1, y2, z2)
-    - read(x2, y1, z2)
-    - read(x2, y2, z1)
-    + read(x1, y1, z2) 
-    + read(x1, y2, z1) 
-    + read(x2, y1, z1)
-    - read(x1, y1, z1);
+    return  read(x2, y2, z2) - read(x1, y2, z2) - read(x2, y1, z2) - read(x2, y2, z1)
+    + read(x1, y1, z2) + read(x1, y2, z1) + read(x2, y1, z1) - read(x1, y1, z1);
 }
-
-// Not tested yet!!
-void updateRange(int x1, int y1, int z1, int x2, int y2, int z2) {
+void updateRange(int x1, int y1, int z1, int x2, int y2, int z2) {		// Not tested yet!!
     update(x1, y1, z1, val);
     update(x2+1, y1, z1, -val);
     update(x1, y2+1, z1, -val);
@@ -212,9 +173,6 @@ void updateRange(int x1, int y1, int z1, int x2, int y2, int z2) {
     update(x2+1, y1, z2+1, val);
     update(x2+1, y2+1, z2+1, -val);
 }
-
-
 // Pattens to built BIT update read:
 // always starts with first(starting point), add val
 // take (1 to n) elements from ending point with all combination add it to staring point, add (-1)^n * val
-
