@@ -44,6 +44,29 @@ vector<pair<ull, ull> > primeFactor(ull n) {
 	return factor;
 }
 
+int pd[MAX];                        // Contains minimum prime factor/divisor, for primes pd[x] = x
+vector<int>primes;                  // Contains prime numbers
+void SieveLinear(int N) {
+    for(int i = 2; i <= N; ++i) {
+        if(pd[i] == 0) pd[i] = i, primes.push_back(i);                  // if pd[i] == 0, then i is prime
+        for(int j=0; j < (int)primes.size() && primes[j] <= pd[i] && i*primes[j] <= N; ++j)
+            pd[i*primes[j]] = primes[j];
+}}
+
+int pd[MAX];                        // Contains minimum prime factor/divisor, for primes pd[x] = x
+vector<int>primes;                  // Contains prime numbers
+vector<int>PF[MAX];
+void SieveLinearRangePF(int N, ll low, ll hi) {             // also returns unique prime factors in range [low, hi]
+    for(int i = 2; i <= N; ++i) {
+        if(pd[i] == 0) {
+            pd[i] = i, primes.push_back(i);                  // if pd[i] == 0, then i is prime
+            for(ll x = (low-1)-(low-1)%i+i; x <= hi; x += i)        // inserting all prime factors [prime will be inserted only once]
+                PF[x-low].push_back(i);                             // just to be sure, used low-1, instead of low
+        }
+        for(int j=0; j < (int)primes.size() && primes[j] <= pd[i] && i*primes[j] <= N; ++j)
+            pd[i*primes[j]] = primes[j];
+}}
+
 vector<ll> Divisors(ll n) {					// Returns the divisors
     ll lim = sqrt(n);
     vector<ll>divisor;

@@ -81,9 +81,6 @@ int recur(int x, int y1, int y2, int nxtDir) {
     }
     return ret;
 }
-    
-    
-    
 
 int main() {
     int t;
