@@ -45,9 +45,9 @@ struct Interval {
         }
         return sum;
 }};
-vector<ll> CountInterval(int n)         // returns number of overlaps of all inclusive points
-    vector<pair<ll, int> >v;            // segments start/end and marker (segments are l - r inclusive)
-    vector<ll>ret(n+1);                 // returns : ret[number_of_overlaps] = total_number_of_points
+vector<ll> CountInterval(int n) // returns number of overlaps of all inclusive points
+    vector<pair<ll, int> >v;    // segments start/end and marker (segments are l - r inclusive)
+    vector<ll>ret(n+1);         // returns : ret[number_of_overlaps] = total_number_of_points
     ll l, r;
     while(n--) {
         cin >> l >> r;                                  // input
