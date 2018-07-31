@@ -160,8 +160,14 @@ ll read(int x, int y, int z) {
 }
 ll readRange(ll x1, ll y1, ll z1, ll x2, ll y2, ll z2) {
     --x1, --y1, --z1;
-    return  read(x2, y2, z2) - read(x1, y2, z2) - read(x2, y1, z2) - read(x2, y2, z1)
-    + read(x1, y1, z2) + read(x1, y2, z1) + read(x2, y1, z1) - read(x1, y1, z1);
+    return  read(x2, y2, z2)
+	    - read(x1, y2, z2)
+	    - read(x2, y1, z2)
+	    - read(x2, y2, z1)
+	    + read(x1, y1, z2)
+	    + read(x1, y2, z1)
+	    + read(x2, y1, z1)
+	    - read(x1, y1, z1);
 }
 void updateRange(int x1, int y1, int z1, int x2, int y2, int z2) {		// Not tested yet!!
     update(x1, y1, z1, val);
