@@ -84,27 +84,27 @@ ull tree[2510][2510];
 int xMax = 2505, yMax = 2505;
 // Updates from min point to MAX LIMIT
 void update(int x, int y, ll val) {
-	int y1;
-	while(x <= xMax) {
-		y1 =  y;
-		while(y1 <= yMax) {
-			tree[x][y1] += val;
-			y1 += (y1 & -y1);
-		}
-		x += (x & -x);
+    int y1;
+    while(x <= xMax) {
+        y1 =  y;
+        while(y1 <= yMax) {
+            tree[x][y1] += val;
+            y1 += (y1 & -y1);
+        }
+        x += (x & -x);
 }}
 ll read(int x, int y) {			// Reads from (0, 0) to (x, y)
-	ll sum = 0;
-	int y1;
-	while(x > 0) {
-		y1 = y;
-		while(y1 > 0) {
-			sum += tree[x][y1];
-			y1 -= (y1 & -y1);
-		}
-		x -= (x & -x);
-	}
-	return sum;
+    ll sum = 0;
+    int y1;
+    while(x > 0) {
+        y1 = y;
+        while(y1 > 0) {
+            sum += tree[x][y1];
+            y1 -= (y1 & -y1);
+        }
+        x -= (x & -x);
+    }
+    return sum;
 }
 ll readSingle(int x, int y) {
     return read(x, y) + read(x-1, y-1) - read(x-1, y) - read(x, y-1);

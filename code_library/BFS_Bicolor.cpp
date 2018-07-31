@@ -2,7 +2,7 @@
 // Complexity : O(V+E)
 
 vector<int>parent, G[MAX];
-void printPath(int u, int source_node) {
+void printPath(int u, int source_node) {            // destination, source
     if(u == source_node) {
         printf("%d", u);
         return;
@@ -34,17 +34,17 @@ int BFS(int source_node, int finish_node, int vertices) {
 }
 
 int color[100];             // Contains Color (1, 2)
-void Bipartite(int u) {     // Bipartite Check
-	queue<int>q;
-	q.push(u);
-	color[u] = 1;           // Color is -1 initialized
-	while(!q.empty()) {
-		u = q.front();
-		q.pop();
-		for(int i = 0; i < (int)G[u].size(); ++i) {
-			int v = G[u][i];
-			if(color[v] == -1) {
-				if(color[u] == 1) 	color[v] = 2;
-				else       			color[v] = 1;
-				q.push(v);
+void Bicolor(int u) {       // Bicolor Check
+    queue<int>q;
+    q.push(u);
+    color[u] = 1;           // Color is -1 initialized
+    while(!q.empty()) {
+        u = q.front();
+        q.pop();
+        for(int i = 0; i < (int)G[u].size(); ++i) {
+            int v = G[u][i];
+            if(color[v] == -1) {
+                if(color[u] == 1) 	color[v] = 2;
+                else       			color[v] = 1;
+                q.push(v);
 }}}}

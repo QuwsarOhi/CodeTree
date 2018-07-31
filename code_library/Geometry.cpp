@@ -1,9 +1,5 @@
 // The trig functions of C++ take radian exclusively
-#define EPS 1e-9
-#define PI  acos(-1)
-
 // 0D Objects---------------------------------------------------------------
-
 struct point {          // In Integer
     int x, y;
     point() { x = y = 0; }
@@ -72,11 +68,9 @@ double whichSide(point p, point q, point r) {     // returns on which side point
 }
 
 // 1D Objects---------------------------------------------------------------
-
 struct line {
     double a, b, c;
 };
-
 void pointsToLine(point p1, point p2, line &l) {    // ax + by + c = 0  [comes from y = mx + c]
     if (fabs(p1.x - p2.x) < EPS)                    // vertical line is fine
         l.a = 1.0, l.b = 0.0, l.c = -p1.x;          // default values
@@ -84,17 +78,13 @@ void pointsToLine(point p1, point p2, line &l) {    // ax + by + c = 0  [comes f
         l.a = -(double)(p1.y - p2.y) / (p1.x - p2.x);
         l.b = 1.0;                                  // IMPORTANT: we fix the value of b to 1.0
         l.c = -(double)(l.a * p1.x) - p1.y;
-    } 
-}
-
+}}
 bool areParallel(line l1, line l2) {            // check coefficients a & b
     return (fabs(l1.a-l2.a) < EPS) && (fabs(l1.b-l2.b) < EPS);
 }
-
 bool areSame(line l1, line l2) {                // also check coefficient c
     return areParallel(l1 ,l2) && (fabs(l1.c - l2.c) < EPS);
 }
-
 bool areIntersect(line l1, line l2, point &p) {
     if(areParallel(l1, l2)) return 0;                                   // no intersection
     p.x = (l2.b * l1.c - l1.b * l2.c) / (l2.a * l1.b - l1.a * l2.b);    // solve system of 2 linear algebraic equations with 2 unknowns
@@ -102,7 +92,6 @@ bool areIntersect(line l1, line l2, point &p) {
     else                    p.y = -(l2.a * p.x + l2.c);
     return 1;
 }
-
 line perpendicularLine(line l, point p) {           // returns a perpendicular line on l which goes throuth
     line ret;                                       // point p
     ret.a = l.b, ret.b = -l.a;
@@ -117,34 +106,27 @@ line perpendicularLine(line l, point p) {           // returns a perpendicular l
 }
 
 // Vectors ------------------------------
-
 struct vec { 
     double x, y;                        // name: ‘vec’ is different from STL vector
     vec(double _x, double _y) : x(_x), y(_y) {}
 };
-    
 vec toVec(point a, point b) {           // convert 2 points to vector a->b
     return vec(b.x - a.x, b.y - a.y);
 }
-
 vec scale(vec v, double s) {            // nonnegative s = [<1 .. 1 .. >1]
     return vec(v.x * s, v.y * s);       // shorter.same.longer
 }
-
 point translate(point p, vec v) {       // translate p according to v
     return point(p.x + v.x , p.y + v.y);
 }
-
 double dot(vec a, vec b) {
     return (a.x * b.x + a.y * b.y);
 }
-
 double norm_sq(vec v) {
     return v.x * v.x + v.y * v.y;
 }
 
 // Parametric Line ------------------------------
-
 struct ParaLine {                                       // Line in Parametric Form
     point a, b;                                         // points must be in DOUBLE
     ParaLine() { a.x  = a.y = b.x = b.y = 0; }
@@ -198,9 +180,7 @@ bool collinear(point p, point q, point r) {     // returns true if point r is on
 }
 
 // 2D Objects ---------------------------------------------------------------
-
 // --------- CIRCLE --------- 
-
 struct circle {
 	int x, y, r;
 	circle(int _x, int _y, int _r) {
@@ -217,33 +197,27 @@ struct circle {
 double CircleSegmentArea(double r, double theta) {		// Circle Radius, Center Angle(degree)
 	return r * r * 0.5 * (DEG_to_RAD(theta) - sin(DEG_to_RAD(theta)));
 }
-
 double CircleSectorArea(double r, double theta) {		// Circle Radius, Center Angle(degree)
 	return r * r * 0.5 * DEG_to_RAD(theta);
 }
-
 double CircleArcLength(double r, double theta) {		// Circle Radius, Center Angle(degree)
 	return r * DEG_to_RAD(theta);
 }
-
 bool doIntersectCircle(circle c1, circle c2) {
 	int dis = dist(point(c1.x, c1.y), point(c2.x, c2.y));
 	if(sqrt(dis) < c1.r+c2.r) return 1;
 	return 0;
 }
-
 bool isInside(circle c1, circle c2) {                   // Returns true if any one of the circle is fully into another circle
     int dis = dist(point(c1.x, c1.y), point(c2.x, c2.y));
     return ((sqrt(dis) <= max(c1.r, c2.r)) and (sqrt(dis) + min(c1.r, c2.r) < max(c1.r, c2.r)));
 }
-
 // Returns where a point p lies according to a circle of center c and radius r
 int insideCircle(point p, point c, int r) {         // all integer version
     int dx = p.x - c.x, dy = p.y - c.y;
     int Euc = dx * dx + dy * dy, rSq = r * r;     // all integer
     return Euc < rSq ? 0 : Euc == rSq ? 1 : 2;      // inside(0)/border(1)/outside(2)
 }
-
 
 // Given 2 points on the circle (p1 and p2) and radius r of the corresponding circle,
 // determine the location of the centers (c1 and c2) of the two possible circles
@@ -258,20 +232,16 @@ bool circle2PtsRad(point p1, point p2, double r, point &c) {
 }
 
 // --------- Triangle ---------
-
 double TriangleArea(double AB, double BC, double CA) {
 	double s = (AB + BC + CA)/2.0;
 	return sqrt(s*(s-AB)*(s-BC)*(s-CA));
 }
-
 double getAngle(double AB, double BC, double CA) {		// Returns the angle(IN RADIAN) opposide of side CA
 	return acos((AB*AB + BC*BC - CA*CA)/(2*AB*BC));
 }
-
 double rInCircle(double ab, double bc, double ca) {     // Returns radius of inCircle of a triangle
     return TriangleArea(ab, bc, ca) / (0.5 * (ab + bc+ ca));
 }
-
 int inCircle(point p1, point p2, point p3, point &ctr, double &r) {
     r = rInCircle(p1, p2, p3);
     if (fabs(r) < EPS) return 0;                    // no inCircle center
@@ -285,12 +255,10 @@ int inCircle(point p1, point p2, point p3, point &ctr, double &r) {
     areIntersect(l1, l2, ctr);
     return 1;
 }
-
 // radius of Circle Outside of a Triangle
 double rCircumCircle(double ab, double bc, double ca) {     // ab, ac, ad are sides of triangle
     return ab * bc * ca / (4.0 * TriangleArea(ab, bc, ca));
 }
-
 point CircumCircleCenter(point a, point b, point c, double &r) {    // returns certer and radius of circumcircle
     double ab = dist(a, b);
     double bc = dist(b, c);
@@ -310,7 +278,6 @@ point CircumCircleCenter(point a, point b, point c, double &r) {    // returns c
 }
 
 // --------- Trapizoid ---------
-
 double TrapiziodArea(double a, double b, double c, double d) {      // a and c are parallel
     double BASE = fabs(a-c);
     double AREA = TriangleArea(d, b, BASE);

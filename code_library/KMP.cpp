@@ -20,18 +20,17 @@ void prefixTable(int n, char pat[], int table[]) {
 void KMP(int strLen, int patLen, char str[], char pat[], int table[]) { 
     int i = 0, j = 0;						// i : string index, j : pattern index
     while (i < N) {
-        if (str[i] == pat[j])
-            i++, j++;
-        if (j == M) {
+        if(str[i] == pat[j]) i++, j++;
+        if(j == M) {
             printf("Found pattern at index %d n", i-j);
             j = table[j-1];					// Match found, try for next match
         }
-        else if (i < strLen && str[i] != pat[j]) {	    // Match not found
+        else if(i < strLen && str[i] != pat[j]) {	    // Match not found
             if(j != 0)  j = table[j-1];                 // if j != 0, then go to the prev match index
             else		i = i+1;					    // if j == 0, then we need to go to next index of str
 }}}
 
-// 2D KMP
+// --------------- 2D KMP ---------------
 
 unordered_map<string, int>patt;             // Clear after each Kmp2D call
 int flag = 0;                               // Set to zero before calling PrefixTable
@@ -44,8 +43,7 @@ vector<int> PrefixTable2D(int r, int c, int table[], string s[]) {
             patt[s[i]] = ++flag;
             Row.push_back(flag);
         }
-        else
-            Row.push_back(patt[s[i]]);
+        else Row.push_back(patt[s[i]]);
     }
     table[0] = -1;
     int i = 0, j = -1;
@@ -64,7 +62,6 @@ vector<pair<int, int> > Kmp2D(int StrR, int StrC, int PattR, int PattC, string S
     int mat[StrR][StrC];
     int limC = StrC - PattC;
     vector<int>PattRow = PrefixTable2D(PattR, PattC, table, Patt);
-    
     for(int i = 0; i < StrR; ++i)
         for(int j = 0; j <= limC; ++j) {
             string tmp = Str[i].substr(j, PattC);
@@ -72,8 +69,7 @@ vector<pair<int, int> > Kmp2D(int StrR, int StrC, int PattR, int PattC, string S
                 patt[tmp] = ++flag;                     // Stored in matrix
                 mat[i][j] = flag;
             }
-            else
-                mat[i][j] = patt[tmp];
+            else mat[i][j] = patt[tmp];
         }
     vector<pair<int, int> >match;                       // This will contain the starting Row & Column of matched string
     for(int c = 0; c <= limC; ++c) {                    // Scan columnwise
@@ -82,9 +78,7 @@ vector<pair<int, int> > Kmp2D(int StrR, int StrC, int PattR, int PattC, string S
             while(j >= 0 && mat[i][c] != PattRow[j])
                 j = table[j];
             ++i, ++j;
-            if(j == PattR)
-                match.push_back(make_pair(i-j,c));
-        }
-    }
+            if(j == PattR) match.push_back(make_pair(i-j,c));
+    }}
     return match;
 }

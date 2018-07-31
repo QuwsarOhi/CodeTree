@@ -52,7 +52,10 @@ void numToNodeConv(int n) {
 }
 int main() {
     memset(nextNode, -1, sizeof nextNode);
-    ChainNo = 1, all = 1; dfs(1, 1);
+    ChainNo = 1, all = 1;
+    dfs(1, 1);
     memset(ChainSize, 0, sizeof ChainSize);     // array reused in hld
-    hld(1, 1); numToNodeConv(n); init(1, 1, n);
+    hld(1, 1); 
+    numToNodeConv(n);
+    init(1, 1, n);
 }
