@@ -120,14 +120,11 @@ struct Bigint {
 
 int main() {
     Bigint a, b, c;         // declared some Bigint variables
-    // taking Bigint input
     string input;           // string to take input
     cin >> input;           // take the Big integer as string
     a = input;              // assign the string to Bigint a
     cin >> input;           // take the Big integer as string
-    b = input;              // assign the string to Bigint b
-    
-    // Using mathematical operators
+    b = input;              // assign the string to Bigint
     c = a + b;            // adding a and b
     c.print();            // printing the Bigint
     puts("");             // newline
