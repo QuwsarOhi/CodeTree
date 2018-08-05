@@ -49,8 +49,8 @@ int KthDikjstra(int Start, int End, int Kth) {      // Kth Shortest Path (Visits
         int w = -pq.top().first;
         pq.pop();
        
-        if((int)dist[End].size() == Kth)    // We can also break if the Kth path is found
-            return dist[End].back();
+        //if((int)dist[End].size() == Kth)    // We can also break if the Kth path is found
+        //    return dist[End].back();
         if(dist[u].empty())
             dist[u].push_back(w);
         else if(dist[u].back() != w)        // Not taking same cost paths

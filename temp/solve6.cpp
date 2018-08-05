@@ -1,172 +1,50 @@
 #include <bits/stdc++.h>
-#define MAX 250090
 using namespace std;
+#define MAX                 100100
+#define EPS                 1e-9
+#define INF                 1e7
+#define MOD                 1000000007
+#define pb                  push_back
+#define mp                  make_pair
+#define fi                  first
+#define se                  second
+#define pi                  acos(-1)
+#define sf                  scanf
+#define pf                  printf
+#define SIZE(a)             ((int)a.size())
+#define All(S)              S.begin(), S.end()              
+#define Equal(a, b)         (abs(a-b) < EPS)
+#define Greater(a, b)       (a >= (b+EPS))
+#define GreaterEqual(a, b)  (a > (b-EPS))
+#define fr(i, a, b)         for(register int i = (a); i < (int)(b); i++)
+#define FastRead            ios_base::sync_with_stdio(false); cin.tie(NULL); cout.tie(NULL);
+#define fileRead(S)         freopen(S, "r", stdin);
+#define fileWrite(S)        freopen(S, "w", stdout);
+#define Unique(X)           X.erase(unique(X.begin(), X.end()), X.end())
+
+#define isOn(S, j)          (S & (1 << j))
+#define setBit(S, j)        (S |= (1 << j))
+#define clearBit(S, j)      (S &= ~(1 << j))
+#define toggleBit(S, j)     (S ^= (1 << j))
+#define lowBit(S)           (S & (-S))
+#define setAll(S, n)        (S = (1 << n) - 1)
+
+typedef unsigned long long ull;
 typedef long long ll;
+typedef map<int, int> mii;
+typedef map<ll, ll>mll;
+typedef map<string, int> msi;
+typedef vector<int> vi;
+typedef vector<long long>vl;
+typedef pair<int, int> pii;
+typedef pair<ll, ll> pll;
+typedef vector<pair<int, int> > vii;
+typedef vector<pair<ll, ll> >vll;
 
-struct STree {
-    ll sum[4*MAX], prop[4*MAX], leftProp[4*MAX], rightProp[4*MAX];
-    
-    void init() {
-        memset(sum, 0, sizeof sum);
-        memset(prop, 0, sizeof prop);
-        memset(leftProp, 0, sizeof leftProp);
-        memset(rightProp, 0, sizeof rightProp);
-    }
-    
-    ll getSeqSumLeft(ll a, ll len) {
-        cerr << "LEFT " << a << " len " << len << " " << (len*(2*a + len-1))/2 << endl;
-        return (len*(2*a + len-1))/2;
-        
-    }
-    
-    ll getSeqSumRight(ll a, ll len) {
-        a = a-len+1;
-        cerr << "RIGHT " << a << " len " << len << " " << (len*(2*a+len-1))/2 << endl;
-        return (len*(2*a+len-1))/2;
-        
-    }
-    
-    //void checkOverlap(int pos, int l, int r) {
-    //    if(prop[pos<<1] != 0 )
-    
-    void propagate0(int pos, int l, int r) {
-        if(prop[pos] == 0) return;
-        if(l == r) return;
-        int mid = (l+r)>>1;
-        
-        sum[pos<<1] = prop[pos]*(mid-l+1);
-        sum[pos<<1|1] = prop[pos]*(r-mid);
-        prop[pos<<1] = prop[pos<<1|1] = prop[pos];
-        leftProp[pos<<1] = leftProp[pos<<1|1] = rightProp[pos<<1] = rightProp[pos<<1|1] = 0;
-        prop[pos] = 0;
-    }
-    
-    void propagate1(int pos, int l, int r) {                    // propagate func for update1
-        if(leftProp[pos] == 0) return;
-        if(l == r) return;
-        int mid = (l+r)>>1;
-        
-        //checkOverlap(pos, l, r);
-        //propagate0(pos, l, r);
-        
-        sum[pos<<1] += getSeqSumLeft(l-leftProp[pos]+1, mid-l+1);
-        sum[pos<<1|1] += getSeqSumLeft(mid+2-leftProp[pos], r-mid);
-        leftProp[pos<<1] += leftProp[pos]; 
-        leftProp[pos<<1|1] += leftProp[pos];
-        leftProp[pos] = 0;
-    }
-    
-    void propagate2(int pos, int l, int r) {
-        if(rightProp[pos] == 0) return;
-        if(l == r) return;
-        int mid = (l+r)>>1;
-        
-        //checkOverlap(pos, l, r);
-        //propagate0(pos, l, r);
-        
-        sum[pos<<1] += getSeqSumRight(rightProp[pos]-mid+1, mid-l+1);
-        sum[pos<<1|1] += getSeqSumRight(rightProp[pos]-r+1, r-mid);
-        rightProp[pos<<1] = rightProp[pos<<1|1] = rightProp[pos];
-        rightProp[pos] = 0;
-    }
-    
-    void update0(int pos, int l, int r, int L, int R, int val) {    // update val, val, val, ... at each index 
-        if(r < L || R < l) return;
-        //propagate1(pos, l, r), propagate2(pos, l, r), propagate0(pos, l, r);
-        propagate0(pos, l, r);
-        cerr << "AT " << pos << " [" << l << ", " << r << "] :" << sum[pos] << endl;
-        if(L <= l && r <= R) {
-            sum[pos] = val*(r-l+1);
-            prop[pos] = val;
-            leftProp[pos] = rightProp[pos] = 0;
-            cerr << "NEWSUM " << sum[pos] << endl;
-            return;
-        }
-        int mid = (l+r)>>1;
-        update0(pos<<1, l, mid, L, R, val), update0(pos<<1|1, mid+1, r, L, R, val);
-        sum[pos] = sum[pos<<1] + sum[pos<<1|1];
-    }
-    
-    void update1(int pos, int l, int r, int L, int R) {         // update like 1, 2, 3, ... at each index i
-        if(r < L || R < l) return;
-        //propagate1(pos, l, r), propagate2(pos, l, r), propagate0(pos, l, r);
-        propagate1(pos, l, r);
-        cerr << "AT " << pos << " [" << l << ", " << r << "] :" << sum[pos] << endl;
-        if(L <= l && r <= R) {
-            sum[pos] += getSeqSumLeft(l-L+1, r-l+1);
-            leftProp[pos] = L;
-            cerr << "NEWSUM " << sum[pos] << endl;
-            return;
-        }
-        int mid = (l+r)>>1;
-        update1(pos<<1, l, mid, L, R), update1(pos<<1|1, mid+1, r, L, R);
-        sum[pos] = sum[pos<<1] + sum[pos<<1|1];
-    }
-    
-    void update2(int pos, int l, int r, int L, int R) {                       // update like 3, 2, 1 at each index i
-        if(r < L || R < l) return;
-        //propagate1(pos, l, r), propagate2(pos, l, r), propagate0(pos, l, r);
-        propagate2(pos, l, r);
-        cerr << "AT " << pos << " [" << l << ", " << r << "] :" << sum[pos] << endl;
-        if(L <= l && r <= R) {
-            sum[pos] += getSeqSumRight(R-l+1, r-l+1);
-            rightProp[pos] = R;
-            cerr << "NEWSUM " << sum[pos] << endl;
-            return;
-        }
-        int mid = (l+r)>>1;
-        update2(pos<<1, l, mid, L, R), update2(pos<<1|1, mid+1, r, L, R);
-        sum[pos] = sum[pos<<1] + sum[pos<<1|1];;
-    }
-     
-     
-    ll query(int pos, int l, int r, int L, int R) {
-        if(r < L || R < l) return 0;
-        propagate1(pos, l, r), propagate2(pos, l, r), propagate0(pos, l, r);
-        cerr << "AT " << pos << " [" << l << ", " << r << "] :" << sum[pos] << endl;
-        if(L <= l && r <= R) {
-            cerr << "RETSUM " << sum[pos] << endl;
-            return sum[pos];
-        }
-        int mid = (l+r)>>1;
-        ll ret = query(pos<<1, l, mid, L, R) + query(pos<<1|1, mid+1, r, L, R);
-        
-        return ret;
-    }
-};
 
-STree ST;
+//int dx[] = {-1, 0, 1, 0}, dy[] = {0, 1, 0, -1};
+//int dx[] = {-1, -1, -1, 0, 0, 1, 1, 1}, dy[] = {-1, 0, 1, -1, 1, -1, 0, 1};
+//----------------------------------------------------------------------------------------------------------
 
-int main() {
-    //freopen("in", "r", stdin);
-    //freopen("out", "w", stdout);
-    
-    int t, q;
-    ll a, b, c, LIM = 4;//250005;
-    char typ;
-    scanf("%d", &t);
-    
-    for(int Case = 1; Case <= t; ++Case) {
-        scanf("%d", &q);
-        printf("Case %d:\n", Case);
-        ST.init();
-        
-        while(q--) {
-            scanf(" %c %lld%lld", &typ, &a, &b);
-            if(typ == 'A')
-                ST.update1(1, 1, LIM, a, b);
-            else if(typ == 'B')
-                ST.update2(1, 1, LIM, a, b);
-            else if(typ == 'C') {
-                scanf("%lld", &c);
-                ST.update0(1, 1, LIM, a, b, c);
-            }
-            else
-                printf("%lld\n", ST.query(1, 1, LIM, a, b));
-            
-            cerr << "TOT " << ST.sum[1] << endl;
-        }
-    }
-    return 0;
-}
-        
+
+

@@ -1,14 +1,19 @@
-10080 — Gopher II (UVA)
-10777 UVA
+10080 — Gopher II (UVA)             // DONE : build graph and do maximum BPM
+10777 UVA                           // Previously solved : Build equation E(x) = p1*h1 + p2 * (E(x) + h2) + p3 * (E(x) + h3)
 10806 — Dijkstra, Dijkstra.
+10816 UVA
 10818 UVA
 10860 UVA
 10937 UVA
 10944 UVA
+11097 UVA
 11138 — Nuts and Bolts
 11262 — Weird Fence
 11323 UVA
+11331 UVA
+11338 UVA
 11348 UVA
+11374 UVA
 11386 UVA
 11419 — SAM I AM (UVA)
 11427 UVA
@@ -16,16 +21,21 @@
 11439 — Maximizing the ICPC
 11474 UVA
 11488 UVA
+11514 UVA
+11516 (UVA)
 11539 UVA
 11594 — All Pairs Maximum Flow
 11613 — Acme Corporation
+11692 (UVA)
 11732 UVA
 11762 UVA
+11985 UVA
 11985 — Prime Independence (UVA)
 11987 UVA
 11990 UVA
 12003 UVA
 1201 — Taxi Cab Scheme (UVA)
+12047 UVA
 12159 — Gun Fight (UVA)
 12186 UVA
 12530 — Game of Tiles
@@ -37,9 +47,12 @@
 12944 — Earthquake Disaster
 12963 — Astragalus Nitidiflorus
 12972 — Cuban Challenge (UVA)
+13150 (UVA)
 13153 UVA
 13169 UVA
+13172 UVA
 13175 UVA
+13177 UVA
 1376 — Animal Run
 3415 — Guardian of Decency (LA)
 3673 — Black-White Grid (UVA)
@@ -48,56 +61,76 @@
 6571 — It Can Be Arranged
 6851 — The Programmers (LA)
 6887 — Book Club
+http://codeforces.com/contest/627/problem/D
 http://codeforces.com/contest/638/problem/B
 http://codeforces.com/contest/638/problem/C
 http://codeforces.com/contest/638/problem/D
+http://codeforces.com/contest/664/problem/D
+http://codeforces.com/contest/675/problem/D
 http://codeforces.com/contest/680/problem/E
 http://codeforces.com/contest/687/problem/D
 http://codeforces.com/contest/700/problem/C
 http://codeforces.com/contest/709/problem/E
 http://codeforces.com/contest/710/problem/E
+http://codeforces.com/contest/713/problem/C
+http://codeforces.com/contest/714/problem/D
+http://codeforces.com/contest/716/problem/D
 http://codeforces.com/contest/723/problem/E
 http://codeforces.com/contest/723/problem/F
 http://codeforces.com/contest/727/problem/A
+http://codeforces.com/contest/727/problem/D
+http://codeforces.com/contest/729/problem/C
 http://codeforces.com/contest/732/problem/F
 http://codeforces.com/contest/734/problem/E
+http://codeforces.com/contest/741/problem/C
 http://codeforces.com/contest/746/problem/F
 http://codeforces.com/contest/746/problem/G
+http://codeforces.com/contest/749/problem/D
 http://codeforces.com/contest/750/problem/F
+http://codeforces.com/contest/757/problem/F
 http://codeforces.com/contest/758/problem/E
 http://codeforces.com/contest/760/problem/B
 http://codeforces.com/contest/760/problem/D
 http://codeforces.com/contest/761/problem/E
 http://codeforces.com/contest/766/problem/D
 http://codeforces.com/contest/767/problem/C
+http://codeforces.com/contest/767/problem/D
 http://codeforces.com/contest/768/problem/D
 http://codeforces.com/contest/769/problem/B
 http://codeforces.com/contest/777/problem/C
+http://codeforces.com/contest/779/problem/D
 http://codeforces.com/contest/781/problem/C
 http://codeforces.com/contest/786/problem/C
 http://codeforces.com/contest/794/problem/D
 http://codeforces.com/contest/796/problem/C
 http://codeforces.com/contest/797/problem/D
+http://codeforces.com/contest/801/problem/C
 http://codeforces.com/contest/802/problem/K
+http://codeforces.com/contest/803/problem/D
 http://codeforces.com/contest/805/problem/C
 http://codeforces.com/contest/805/problem/E
+http://codeforces.com/contest/807/problem/C
 http://codeforces.com/contest/813/problem/C
 http://codeforces.com/contest/814/problem/C
 http://codeforces.com/contest/818/problem/C 
+http://codeforces.com/contest/818/problem/F
+http://codeforces.com/contest/827/problem/F
 http://codeforces.com/contest/828/problem/D
 http://codeforces.com/contest/834/problem/B
 http://codeforces.com/contest/839/problem/C
 http://codeforces.com/contest/840/problem/D
 http://codeforces.com/contest/841/problem/D
 http://codeforces.com/contest/844/problem/E
+http://codeforces.com/contest/845/problem/E
 http://codeforces.com/contest/845/problem/G
+http://codeforces.com/contest/846/problem/D         // Done 2D Sum using DP, and binary search for minimum time
 http://codeforces.com/contest/846/problem/E
 http://codeforces.com/contest/846/problem/F
 http://codeforces.com/contest/849/problem/C
 http://codeforces.com/contest/863/problem/F
-http://codeforces.com/gym/100753 (Bounty Hunterr II — B) //VERY NICE — I refered multiple times to this principal
+http://codeforces.com/gym/100753 (Bounty Hunterr II — B)
 http://codeforces.com/gym/100800 (Aqueduct Construction — A)
-http://codeforces.com/gym/100820 (Airport — A) //Nice one
+http://codeforces.com/gym/100820 (Airport — A)
 http://codeforces.com/gym/101047/problem/H
 http://codeforces.com/gym/101408 (Cat vs Dog — C)
 http://codeforces.com/gym/101485 (Elementary Math — E)
@@ -114,12 +147,18 @@ http://www.spoj.com/problems/ARRAYSUB/
 http://www.spoj.com/problems/A_W_S_N/
 http://www.spoj.com/problems/BNMT/
 http://www.spoj.com/problems/CAC/
+http://www.spoj.com/problems/CNTINDX/
 http://www.spoj.com/problems/CODFURY/
+http://www.spoj.com/problems/COT/
+http://www.spoj.com/problems/CPAIR2/
 http://www.spoj.com/problems/CRAN04/
+http://www.spoj.com/problems/DCEPCA09/
+http://www.spoj.com/problems/EC_ESTA/
 http://www.spoj.com/problems/EC_P/
 http://www.spoj.com/problems/FOXLINGS/
 http://www.spoj.com/problems/FRNDCIRC
 http://www.spoj.com/problems/GIVEAWAY/
+http://www.spoj.com/problems/GOT/
 http://www.spoj.com/problems/GRAFFDEF/
 http://www.spoj.com/problems/HARSHAD/
 http://www.spoj.com/problems/IITKWPCG/
@@ -129,7 +168,9 @@ http://www.spoj.com/problems/IITWPC4J/
 http://www.spoj.com/problems/KOZE/
 http://www.spoj.com/problems/LEXSTR/
 http://www.spoj.com/problems/MAKEMAZE/
-http://www.spoj.com/problems/MATCHING/ //Raw (no sauce)
+http://www.spoj.com/problems/MATCHING/
+http://www.spoj.com/problems/MATHLOVE/
+http://www.spoj.com/problems/NDS/
 http://www.spoj.com/problems/NITT4/
 http://www.spoj.com/problems/NITTROAD/
 http://www.spoj.com/problems/OPCPIZZA/
@@ -137,13 +178,17 @@ http://www.spoj.com/problems/PUCMM210/
 http://www.spoj.com/problems/RANDG/
 http://www.spoj.com/problems/RANGESUM/
 http://www.spoj.com/problems/RIOI_2_3/
+http://www.spoj.com/problems/RMID/
+http://www.spoj.com/problems/RMID2/
 http://www.spoj.com/problems/RTREE/
-http://www.spoj.com/problems/SCPC11H/ //Very nice — yet not hard
+http://www.spoj.com/problems/SABBIRGAME/
+http://www.spoj.com/problems/SCPC11H/
+http://www.spoj.com/problems/SHAHBG/
 http://www.spoj.com/problems/SUBMERGE/
 http://www.spoj.com/problems/TRYCOMP/
-https://www.codechef.com/problems/HOGON
 http://www.spoj.com/problems/ULM09/
-http://www.spoj.com/problems/SHAHBG/
-https://www.codechef.com/problems/CHEFYODA
+http://www.spoj.com/problems/VECTAR4/
 http://www.spoj.com/problems/WOWSUBSTR2/
 http://www.spoj.com/problems/ZCR/
+https://www.codechef.com/problems/CHEFYODA
+https://www.codechef.com/problems/HOGON

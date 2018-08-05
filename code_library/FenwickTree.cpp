@@ -67,6 +67,7 @@ struct BIT {
     void invUpdate(int idx, ll val) {
         update(MaxVal-idx, val);
 }};
+
 // --------------------------- 2D Fenwick Tree -------------------------
 /* /\
  y  |
@@ -80,50 +81,37 @@ struct BIT {
     |___________________________
    (0, 0)                   x-->		*/
 
-ull tree[2510][2510];
-int xMax = 2505, yMax = 2505;
-// Updates from min point to MAX LIMIT
-void update(int x, int y, ll val) {
-    int y1;
-    while(x <= xMax) {
-        y1 =  y;
-        while(y1 <= yMax) {
-            tree[x][y1] += val;
-            y1 += (y1 & -y1);
-        }
-        x += (x & -x);
-}}
-ll read(int x, int y) {			// Reads from (0, 0) to (x, y)
-    ll sum = 0;
-    int y1;
-    while(x > 0) {
-        y1 = y;
-        while(y1 > 0) {
-            sum += tree[x][y1];
-            y1 -= (y1 & -y1);
-        }
-        x -= (x & -x);
+struct FTree2D {
+    ll tree[MAX][MAX] = {0};
+    int xMax, yMax;
+    void init(int xx, int yy) {
+        xMax = xx, yMax = yy;
     }
-    return sum;
-}
-ll readSingle(int x, int y) {
-    return read(x, y) + read(x-1, y-1) - read(x-1, y) - read(x, y-1);
-}
-void updateSquare(pii p1, pii p2, ll val) {     // p1 : lower left point, p2 : upper right point
-    update(p1.first, p1.second, val);
-    update(p1.first, p2.second+1, -val);
-    update(p2.first+1, p1.second, -val);
-    update(p2.first+1, p2.second+1, val);
-}
-ll readSquare(pii p1, pii p2) {                // p1 : lower left point, p2 : upper right point
-    ll ans = read(p2.first, p2.second);
-    ans -= read(p1.first-1, p2.second);
-    ans -= read(p2.first, p1.second-1);
-    ans += read(p1.first-1, p1.second-1);
-    return ans;
-}
-
-// // --------------------------- 3D Fenwick Tree -------------------------
+    void update(int x, int y, int val) {
+        for(int x1 = x; x1 <= xMax; x1 += x1 & -x1)
+            for(int y1 = y; y1 <= yMax; y1 += y1 & -y)
+                tree[x1][y1] += val;
+    }
+    ll read(int x, int y) {
+        ll sum = 0;
+        for(int x1 = x; x1 > 0; x1 -= x1 & -x1)
+            for(int y1 = y; y1 > 0; y1 -= y1 & -y1)
+                sum += tree[x1][y1];
+        return sum;
+    }
+    ll readSingle(int x, int y) {
+        return read(x, y) - read(x-1, y) - read(x, y-1) + read(x-1, y-1);
+    }
+    void updateSquare(int x1, int y1, int x2, int y2, int val) {
+        update(x1, y1, val);
+        update(x1, y2+1, -val);
+        update(x2+1, y1, -val);
+        update(x2+1, y2+1, val);
+    }
+    ll readSquare(int x1, int y1, int x2, int y2) {                // p1 : lower left point, p2 : upper right point
+        return  read(x2, y2) - read(x1-1, y2) - read(x2, y1-1) + read(x1-1, y1-1);
+}};
+//// --------------------------- 3D Fenwick Tree -------------------------
 
 ll tree[105][105][105];
 ll xMax = 100, yMax = 100, zMax = 100;
