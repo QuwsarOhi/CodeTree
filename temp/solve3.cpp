@@ -1,6 +1,6 @@
 #include <bits/stdc++.h>
 using namespace std;
-#define MAX                 100100
+#define MAX                 550
 #define EPS                 1e-9
 #define INF                 1e7
 #define MOD                 1000000007
@@ -46,35 +46,109 @@ typedef vector<pair<ll, ll> >vll;
 //int dx[] = {-1, -1, -1, 0, 0, 1, 1, 1}, dy[] = {-1, 0, 1, -1, 1, -1, 0, 1};
 //----------------------------------------------------------------------------------------------------------
 
-pii Dikjstr(int s, int t) {
+vi G[MAX];
+vector<float> W[MAX], R[MAX];
+double tmp[MAX], dist[MAX];
+int parent[MAX];
+map<int, vector<pair<pair<double, double>, int> > >EDGE;
+
+pair<double, double> Dikjstra(int s, int t) {
 	queue<int>q;
 	for(int i = 0; i < MAX; ++i)
 		dist[i] = INF, tmp[i] = INF;
 	q.push(s);
-	dist[s] = 0;
+	dist[s] = 0, tmp[s] = 0;
 	while(not q.empty()) {
 		int u = q.front();
 		q.pop();
 		for(int i = 0; i < (int)G[u].size(); ++i) {
-			int v = G[u][i], w = W[u][i], r = R[u][i];
-			if(first) {
-				//tmp[v] = r;
-				//dist[v] = dist[u]+w;
-				q.push({{r, w+_w} v});
+			int v = G[u][i];
+			double w = W[u][i], r = R[u][i];
+			if(max(r, tmp[u]) < tmp[v]) {
+				//if(dist[u] + w > dist[v]) {
+				//	cerr << "FROM " << u << " to " << v << "bigger distance" << endl;
+				//	continue;
+				//}
+				parent[v] = u;
+				tmp[v] = max(r, tmp[u]);
+				//if(tmp[u] == INF) tmp[v] = r;
+				dist[v] = dist[u] + w;
+				//cerr  << "FROM " << u << " to " << v << " :: " << dist[v] << ", " << tmp[v] << endl;
+				q.push(v);
+				TRACK[v].pb({tmp[v], dist[v], u});
 			}
-			else if(r < tmp[v] and dist[u]+w < dist[v]) {
-				
+			//else {
+			//	cerr << "SKIP " << u << " to " << v << " :: " << max(r, tmp[u]) << " but " << tmp[v] << endl;
+			//}
+	}}
+	//cerr << tmp[t] << " " << dist[t] << endl; 
+	return mp(dist[t], tmp[t]);
+}
+
+void recur(int s, int t) {
+	if(s == t) {
+		pf("%d", s);
+		return;
+	}
+	recur(s, parent[t]);
+	pf(" %d", t);
+}
+
+void printer(int u, int s) {
+	if(u == s) {
+		pf("%d ", s);
+		return;
+	}
+	recur()
 
 int main() {
+	fileRead("in");
+	fileWrite("out");
+	
+	int V, E, s, t, u, v;
+	double d, r;
 	while(sf("%d%d", &V, &E) == 2) {
 		sf("%d%d", &s, &t);
 		while(E--) {
-			sf("%d%d%lf%lf", &u, &v, &d, &r);
-			G[u].pb(v), G[v].pb(u);
-			W[u].pb(d*10), W[v].pb(d*10);
-			R[u].pb(r*10), R[u].pb(r*10);
+			sf("%d%d%lf%lf", &u, &v, &r, &d);
+			EDGE[u].pb(mp(mp(d, r), v));
+			/*G[u].pb(v), G[v].pb(u);
+			W[u].pb(d), W[v].pb(d);
+			R[u].pb(r), R[v].pb(r);*/
+			//cerr << u << " " << v << " " << r << " " << d << endl;
 		}
+
+		for(auto vv : EDGE) {
+			sort(All(vv.second));
+			u = vv.first;
+			for(auto it : vv.second) {
+				v = it.se;
+				d = it.fi.fi, r = it.fi.se;
+				G[u].pb(v), G[v].pb(u);
+				W[u].pb(d), W[v].pb(d);
+				R[u].pb(r), R[v].pb(r);
+		}}
 		
+		pair<double, double> ans = Dikjstra(s, t);
+		recur(s, t);
+		pf("\n%.1f %.1f\n", ans.fi, ans.se);
+		
+		EDGE.clear();
+		for(int i = 0; i <= V; ++i)
+			G[i].clear(), W[i].clear(), R[i].clear();
 	}
 	return 0;
 }
+
+
+/*
+
+4 4
+1 4
+
+2 4 5 30
+1 3 10 40
+3 4 5 30
+1 2 10 20
+
+*/
