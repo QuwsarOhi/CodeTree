@@ -1,7 +1,6 @@
-// MaxFlow
+// MaxFlow (Directed/Undirected)
 // Ford-Fulkerson
 // Complexity: O(VE^2)
-// Graph Type : Directed/Undirected
 
 const int MAX = 120;
 vector<int>edge[MAX];
@@ -41,26 +40,62 @@ int maxFlow(int s, int d) {             // source, destination
     return max_flow;
 }
 
-int main() {
-    int u, v, w, source, destination, Case = 1;
-    map<pair<int, int>, bool>Map;
-    while(scanf("%d", &V) && V) {
-        scanf("%d%d%d", &source, &destination, &E);
-        memset(rG, 0, sizeof rG);
-        for(int i = 0; i < E; ++i) {
-            scanf("%d%d%d", &u, &v, &w);
-            rG[u][v] += w;                          // edges are undirected
-            rG[v][u] += w;                          // remove this line if edges are directed
-            if(Map.find({u, v}) == Map.end()) {             // same edges might occur more than once
-                edge[u].push_back(v);                       // to avoid n^2 calculation
-                edge[v].push_back(u);
-                Map[{u, v}] = Map[{v, u}] = 1;
-        }}
-        printf("Network %d\n", Case++);
-        printf("The bandwidth is %d.\n\n", maxFlow(source, destination));
+void AddEdge(int u, int v, int w) {
+	edge[u].push_back(v), edge[v].push_back(u);
+	rG[u][v] += w;
+	rG[v][u] += w;
+}
 
-        for(int i = 0; i <= V; ++i) edge[i].clear();
-        Map.clear();
-    }
-    return 0;
+// Min Cost Max Flow (Directed/Undirected)
+// Edmonds-Karp relabelling + Dijkstra
+// Complexity : O(V*V*flow)
+
+vi G[MAX];
+int cost[MAX][MAX], cap[MAX][MAX], dist[MAX], parent[MAX];
+bitset<MAX>vis;
+
+bool Dikjstra(int src, int sink) {
+	queue<int>q;
+	for(int i = 0; i < MAX; ++i) 
+		dist[i] = INT_MAX;
+	vis.reset();
+	q.push(src);
+	vis[src] = 1, dist[src] = 0;					// dist[u] : contains minimum cost
+	while(!q.empty()) {
+		int u = q.front();
+		q.pop(), vis[u] = 0;						// node u is processed and poped out, so set vis = 0
+		for(int i = 0; i < (int)G[u].size(); ++i) {
+			int v = G[u][i], w = dist[u] + cost[u][v];
+			if(cap[u][v] > 0 and dist[v] > w) {		// if capacity exists and can minimize cost
+				dist[v] = w;
+				parent[v] = u;
+				if(not vis[v])						// check if node v is not inserted in queue
+					q.push(v), vis[v] = 1;			// this check is because we might insert same node twice
+	}}}
+	return dist[sink] != INT_MAX;
+}
+
+int MinCostFlow(int src, int sink, int &max_flow) {		// Returns min cost and max flow
+	int flow, min_cost = 0;
+	max_flow = 0;
+	while(Dikjstra(src, sink)) {						// Max flow does bfs
+		flow = INT_MAX;
+		for(int v = sink; v != src; v = parent[v]) {
+			int u = parent[v];
+			flow = min(flow, cap[u][v]);
+		}
+		for(int v = sink; v != src; v = parent[v]) {
+			int u = parent[v];
+			cap[u][v] -= flow, cap[v][u] += flow;
+			cost[v][u] = -cost[v][u];					// Extra part of MaxFlow
+		}
+		min_cost += dist[sink]*flow, max_flow += flow;	// cost of this flow = total_cost * actual_flow
+	}
+	return min_cost;
+}
+
+void AddEdge(int u, int v, int _capacity, int _cost) {		// Assuming undirected graph
+	G[u].push_back(v), G[v].push_back(u);					//
+	cost[u][v] = cost[v][u] = _cost;						// Cost of edge u-v
+	cap[u][v] = cap[v][u] = _capacity;						// Capacity of edfe u-v
 }

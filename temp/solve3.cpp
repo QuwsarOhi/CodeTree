@@ -46,5 +46,35 @@ typedef vector<pair<ll, ll> >vll;
 //int dx[] = {-1, -1, -1, 0, 0, 1, 1, 1}, dy[] = {-1, 0, 1, -1, 1, -1, 0, 1};
 //----------------------------------------------------------------------------------------------------------
 
+pii Dikjstr(int s, int t) {
+	queue<int>q;
+	for(int i = 0; i < MAX; ++i)
+		dist[i] = INF, tmp[i] = INF;
+	q.push(s);
+	dist[s] = 0;
+	while(not q.empty()) {
+		int u = q.front();
+		q.pop();
+		for(int i = 0; i < (int)G[u].size(); ++i) {
+			int v = G[u][i], w = W[u][i], r = R[u][i];
+			if(first) {
+				//tmp[v] = r;
+				//dist[v] = dist[u]+w;
+				q.push({{r, w+_w} v});
+			}
+			else if(r < tmp[v] and dist[u]+w < dist[v]) {
+				
 
-
+int main() {
+	while(sf("%d%d", &V, &E) == 2) {
+		sf("%d%d", &s, &t);
+		while(E--) {
+			sf("%d%d%lf%lf", &u, &v, &d, &r);
+			G[u].pb(v), G[v].pb(u);
+			W[u].pb(d*10), W[v].pb(d*10);
+			R[u].pb(r*10), R[u].pb(r*10);
+		}
+		
+	}
+	return 0;
+}

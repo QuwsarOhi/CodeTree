@@ -1,6 +1,10 @@
+// UVa
+// 10806 - Dijkstra, Dijkstra.
+// https://uva.onlinejudge.org/index.php?option=com_onlinejudge&Itemid=8&page=show_problem&category=&problem=1747&mosmsg=Submission+received+with+ID+21754582
+
 #include <bits/stdc++.h>
 using namespace std;
-#define MAX                 225
+#define MAX                 110
 #define EPS                 1e-9
 #define INF                 1e7
 #define MOD                 1000000007
@@ -46,109 +50,92 @@ typedef vector<pair<ll, ll> >vll;
 //int dx[] = {-1, -1, -1, 0, 0, 1, 1, 1}, dy[] = {-1, 0, 1, -1, 1, -1, 0, 1};
 //----------------------------------------------------------------------------------------------------------
 
-vi G[MAX], W[MAX], dist[MAX];
-bool block[MAX][MAX];
-int parent[MAX];//, dist[MAX];
-pii lstEdge;
+vi G[MAX];
+int cost[MAX][MAX], cap[MAX][MAX], dist[MAX], parent[MAX];
+bitset<MAX>vis;
 
-void BlockEdge(int src, int dest) {
-    if(src == dest) return;
-    block[dest][parent[dest]] = block[parent[dest]][dest] = 1;
-    // lstEdge.fi = parent[dest], lstEdge.se = dest;
-    BlockEdge(src, parent[dest]);
+bool Dikjstra(int src, int sink) {
+	queue<int>q;
+	for(int i = 0; i < MAX; ++i) 
+		dist[i] = INT_MAX;
+	vis.reset();
+	q.push(src);
+	vis[src] = 1, dist[src] = 0;					// dist[u] : contains minimum cost
+	while(!q.empty()) {
+		int u = q.front();
+		q.pop(), vis[u] = 0;						// node u is processed and poped out, so set vis = 0
+		for(int i = 0; i < (int)G[u].size(); ++i) {
+			int v = G[u][i], w = dist[u] + cost[u][v];
+			if(cap[u][v] > 0 and dist[v] > w) {		// if capacity exists and can minimize cost
+				dist[v] = w;
+				parent[v] = u;
+				if(not vis[v])						// check if node v is not inserted in queue
+					q.push(v), vis[v] = 1;			// this check is because we might insert same node twice
+	}}}
+	return dist[sink] != INT_MAX;
 }
 
-int KthDikjstra(int Start, int End, int Kth = 5) {      // Kth Shortest Path (Visits Edge Only Once)
-    for(int i = 0; i < MAX; ++i)
-        dist[i].clear();
-    priority_queue<pii>pq;                  // Weight, Node
-    pq.push(make_pair(0, Start));
-   
-    while(!pq.empty()) {
-        int u = pq.top().second;
-        int w = -pq.top().first;
-        pq.pop();
-       
-        if((int)dist[End].size() == Kth)    // We can also break if the Kth path is found
-            return dist[End].back();
-        if(dist[u].empty())
-            dist[u].push_back(w);
-        //else if(dist[u].back() != w)        // Not taking same cost paths
-            dist[u].push_back(w);           // As priority queue greedily chooses edge, it's guranteed that this edge is bigger than previous
-        if((int)dist[u].size() > Kth)       // Like basic dikjstra, we'll not take the Kth+ edges
-            continue;
-        for(int i = 0; i < (int)G[u].size(); ++i) {
-            int v = G[u][i];
-            int _w = w + W[u][i];
-            if((int)dist[v].size() == Kth)
-                continue;
-            if(parent[u] == v) continue;
-            parent[v] = u;
-            cerr << u << " to " << v << " : " << _w << endl;
-            pq.push(make_pair(-_w, v));
-    }}
-    return -1;
+int MinCostFlow(int src, int sink, int &max_flow) {		// Returns min cost and max flow
+	int flow, min_cost = 0;
+	max_flow = 0;
+	while(Dikjstra(src, sink)) {						// Max flow does bfs
+		flow = INT_MAX;
+		for(int v = sink; v != src; v = parent[v]) {
+			int u = parent[v];
+			flow = min(flow, cap[u][v]);
+		}
+		for(int v = sink; v != src; v = parent[v]) {
+			int u = parent[v];
+			cap[u][v] -= flow, cap[v][u] += flow;
+			cost[v][u] = -cost[v][u];					// Extra part of MaxFlow
+		}
+		min_cost += dist[sink]*flow, max_flow += flow;	// cost of this flow = total_cost * actual_flow
+	}
+	return min_cost;
 }
-    
-/*
-int Dikjstra(int s, int d) {
-    for(int i = 0; i <= d; ++i) dist[i] = INT_MAX;
-    queue<int>q;
-    q.push(s);
-    dist[s] = 0;
-    
-    while(not q.empty()) {
-        int u = q.front();
-        q.pop();
-        if(u == d) return dist[u];
-        for(int i = 0; i < G[u].size(); ++i) {
-            if(not block[u][G[u][i]] and (dist[u] + W[u][i] < dist[G[u][i]])) {
-                parent[G[u][i]] = u;
-                dist[G[u][i]] = dist[u] + W[u][i];
-                //cerr << u << " " << G[u][i] << " " << dist[G[u][i]] << endl;
-                q.push(G[u][i]);
-    }}}
-    return -1;
-}*/
 
-
+void AddEdge(int u, int v, int _capacity, int _cost) {		// Assuming undirected graph
+	G[u].push_back(v), G[v].push_back(u);					//
+	cost[u][v] = cost[v][u] = _cost;						// Cost of edge u-v
+	cap[u][v] = cap[v][u] = _capacity;						// Capacity of edfe u-v
+}
+	
 int main() {
-    //fileRead("in");
-    //fileWrite("out");
-    int u, v, w, E, n;
-    while(sf("%d", &n) == 1 and n) {
-        sf("%d", &E);
-        while(E--) {
-            sf("%d%d%d", &u, &v, &w);
-            G[u].pb(v), G[v].pb(u), W[u].pb(w), W[v].pb(w);
-        }
-        
-        memset(block, 0, sizeof block);
-        
-        /*int ans = INT_MAX;
-        int x = Dikjstra(1, n), y;
-        
-        while(1) {
-            if(x == -1) break;
-            BlockEdge(1, n);
-            y = Dikjstra(1, n);
-            if(y == -1) break;
-            ans = min(ans, x+y);
-            swap(x, y);
-        }*/
-        
-        
-       // cerr << x << " " << y << endl;
-        /*if(ans == INT_MAX)
-            pf("Back to jail\n");
-        else
-            pf("%d\n", ans);*/
-        
-        KthDikjstra(1, n, (n*(n+1))/2);
-        for(int i = 0; i < n*(n+1)/2; ++i)
-            cout << i << " " << dist[n][i] << endl;
-        
-        for(int i = 1; i <= n; ++i) G[i].clear(), W[i].clear();
-    }
-    return 0;
+	int n, u, v, cst, flow, E;
+	while(sf("%d", &n) and n) {
+		sf("%d", &E);
+		int src = 0, sink = n+1;
+		while(E--) {
+			sf("%d%d%d", &u, &v, &cst);
+			AddEdge(u, v, 1, cst);
+		}
+		AddEdge(src, 1, 2, 0);
+		AddEdge(n, sink, 2, 0);
+		cst = MinCostFlow(src, sink, flow);
+		
+		if(cap[1][src] != 4)
+			pf("Back to jail\n");
+		else
+			pf("%d\n", cst);
+		//cout << cst << " " << flow << " " << cap[1][0] << endl;
+		
+		for(int i = 0; i <= n; ++i) G[i].clear();
+		memset(cost, 0, sizeof cost);
+		memset(cap, 0, sizeof cap);
+	}
+	return 0;
 }
+
+
+/*
+
+4
+6
+1 2 1
+1 3 10
+1 4 100
+2 4 10
+2 3 1
+3 4 1
+
+*/

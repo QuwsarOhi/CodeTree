@@ -57,7 +57,7 @@ bitset<MAX>vis;
 
 int vertexCover(int u) {
     vis[u] = 1;
-    for(auto v : G[u]) {
+    for(int v : G[u]) {
         if(vis[v]) continue;
         vis[v] = 1;
         if(lft[v] == -1) {
