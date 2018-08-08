@@ -1,8 +1,8 @@
-10080 — Gopher II (UVA)             // DONE : build graph and do maximum BPM
+10080 — Gopher II (UVA)             // Build graph and do maximum BPM
 10777 UVA                           // Previously solved : Build equation E(x) = p1*h1 + p2 * (E(x) + h2) + p3 * (E(x) + h3)
-10806 — Dijkstra, Dijkstra.
-10816 UVA
-10818 UVA
+10806 — Dijkstra, Dijkstra.			// Min Cost Max flow problem, add source and sink, weights are the cost of the flow graph
+10816 UVA							// Do dikjstra twice
+10818 UVA							// 
 10860 UVA
 10937 UVA
 10944 UVA
