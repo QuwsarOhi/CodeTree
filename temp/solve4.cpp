@@ -1,6 +1,6 @@
 #include <bits/stdc++.h>
 using namespace std;
-#define MAX                 100100
+#define MAX                 25
 #define EPS                 1e-9
 #define INF                 1e7
 #define MOD                 1000000007
@@ -46,4 +46,237 @@ typedef pair<double, double>pdd;
 //int dx[] = {-1, -1, -1, 0, 0, 1, 1, 1}, dy[] = {-1, 0, 1, -1, 1, -1, 0, 1};
 //----------------------------------------------------------------------------------------------------------
 
+string g[MAX];
+int dx[] = {0, -1, 1, 0}, dy[] = {1, 0, 0, -1};
+char D[] = {'E', 'N', 'S', 'W'};
+bool vis[MAX][MAX];
+vii v;
+map<pair<int, int>, int>DIR;
+string dir[MAX][MAX];
+string dp[12][1 << (12)], path[12][12];
 
+void fill(int x, int y) {
+	if(vis[x][y]) return;
+	if(g[x][y] == '#' or g[x][y] == 'X') return;
+	if(g[x][y] == '*') {
+		DIR[{x, y}] = v.size();
+		v.pb({x, y});
+	}
+		
+	//getchar();
+	//cerr << "at " << x << " " << y << endl;
+	vis[x][y] = 1;
+	for(int i = 0; i < 4; ++i)
+		fill(x+dx[i], y+dy[i]);
+}
+
+string SMALL(string &a, string &b) {
+	if(a.empty()) return b;
+	if(a.size() < b.size()) return a;
+	else if(b.size() < a.size()) return b;
+	for(int i = 0; i < (int)a.size(); ++i)
+		if(a[i] > b[i])
+			return b;
+	return a;
+}
+
+bool getPath(int x, int y, int _x, int _y, string &str) {
+	if(g[x][y] == '#' or g[x][y] == 'X' or vis[x][y])
+		return 0;
+	if(x == _x and y == _y) {
+		//cerr << "AT " << _x << " " << _y << endl;
+		return 1;
+	}
+	string tmp, ret;
+	str.clear();
+	bool ok = 0;
+	vis[x][y] = 1;
+	for(int i = 0; i < 4; ++i) {
+		tmp.clear(), ret.clear();
+		tmp.pb(D[i]);
+		if(getPath(x+dx[i], y+dy[i], _x, _y, ret)) {
+			tmp += ret;
+			//cerr << "OK " << x << " " << y << " " << " to " << x+dx[i] << " " << y+dy[i] << " " << i << " : " << tmp << endl;
+			//if(not tmp.empty())
+			if(str.empty())
+				str = tmp;
+			else
+				str = SMALL(str, tmp);
+			ok = 1;
+		}
+	}
+	vis[x][y] = 0;
+	return ok;
+}
+
+
+void bfsPoint(int p) {
+	for(int i = 0; i < MAX; ++i)
+		for(int j = 0; j < MAX; ++j)
+			dir[i][j].clear();
+	queue<pair<int, int> >q;
+	q.push({v[p]});
+	while(not q.empty()) {
+		pii u = q.front();
+		q.pop();
+		for(int i = 0; i < 4; ++i) {
+			int x = u.fi+dx[i], y = u.se+dy[i];
+			if(g[x][y] == 'X' or g[x][y] == '#') continue;
+			
+			string tmp = dir[u.fi][u.se];
+			tmp.pb(D[i]);
+			if(dir[x][y].empty()) {
+				dir[x][y] = tmp;
+				q.push({x, y});
+			}
+			else if(dir[x][y].size() > tmp.size()) {
+				dir[x][y] = tmp;
+				q.push({x, y});
+			}
+			else if(dir[x][y].size() == tmp.size() and dir[x][y] > tmp) {
+				dir[x][y] = tmp;
+				q.push({x, y});
+			}
+	}}
+	
+	//cerr << "AT " << p << endl;
+	for(auto it : DIR) {
+		if(it.se == p) continue;
+		int x = it.fi.fi, y = it.fi.se;
+		path[p][it.se] = dir[x][y];
+		//cerr << v[p].fi << " " << v[p].se << " to " << x << " " << y << " : " << dir[x][y] << endl;
+	}	
+}
+		
+
+string TSP(int pos, int mask) {
+	//bitset<3>b(mask);
+	//cerr << pos << " " << b << " " << mask << " " << v.size() << endl;
+	
+	if(__builtin_popcount(mask) == (int)v.size()) {
+		//cerr << "OK GOT IT\n";
+		return path[pos][0];
+	}
+	if(not dp[pos][mask].empty())
+		return dp[pos][mask];
+	string ret, tmp;
+	for(int i = 0; i < (int)v.size(); ++i)
+		if(not (mask & (1<<i))) {
+			//cerr << "GOING from " << pos << " to " << i << endl;
+			tmp = path[pos][i] + TSP(i, mask | (1 << i));
+			//cerr << "From " << pos << " " << tmp << endl;
+			if(ret.empty())
+				ret = tmp;
+			else if(tmp.size() < ret.size())
+				ret = tmp;
+			else if(tmp.size() == ret.size() and tmp < ret)
+				ret = tmp;
+		}
+	return dp[pos][mask] = ret;
+}
+
+int main() {
+	//fileRead("in");
+	//fileWrite("out");
+	
+	int n, m, _x, _y;
+	
+	while(cin >> n >> m) {
+		//cerr  << n << " " << m << endl;
+		if(n == 0 and m == 0) break;
+		v.clear();
+		DIR.clear();
+		getchar();
+		
+		for(int i = 0; i < n; ++i) {
+			g[i].clear();
+			getline(cin, g[i]);
+			
+			for(int j = 0; j < m; ++j)
+				if(g[i][j] == 'S') {
+					_x = i, _y = j;
+					DIR[{i, j}] = v.size();
+					v.pb({i, j});
+		}}
+		
+		//cerr << "INPUT DONE\n";
+		memset(vis, 0, sizeof vis);
+		fill(_x, _y);
+		//cerr << "FILL DONE " << v.size() << endl;
+		
+		if(v.size() == 1ULL) {
+			cout << "Stay home!\n";
+			continue;
+		}
+		
+		//cerr << "STARTING dist cal\n";
+		for(int i = 0; i < (int)v.size(); ++i)
+			bfsPoint(i);
+		
+		//cerr << "GOT ALL PATH\n";
+		
+		for(int i = 0; i < 12; ++i)
+			for(int j = 0; j < (1 << 12); ++j)
+				dp[i][j].clear();
+		
+		//cerr << path[0][1] << " + " << path[1][0] << endl;
+		//cerr << "Starting\n";
+		string ans = TSP(0, 1);
+		cout << ans << endl;
+	}
+	return 0;
+}
+		
+		
+		
+		
+		
+		
+/*
+
+5 5
+#####
+#  S#
+# XX#
+#  *#
+#####
+5 5
+#####
+#* X#
+###X#
+#S *#
+#####
+5 5
+#####
+#S X#
+#  X#
+# #*#
+#####
+0 0
+
+
+10 12
+############
+##X X #S  ##
+#       ## #
+#  # * * X #
+#   #  X   #
+#  # # X # #
+## XX**  # #
+# *  #     #
+#*      X  #
+############
+
+10 12
+############
+##X X #S  ##
+#       ## #
+#  # *   X #
+#   #  X   #
+#  # # X # #
+## XX    # #
+#    #     #
+#       X  #
+############
+
+*/
