@@ -1,6 +1,10 @@
+// UVa
+// 10816 - Travel in Desert
+// https://uva.onlinejudge.org/index.php?option=com_onlinejudge&Itemid=8&page=show_problem&category=24&problem=1757&mosmsg=Submission+received+with+ID+21762892
+
 #include <bits/stdc++.h>
 using namespace std;
-#define MAX                 550
+#define MAX                 120
 #define EPS                 1e-9
 #define INF                 1e7
 #define MOD                 1000000007
@@ -47,93 +51,90 @@ typedef vector<pair<ll, ll> >vll;
 //----------------------------------------------------------------------------------------------------------
 
 vi G[MAX];
-vector<float> W[MAX], R[MAX];
-double tmp[MAX], dist[MAX];
+vector<double> R[MAX], W[MAX];
+double tt;
+double temp[MAX], dist[MAX];
 int parent[MAX];
-map<int, vector<pair<pair<double, double>, int> > >EDGE;
 
-pair<double, double> Dikjstra(int s, int t) {
+double DikjstraTemp(int s, int t) {
 	queue<int>q;
-	for(int i = 0; i < MAX; ++i)
-		dist[i] = INF, tmp[i] = INF;
+	for(int i = 0; i < MAX; ++i) temp[i] = INF;
 	q.push(s);
-	dist[s] = 0, tmp[s] = 0;
+	temp[s] = 0;
 	while(not q.empty()) {
 		int u = q.front();
 		q.pop();
 		for(int i = 0; i < (int)G[u].size(); ++i) {
 			int v = G[u][i];
-			double w = W[u][i], r = R[u][i];
-			if(max(r, tmp[u]) < tmp[v]) {
-				//if(dist[u] + w > dist[v]) {
-				//	cerr << "FROM " << u << " to " << v << "bigger distance" << endl;
-				//	continue;
-				//}
-				parent[v] = u;
-				tmp[v] = max(r, tmp[u]);
-				//if(tmp[u] == INF) tmp[v] = r;
-				dist[v] = dist[u] + w;
-				//cerr  << "FROM " << u << " to " << v << " :: " << dist[v] << ", " << tmp[v] << endl;
+			double r = R[u][i];
+			if(temp[v] > max(r, temp[u])) {
+				temp[v] = max(r, temp[u]);
 				q.push(v);
-				TRACK[v].pb({tmp[v], dist[v], u});
-			}
-			//else {
-			//	cerr << "SKIP " << u << " to " << v << " :: " << max(r, tmp[u]) << " but " << tmp[v] << endl;
-			//}
-	}}
-	//cerr << tmp[t] << " " << dist[t] << endl; 
-	return mp(dist[t], tmp[t]);
+	}}}
+	return temp[t];
 }
 
-void recur(int s, int t) {
+
+double DikjstraDist(int s, int t, double distLim) {
+	double ret = distLim;
+	queue<int>q;
+	for(int i = 0; i < MAX; ++i) dist[i] = INF;
+	dist[s] = 0;
+	q.push(s);
+	while(not q.empty()) {
+		int u = q.front();
+		q.pop();
+		//cerr << "AT " << u << endl;
+		if(u == t) {
+			ret = min(ret, dist[t]);
+			continue;
+		}
+		for(int i = 0; i < (int)G[u].size(); ++i) {
+			int v = G[u][i];
+			double w = W[u][i] + dist[u];
+			if(w < dist[v] and w <= distLim and R[u][i] <= tt) {
+				//cerr << "FROM " << u << " to " << v << endl;
+				dist[v] = w;
+				parent[v] = u;
+				q.push(v);
+	}}}
+	return ret;
+}
+
+int lastPar[MAX];
+
+void pathPrint(int s, int t) {
 	if(s == t) {
 		pf("%d", s);
 		return;
 	}
-	recur(s, parent[t]);
-	pf(" %d", t);
+	pathPrint(s, parent[t]);
+	printf(" %d", t);
 }
 
-void printer(int u, int s) {
-	if(u == s) {
-		pf("%d ", s);
-		return;
-	}
-	recur()
-
 int main() {
-	fileRead("in");
-	fileWrite("out");
+	//fileRead("in");
+	//fileWrite("out");
 	
 	int V, E, s, t, u, v;
-	double d, r;
+	double d, r, tot;
 	while(sf("%d%d", &V, &E) == 2) {
 		sf("%d%d", &s, &t);
+		tot = 0;
 		while(E--) {
 			sf("%d%d%lf%lf", &u, &v, &r, &d);
-			EDGE[u].pb(mp(mp(d, r), v));
-			/*G[u].pb(v), G[v].pb(u);
+			G[u].pb(v), G[v].pb(u);
 			W[u].pb(d), W[v].pb(d);
-			R[u].pb(r), R[v].pb(r);*/
-			//cerr << u << " " << v << " " << r << " " << d << endl;
+			R[u].pb(r), R[v].pb(r);
+			tot += d;
 		}
 
-		for(auto vv : EDGE) {
-			sort(All(vv.second));
-			u = vv.first;
-			for(auto it : vv.second) {
-				v = it.se;
-				d = it.fi.fi, r = it.fi.se;
-				G[u].pb(v), G[v].pb(u);
-				W[u].pb(d), W[v].pb(d);
-				R[u].pb(r), R[v].pb(r);
-		}}
+		double dd;
+		tt = DikjstraTemp(s, t);
+		dd = DikjstraDist(s, t, tot);
+		pathPrint(s, t);
+		pf("\n%.1f %.1f\n", dd, tt);
 		
-		pair<double, double> ans = Dikjstra(s, t);
-		recur(s, t);
-		pf("\n%.1f %.1f\n", ans.fi, ans.se);
-		
-		EDGE.clear();
 		for(int i = 0; i <= V; ++i)
 			G[i].clear(), W[i].clear(), R[i].clear();
 	}
@@ -145,10 +146,32 @@ int main() {
 
 4 4
 1 4
-
 2 4 5 30
 1 3 10 40
 3 4 5 30
 1 2 10 20
+
+8 12
+1 4
+1 2 10 1
+1 5 10 3
+1 7 10 3
+2 3 20 2
+5 6 10 2
+7 8 10 1
+3 4 10 3
+6 4 10 2
+8 4 10 2
+3 4 10 1
+5 6 10 2
+8 4 10 1
+
+5 5
+1 3
+1 2 10 5
+2 3 10 1
+1 4 10 3
+4 5 10 1
+5 3 10 1
 
 */
