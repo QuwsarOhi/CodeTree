@@ -1,6 +1,6 @@
 #include <bits/stdc++.h>
 using namespace std;
-#define MAX                 120
+#define MAX                 200010
 #define EPS                 1e-9
 #define INF                 1e7
 #define MOD                 1000000007
@@ -45,4 +45,236 @@ typedef vector<pair<ll, ll> >vll;
 //int dx[] = {-1, 0, 1, 0}, dy[] = {0, 1, 0, -1};
 //int dx[] = {-1, -1, -1, 0, 0, 1, 1, 1}, dy[] = {-1, 0, 1, -1, 1, -1, 0, 1};
 //----------------------------------------------------------------------------------------------------------
+/*
+struct MergeSortTree {
+    vector<int>tree[MAX*4];
+    void init(int pos, int l, int r, ll val[]) {
+        tree[pos].clear();                              // Clears past values
+        if(l == r) {
+            tree[pos].push_back(val[l]);
+            return;
+        }
+        int mid = (l+r)>>1;
+        init(pos<<1, l, mid, val);
+        init(pos<<1|1, mid+1, r, val);
+        merge(tree[pos<<1].begin(), tree[pos<<1].end(), tree[pos<<1|1].begin(), tree[pos<<1|1].end(), back_inserter(tree[pos]));
+    }
+	
+	void update(int pos, int l, int r, int idx, int newVal) {
+		if(l == r) {
+			tree[pos][0] = newVal;
+			return;
+		}
+		int mid = (l+r)>>1;
+		if(pos <= mid)
+			update(pos<<1, l, mid, idx, newVal);
+		else
+			update(pos<<1|1, mid+1, idx, newVal);
+		
+	
+    int query(int pos, int l, int r, int L, int R, int k) {
+        if(r < L || R < l) return 0;
+        if(L <= l && r <= R) {
+			auto it = upper_bound(tree[pos].begin(), tree[pos].end(), k);
+			if(it != tree[pos].end() and *it == k) ++it;
+			return (int)(tree[pos].end() - it);
+		}
+        //return (int)tree[pos].size() - (upper_bound(tree[pos].begin(), tree[pos].end(), k) - tree[pos].begin());        // MODIFY
+        int mid = (l+r)>>1;
+        return query(pos<<1, l, mid, L, R, k) + query(pos<<1|1, mid+1, r, L, R, k);
+	}
+	
+	int queryMin(int pos, int n, int k, int val) {
+		int l = max(1, pos-k), r = min(n, pos+k);
+		if(l == r) return 0;
+		return query(1, 1, n, l, r, val);
+	}
+};*/
 
+inline void fastIn(ll &num) {          // Fast IO, with space and new line ignoring
+    bool neg = false;
+    register int c;
+    num = 0;
+    c = getchar();
+    for( ; c != '-' && (c < '0' || c > '9'); c = getchar());
+    if (c == '-') {
+        neg = true;
+        c = getchar();
+    }
+    for(; (c>47 && c<58); c=getchar())
+        num = (num<<1) + (num<<3) + c - 48;
+    if(neg)
+        num *= -1;
+}
+
+struct RangeMax {
+	ll tree[4*MAX];
+	void init(int pos, int l, int r) {
+		tree[pos] = 0;
+		if(l == r) return;
+		int mid = (l+r)>>1;
+		init(pos<<1, l, mid), init(pos<<1|1, mid+1, r);
+	}
+	ll query(int pos, int l, int r, int L, int R) {
+		if(r < L or R < l) return 0;
+		if(L <= l and r <= R) return tree[pos];
+		int mid = (l+r)>>1;
+		return max(query(pos<<1, l, mid, L, R), query(pos<<1|1, mid+1, r, L, R));
+	}
+	void update(int pos, int l, int r, int idx, ll val) {
+		if(l == r) {
+			tree[pos] = val;
+			return;
+		}
+		int mid = (l+r)>>1;
+		if(idx <= mid) 	update(pos<<1, l, mid, idx, val);
+		else 			update(pos<<1|1, mid+1, r, idx, val);
+		tree[pos] = max(tree[pos<<1], tree[pos<<1|1]);
+	}
+	ll queryRange(int pos, int n, int k) {
+		int l = max(1, pos-k), r = min(n, pos+k);
+		if(l == r) return 0;
+		return query(1, 1, n, l, r);
+}};
+		
+RangeMax st;
+ll a[MAX];
+//vll v;
+ll GO[MAX];
+
+ll assigned[MAX];
+map<ll, vector<ll> >MAP;
+ll sum;
+
+void FixPast(ll p1) {
+	if(GO[p1] == -1) return;
+	ll p2 = GO[p1];
+	if(assigned[p1] != assigned[p2]) {
+		//cerr << "GONE " << p1 << " to " << p2 << "FIXED\n";
+		sum -= assigned[p2];
+		sum += assigned[p1];
+		assigned[p2] = assigned[p1];
+		FixPast(p2);
+	}
+}
+
+ll simulate(int k, int n) {
+	sum = 0;
+	st.init(1, 1, n);
+	memset(GO, -1, sizeof GO);
+	
+	for(auto vv : MAP) {
+		vl v = vv.se;
+		//ll posVal = vv.fi;
+		for(int i = 0; i < (int)v.size(); ++i) {
+			bool inRange = 0;
+			if(i) {
+				ll pstR = min((ll)n, v[i-1]+k);
+				//int nowL = max(1, v[i]-k);	
+				if(pstR >= v[i]) {		// In Range and Same
+					inRange = 1;
+					GO[v[i]] = v[i-1];
+					//cerr << "linked\n";
+				}
+			}
+			
+			int val = st.queryRange(v[i], n, k);
+			//cerr << "AT " << v[i] << " val " << val;
+			if(inRange and val == 0)
+				val = assigned[v[i-1]];
+			else
+				val++;//val += (not inRange);
+				
+			//cerr << " new " << val << endl;
+			
+			
+			assigned[v[i]] = val;
+			sum += val;
+			FixPast(v[i]);
+		}
+		
+		for(int i = 0; i < (int)v.size(); ++i)
+			st.update(1, 1, n, v[i], assigned[v[i]]);
+	}
+	
+	/*cerr << k << " : ";
+	ll ss = 0;
+	for(int i = 1; i <= n; ++i) {
+		ss += assigned[i];
+		cerr << assigned[i] << " ";
+	}
+	cerr << ": " << ss << endl;*/
+	
+	return sum;
+}
+		
+int main() {
+	//fileRead("in");
+	//fileWrite("out");
+	//FastRead;
+	
+	ll s, n, t;
+    fastIn(t);
+	while(t--) {
+		//cin >> n >> s;
+		fastIn(n), fastIn(s);
+		MAP.clear();
+		//v.clear();
+		
+		for(int i = 1; i <= n; ++i) {
+			fastIn(a[i]);
+			//v.pb({a[i], i});
+			MAP[a[i]].pb(i);
+		}
+		//sort(v.begin(), v.end());
+		int ans = 0;
+		int lo = 0, hi = n;
+		while(lo <= hi) {
+			int mid = (lo+hi)>>1;
+			if(simulate(mid, n) <= s) {
+				ans = max(ans, mid+1);
+				lo = mid+1;
+			}
+			else
+				hi = mid-1;
+		}
+		
+		
+		/*cerr << "GOT " << ans << endl;
+		for(int k = 0; k <= n; ++k) {
+			if(simulate(k, n) <= s)
+				ans = k+1;
+			else
+				break;
+		}*/
+		
+		pf("%d\n", ans);
+	}
+	return 0;
+}
+
+/*
+
+1
+8 23
+4 2 8 1 4 3 8 1
+4
+
+1
+8 20
+4 2 2 1 4 3 8 1
+3
+
+5 10
+0 2 1 0 6
+3
+
+5 9
+0 2 1 0 6
+2
+
+5 1
+0 2 1 0 6
+0
+		
+*/

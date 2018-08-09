@@ -52,8 +52,7 @@ char D[] = {'E', 'N', 'S', 'W'};
 bool vis[MAX][MAX];
 vii v;
 map<pair<int, int>, int>DIR;
-string dir[MAX][MAX];
-string dp[12][1 << (12)], path[12][12];
+string dir[MAX][MAX], dp[12][1 << (12)], path[12][12];
 
 void fill(int x, int y) {
 	if(vis[x][y]) return;
@@ -62,9 +61,6 @@ void fill(int x, int y) {
 		DIR[{x, y}] = v.size();
 		v.pb({x, y});
 	}
-		
-	//getchar();
-	//cerr << "at " << x << " " << y << endl;
 	vis[x][y] = 1;
 	for(int i = 0; i < 4; ++i)
 		fill(x+dx[i], y+dy[i]);
@@ -83,10 +79,8 @@ string SMALL(string &a, string &b) {
 bool getPath(int x, int y, int _x, int _y, string &str) {
 	if(g[x][y] == '#' or g[x][y] == 'X' or vis[x][y])
 		return 0;
-	if(x == _x and y == _y) {
-		//cerr << "AT " << _x << " " << _y << endl;
+	if(x == _x and y == _y)
 		return 1;
-	}
 	string tmp, ret;
 	str.clear();
 	bool ok = 0;
@@ -96,8 +90,6 @@ bool getPath(int x, int y, int _x, int _y, string &str) {
 		tmp.pb(D[i]);
 		if(getPath(x+dx[i], y+dy[i], _x, _y, ret)) {
 			tmp += ret;
-			//cerr << "OK " << x << " " << y << " " << " to " << x+dx[i] << " " << y+dy[i] << " " << i << " : " << tmp << endl;
-			//if(not tmp.empty())
 			if(str.empty())
 				str = tmp;
 			else
@@ -139,32 +131,23 @@ void bfsPoint(int p) {
 			}
 	}}
 	
-	//cerr << "AT " << p << endl;
 	for(auto it : DIR) {
 		if(it.se == p) continue;
 		int x = it.fi.fi, y = it.fi.se;
 		path[p][it.se] = dir[x][y];
-		//cerr << v[p].fi << " " << v[p].se << " to " << x << " " << y << " : " << dir[x][y] << endl;
 	}	
 }
 		
 
 string TSP(int pos, int mask) {
-	//bitset<3>b(mask);
-	//cerr << pos << " " << b << " " << mask << " " << v.size() << endl;
-	
-	if(__builtin_popcount(mask) == (int)v.size()) {
-		//cerr << "OK GOT IT\n";
+	if(__builtin_popcount(mask) == (int)v.size())
 		return path[pos][0];
-	}
 	if(not dp[pos][mask].empty())
 		return dp[pos][mask];
 	string ret, tmp;
 	for(int i = 0; i < (int)v.size(); ++i)
 		if(not (mask & (1<<i))) {
-			//cerr << "GOING from " << pos << " to " << i << endl;
 			tmp = path[pos][i] + TSP(i, mask | (1 << i));
-			//cerr << "From " << pos << " " << tmp << endl;
 			if(ret.empty())
 				ret = tmp;
 			else if(tmp.size() < ret.size())
@@ -176,13 +159,8 @@ string TSP(int pos, int mask) {
 }
 
 int main() {
-	//fileRead("in");
-	//fileWrite("out");
-	
 	int n, m, _x, _y;
-	
 	while(cin >> n >> m) {
-		//cerr  << n << " " << m << endl;
 		if(n == 0 and m == 0) break;
 		v.clear();
 		DIR.clear();
@@ -199,38 +177,23 @@ int main() {
 					v.pb({i, j});
 		}}
 		
-		//cerr << "INPUT DONE\n";
 		memset(vis, 0, sizeof vis);
 		fill(_x, _y);
-		//cerr << "FILL DONE " << v.size() << endl;
 		
 		if(v.size() == 1ULL) {
 			cout << "Stay home!\n";
 			continue;
 		}
-		
-		//cerr << "STARTING dist cal\n";
 		for(int i = 0; i < (int)v.size(); ++i)
 			bfsPoint(i);
-		
-		//cerr << "GOT ALL PATH\n";
-		
 		for(int i = 0; i < 12; ++i)
 			for(int j = 0; j < (1 << 12); ++j)
 				dp[i][j].clear();
-		
-		//cerr << path[0][1] << " + " << path[1][0] << endl;
-		//cerr << "Starting\n";
 		string ans = TSP(0, 1);
 		cout << ans << endl;
 	}
 	return 0;
 }
-		
-		
-		
-		
-		
 		
 /*
 
