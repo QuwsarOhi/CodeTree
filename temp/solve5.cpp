@@ -45,51 +45,6 @@ typedef vector<pair<ll, ll> >vll;
 //int dx[] = {-1, 0, 1, 0}, dy[] = {0, 1, 0, -1};
 //int dx[] = {-1, -1, -1, 0, 0, 1, 1, 1}, dy[] = {-1, 0, 1, -1, 1, -1, 0, 1};
 //----------------------------------------------------------------------------------------------------------
-/*
-struct MergeSortTree {
-    vector<int>tree[MAX*4];
-    void init(int pos, int l, int r, ll val[]) {
-        tree[pos].clear();                              // Clears past values
-        if(l == r) {
-            tree[pos].push_back(val[l]);
-            return;
-        }
-        int mid = (l+r)>>1;
-        init(pos<<1, l, mid, val);
-        init(pos<<1|1, mid+1, r, val);
-        merge(tree[pos<<1].begin(), tree[pos<<1].end(), tree[pos<<1|1].begin(), tree[pos<<1|1].end(), back_inserter(tree[pos]));
-    }
-	
-	void update(int pos, int l, int r, int idx, int newVal) {
-		if(l == r) {
-			tree[pos][0] = newVal;
-			return;
-		}
-		int mid = (l+r)>>1;
-		if(pos <= mid)
-			update(pos<<1, l, mid, idx, newVal);
-		else
-			update(pos<<1|1, mid+1, idx, newVal);
-		
-	
-    int query(int pos, int l, int r, int L, int R, int k) {
-        if(r < L || R < l) return 0;
-        if(L <= l && r <= R) {
-			auto it = upper_bound(tree[pos].begin(), tree[pos].end(), k);
-			if(it != tree[pos].end() and *it == k) ++it;
-			return (int)(tree[pos].end() - it);
-		}
-        //return (int)tree[pos].size() - (upper_bound(tree[pos].begin(), tree[pos].end(), k) - tree[pos].begin());        // MODIFY
-        int mid = (l+r)>>1;
-        return query(pos<<1, l, mid, L, R, k) + query(pos<<1|1, mid+1, r, L, R, k);
-	}
-	
-	int queryMin(int pos, int n, int k, int val) {
-		int l = max(1, pos-k), r = min(n, pos+k);
-		if(l == r) return 0;
-		return query(1, 1, n, l, r, val);
-	}
-};*/
 
 inline void fastIn(ll &num) {          // Fast IO, with space and new line ignoring
     bool neg = false;
@@ -139,7 +94,6 @@ struct RangeMax {
 		
 RangeMax st;
 ll a[MAX];
-//vll v;
 ll GO[MAX];
 
 ll assigned[MAX];
@@ -158,20 +112,19 @@ void FixPast(ll p1) {
 	}
 }
 
-ll simulate(int k, int n) {
+ll simulate(ll k, ll n) {
 	sum = 0;
 	st.init(1, 1, n);
 	memset(GO, -1, sizeof GO);
+	memset(assigned, 0, sizeof assigned);
 	
 	for(auto vv : MAP) {
 		vl v = vv.se;
-		//ll posVal = vv.fi;
 		for(int i = 0; i < (int)v.size(); ++i) {
 			bool inRange = 0;
 			if(i) {
 				ll pstR = min((ll)n, v[i-1]+k);
-				//int nowL = max(1, v[i]-k);	
-				if(pstR >= v[i]) {		// In Range and Same
+				if(pstR >= v[i]) {						// In Range and Same
 					inRange = 1;
 					GO[v[i]] = v[i-1];
 					//cerr << "linked\n";
@@ -183,11 +136,9 @@ ll simulate(int k, int n) {
 			if(inRange and val == 0)
 				val = assigned[v[i-1]];
 			else
-				val++;//val += (not inRange);
+				val++;
 				
 			//cerr << " new " << val << endl;
-			
-			
 			assigned[v[i]] = val;
 			sum += val;
 			FixPast(v[i]);
@@ -204,33 +155,26 @@ ll simulate(int k, int n) {
 		cerr << assigned[i] << " ";
 	}
 	cerr << ": " << ss << endl;*/
-	
 	return sum;
 }
 		
 int main() {
 	//fileRead("in");
 	//fileWrite("out");
-	//FastRead;
 	
 	ll s, n, t;
-    fastIn(t);
+	sf("%lld", &t);
 	while(t--) {
-		//cin >> n >> s;
-		fastIn(n), fastIn(s);
+		sf("%lld%lld", &n, &s);
 		MAP.clear();
-		//v.clear();
-		
 		for(int i = 1; i <= n; ++i) {
-			fastIn(a[i]);
-			//v.pb({a[i], i});
+			sf("%lld", &a[i]);
 			MAP[a[i]].pb(i);
 		}
-		//sort(v.begin(), v.end());
-		int ans = 0;
-		int lo = 0, hi = n;
+		ll ans = 0;
+		ll lo = 0, hi = n;
 		while(lo <= hi) {
-			int mid = (lo+hi)>>1;
+			ll mid = (lo+hi)>>1;
 			if(simulate(mid, n) <= s) {
 				ans = max(ans, mid+1);
 				lo = mid+1;
@@ -238,7 +182,6 @@ int main() {
 			else
 				hi = mid-1;
 		}
-		
 		
 		/*cerr << "GOT " << ans << endl;
 		for(int k = 0; k <= n; ++k) {
@@ -248,7 +191,7 @@ int main() {
 				break;
 		}*/
 		
-		pf("%d\n", ans);
+		pf("%lld\n", ans);
 	}
 	return 0;
 }
@@ -276,5 +219,13 @@ int main() {
 5 1
 0 2 1 0 6
 0
-		
+
+1
+9 50
+4 2 1 2 1 4 3 8 1
+
+1
+8 100
+4 2 8 1 4 3 8 1
+	
 */

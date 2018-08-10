@@ -2,9 +2,9 @@
 10777 UVA                           // Previously solved : Build equation E(x) = p1*h1 + p2 * (E(x) + h2) + p3 * (E(x) + h3)
 10806 — Dijkstra, Dijkstra.			// Min Cost Max flow problem, add source and sink, weights are the cost of the flow graph
 10816 UVA							// Do dikjstra twice
-10818 UVA							// 
-10860 UVA
-10937 UVA
+10818 UVA							// Shortest Path using BFS + Travelling Salesman
+10860 UVA							// Basic DP
+10937 UVA							
 10944 UVA
 11097 UVA
 11138 — Nuts and Bolts
