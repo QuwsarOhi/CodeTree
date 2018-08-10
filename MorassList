@@ -4,8 +4,8 @@
 10816 UVA							// Do dikjstra twice
 10818 UVA							// Shortest Path using BFS + Travelling Salesman
 10860 UVA							// Basic DP
-10937 UVA							
-10944 UVA
+10937 UVA							// Almost same as UVA 10818
+10944 UVA							// Almost same as UVA 10818
 11097 UVA
 11138 — Nuts and Bolts
 11262 — Weird Fence
