@@ -1,3 +1,6 @@
+// CodeChef
+// https://www.codechef.com/AUG18B/problems/KCOMPRES
+
 #include <bits/stdc++.h>
 using namespace std;
 #define MAX                 200010
@@ -131,10 +134,9 @@ ll simulate(ll k, ll n) {
 				}
 			}
 			
-			int val = st.queryRange(v[i], n, k);
-			//cerr << "AT " << v[i] << " val " << val;
-			if(inRange and val == 0)
-				val = assigned[v[i-1]];
+			ll val = st.queryRange(v[i], n, k);
+			if(inRange)
+				val = max(val+1, assigned[v[i-1]]);
 			else
 				val++;
 				
@@ -142,6 +144,7 @@ ll simulate(ll k, ll n) {
 			assigned[v[i]] = val;
 			sum += val;
 			FixPast(v[i]);
+			//st.update(1, 1, n, v[i], assigned[v[i]]);
 		}
 		
 		for(int i = 0; i < (int)v.size(); ++i)
@@ -187,8 +190,8 @@ int main() {
 		for(int k = 0; k <= n; ++k) {
 			if(simulate(k, n) <= s)
 				ans = k+1;
-			else
-				break;
+			//else
+			//	break;
 		}*/
 		
 		pf("%lld\n", ans);
@@ -227,5 +230,13 @@ int main() {
 1
 8 100
 4 2 8 1 4 3 8 1
-	
+
+1
+8 20
+4 2 2 1 4 3 8 1 
+
+1
+8 20
+1 8 3 4 1 2 2 4
+
 */
