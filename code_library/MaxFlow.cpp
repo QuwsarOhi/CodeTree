@@ -24,7 +24,7 @@ bool bfs(int s, int d) {                // augment path : source, destination
                 
 int maxFlow(int s, int d) {             // source, destination
     int max_flow = 0;
-    while((bfs(s, d))) {
+    while(bfs(s, d)) {
         int flow = INT_MAX;
         for(int v = d; v != s; v = parent[v]) {
             int u = parent[v];
