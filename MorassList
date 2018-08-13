@@ -10,8 +10,8 @@
 11138 — Nuts and Bolts				// Bipartite Matching
 11262 — Weird Fence					// Binary Search + Maximum Bipartite Matching
 11323 UVA
-11331 UVA
-11338 UVA
+11331 UVA                           // Graph Bi-Coloring + Knapsack/Greedy
+11338 UVA                           // Dikjstra
 11348 UVA
 11374 UVA
 11386 UVA

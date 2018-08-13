@@ -1,3 +1,7 @@
+// UVa
+// 11338 - Minefield
+// https://uva.onlinejudge.org/index.php?option=com_onlinejudge&Itemid=8&category=24&page=show_problem&problem=2313
+
 #include <bits/stdc++.h>
 using namespace std;
 #define MAX                 110
@@ -46,3 +50,72 @@ typedef vector<pair<ll, ll> >vll;
 //int dx[] = {-1, -1, -1, 0, 0, 1, 1, 1}, dy[] = {-1, 0, 1, -1, 1, -1, 0, 1};
 //----------------------------------------------------------------------------------------------------------
 
+int w, h;
+double d;
+set<pair<double, double> >inQueue;
+vector<pair<double, double> >p;
+map<pair<double, double>, double>dst;
+
+double dist(double x1, double y1, double x2, double y2) {
+    double x = x1-x2, y = y1-y2;
+    return sqrt(x*x + y*y);
+}
+
+bool dikjstra(double x = 0, double y = 0) {
+    queue<pair<double, double> >q;
+    q.push({x, y});
+    
+    inQueue.clear();
+    inQueue.insert({x, y});
+    
+    dst.clear();
+    dst[{x, y}] = 0;
+    
+    while(not q.empty()) {
+        x = q.front().fi, y = q.front().se;
+        q.pop();
+        inQueue.erase({x, y});
+        
+        double dstU = dst[{x, y}];
+        for(auto it : p) {
+            double dd = dist(x, y, it.fi, it.se) + dstU;
+            if(dd > d) continue;
+            
+            if(dist(x, y, it.fi, it.se) > 1.5) continue;
+            
+            if(dst.find({it.fi, it.se}) == dst.end() or dst[{it.fi, it.se}] > dd) {
+                dst[{it.fi, it.se}] = dd;
+                if(inQueue.find({it.fi, it.se}) == inQueue.end()) {
+                    inQueue.insert({it.fi, it.se});
+                    q.push({it.fi, it.se});
+                }
+            }
+        }
+    }
+    return dst.find({w, h}) != dst.end();
+}
+
+int main() {
+    int n;
+    double x, y;
+    
+    while(sf(" %d %d", &w, &h) == 2) {
+        sf("%d", &n);
+        p.clear();
+        
+        for(int i = 0; i < n; ++i) {
+            sf("%lf%lf", &x, &y);
+            p.pb({x, y});
+        }
+        
+        p.pb({w, h});
+        sf("%lf", &d);
+        
+        if(dist(0, 0, w, h) <= d and dikjstra())
+            puts("I am lucky!");
+        else
+            puts("Boom!");
+        //cerr << dst[{w, h}] << endl;
+    }
+    return 0;
+}
