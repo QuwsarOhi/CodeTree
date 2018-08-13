@@ -1,3 +1,7 @@
+// UVa
+// 11386 - Triples
+// https://uva.onlinejudge.org/index.php?option=com_onlinejudge&Itemid=8&page=show_problem&category=24&problem=2381&mosmsg=Submission+received+with+ID+21798603
+
 #include <bits/stdc++.h>
 using namespace std;
 #define MAX                 110
@@ -46,4 +50,61 @@ typedef vector<pair<ll, ll> >vll;
 //int dx[] = {-1, -1, -1, 0, 0, 1, 1, 1}, dy[] = {-1, 0, 1, -1, 1, -1, 0, 1};
 //----------------------------------------------------------------------------------------------------------
 
+vi v;
+map<long, long>MAP;
 
+// Building Pascle C(n, r)
+ll p[5010][5];
+void buildPascle() {                                // This Contains values of nCr : p[n][r] 
+    p[0][0] = 1;
+    p[1][0] = p[1][1] = 1;
+    for(int i = 2; i <= 5001; i++)
+        for(int j = 0; j <= 5; j++) {
+            if(j == 0 || j == i)
+                p[i][j] = 1;
+            else
+                p[i][j] = p[i-1][j-1] + p[i-1][j];
+}}
+
+ll C(int n, int r) {
+    if (r<0 || r>n) return 0;
+    return p[n][r];
+}
+
+// 1, 3, 6, 10, 15
+
+int main() {
+    //fileRead("in");
+    //fileWrite("out");
+    FastRead;
+    
+    buildPascle();
+    ll n, x;
+    while(cin >> n) {
+        MAP.clear(), v.clear();
+        for(int i = 0; i < n; ++i) {
+            cin >> x;
+            v.pb(x);
+            MAP[x]++;
+        }
+        
+        ll cnt = 0;
+        for(auto it1 = MAP.begin(); it1 != MAP.end(); ++it1) {
+            if(it1->se >= 2) {
+                ll tot = it1->fi*2LL;
+                if(MAP.find(tot) != MAP.end())
+                    cnt += C(it1->se, 2)*MAP[tot];
+            }
+            for(auto it2 = it1; ; ) {
+                it2++;
+                if(it2 == MAP.end()) break;
+                ll tot = it1->fi+it2->fi;
+                if(MAP.find(tot) != MAP.end())
+                    cnt += it1->se*it2->se*MAP[tot]*1LL;
+            }
+        }
+                    
+        cout << cnt << "\n";
+    }
+    return 0;
+}
