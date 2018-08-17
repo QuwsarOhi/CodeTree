@@ -15,9 +15,8 @@
 11348 UVA                           // Counting & Math
 11374 UVA                           // Dikjstra
 11386 UVA                           // Counting
-11419 — SAM I AM (UVA)
 11427 UVA
-11436 UVA
+11436 UVA                           // Math, Equation
 11439 — Maximizing the ICPC
 11474 UVA
 11488 UVA
@@ -35,6 +34,7 @@
 11990 UVA
 12003 UVA
 1201 — Taxi Cab Scheme (UVA)
+12012 UVA
 12047 UVA
 12159 — Gun Fight (UVA)
 12186 UVA
@@ -61,8 +61,12 @@
 6571 — It Can Be Arranged
 6851 — The Programmers (LA)
 6887 — Book Club
+
+11419 — SAM I AM (UVA)              // skpiped, http://tryalgo.org/en/matching/2016/08/05/konig/, https://blog.csdn.net/keshuai19940722/article/details/48689255
+
 http://codeforces.com/contest/627/problem/D
 http://codeforces.com/contest/638/problem/B
+http://codeforces.com/problemset/problem/1023/D
 http://codeforces.com/contest/638/problem/C
 http://codeforces.com/contest/638/problem/D
 http://codeforces.com/contest/664/problem/D

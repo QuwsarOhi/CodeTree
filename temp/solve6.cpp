@@ -1,6 +1,6 @@
 #include <bits/stdc++.h>
 using namespace std;
-#define MAX                 110
+#define MAX                 200010
 #define EPS                 1e-9
 #define INF                 1e7
 #define MOD                 1000000007
@@ -46,4 +46,40 @@ typedef vector<pair<ll, ll> >vll;
 //int dx[] = {-1, -1, -1, 0, 0, 1, 1, 1}, dy[] = {-1, 0, 1, -1, 1, -1, 0, 1};
 //----------------------------------------------------------------------------------------------------------
 
+/*
 
+6
+a
+b
+ayxdeb
+x
+z
+eb
+
+*/
+
+vector<string>v;
+string s;
+int n;
+
+int main() {
+    cin >> n;
+    for(int i = 0; i < n; ++i) {
+        cin >> s;
+        v.pb(s);
+    }
+    
+    sort(v.begin(), v.end(), [](string &a1, string &a2) {return a1.size() < a2.size();});
+    
+    for(int i = 0; i < (int)v.size(); ++i)
+        for(auto c : v[i])
+            dag[c - 'a'].pb(i);
+    
+    string ans;
+    for(int i = 0; i < 26; ++i) {
+        if(dag[s])
+    
+    return 0;
+}
+    
+    
