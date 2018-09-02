@@ -19,7 +19,7 @@
 11436 UVA                           // Math, Equation
 11439 — Maximizing the ICPC
 11474 UVA
-11488 UVA
+11488 UVA                           // Basic Trie
 11514 UVA
 11516 (UVA)
 11539 UVA
@@ -65,7 +65,7 @@
 11419 — SAM I AM (UVA)              // skpiped, http://tryalgo.org/en/matching/2016/08/05/konig/, https://blog.csdn.net/keshuai19940722/article/details/48689255
 
 http://codeforces.com/contest/627/problem/D
-http://codeforces.com/contest/638/problem/B
+http://codeforces.com/contest/638/problem/B         // DAG, Bruteforce, Implementation
 http://codeforces.com/problemset/problem/1023/D
 http://codeforces.com/contest/638/problem/C
 http://codeforces.com/contest/638/problem/D

@@ -7,7 +7,7 @@ void prefixTable(int n, char pat[], int table[]) {
     int len = 0, i = 1;                     // length of the previous longest prefix suffix
     table[0] = 0;                           // table[0] is always 0
     while (i < n) {
-        if pat[i] == pat[len]) {
+        if (pat[i] == pat[len]) {
             len++;
             table[i] = len;
             i++;

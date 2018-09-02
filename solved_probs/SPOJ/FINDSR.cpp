@@ -1,3 +1,6 @@
+// SPOJ
+// https://www.spoj.com/problems/FINDSR/
+
 #include <bits/stdc++.h>
 using namespace std;
 #define MAX                 200010
@@ -46,40 +49,49 @@ typedef vector<pair<ll, ll> >vll;
 //int dx[] = {-1, -1, -1, 0, 0, 1, 1, 1}, dy[] = {-1, 0, 1, -1, 1, -1, 0, 1};
 //----------------------------------------------------------------------------------------------------------
 
-/*
+void PrefixTable(int n, char str[], int table[]) {
+    int len = 0, i = 1;
+    table[0] = 0;
+    while(i < n) {
+        if(str[i] == str[len]) {
+            ++len;
+            table[i] = len;
+            ++i;
+        }
+        else {
+            if(len != 0)
+                len = table[len-1];
+            else
+                table[i] = 0, ++i;
+        }
+    }
+}
 
-6
-a
-b
-ayxdeb
-x
-z
-eb
+int table[MAX];
+char str[MAX];
 
-*/
-
-vector<string>v;
-string s;
-int n;
+bool TRY(char str[], int len, int prefLen) {
+    for(int i = 0; i < len; ) {
+        for(int j = 0; j < prefLen; ++i, ++j)
+            if(str[i] != str[j])
+                return 0;
+    }
+    return 1;
+}
 
 int main() {
-    cin >> n;
-    for(int i = 0; i < n; ++i) {
-        cin >> s;
-        v.pb(s);
+    while(sf("%s", str) and str[0] != '*') {
+        int len = strlen(str);
+        PrefixTable(len, str, table);
+        //cerr << "DONE\n";
+        int match = len - table[len-1];
+        
+        //cerr << "MATCHED " << match << endl;
+        
+        if(match != 0 and len%match == 0 and TRY(str, len, match))
+            pf("%d\n", len/match);
+        else
+            pf("1\n");
     }
-    
-    sort(v.begin(), v.end(), [](string &a1, string &a2) {return a1.size() < a2.size();});
-    
-    for(int i = 0; i < (int)v.size(); ++i)
-        for(auto c : v[i])
-            dag[c - 'a'].pb(i);
-    
-    string ans;
-    for(int i = 0; i < 26; ++i) {
-        if(dag[s])
-    
     return 0;
 }
-    
-    
