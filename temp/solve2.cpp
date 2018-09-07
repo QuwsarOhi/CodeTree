@@ -1,6 +1,11 @@
+// UVaLive
+// OmniGravity
+// https://icpcarchive.ecs.baylor.edu/index.php?option=com_onlinejudge&Itemid=8&page=show_problem&category=383&problem=2857&mosmsg=Submission+received+with+ID+2448260
+// ICPC Dhaka Regional 2010
+
 #include <bits/stdc++.h>
 using namespace std;
-#define MAX                 200010
+#define MAX                 20000
 #define EPS                 1e-9
 #define INF                 1e7
 #define MOD                 1000000007
@@ -12,7 +17,7 @@ using namespace std;
 #define sf                  scanf
 #define pf                  printf
 #define SIZE(a)             ((int)a.size())
-#define All(S)              S.begin(), S.end()              
+#define All(S)              S.begin(), S.end()
 #define Equal(a, b)         (abs(a-b) < EPS)
 #define Greater(a, b)       (a >= (b+EPS))
 #define GreaterEqual(a, b)  (a > (b-EPS))
@@ -46,91 +51,172 @@ typedef vector<pair<ll, ll> >vll;
 //int dx[] = {-1, -1, -1, 0, 0, 1, 1, 1}, dy[] = {-1, 0, 1, -1, 1, -1, 0, 1};
 //----------------------------------------------------------------------------------------------------------
 
+int dx[] = {0, 0, 1, 1}, dy[] = {0, 1, 0, 1};
+int gx[] = {-1, 0, 0, 1}, gy[] = {0, -1, 1, 0}; 	// up left right down
+char g[10][10];
 
-double PointToArea(pll p1, pll p2, pll p3) {                            // Returns Positive Area in if the points are clockwise, Negative for Anti-Clockwise
-	return (p1.x*(p2.y-p3.y) + p2.x*(p3.y-p1.y) + p3.x*(p1.y-p2.y))/2.0;	// Divide by 2 if Triangle area is needed
+struct state {
+	pii p[4];
+	bool pos[8][8];
+	
+	// a, b, c, d
+	state(pii pp[]) {
+		for(int i = 0; i < 4; ++i) p[i] = pp[i];
+	}
+	state(ll v) {
+		for(int i = 0; i < 4; ++i) {
+			p[3-i].y = v%10;
+			v /= 10;
+			p[3-i].x = v%10;
+			v /= 10;
+		}
+	}
+	
+	ll compress() {
+		ll v = 0;
+		for(int i = 0; i < 4; ++i) {
+			v *= 10;
+			v += p[i].x;
+			v *= 10;
+			v += p[i].y;
+		}
+		return v;
+	}
+	
+	void place(pii a) {
+		for(int i = 0; i < 4; ++i)
+			pos[a.x+dx[i]][a.y+dy[i]] = 1;
+	}
+	
+	void disPlace(pii a) {
+		for(int i = 0; i < 4; ++i)
+			pos[a.x+dx[i]][a.y+dy[i]] = 0;
+	}
+	
+	bool canPlace(pii a) {
+		for(int i = 0; i < 4; ++i) {
+			int _x = a.x+dx[i], _y = a.y+dy[i];
+			if(_x < 0 or _y < 0 or _x >= 8 or _y >= 8 or g[_x][_y] == '#' or pos[_x][_y])
+				return 0;
+		}
+		return 1;
+	}
+	
+	ll Gravity(int dir) {
+		bool ok;
+		memset(pos, 0, sizeof pos);
+		for(int i = 0; i < 4; ++i) place(p[i]);
+		
+		do {
+			ok = 0;
+			for(int box = 0; box < 4; ++box) {		// try to move the boxes towards gravity
+				int _x = p[box].x+gx[dir], _y = p[box].y+gy[dir];
+				disPlace(p[box]);
+				if(canPlace(mp(_x, _y))) {
+					ok = 1;
+					p[box].x = _x, p[box].y = _y;
+				}
+				place(p[box]);
+			}
+		} while(ok);
+		return compress();
+	}
+};
+
+void PRINT(pii p[]) {
+	char gg[8][8];
+	for(int i = 0; i < 8; ++i)
+		for(int j = 0; j < 8; ++j)
+			gg[i][j] = (g[i][j] == '#' ? '#':'.');
+	
+	for(int i = 0; i < 4; ++i)
+		for(int j = 0; j < 4; ++j) {
+			int x = p[i].x+dx[j], y = p[i].y+dy[j];
+			gg[x][y] = i+'A';
+		}
+	
+	for(int i = 0; i < 8; ++i, pf("\n"))
+		for(int j = 0; j < 8; ++j)
+			pf("%c", gg[i][j]);
+	pf("\n");
 }
+			
 
-bool isColleniar(pll a, pll b, pll c) {
-    return PointToArea(a, b, c)==0;
+unordered_set<ll>vis;
+
+int bfs(pii p[]) {
+	state u = state(p);
+	queue<state>q;
+	q.push(u);
+	int ans = 0;
+	
+	while(not q.empty()) {
+		u = q.front();
+		q.pop();
+		++ans;
+		
+		//cerr << "AT---------\n";
+		//PRINT(u.p);
+		//getchar();	
+		
+		for(int i = 0; i < 4; ++i) {
+			state v = u;
+			ll vv = v.Gravity(i);
+			if(vis.count(vv)) continue;
+			vis.insert(vv);
+			//cerr << i << endl;
+			//PRINT(v.p);
+			q.push(v);
+		}
+	}
+	return ans;
 }
-
-vector<pll> sqr;       // Used in convexHull
-bool convexHull(vector<pll> &v) {
-    if(v.size() < 3)
-        return 0;
-    
-    // Finding Upper LeftMost point
-    int l = 0;
-    for(int i = 1; i < (int)v.size(); ++i)
-        if(v[i].x < v[l].x)
-            l = i;
-    
-    //printf("Starting %lld %lld\n", v[l].x, v[l].y);
-    int p = l, q;
-    do {
-        sqr.push_back(v[p]);          // Hull point index is pushed
-        
-        q = (p+1) % v.size();
-        // This checks if there exists same point twice (no need if points are unique)
-        while(v[p] == v[q])
-            q = (q+1) % v.size();
-        
-        for(int i = 0; i < (int)v.size(); ++i) {
-            if(PointToArea(v[p], v[q], v[i]) < 0)                                                        // point i is on left w.r.t point pq
-                q = i;
-            // Use this commented code, if minimum number of points needed (points in same line is rejected)
-            //else if(side == 0 and dist(v[p], v[q]) < dist(v[p], v[i]))          // if point i is on same line pq
-            //    q = i;
-        }
-        p = q;
-        if(SIZE(sqr) == 4) break;
-    }while(p != l);
-    return SIZE(sqr) == 4;
-}
-
-
-vll p;
-
+			
 
 int main() {
-    int n;
-    cin >> n;
-    
-    p.resize(n);
-    for(int i = 0; i < n; ++i)
-        cin >> p[i].x >> p[i].y;
-    
-    sort(All(p));
-    
-    bool found = 0;
-    /*for(int i = 2; i < n; ++i) {
-        cerr << i << " : " << p[i].x << ", " << p[i].y << " : " << PointToArea(p[0], p[1], p[i]) << endl;
-        if(PointToArea(p[0], p[1], p[i]) >= 0) {
-            cerr << "FOUND " << 2 << endl;
-            found = 1;
-            swap(p[i], p[2]);
-            break;
-        }
-    }
-    
-    // if p[2] not found then output yes
-    
-    for(int i = 3; i < n; ++i) {
-        cerr << i << " : " << p[i].x << ", " << p[i].y << " : " << PointToArea(p[1], p[2], p[i]) << endl;
-        if(PointToArea(p[1], p[2], p[i]) > 0) {
-            cerr << "FOUND " << 3 << endl;
-            found = 1;
-            swap(p[i], p[3]);
-            break;
-        }
-    }*/
-    
-    cout << convexHull(p) << endl;
-    
-    
-    for(int i = 0; i < SIZE(sqr); ++i)
-        cout << sqr[i].x << ", " << sqr[i].y << endl;
-    
-    return 0;
+	int t;
+	pii p[4];
+	bool found[10];
+	sf("%d", &t);
+	
+	for(int Case = 1; Case <= t; ++Case) {
+		memset(found, 0, sizeof found);
+		for(int i = 0; i < 8; ++i)
+			for(int j = 0; j < 8; ++j) {
+				sf(" %c", &g[i][j]);
+				if(isalpha(g[i][j]) and not found[g[i][j]-'A']) {
+					p[g[i][j]-'A'] = {i, j}, found[g[i][j]-'A'] = 1;
+					//cerr << g[i][j] << " at " << i << ", " << j << endl;
+				} 
+			}
+		
+		pf("Case %d: %d\n", Case, bfs(p)-1);
+		vis.clear();
+	}
+	
+	return 0;
 }
+
+/*
+1
+....AA..
+....AA..
+........
+CC....BB
+CC....BB
+........
+..DD....
+..DD....
+28
+
+1
+....AA..
+....AA..
+........
+CC...BB.
+CC...BB.
+........
+..DD....
+..DD....
+40
+*/

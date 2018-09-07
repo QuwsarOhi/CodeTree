@@ -24,7 +24,7 @@ bool convexHull(vector<pll> &v) {
     if(v.size() < 3)
         return 0;
     
-    // Finding Upper LeftMost point
+    // Finding LeftMost point
     int l = 0;
     for(int i = 1; i < (int)v.size(); ++i)
         if(v[i].x < v[l].x)
