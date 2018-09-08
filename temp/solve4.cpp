@@ -1,3 +1,6 @@
+// UVa
+// 10056	What is the Probability ?
+
 #include <bits/stdc++.h>
 using namespace std;
 #define MAX                 310000
@@ -58,12 +61,14 @@ int main() {
 		win[1] = p;
 		sum = p;
 		for(int i = 2; i <= n; ++i) {
-			win[i] = p*(1-win[i-1]);
+			win[i] = win[i-1]*(1-p);
 			sum += win[i];
 			//pf("%.5f %.5f\n", win[i], sum);
 		}
-		
-		pf("%.4f\n", win[idx]/sum);
+		if(sum == 0)
+			pf("%.4f\n", 0.0);
+		else
+			pf("%.4f\n", win[idx]/sum);
 	}
 	return 0;
 }

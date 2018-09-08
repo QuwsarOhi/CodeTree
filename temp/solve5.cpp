@@ -47,12 +47,16 @@ typedef vector<pair<ll, ll> >vll;
 //----------------------------------------------------------------------------------------------------------
 
 int main() {
-    ll x, y, m;
-     cin >> x >> y;
-     m = max(x, y);
-     
-     ll a = 6-m+1, b = 6;
-     ll gcd = __gcd(a, b);
-     cout << a/gcd << "/" << b/gcd << endl;
-     return 0;
- }
+    int n, m;
+    cin >> m >> n;
+    double ans = pow(1.0/m, n);
+    for(int i = 2; i <= m; ++i) {
+        double a = i/double(m);
+        double b = (i-1)/double(m);
+        ans += i*(pow(a, n) - pow(b, n));
+        //cerr << i << " : " << fixed << setprecision(3) << pow(a, n) - pow(b, n) << endl;
+    }
+    
+    cout << fixed << setprecision(17) << ans << endl;
+    return 0;
+}
