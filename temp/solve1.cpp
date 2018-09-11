@@ -1,6 +1,3 @@
-// UVa
-// 11516 - WiFi
-
 #include <bits/stdc++.h>
 using namespace std;
 #define MAX                 200010
@@ -49,55 +46,3 @@ typedef vector<pair<ll, ll> >vll;
 //int dx[] = {-1, -1, -1, 0, 0, 1, 1, 1}, dy[] = {-1, 0, 1, -1, 1, -1, 0, 1};
 //----------------------------------------------------------------------------------------------------------
 
-vector<int>v;
-
-bool TRY(int r, double mid) {
-    double range = v[0]+mid;
-    int cnt = 1;
-    //cerr << "R : " << range << " ";
-    for(int i = 1; i < SIZE(v); ++i) {
-        if(fabs(range-v[i]) > mid) {
-            range = v[i]+mid;
-            //cerr << range << " ";
-            ++cnt;
-        }
-    }
-    //cerr << endl;
-    //cerr << "A: " << mid << " " << cnt << " " << (cnt <= r) << endl;
-    return cnt <= r;
-}
-    
-
-int main() {
-    int r, n, t;
-    sf("%d", &t);
-    
-    while(t--) {
-        sf("%d%d", &r, &n);
-        
-        v.clear();
-        v.resize(n);
-        
-        for(int i = 0; i < n; ++i)
-            sf("%d", &v[i]);
-        
-        //for(int i = 0; i < n; ++i)
-        //    cout << v[i] << endl;
-        
-        sort(All(v));
-        
-        double lo = 0, hi = 1e9, mid, ans = 1e9;
-        for(int i = 0; i < 100; ++i) {
-            mid = (lo+hi)/2.0;
-            if(TRY(r, mid)) {
-                //cerr << mid << " ok\n";
-                ans = min(ans, mid);
-                hi = mid;
-            }
-            else
-                lo = mid;
-        }
-        pf("%.1f\n", ans);
-    }
-    return 0;
-}

@@ -46,17 +46,3 @@ typedef vector<pair<ll, ll> >vll;
 //int dx[] = {-1, -1, -1, 0, 0, 1, 1, 1}, dy[] = {-1, 0, 1, -1, 1, -1, 0, 1};
 //----------------------------------------------------------------------------------------------------------
 
-int main() {
-    int n, m;
-    cin >> m >> n;
-    double ans = pow(1.0/m, n);
-    for(int i = 2; i <= m; ++i) {
-        double a = i/double(m);
-        double b = (i-1)/double(m);
-        ans += i*(pow(a, n) - pow(b, n));
-        //cerr << i << " : " << fixed << setprecision(3) << pow(a, n) - pow(b, n) << endl;
-    }
-    
-    cout << fixed << setprecision(17) << ans << endl;
-    return 0;
-}
