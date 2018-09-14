@@ -766,3 +766,83 @@ struct SortedST {                                       // Performs -1 from n no
         if(r-rem+1 <= r)    update(1, 1, n, r-rem+1, r, -1);
         return 1;
 }};
+
+
+struct HashTree {
+    vector<ll>sum, propSum, propMul;
+    ll mod, len;
+    void init(int n, ll _mod, ll arr[]) {
+        sum.resize(4*n);
+        propSum.resize(4*n);
+        propMul.resize(4*n);
+        mod = _mod, len = n;
+        init(1, 1, len, arr);
+    }
+    inline ll add(ll a, ll b) {
+        //a = ((a%mod) + mod)%mod, b = ((b%mod) + mod)%mod;         // Can Cause TLE
+        return (a+b)%mod;
+    }
+    inline ll mul(ll a, ll b) {
+        //a = ((a%mod) + mod)%mod, b = ((b%mod) + mod)%mod;         // Can Cause TLE
+        return (a*b)%mod;
+    }
+    void pushDown(int child, int par) {                             // just push down the values
+        propSum[child] = mul(propSum[child], propMul[par]);
+        propSum[child] = add(propSum[child], propSum[par]);
+        propMul[child] = mul(propMul[child], propMul[par]);
+    }
+    void init(int pos, int l, int r, ll arr[]) {                              // NOTE: init must be called!!
+        sum[pos] = propSum[pos] = 0, propMul[pos] = 1;
+        if(l == r) {
+            sum[pos] = arr[l];
+            return;
+        }
+        int mid = (l+r)>>1;
+        init(pos<<1, l, mid, arr);
+        init(pos<<1|1, mid+1, r, arr);
+        sum[pos] = add(sum[pos<<1], sum[pos<<1|1]);
+    }
+    void propagate(int pos, int l, int r) {                         // sets and pushes values to child
+        if(propMul[pos] == 1 and propSum[pos] == 0) return;
+        sum[pos] = add(mul(sum[pos], propMul[pos]), mul(r-l+1, propSum[pos]));
+        if(l == r) {
+            propMul[pos] = 1, propSum[pos] = 0;
+            return;
+        }
+        pushDown(pos<<1, pos), pushDown(pos<<1|1, pos);
+        propMul[pos] = 1, propSum[pos] = 0;
+    }
+    void update(int pos, int l, int r, int L, int R, ll val, int type) {
+        propagate(pos, l, r);
+        if(r < L or R < l) return;
+        if(L <= l and r <= R) {
+            if(type == 0)                               // add val in [L, R]
+                propSum[pos] = add(propSum[pos], val);
+            else if(type == 1) {                        // multiply val in [L, R]
+                propSum[pos] = mul(propSum[pos], val);
+                propMul[pos] = mul(propMul[pos], val);
+            }
+            else if(type == 2)                          // set all value = val
+                propSum[pos] = val, propMul[pos] = 0;
+            propagate(pos, l, r);
+            return;
+        }
+        
+        int mid = (l+r)>>1;
+        update(pos<<1, l, mid, L, R, val, type);
+        update(pos<<1|1, mid+1, r, L, R, val, type);
+        sum[pos] = add(sum[pos<<1], sum[pos<<1|1]);
+    }
+    ll query(int pos, int l, int r, int L, int R) {
+        propagate(pos, l, r);
+        if(r < L || R < l) return 0;
+        if(L <= l && r <= R) return sum[pos];
+        int mid = (l+r)>>1;
+        return add(query(pos<<1, l, mid, L, R), query(pos<<1|1, mid+1, r, L, R));
+    }
+    
+    ll query(int l, int r)              { return query(1, 1, len, l, r); }
+    void add(int l, int r, ll val)      { update(1, 1, len, l, r, val, 0); }
+    void mul(int l, int r, ll val)      { update(1, 1, len, l, r, val, 1); }
+    void set(int l, int r, ll val)      { update(1, 1, len, l, r, val, 2); }   
+};

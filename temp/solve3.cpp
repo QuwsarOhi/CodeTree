@@ -1,6 +1,6 @@
 #include <bits/stdc++.h>
 using namespace std;
-#define MAX                 300000
+#define MAX                 100100
 #define EPS                 1e-9
 #define INF                 1e7
 #define pb                  push_back
@@ -55,98 +55,82 @@ template<class T> using ordered_set = tree<T, null_type, less_equal<T>, rb_tree_
 
 struct HashTree {
     vector<ll>sum, propSum, propMul;
-    ll mod;
-    
-    void Resize(int n, ll mod) {
-        sum.resize(5*n);
-        propSum.resize(5*n);
-        propMul.resize(5*n);
-        mod = mod;
+    ll mod, len;
+    void init(int n, ll _mod) {
+        sum.resize(4*n);
+        propSum.resize(4*n);
+        propMul.resize(4*n);
+        mod = _mod, len = n;
+        init(1, 1, len);
     }
-    
-    ll add(ll a, ll b) {
-        a %= mod, b %= mod;
-        a = (a + mod)%mod, b = (b + mod)%mod;
+    inline ll add(ll a, ll b) {
+        //a = ((a%mod) + mod)%mod, b = ((b%mod) + mod)%mod;         // Can Cause TLE
         return (a+b)%mod;
     }
-    
-    ll mul(ll a, ll b) {
-        a = ((a%mod) + mod)%mod;
-        b = ((b%mod) + mod)%mod;
+    inline ll mul(ll a, ll b) {
+        //a = ((a%mod) + mod)%mod, b = ((b%mod) + mod)%mod;         // Can Cause TLE
         return (a*b)%mod;
     }
-        
-    void init(int pos, int l, int r, ll val[]) {
+    void pushDown(int child, int par) {                             // just push down the values
+        propSum[child] = mul(propSum[child], propMul[par]);
+        propSum[child] = add(propSum[child], propSum[par]);
+        propMul[child] = mul(propMul[child], propMul[par]);
+    }
+    void init(int pos, int l, int r) {                              // NOTE: init must be called!!
         sum[pos] = propSum[pos] = 0, propMul[pos] = 1;
+        if(l == r) return;
+        int mid = (l+r)>>1;
+        init(pos<<1, l, mid);
+        init(pos<<1|1, mid+1, r);
+        sum[pos] = add(sum[pos<<1], sum[pos<<1|1]);
+    }
+    void propagate(int pos, int l, int r) {                         // sets and pushes values to child
+        if(propMul[pos] == 1 and propSum[pos] == 0) return;
+        sum[pos] = add(mul(sum[pos], propMul[pos]), mul(r-l+1, propSum[pos]));
         if(l == r) {
-            sum[pos] = val[l]%mod;
+            propMul[pos] = 1, propSum[pos] = 0;
             return;
         }
-        int mid = (l+r)>>1;
-        init(pos<<1, l, mid, val);
-        init(pos<<1|1, mid+1, r, val);
-        sum[pos] = add(sum[pos<<1], sum[pos<<1|1]);
+        pushDown(pos<<1, pos), pushDown(pos<<1|1, pos);
+        propMul[pos] = 1, propSum[pos] = 0;
     }
-
-    void propagate(int pos, int l, int r) {
-        if(propMul[pos] == 0) propMul[pos] = 1;
-        if((propMul[pos] == 1 and propSum[pos] == 0) or l == r) return;
-        int mid = (l+r)>>1;
-        
-        sum[pos<<1] = add(mul(sum[pos<<1], propMul[pos]), mul(propSum[pos], (mid-l+1)));
-        sum[pos<<1|1] = add(mul(sum[pos<<1|1], propMul[pos]), mul(propSum[pos], (r-mid)));
-        
-        propSum[pos<<1] = add(propSum[pos<<1], propSum[pos]);
-        propSum[pos<<1|1] = add(propSum[pos<<1|1], propSum[pos]);
-        propSum[pos] = 0;
-        
-        propMul[pos<<1] = mul(propMul[pos<<1], propMul[pos]);
-        propMul[pos<<1|1] = mul(propMul[pos<<1|1], propMul[pos]);
-        propMul[pos] = 1;
-    }
-
-    void add(int pos, int l, int r, int L, int R, ll val) {
-        if(r < L || R < l) return;
+    void update(int pos, int l, int r, int L, int R, ll val, int type) {
         propagate(pos, l, r);
-        if(L <= l && r <= R) {
-            sum[pos] = add(sum[pos], val*(r-l+1));
-            propSum[pos] = add(propSum[pos], val);
+        if(r < L or R < l) return;
+        if(L <= l and r <= R) {
+            if(type == 0)                               // add val in [L, R]
+                propSum[pos] = add(propSum[pos], val);
+            else if(type == 1) {                        // multiply val in [L, R]
+                propSum[pos] = mul(propSum[pos], val);
+                propMul[pos] = mul(propMul[pos], val);
+            }
+            else if(type == 2)                          // set all value = val
+                propSum[pos] = val, propMul[pos] = 0;
+            propagate(pos, l, r);
             return;
         }
-
         int mid = (l+r)>>1;
-        add(pos<<1, l, mid, L, R, val);
-        add(pos<<1|1, mid+1, r, L, R, val);
+        update(pos<<1, l, mid, L, R, val, type);
+        update(pos<<1|1, mid+1, r, L, R, val, type);
         sum[pos] = add(sum[pos<<1], sum[pos<<1|1]);
     }
-    
-    void multiply(int pos, int l, int r, int L, int R, ll val) {
-        if(r < L || R < l) return;
-        propagate(pos, l, r);
-        if(L <= l && r <= R) {
-            sum[pos] = mul(sum[pos], val);
-            propMul[pos] = mul(propMul[pos], val);
-            return;
-        }
-        
-        int mid = (l+r)>>1;
-        multiply(pos<<1, l, mid, L, R, val);
-        multiply(pos<<1|1, mid+1, r, L, R, val);
-        sum[pos] = add(sum[pos<<1], sum[pos<<1|1]);
-    }
-
     ll query(int pos, int l, int r, int L, int R) {
-        if(r < L || R < l) return 0;
         propagate(pos, l, r);
-        if(L <= l && r <= R)
-            return sum[pos];
+        if(r < L || R < l) return 0;
+        if(L <= l && r <= R) return sum[pos];
         int mid = (l+r)>>1;
         return add(query(pos<<1, l, mid, L, R), query(pos<<1|1, mid+1, r, L, R));
-}};
+    }
+    
+    ll query(int l, int r)              { return query(1, 1, len, l, r); }
+    void add(int l, int r, ll val)      { update(1, 1, len, l, r, val, 0); }
+    void mul(int l, int r, ll val)      { update(1, 1, len, l, r, val, 1); }
+    void set(int l, int r, ll val)      { update(1, 1, len, l, r, val, 2); }   
+};
 
 struct DynamicHash {
     pair<HashTree, HashTree>H;
-    tree<int, null_type, greater_equal<int>, rb_tree_tag, tree_order_statistics_node_update> indexGen;
+    ordered_set<int> indexGen;
     const ll p1 = 31, modInvP1 = 838709685;
     const ll p2 = 51, modInvP2 = 1372550;
     const ll mod1 = 1e9+9, mod2 = 1e7+7;
@@ -158,22 +142,29 @@ struct DynamicHash {
         LIM = str.size() + 100;
         PowerGen(LIM+100);
         
-        H.first.Resize(len+5, mod1);
-        H.second.Resize(len+5, mod2);
+        H.first.init(len+5, mod1);
+        H.second.init(len+5, mod2);
         
         ll h1 = 0, h2 = 0;
         len = str.size();
+        
+        cerr << "GENERATED HASH :\n";
+        ll TMP = 0;
         
         for(int i = 1; i < len; ++i) {        // assuming string starts from index 1
             h1 = ((str[i] - 'a' + 1) * Power[i].first)%mod1;
             h2 = ((str[i] - 'a' + 1) * Power[i].second)%mod2;
             
-            H.first.add(1, 1, len, i, len, h1);
-            H.second.add(1, 1, len, i, len, h2);
+            H.first.add(i, len, h1);
+            H.second.add(i, len, h2);
+            
+            TMP += h1;
+            TMP %= mod1;
+            cerr << i << " : " << h1 << " (" << TMP << ", " << str[i] << ")\n"; 
     }}
     
     int GetPos(int idx) {
-        return indexGen.order_of_key(idx)+idx;
+        return indexGen.lessThan(idx)+idx;
     }
     
     void ReplaceChar(int idx, char newChar, char prevChar) {
@@ -181,8 +172,8 @@ struct DynamicHash {
         ll newVal1 = ((((newChar-'a'+1)*Power[idx].first)%mod1 - ((prevChar-'a'+1)*Power[idx].second)%mod1)%mod1 + mod1)%mod1;
         ll newVal2 = ((((newChar-'a'+1)*Power[idx].second)%mod2 - ((prevChar-'a'+1)*Power[idx].second)%mod2)%mod2 + mod2)%mod2;
         
-        H.first.add(1, 1, len, idx, len, newVal1);
-        H.second.add(1, 1, len, idx, len, newVal2);
+        H.first.add(idx, len, newVal1);
+        H.second.add(idx, len, newVal2);
     }
     
     void RemoveChar(int idx, char ch) {
@@ -190,11 +181,11 @@ struct DynamicHash {
         ll val1 = ((ch-'a'+1)*Power[idx].first)%mod1;
         ll val2 = ((ch-'a'+1)*Power[idx].second)%mod2;
         
-        H.first.add(1, 1, len, idx, len, -val1);
-        H.second.add(1, 1, len, idx, len, -val2);
+        H.first.add(idx, len, (-val1+mod1)%mod1);
+        H.second.add(idx, len, (-val2+mod2)%mod2);
         
-        H.first.multiply(1, 1, len, idx, len, modInvP1);
-        H.second.multiply(1, 1, len, idx, len, modInvP2);
+        H.first.mul(idx, len, modInvP1);
+        H.second.mul(idx, len, modInvP2);
         indexGen.insert(idx);
     }
     
@@ -222,31 +213,50 @@ struct DynamicHash {
         return hash;
 }};
     
-    
+HashTree HT;    
+ll arr[3*MAX];
 
 int main() {
-    int n = 7;
-    HashTree ht;
-    ht.Resize(4, 1000);
-    char ch;
-    int x, y;
+    ll n, q, x, y, v, typ;
+    cin >> n >> q;
     
-    while(1) {
-        cin >> ch;
-
-        if(ch == '+') {
-            cin >> x >> y;
-            ht.add(1, 1, n, x, x, y);
+    //HT.init(n, 1e9+7);
+    
+    for(int i = 1; i <= n; ++i) {
+        cin >> arr[i];
+        //cerr << "DONE\n";
+    }
+    
+    HT.init(n, 1e9+7, arr);
+    
+    /*for(int i = 1; i <= n; ++i)
+        cerr << HT.query(i, i) << " ";
+    cerr << endl;
+    cerr << HT.query(1, n) << endl;*/
+    
+    while(q--) {
+        cin >> typ;
+        //cerr << "TYP " << typ << endl;
+        if(typ == 1) {
+            cin >> x >> y >> v;
+            //cerr << "ADD " << x << " " << y << " " << v << endl;
+            HT.add(x, y, v);
+        }
+        else if(typ == 2) {
+            cin >> x >> y >> v;
+            //cerr << "MUL " << x << " " << y << " " << v << endl;
+            HT.mul(x, y, v);
+        }
+        else if(typ == 3) {
+            cin >> x >> y >> v;
+            //cerr << "SET " << x << " " << y << " " << v << endl;
+            HT.set(x, y, v);
         }
         else {
             cin >> x >> y;
-            ht.multiply(1, 1, n, x, x, y);
+            //cerr << "Query " << x << " " << y << endl;
+            cout << HT.query(x, y) << "\n";
         }
-        cerr << "TREE" << endl;
-        for(int i = 1; i <= n; ++i)
-            cout << ht.query(1, 1, n, i, i) << " ";
-        cout << endl;
     }
-    
     return 0;
 }
