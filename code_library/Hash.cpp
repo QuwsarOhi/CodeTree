@@ -96,3 +96,70 @@ bool MatchSubStr(int l, int r, vector<pll>&Hash, pll HashVal, int len) {
     }
     return 0;
 }
+
+// Dynamic Hash supports replacing and deletion of charachter
+
+struct DynamicHash {
+    pair<HashTree, HashTree>H;
+    ordered_set<int> indexGen;
+    const ll p1 = 31, modInvP1 = 838709685;
+    const ll p2 = 51, modInvP2 = 1372550;
+    const ll mod1 = 1e9+9, mod2 = 1e7+7;
+    ll LIM;
+    int len;
+    vll Power;
+    
+    void init(string &str) {
+        LIM = str.size() + 100;
+        PowerGen(LIM+100);+
+        ll h1 = 0, h2 = 0;
+        len = SIZE(str);
+        indexGen.clear();
+        H.first.init(len+5, mod1);
+        H.second.init(len+5, mod2);
+        indexGen.insert(0);
+ 
+        for(int i = 1; i < len; ++i) {                  // assuming string starts from index 1
+            h1 = ((str[i] - 'a' + 1) * Power[i].first)%mod1;
+            h2 = ((str[i] - 'a' + 1) * Power[i].second)%mod2;
+            
+            H.first.add(i, i, h1);
+            H.second.add(i, i, h2);
+            indexGen.insert(i);
+    }}
+    int GetPos(int idx) {
+        return *indexGen.at(idx);
+    }
+    void PlaceChar(int idx, char newChar) {             // Place/Replace charachter at idx
+        int StrIdx = GetPos(idx);
+        ll newVal1 = ((newChar-'a'+1)*Power[idx].first)%mod1;
+        ll newVal2 = ((newChar-'a'+1)*Power[idx].second)%mod2;
+        H.first.set(StrIdx, StrIdx, newVal1);
+        H.second.set(StrIdx, StrIdx, newVal2);
+        str[StrIdx] = newChar;
+    }
+    void RemoveChar(int pos) {                          // Remove charachter at pos
+        int idx = GetPos(pos);
+        H.first.set(idx, idx, 0);
+        H.second.set(idx, idx, 0);
+        H.first.mul(idx+1, len, modInvP1);
+        H.second.mul(idx+1, len, modInvP2);
+        indexGen.erase(indexGen.at(pos));
+    }
+    void PowerGen(int n) {
+        Power.resize(n+1);
+        Power[0] = {1, 1};
+        for(int i = 1; i < n; ++i) {
+            Power[i].first = (Power[i-1].first * p1)%mod1;
+            Power[i].second = (Power[i-1].second * p2)%mod2;
+    }}
+    ll SubStrHash(int l, int strLen, bool first = 1) {
+        int RR = GetPos(l+strLen-1);
+        int LL = GetPos(l);
+        ll hash = first ? H.first.query(LL, RR):H.second.query(LL, RR);
+        hash = (hash * (first?Power[LIM-l].first:Power[LIM-l].second))%(first?mod1:mod2);
+        return hash;
+    }
+    ll GetHash(int l, int r) {
+        return H.first.query(GetPos(l), GetPos(r));
+}};

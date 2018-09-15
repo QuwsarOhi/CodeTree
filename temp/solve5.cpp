@@ -1,148 +1,54 @@
-/*
-Title: STRLCP
-Data: 2011-4-21
-*/
-
 #include <bits/stdc++.h>
-
-#define InputFileName		"STRLCP.in"
-#define OutputFileName		"STRLCP.out"
-#define Max(a, b)			(a > b ? a : b)
-
 using namespace std;
+#define MAX                 100100
+#define EPS                 1e-9
+#define INF                 1e7
+#define pb                  push_back
+#define mp                  make_pair
+#define xx                  first
+#define yy                  second
+#define pi                  acos(-1)
+#define sf                  scanf
+#define pf                  printf
+#define SIZE(a)             ((int)a.size())
+#define All(S)              S.begin(), S.end()
+#define Equal(a, b)         (abs(a-b) < EPS)
+#define Greater(a, b)       (a >= (b+EPS))
+#define GreaterEqual(a, b)  (a > (b-EPS))
+#define fr(i, a, b)         for(register int i = (a); i < (int)(b); i++)
+#define FastRead            ios_base::sync_with_stdio(false); cin.tie(NULL); cout.tie(NULL);
+#define fileRead(S)         freopen(S, "r", stdin);
+#define fileWrite(S)        freopen(S, "w", stdout);
+#define Unique(X)           X.erase(unique(X.begin(), X.end()), X.end())
 
-const int MaxN = 260000;
-long long HashMod = 110118553, HashMul = 131;
+#define isOn(S, j)          (S & (1 << j))
+#define setBit(S, j)        (S |= (1 << j))
+#define clearBit(S, j)      (S &= ~(1 << j))
+#define toggleBit(S, j)     (S ^= (1 << j))
+#define lowBit(S)           (S & (-S))
+#define setAll(S, n)        (S = (1 << n) - 1)
 
-int n, q, Son[MaxN][2], Father[MaxN], Size[MaxN], Total;
-char a[MaxN], cmd, Data[MaxN];
-long long Hash[MaxN], Power[MaxN];
+typedef unsigned long long ull;
+typedef long long ll;
+typedef map<int, int> mii;
+typedef map<ll, ll>mll;
+typedef map<string, int> msi;
+typedef vector<int> vi;
+typedef vector<long long>vl;
+typedef pair<int, int> pii;
+typedef pair<ll, ll> pll;
+typedef vector<pair<int, int> > vii;
+typedef vector<pair<ll, ll> >vll;
 
-inline void Update(const int t)
-{
-	Size[t] = Size[Son[t][0]]+Size[Son[t][1]]+1;
-	Hash[t] = (Hash[Son[t][0]]+Power[Size[Son[t][0]]]*(long long)Data[t]+Power[Size[Son[t][0]]+1]*Hash[Son[t][1]]) % HashMod;
-}
+#include <ext/pb_ds/assoc_container.hpp>    // rb_tree_tag
+#include <ext/pb_ds/tree_policy.hpp>        // tree_order_statistics_node_update
+#define at(X)          find_by_order(X)
+#define lessThan(X)    order_of_key(X)
+using namespace std;
+using namespace __gnu_pbds;
+template<class T> using ordered_set = tree<T, null_type, less_equal<T>, rb_tree_tag, tree_order_statistics_node_update>;
 
-void Build(int &t, const int f, const int l, const int r)
-{
-	const int mid = l+r >> 1;
-	Data[t = ++Total] = a[mid];
-	Father[t] = f;
-	if (l < mid)
-		Build(Son[t][0], t, l, mid-1);
-	else
-		Son[t][0] = 0;
-	if (mid < r)
-		Build(Son[t][1], t, mid+1, r);
-	else
-		Son[t][1] = 0;
-	Update(t);
-}
+//int dx[] = {-1, 0, 1, 0}, dy[] = {0, 1, 0, -1};
+//int dx[] = {-1, -1, -1, 0, 0, 1, 1, 1}, dy[] = {-1, 0, 1, -1, 1, -1, 0, 1};
+//----------------------------------------------------------------------------------------------------------
 
-void Rotate(const int t, const int p)
-{
-	const int f = Father[t];
-	Father[t] = Father[f];
-	Son[Father[t]][Son[Father[f]][1] == f] = t;
-	Father[Son[t][! p]] = f;
-	Son[f][p] = Son[t][! p];
-	Father[f] = t;
-	Son[t][! p] = f;
-	Update(f);
-	Update(t);
-}
-
-void Splay(const int t, const int Root)
-{
-	for (int f, p, q; (f = Father[t]) != Root;)
-	{
-		p = Son[f][1] == t;
-		q = Father[f] == Root ? -1 : (Son[Father[f]][1] == f);
-		Rotate(p == q ? f : t, p);
-		if (q >> 1)
-			break;
-		Rotate(t, q);
-	}
-}
-
-int Query(int t, int k)
-{
-	while (1)
-		if (Size[Son[t][0]]+1 == k)
-			return t;
-		else if (k <= Size[Son[t][0]])
-			t = Son[t][0];
-		else
-		{
-			k -= Size[Son[t][0]]+1;
-			t = Son[t][1];
-		}
-}
-
-void GetSeg(const int x, const int y)
-{
-	Splay(Query(Son[1][0], x), 1);
-	Splay(Query(Son[1][0], y+2), Son[1][0]);
-}
-
-int main()
-{
-	//#ifndef ONLINE_JUDGE
-	//freopen(InputFileName, "r", stdin);
-	//freopen(OutputFileName, "w", stdout);
-	//#endif
-    //freopen("out", "w", stdout);
-	Power[0] = 1;
-	for (int i = 1; i < MaxN; ++i)
-		Power[i] = Power[i-1]*HashMul % HashMod;
-	int TestCase;
-    scanf("%d\n", &TestCase);
-	while(TestCase--)
-	{
-		Total = 1;
-		scanf("%s", (a+1));
-		for (n = 1; a[n]; ++n);
-		scanf("%d\n", &q);
-		Build(Son[1][0], 1, 0, n);
-		for (int x, y; q; --q)
-		{
-			scanf("%c", &cmd);
-			if (cmd == 'Q')
-			{
-				scanf("%d%d\n", &x, &y);
-				int Ans = 0;
-				long long p, q;
-				for (int l = 1, r = Size[Son[1][0]]-Max(x, y)-1, mid = l+r >> 1; l <= r; mid = l+r >> 1)
-				{
-					GetSeg(x, x+mid-1);
-					p = Hash[Son[Son[Son[1][0]][1]][0]];
-					GetSeg(y, y+mid-1);
-					q = Hash[Son[Son[Son[1][0]][1]][0]];
-					p == q ? l = (Ans = mid)+1 : r = mid-1;
-				}
-				printf("%d\n", Ans);
-			}
-			else if (cmd == 'R')
-			{
-				scanf("%d ", &x);
-				GetSeg(x, x);
-				scanf("%c\n", &Data[Son[Son[Son[1][0]][1]][0]]);
-				Hash[Son[Son[Son[1][0]][1]][0]] = Data[Son[Son[Son[1][0]][1]][0]];
-			}
-			else if (cmd == 'I')
-			{
-				scanf("%d %c\n", &x, &a[0]);
-				GetSeg(x, x-1);
-				Build(Son[Son[Son[1][0]][1]][0], Son[Son[1][0]][1], 0, 0);
-			}
-			if (cmd != 'Q')
-			{
-				Update(Son[Son[1][0]][1]);
-				Update(Son[1][0]);
-			}
-		}
-        //cerr << "DONE\n";
-	}
-	return 0;
-}

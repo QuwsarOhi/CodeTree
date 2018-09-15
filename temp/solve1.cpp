@@ -1,6 +1,3 @@
-// UVa
-// 10288 - Coupons
-
 #include <bits/stdc++.h>
 using namespace std;
 #define MAX                 200010
@@ -49,78 +46,4 @@ typedef vector<pair<ll, ll> >vll;
 //int dx[] = {-1, -1, -1, 0, 0, 1, 1, 1}, dy[] = {-1, 0, 1, -1, 1, -1, 0, 1};
 //----------------------------------------------------------------------------------------------------------
 
-struct fraction {                   // Fraction Calculation Template
-    ll a, b;
-    fraction() {
-        a = 1;
-        b = 1;
-    }
-    fraction(int x, int y) : a(x), b(y) {}
-    void flip() {swap(a, b);}
-    fraction operator + (fraction other) {
-        fraction temp;
-        temp.b = ((b)*(other.b))/(__gcd((b), other.b));
-        temp.a = (temp.b/b)*a + (temp.b/other.b)*other.a;
-        int x = __gcd(temp.a, temp.b);
-        if(x != 1) {temp.a/=x; temp.b/=x;}
-        return temp;
-    }
-    fraction operator - (fraction other) {
-        fraction temp;
-        temp.b = (b*other.b)/__gcd(b, other.b);
-        temp.a = (temp.b/b)*a - (temp.b/other.b)*other.a;
-        int x = __gcd(temp.a, temp.b);
-        if(x != 1) {temp.a/=x; temp.b/=x;}
-        return temp;
-    }
-    fraction operator / (fraction other) {
-        fraction temp;
-        temp.a = a*other.b;
-        temp.b = b*other.a;
-        int x = __gcd(temp.a, temp.b);
-        if(x != 1) {temp.a/=x; temp.b/=x;}
-        return temp;
-    }
-    fraction operator * (fraction other) {
-        fraction temp;
-        temp.a = a*other.a;
-        temp.b = b*other.b;
-        int x = __gcd(temp.a, temp.b);
-        if(x != 1) {temp.a/=x; temp.b/=x;}
-        return temp;
-}};
 
-
-
-int main() {
-	int n;
-	while(sf("%d", &n) == 1) {
-		fraction ans = fraction(1, 1);
-		for(int i = 2; i <= n; ++i) {
-			fraction x = fraction(n, n-i+1);
-			//cerr << ans.a << "/" << ans.b << " * " << x.a << "/" << x.b << endl;
-			ans = ans + x;
-		}
-		ll a = ans.a/ans.b;
-		ll b = ans.a%ans.b;
-		ll c = ans.b;
-		
-		
-		int len = max(floor(log10(b))+1, floor(log10(c))+1);
-		
-		if(c == 1)
-			pf("%ld\n", ans.a);
-		else {
-			int alen = floor(log10(a))+2;
-			for(int i = 0; i < alen; ++i) pf(" ");
-			pf("%lld\n", b);
-			pf("%lld ", a);
-			while(len--) pf("-");
-			pf("\n");
-			for(int i = 0; i < alen; ++i) pf(" ");
-			pf("%lld\n", c);
-		}
-	}
-	return 0;
-}
-			
