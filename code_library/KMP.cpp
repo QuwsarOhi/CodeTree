@@ -19,7 +19,7 @@ void prefixTable(int n, char pat[], int table[]) {
 
 void KMP(int strLen, int patLen, char str[], char pat[], int table[]) { 
     int i = 0, j = 0;						// i : string index, j : pattern index
-    while (i < N) {
+    while (i < strLen) {
         if(str[i] == pat[j]) i++, j++;
         if(j == M) {
             printf("Found pattern at index %d n", i-j);
