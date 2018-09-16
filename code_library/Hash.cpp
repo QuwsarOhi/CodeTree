@@ -163,3 +163,62 @@ struct DynamicHash {
     ll GetHash(int l, int r) {
         return H.first.query(GetPos(l), GetPos(r));
 }};
+
+
+// ---------------------------------------- 2D Hash ---------------------------------------- 
+
+ll Minus(ll x, ll y, ll m) {
+    return ((x-y)%m+m)%m;
+}
+
+const int lineOffset = 1010;                                    // use the 2DLim to distinguish between rows
+vector<vll> Gen2DHash(int r, int c, char str[][1010]) {         // row, column, string
+    vector<vll> hash(r);
+    for(int i = 0, offset = 0; i < r; ++i, offset += lineOffset) {          // Powers of every row r starts from r*offset
+        pll h = {0, 0};
+        for(int j = 0; j < c; ++j) {
+            h.first = ((str[i][j] - 'a' + 1)*Power[j+offset].first)%mod1;
+            h.second = ((str[i][j] - 'a' + 1)*Power[j+offset].second)%mod2;
+            hash[i].push_back(h);
+    }}
+
+    for(int i = 0; i < r; ++i) {
+        for(int j = 0; j < c; ++j) {
+            if(i > 0) {
+                hash[i][j].first = (hash[i][j].first + hash[i-1][j].first)%mod1;
+                hash[i][j].second = (hash[i][j].second + hash[i-1][j].second)%mod2;
+            }
+            if(j > 0) {
+                hash[i][j].first = (hash[i][j].first + hash[i][j-1].first)%mod1;
+                hash[i][j].second = (hash[i][j].second + hash[i][j-1].second)%mod2;
+            }
+            if(i > 0 and j > 0) {
+                hash[i][j].first = (hash[i][j].first - hash[i-1][j-1].first + mod1)%mod1;
+                hash[i][j].second = (hash[i][j].second - hash[i-1][j-1].second + mod2)%mod2;
+            }
+            hash[i][j].first = (hash[i][j].first)%mod1;
+            hash[i][j].second = (hash[i][j].second)%mod2;
+    }}
+    return hash;
+}
+
+const ll LIM = 1025000;
+pll SubHash2D(vector<vll> &H, int x, int y, int r, int c) {       // generates hash which's upper left point is x, y
+    int xx = x+r-1, yy = y+c-1;
+    pll ret = H[xx][yy];
+    if(x > 0) {
+        ret.first = (ret.first - H[x-1][yy].first + mod1)%mod1;
+        ret.second = (ret.second - H[x-1][yy].second + mod2)%mod2;
+    }
+    if(y > 0) {
+        ret.first = (ret.first - H[xx][y-1].first + mod1)%mod1;
+        ret.second = (ret.second - H[xx][y-1].second + mod2)%mod2;
+    }
+    if(x > 0 and y > 0)
+        ret.first += H[x-1][y-1].first, ret.second += H[x-1][y-1].second;
+    ret.first = ret.first%mod1;
+    ret.second = ret.second%mod2;
+    ret.first = (ret.first*Power[LIM-(x*lineOffset+y)].first)%mod1;
+    ret.second = (ret.second*Power[LIM-(x*lineOffset+y)].second)%mod2;
+    return ret;
+}

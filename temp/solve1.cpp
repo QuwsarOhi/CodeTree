@@ -1,3 +1,6 @@
+// UVa
+// 11019 Matrix Matcher
+
 #include <bits/stdc++.h>
 using namespace std;
 #define MAX                 200010
@@ -46,111 +49,108 @@ typedef vector<pair<ll, ll> >vll;
 //int dx[] = {-1, -1, -1, 0, 0, 1, 1, 1}, dy[] = {-1, 0, 1, -1, 1, -1, 0, 1};
 //----------------------------------------------------------------------------------------------------------
 
+const ll p1 = 31, p2 = 51, mod1 = 1e9+9, mod2 = 1e7+7;
 
-// --------------- 2D KMP ---------------
+vll Power;
+void PowerGen(int n) {
+    Power.resize(n+1);
+    Power[0] = {1, 1};
+    for(int i = 1; i < n; ++i) {
+        Power[i].first = (Power[i-1].first * p1)%mod1;
+        Power[i].second = (Power[i-1].second * p2)%mod2;
+}}
 
-unordered_map<string, int>patt;             // Clear after each Kmp2D call
-int flag = 0;                               // Set to zero before calling PrefixTable
-// r : Pattern row, c : Pattern column      // table : prefix table (1D array)
-// s : Pattern String (C++ string)          // Followed Felix-Halim KMP
+ll Minus(ll x, ll y, ll m) {
+    return ((x-y)%m+m)%m;
+}
 
-vector<int> PrefixTable2D(int r, int c, int table[], string s[]) {
-    vector<int>Row;                         // Contains Row mapped string index
-    for(int i = 0; i < r; ++i) {
-        if(patt.find(s[i]) == patt.end()) {
-            patt[s[i]] = ++flag;
-            Row.push_back(flag);
-        }
-        else Row.push_back(patt[s[i]]);
-    }
-    int len = 0, i = 1;
-    table[0] = 0;
-    while(i < r) {
-        if(Row[i] == Row[len]) {
-            ++len;
-            table[i] = len;
-            ++i;
-        }
-        else {
-            if(len != 0)    len = table[i-1];
-            else            table[i++] = 0;
+const int lineOffset = 1010;                                    // use the 2DLim to distinguish between rows
+vector<vll> Gen2DHash(int r, int c, char str[][1010]) {         // row, column, string
+    vector<vll> hash(r);
+    for(int i = 0, offset = 0; i < r; ++i, offset += lineOffset) {          // Powers of every row r starts from r*offset
+        pll h = {0, 0};
+        for(int j = 0; j < c; ++j) {
+            h.first = ((str[i][j] - 'a' + 1)*Power[j+offset].first)%mod1;
+            h.second = ((str[i][j] - 'a' + 1)*Power[j+offset].second)%mod2;
+            hash[i].push_back(h);
     }}
-    return Row;       // Returns Hashed index of each row in pattern string
+
+    for(int i = 0; i < r; ++i) {
+        for(int j = 0; j < c; ++j) {
+            if(i > 0) {
+                hash[i][j].first = (hash[i][j].first + hash[i-1][j].first)%mod1;
+                hash[i][j].second = (hash[i][j].second + hash[i-1][j].second)%mod2;
+            }
+            if(j > 0) {
+                hash[i][j].first = (hash[i][j].first + hash[i][j-1].first)%mod1;
+                hash[i][j].second = (hash[i][j].second + hash[i][j-1].second)%mod2;
+            }
+            if(i > 0 and j > 0) {
+                hash[i][j].first = (hash[i][j].first - hash[i-1][j-1].first + mod1)%mod1;
+                hash[i][j].second = (hash[i][j].second - hash[i-1][j-1].second + mod2)%mod2;
+            }
+            hash[i][j].first = (hash[i][j].first)%mod1;
+            hash[i][j].second = (hash[i][j].second)%mod2;
+    }}
+    return hash;
 }
 
-// StrR StrC : String Row and Column       // PattR PattC : Pattern row and column
-// Str : String (C++ String)               // Patt : Pattern (C++ String)      // table : Prefix table of pattern (1D array)
-int Kmp2D(int StrR, int StrC, int PattR, int PattC, string Str[], string Patt[], int table[]) {
-    int mat[StrR][StrC];
-    int limC = StrC - PattC;
-    
-    patt.clear(), flag = 0;
-
-    vector<int>PattRow = PrefixTable2D(PattR, PattC, table, Patt);
-    for(int i = 0; i < StrR; ++i)
-        for(int j = 0; j <= limC; ++j) {
-            string tmp = Str[i].substr(j, PattC);
-            if(patt.find(tmp) == patt.end()) {          // Generating String Mapped using same mapping values
-                patt[tmp] = ++flag;                     // Stored in matrix
-                mat[i][j] = flag;
-            }
-            else mat[i][j] = patt[tmp];
-        }
-    //vector<pair<int, int> >match;                       // This will contain the starting Row & Column of matched string
-    /*for(int c = 0; c <= limC; ++c) {                    // Scan columnwise
-        int i = 0, j = 0;
-        while(i < StrR) {
-            while(j >= 0 && mat[i][c] != PattRow[j])
-                j = table[j];
-            ++i, ++j;
-            if(j == PattR) match.push_back(make_pair(i-j,c));
-    }}*/
-    int cnt = 0;
-    for(int c = 0; c <= limC; ++c) {
-        int i = 0, j = 0;
-        while(i < StrR) {
-            if(mat[i][c] == PattRow[j])     ++i, ++j;
-            if(j == PattR) {
-                //match.push_back({i-j, c});          // Match Found
-                ++cnt;
-                j = table[j-1];
-            }
-            else if(i < StrR and mat[i][c] != PattRow[j]) {
-                if(j != 0)  j = table[j-1];
-                else        i++;
-            }
-        }
+const ll LIM = 1025000;
+pll SubHash2D(vector<vll> &H, int x, int y, int r, int c) {       // generates hash which's upper left point is x, y
+    int xx = x+r-1, yy = y+c-1;
+    pll ret = H[xx][yy];
+    if(x > 0) {
+        ret.first = (ret.first - H[x-1][yy].first + mod1)%mod1;
+        ret.second = (ret.second - H[x-1][yy].second + mod2)%mod2;
     }
-    return cnt;
+    if(y > 0) {
+        ret.first = (ret.first - H[xx][y-1].first + mod1)%mod1;
+        ret.second = (ret.second - H[xx][y-1].second + mod2)%mod2;
+    }
+    if(x > 0 and y > 0)
+        ret.first += H[x-1][y-1].first, ret.second += H[x-1][y-1].second;
+    ret.first = ret.first%mod1;
+    ret.second = ret.second%mod2;
+    ret.first = (ret.first*Power[LIM-(x*lineOffset+y)].first)%mod1;
+    ret.second = (ret.second*Power[LIM-(x*lineOffset+y)].second)%mod2;
+    return ret;
 }
 
-string str[1010], Patt[110];
-int table[1010];
+vector<vll>strH, pattH;
+char str[1010][1010];
+
 
 int main() {
     //fileRead("in");
     //fileWrite("out");
-    FastRead;
 
     int t, n, m, x, y;
-    cin >> t;
+    sf("%d", &t);
 
-    while(t--) {
-        cin >> n >> m;
+    PowerGen(LIM+100);
+    for(int Case = 1; Case <= t; ++Case) {
+        sf("%d%d", &n, &m);
+        for(int i = 0; i < n; ++i)
+            sf("%s", str[i]);
+        strH = Gen2DHash(n, m, str);
+        
+        sf("%d%d", &x, &y);
+        for(int i = 0; i < x; ++i)
+            sf("%s", str[i]);
+        pattH = Gen2DHash(x, y, str);
 
 
-        for(int i = 0; i < n; ++i) {
-            cin >> str[i];
-            //cerr << "GOT " << str[i] << endl;
-        }
+        pattH[x-1][y-1].first = (pattH[x-1][y-1].first * Power[LIM].first)%mod1;
+        pattH[x-1][y-1].second = (pattH[x-1][y-1].second * Power[LIM].second)%mod2;
 
-        cin >> x >> y;
-        for(int i = 0; i < x; ++i) {
-            cin >> Patt[i];
-            //cerr << "GOT " << Patt[i] << endl;
-        }
+        int cnt = 0;
+        for(int i = 0; i+x-1 < n; ++i)
+            for(int j = 0; j+y-1 < m; ++j) {
+                //cerr << "at " << i << " " << j << " :: " << ((pattH[x-1][y-1] == SubHash2D(strH, i, j, x, y)) ? "Yes":"No") << endl;
+                cnt += (pattH[x-1][y-1] == SubHash2D(strH, i, j, x, y));
+            }
 
-        cout << Kmp2D(n, m, x, y, str, Patt, table) << "\n";
+        pf("%d\n", cnt);
     }
     return 0;
 }
