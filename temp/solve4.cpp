@@ -1,7 +1,3 @@
-// SPOJ
-// STRLCP - Longest Common Prefix
-// https://www.spoj.com/problems/STRLCP/
-
 #include <bits/stdc++.h>
 using namespace std;
 #define MAX                 300000
@@ -57,3 +53,68 @@ template<class T> using ordered_set = tree<T, null_type, less_equal<T>, rb_tree_
 //int dx[] = {-1, -1, -1, 0, 0, 1, 1, 1}, dy[] = {-1, 0, 1, -1, 1, -1, 0, 1};
 //----------------------------------------------------------------------------------------------------------
  
+ull ans = 0;
+vi l, r;
+
+void recur(vi v) {
+	ll cal = 0;
+	cerr << "len " << SIZE(v) << endl;
+
+
+	if(SIZE(v) == 1) {
+		if(SIZE(v) == SIZE(r))
+			cal = abs(v[0]-r[0]);
+		else
+			cal = 10-v[0]-(v[0] == 0);
+	}
+	else if(SIZE(v) == 2) {
+		if(SIZE(v) == SIZE(r))
+			cal = min(r[0], r[1]);
+		else
+			cal = 9;
+
+	}
+	else {
+		cal = 1;
+		for(int i = 1; i < SIZE(v)-1; ++i) {
+			if(SIZE(v) == SIZE(r))
+				cal *= abs(v[i] - r[i]);
+			else
+				cal *= 9;
+		}
+		if(SIZE(v) == SIZE(r))
+			cal *= min(r.front(), r.back());
+		else
+			cal *= 9;
+	}
+
+	ans += cal;
+	if(SIZE(v)+1 > SIZE(r)) return;
+
+	int len = SIZE(v)+1;
+	v.clear();
+	for(int i = 0; i < len; ++i) v.pb(0);
+	recur(v);
+}
+
+int main() {
+	ull x, y;
+	cin >> x >> y;
+
+	while(x) {
+		l.pb(x%10);
+		x/=10;
+	}
+
+	while(y) {
+		r.pb(y%10);
+		y/=10;
+	}
+	
+	cerr << "DONE" <<endl;
+	if(l.empty()) l.pb(0);
+
+	recur(l);
+	cout << ans << endl;
+	return 0;
+}
