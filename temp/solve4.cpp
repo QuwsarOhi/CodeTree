@@ -54,67 +54,81 @@ template<class T> using ordered_set = tree<T, null_type, less_equal<T>, rb_tree_
 //----------------------------------------------------------------------------------------------------------
  
 ull ans = 0;
-vi l, r;
+vl l, r;
 
-void recur(vi v) {
+void recur(int len, vl &t) {
+	cerr << "len " << len << endl;
 	ll cal = 0;
-	cerr << "len " << SIZE(v) << endl;
 
-
-	if(SIZE(v) == 1) {
-		if(SIZE(v) == SIZE(r))
-			cal = abs(v[0]-r[0]);
-		else
-			cal = 10-v[0]-(v[0] == 0);
+	if(len > SIZE(t)) {
+		cerr << "fuck" << endl;
+		return;
 	}
-	else if(SIZE(v) == 2) {
-		if(SIZE(v) == SIZE(r))
-			cal = min(r[0], r[1]);
-		else
-			cal = 9;
 
+	if(SIZE(t) == 1) {
+		ans += t[0];
+		return;
+	}
+
+	
+	if(len != SIZE(t)) {
+		if(len == 1) {
+			cal = 10;
+		}
+		else {
+			cal = 1;
+			for(int i = 0; i < len-1; ++i)
+				cal *= 9;
+		}
 	}
 	else {
 		cal = 1;
-		for(int i = 1; i < SIZE(v)-1; ++i) {
-			if(SIZE(v) == SIZE(r))
-				cal *= abs(v[i] - r[i]);
-			else
-				cal *= 9;
-		}
-		if(SIZE(v) == SIZE(r))
-			cal *= min(r.front(), r.back());
-		else
-			cal *= 9;
+		ll mn = 10;
+		for(auto it : t)
+			mn = min(mn, it);
+		for(int i = 0; i < SIZE(t)-1; ++i)
+			cal *= mn;
 	}
 
+	cerr << "len ans " << len << " " <<  cal << endl;
 	ans += cal;
-	if(SIZE(v)+1 > SIZE(r)) return;
-
-	int len = SIZE(v)+1;
-	v.clear();
-	for(int i = 0; i < len; ++i) v.pb(0);
-	recur(v);
+	recur(len+1, t);
 }
+
 
 int main() {
 	ull x, y;
 	cin >> x >> y;
 
-	while(x) {
+	--x;
+	while(x > 0) {
 		l.pb(x%10);
 		x/=10;
 	}
 
-	while(y) {
+	while(y > 0) {
 		r.pb(y%10);
 		y/=10;
 	}
 	
-	cerr << "DONE" <<endl;
+	//cerr << "DONE" <<endl;
 	if(l.empty()) l.pb(0);
 
-	recur(l);
-	cout << ans << endl;
+	//for(auto it : l) cerr << it << " ";
+	//	cerr << endl;
+
+	ans = 0;
+	if(l[0] > 0)
+		recur(1, l);
+	ll a = ans;
+	ans = 0;
+	//cerr << "OK OK" << endl;
+	recur(1, r);
+	ll b = ans;
+
+	cout << a << " " << b << endl;
+
+	cout << b-a << endl;
+
 	return 0;
 }
