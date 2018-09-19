@@ -1,3 +1,7 @@
+// UVa
+// 11888	Abnormal 89's
+// KMP / HASH
+
 #include <bits/stdc++.h>
 using namespace std;
 #define MAX                 200010
@@ -65,38 +69,61 @@ void PrefixTable(int n, char str[], int table[]) {
 			else			table[i++] = 0;
 }}}
 
-char str[420000], str2[420000];
+bool isAlindrome, isPalindrome;
+
+void KMP(int strLen, int pattLen, char str[], char patt[], int table[]) {
+	int i = 0, len = 0;
+	//cerr << strLen << " " << pattLen << endl;
+	while(i < strLen) {
+		if(str[i] == patt[len]) ++i, ++len;
+		if(len == pattLen) {
+			//cerr << "AT " << i << endl;
+			if(i > pattLen and i < strLen)
+				isAlindrome = 1;
+			else if(i == pattLen)
+				isPalindrome = 1;
+			len = table[len-1];
+		}
+		else if(i < strLen and str[i] != patt[len]) {
+			if(len != 0)	len = table[len-1];
+			else			++i;
+}}}
+
+
+char str[420000], patt[210000];
 int table[420000];
 
 int main() {
+	//fileRead("in");
+	//fileWrite("out");
+
 	int t;
 	sf("%d", &t);
 
 	while(t--) {
 		sf("%s", str);
+
 		int len = strlen(str);
-
-		str[len] = '#';
-		for(int i = len+1, j = len-1; j >= 0; ++i, --j)
+		for(int i = len, j = 0; j < len; ++i, ++j)
 			str[i] = str[j];
-		
-		int slen = len*2 + 1;
+		str[2*len] = '\0';
+		for(int i = 0, j = len-1; i < len; ++i, --j)
+			patt[j] = str[i];
+		patt[len] = '\0';
 
-		PrefixTable(slen, str, table);
+		//cerr << str << " " << patt << endl;
 
-		for(int i = 0; i < slen; ++i)
-			cerr << table[i] << "(" << str[i] << ") ";
-		cerr << endl;
+		isAlindrome = isPalindrome = 0;
+		PrefixTable(len, patt, table);
+		KMP(len*2, len, str, patt, table);
 
-		if(table[slen-1] == len) {
+		if(isAlindrome)
+			pf("alindrome\n");
+		else if(isPalindrome)
 			pf("palindrome\n");
-			continue;
-		}
-		
-		for(int i = len+2, j = ; i < slen; ++i)
-
-		
-		pf("simple\n");
+		else
+			pf("simple\n");
 	}
+
 	return 0;
 }
