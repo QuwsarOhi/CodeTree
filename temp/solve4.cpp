@@ -1,6 +1,11 @@
+// HackerRank
+// Sherlock and Unique Substrings
+// https://www.hackerrank.com/contests/101hack26/challenges/sherlock-and-unique-substrings/problem 
+// Suffix Array + Segment Tree + Offline
+
 #include <bits/stdc++.h>
 using namespace std;
-#define MAX                 300000
+#define MAX                 200000
 #define EPS                 1e-9
 #define INF                 1e7
 #define MOD                 1000000007
@@ -45,14 +50,47 @@ typedef vector<pair<ll, ll> >vll;
 //int dx[] = {-1, 0, 1, 0}, dy[] = {0, 1, 0, -1};
 //int dx[] = {-1, -1, -1, 0, 0, 1, 1, 1}, dy[] = {-1, 0, 1, -1, 1, -1, 0, 1};
 //----------------------------------------------------------------------------------------------------------
- 
+
+struct SegTree {
+	ll tree[MAX*4] = {0}, prop[MAX*4] = {0};
+	void pushDown(int pos, int l, int r) {
+		tree[pos] += prop[pos]*(r-l+1);
+		if(l == r) {
+			prop[pos] = 0;
+			return;
+		}
+		prop[pos<<1] += prop[pos];
+		prop[pos<<1|1] += prop[pos];
+		prop[pos] = 0;
+	}
+	void update(int pos, int l, int r, int L, int R, ll val) {
+		pushDown(pos, l, r);
+		if(r < L or R < l) return;
+		if(L <= l and r <= R) {
+			prop[pos] += val;
+			pushDown(pos, l, r);
+			return;
+		}
+		int mid = (l+r)>>1;
+		update(pos<<1, l, mid, L, R, val);
+		update(pos<<1|1, mid+1, r, L, R, val);
+		tree[pos] = tree[pos<<1] + tree[pos<<1|1];
+	}
+	ll query(int pos, int l, int r, int L, int R) {
+		pushDown(pos, l, r);
+		if(r < L or R < l) return 0;
+		if(L <= l and r <= R) return tree[pos];
+		int mid = (l+r)>>1;
+		return query(pos<<1, l, mid, L, R) + query(pos<<1|1, mid+1, r, L, R);
+}};
+
 
 struct suffix{
     int idx;                        // Start index of suffix
     pair<int, int> rank;            // Sorting Ranks
 };
 
-suffix suff[200000];
+suffix suff[MAX];
 
 bool cmp(suffix a, suffix b) {
     return a.rank < b.rank;
@@ -143,23 +181,83 @@ int consecutiveMaxLCP(int idx, int len, vi &idxLcp) {
 	return ret;
 }
 
-int main() {
-    char str[200000];
-    scanf("%s", str);
-    int len = strlen(str);
-    
-    SuffixArray(str, len);
-    
-    for(int i = 0; i < len; ++i)                // i : rank
-        printf("%d %s\n", suff[i].idx, (str+suff[i].idx), suff[i].rank.fi);            // idx: starting index of suffix
-        //printf("%d\n", suff[i].idx);
-   	
-   	vi lcp = Kasai(len, suff, str);
+char str[MAX];
+vi lcp;
+vl ANS;
+queue<int>lquery;
+SegTree ST;
+map<int, vii>MAP;
 
-   	pf("\n");
-   	for(int i = 0; i < len; ++i) {
-   		printf("%d 	%d\n", lcp[suff[i].idx], consecutiveMaxLCP(suff[i].idx, len, lcp));
-   	}
-    
+int main() {
+	//fileRead("in");
+	//fileWrite("out");
+
+	int q, l, r;
+	sf("%s", str);
+	int len = strlen(str);
+	SuffixArray(str, len);
+	lcp = Kasai(len, suff, str);
+
+	sf("%d", &q);
+
+
+	//for(int i = 0; i < len; ++i)
+	//	cerr << suff[i].idx << " :: " << (str + suff[i].idx) << endl;
+
+	/*while(q--) {
+		sf("%d%d", &l, &r);
+		--l, --r;
+		int ans = 0;
+		for(int i = l; i <= r; ++i) {
+			int maxLcp = consecutiveMaxLCP(i, len, lcp);
+			ans += max((r-i+1)-maxLcp, 0);
+
+			cerr << i << " :: " << maxLcp << " -> " << (r-i+1)-maxLcp << endl;
+		}
+
+		cerr << "COrrect " << ans << endl;
+
+		int maxLcp = consecutiveMaxLCP(l, len, lcp);
+		cerr << maxLcp << " " << r-l+1 << endl;
+		pf("%d\n", max((r-l+1)-maxLcp, 0));
+	}*/
+
+	ANS.resize(q);
+	for(int i = 0; i < q; ++i) {
+		sf("%d%d", &l, &r);
+		--l, --r;
+		MAP[l].pb({r, i});
+	}
+
+	for(int i = 0; i < len; ++i) {
+		int maxLcp = consecutiveMaxLCP(i, len, lcp);
+		if(i+maxLcp < len) {
+			ST.update(1, 1, len, i+maxLcp, len, 1);
+			lquery.push(i);
+		}
+	}
+
+	for(auto it : MAP) {
+		int l = it.first;
+		vii vec = it.second;
+		sort(All(vec));
+
+		while(not lquery.empty() and lquery.front() < l) {
+			int ll = lquery.front();
+			int maxLcp = consecutiveMaxLCP(ll, len, lcp);
+			if(ll+maxLcp < len)
+				ST.update(1, 1, len, ll+maxLcp, len, -1);
+			lquery.pop();
+		}
+
+		for(auto it2 : vec) {
+			int r = it2.first, idx = it2.second;
+			ANS[idx] = ST.query(1, 1, len, l, r);
+		}
+	}
+
+	for(int i = 0; i < q; ++i)
+		pf("%lld\n", ANS[i]);
+
     return 0;
 }
