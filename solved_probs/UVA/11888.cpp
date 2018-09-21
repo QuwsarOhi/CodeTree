@@ -1,12 +1,16 @@
+// UVa
+// 11888	Abnormal 89's
+// KMP / HASH
+
 #include <bits/stdc++.h>
 using namespace std;
-#define MAX                 100100
+#define MAX                 200010
 #define EPS                 1e-9
 #define INF                 1e7
 #define pb                  push_back
 #define mp                  make_pair
-#define fi                  first
-#define se                  second
+#define xx                  first
+#define yy                  second
 #define pi                  acos(-1)
 #define sf                  scanf
 #define pf                  printf
@@ -52,3 +56,74 @@ template<class T> using ordered_set = tree<T, null_type, less_equal<T>, rb_tree_
 //int dx[] = {-1, -1, -1, 0, 0, 1, 1, 1}, dy[] = {-1, 0, 1, -1, 1, -1, 0, 1};
 //----------------------------------------------------------------------------------------------------------
 
+void PrefixTable(int n, char str[], int table[]) {
+	int i = 1, len = 0;
+	table[0] = 0;
+	while(i < n) {
+		if(str[i] == str[len]) {
+			len++;
+			table[i++] = len;
+		}
+		else {
+			if(len != 0) 	len = table[len-1];
+			else			table[i++] = 0;
+}}}
+
+bool isAlindrome, isPalindrome;
+
+void KMP(int strLen, int pattLen, char str[], char patt[], int table[]) {
+	int i = 0, len = 0;
+	//cerr << strLen << " " << pattLen << endl;
+	while(i < strLen) {
+		if(str[i] == patt[len]) ++i, ++len;
+		if(len == pattLen) {
+			//cerr << "AT " << i << endl;
+			if(i > pattLen and i < strLen)
+				isAlindrome = 1;
+			else if(i == pattLen)
+				isPalindrome = 1;
+			len = table[len-1];
+		}
+		else if(i < strLen and str[i] != patt[len]) {
+			if(len != 0)	len = table[len-1];
+			else			++i;
+}}}
+
+
+char str[420000], patt[210000];
+int table[420000];
+
+int main() {
+	//fileRead("in");
+	//fileWrite("out");
+
+	int t;
+	sf("%d", &t);
+
+	while(t--) {
+		sf("%s", str);
+
+		int len = strlen(str);
+		for(int i = len, j = 0; j < len; ++i, ++j)
+			str[i] = str[j];
+		str[2*len] = '\0';
+		for(int i = 0, j = len-1; i < len; ++i, --j)
+			patt[j] = str[i];
+		patt[len] = '\0';
+
+		//cerr << str << " " << patt << endl;
+
+		isAlindrome = isPalindrome = 0;
+		PrefixTable(len, patt, table);
+		KMP(len*2, len, str, patt, table);
+
+		if(isAlindrome)
+			pf("alindrome\n");
+		else if(isPalindrome)
+			pf("palindrome\n");
+		else
+			pf("simple\n");
+	}
+
+	return 0;
+}
