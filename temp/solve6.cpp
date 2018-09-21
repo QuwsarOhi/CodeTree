@@ -1,3 +1,8 @@
+// SPOJ
+// MSUBSTR - Mirror Strings !!!
+// https://www.spoj.com/problems/MSUBSTR/
+// HASH + Binary Search
+
 #include <bits/stdc++.h>
 using namespace std;
 #define MAX                 7000
@@ -52,187 +57,110 @@ template<class T> using ordered_set = tree<T, null_type, less_equal<T>, rb_tree_
 //int dx[] = {-1, -1, -1, 0, 0, 1, 1, 1}, dy[] = {-1, 0, 1, -1, 1, -1, 0, 1};
 //----------------------------------------------------------------------------------------------------------
 
+const ll p = 31;
+const ll mod = 1e9+9;
 
-
-struct suffix {
-	int idx;
-	pii rank;
-	bool operator < (suffix x) {
-		return rank < x.rank;
-}};
-
-int order(char x) {
-	if(isdigit(x)) return x - '0';
-	else if(isupper(x)) return x-'A'+10;
-	else if(islower(x)) return x-'a'+36;
-	else return 110;
+vl Power;
+void PowerGen(int n) {
+    Power.resize(n+1);
+    Power[0] = 1;
+    for(int i = 1; i < n; ++i)
+        Power[i] = (Power[i-1] * p)%mod;
 }
 
-int idxToRank[MAX];									// index to position mapping
-suffix suff[MAX];
-
-void SuffixArray(int len, char str[]) {				// First initial 1st and 2nd ranks for all suffix and sort once
-    for(int i = 0, j = 1; i < len; ++i, ++j) {
-        suff[i].idx = i;
-        suff[i].rank.fi = order(str[i]);
-        suff[i].rank.se = (j<len) ? order(str[j]):-1;	// if 2nd rank is out of range, assign -1
-        idxToRank[i] = 0;
+vl Hash(char s[], int len) {
+    ll hashVal = 0;
+    vector<ll>v;
+    for(int i = 0; i < len; ++i) {
+        hashVal = (hashVal + (s[i] - 'a' + 1)* Power[i])%mod;
+        v.push_back(hashVal);
     }
-    sort(suff, suff+len);                               
-    for(ll k = 4; k < (2*len); k *= 2) {			// Assigning new first rank for all suffix
-        int rank = 0;
-        int prevRank = suff[0].rank.fi;             // prevRank contains previous suffix's first rank
-        suff[0].rank.fi = 0;                        // first rank is always zero 
-        idxToRank[suff[0].idx] = 0;
-        for(int i = 1; i < len; ++i) {
-            if(suff[i].rank == make_pair(prevRank, suff[i-1].rank.se)) {
-                prevRank = suff[i].rank.fi;         // we'll manipulate this first rank, so saving it for later use
-                suff[i].rank.fi = rank;             // assigning the new rank to this suffix first rank
-            }
-            else {
-                prevRank = suff[i].rank.fi;         // saving this first rank as this will be manipulated
-                suff[i].rank.fi = ++rank;           // as this is not as same as previous rank, increment rank by one
-            }
-            idxToRank[suff[i].idx] = i;
-        }        
-        for(int i = 0; i < len; ++i) {			// Assign the second rank
-            int nxtIdx = suff[i].idx + k/2;   	// finding index at where the substring is as same as this strings [idx, idx+k/2]
-            suff[i].rank.se = (nxtIdx < len) ? suff[idxToRank[nxtIdx]].rank.fi:-1;	
-        }										// the newIdx contains next segments second half's rank
-        sort(suff, suff+len);
-}}
-
-char str[MAX];
-
-// abcxpcba
-// aaaabbaaaakdjk
-// axpayza
-
-int strActualLen, maxPalinLen, maxPalinCount;
-/*void PalinCheck(int idx1, int idx2, int match) {
-    if(match == 0) return;
-    //if(not(idx1 < strActualLen or idx2 < strActualLen)) return;
-    //if(not((idx1 < strActualLen and idx2 > strActualLen) or (idx1 > strActualLen and idx2 < strActualLen)))
-    //    return;
-    cerr << idx1 << " and " << idx2 << " :: " << match << endl;
-    if(idx1 > strActualLen) {
-        int idx = idx1 - strActualLen - 1;
-        idx = strActualLen - idx - 1;
-        //if(abs(strActualLen-idx-1) != idx2) return;
-        if(idx2+match-1 != idx) return;
-    }
-    if(idx2 > strActualLen) {
-        int idx = idx2 - strActualLen - 1;
-        idx = strActualLen - idx - 1;
-        //if(abs(strActualLen-idx-1) != idx1) return;
-        if(idx1+match-1 != idx) return;
-    }
-
-    cerr << idx1 << " and " << idx2 << endl;
-    if(match > maxPalinLen) {
-        maxPalinCount = 1;
-        maxPalinLen = match;
-        cout << "GOT new ----------------------------------------------------------------------------- " << match << endl;
-        //cout << idx1 << " : " << (str+suff[i].idx) << " = " << suff[i].idx << " lcp " << lcp[suff[i].idx] << endl;
-        int r1 = idxToRank[idx1], r2 = idxToRank[idx2];
-        cout << str+suff[r1].idx << "\n\n";
-        cout << str+suff[r2].idx << "\n\n";
-    }
-    else if(match == maxPalinLen)
-        ++maxPalinCount;
-}*/
-
-// Longest Common Prefix: Kasai's Algorithm
-// Complexity: O(n) ~ O(n logn)
-
-int lcp[MAX];
-void Kasai(int len, char str[]) {				// Matches Same charechters with i'th rank & (i+1)'th rank
-	int match = 0;
-	for(int idx = 0; idx < len; ++idx) {
-		if(idxToRank[idx] == len-1) {
-			match = 0;
-			continue;
-		}
-		int nxtRankIdx = suff[idxToRank[idx]+1].idx;
-		while(idx+match < len and nxtRankIdx+match < len and str[idx+match] == str[nxtRankIdx+match])
-			++match;
-        // Palindrome Check
-        //PalinCheck(idx, nxtRankIdx, match);
-		lcp[nxtRankIdx] = match;				// the lcp match of i'th & (i+1)'th is stored in
-		match -= match>0;						// the index of (i+1)'th suffix's index
-}}
-
-int consecutiveMaxLCP(int idx, int len) {		// calculates max LCP of index idx
-	int r = idxToRank[idx];						// comparing with the next rank string of idx's string
-	int ret = lcp[idx];
-	if(r+1 < len)
-		ret = max(ret, lcp[suff[r+1].idx]);
-	return ret;
+    return v;
 }
 
-
-int table[MAX][14];
-
-void buildSparseTableRMQ(int n) {                           //  O(n Log n)
-    for(int i = 0; i < n; ++i)
-        table[i][0] = i;
-    for(int j = 1; (1 << j) <= n; ++j)                      // 2^j
-        for(int i = 0; i + (1 << j) - 1< n; ++i) {          // For every node
-            if(lcp[suff[table[i][j-1]].idx] < lcp[suff[table[i + (1 << (j-1))][j-1]].idx])
-                table[i][j] = table[i][j-1];
-            else
-                table[i][j] = table[i + (1 << (j-1))][j-1];
-}}
-int sparseQueryRMQ(int l, int r) {                          // O(1)
-    int k = log2(r - l + 1);                                // log(2);
-    return min(lcp[suff[table[l][k]].idx], lcp[suff[table[r - (1 << k) + 1][k]].idx]);
+ll SubHash(vl &Hash, ll l, ll r, ll LIM = 7000) {
+    ll H;
+    H = (Hash[r] - (l-1 >= 0 ? Hash[l-1]:0) + mod)%mod;
+    H = (H * Power[LIM-l])%mod;
+    return H;
 }
+
+vl H1, H2;
+char str[MAX], revstr[MAX]; 
+
+int checker(int clen, int len) {
+    int cnt = 0;
+    //cerr << "LEN " << clen << endl;
+    for(int i = 0; i+clen-1 < len; ++i) {
+        //cerr << i << endl;
+        ll h1 = SubHash(H1, i, i+clen-1);
+        int mirrorIdx = len-i-1;
+        mirrorIdx = mirrorIdx - clen + 1;
+        ll h2 = SubHash(H2, mirrorIdx, mirrorIdx+clen-1);
+        //cerr << str+i << endl;
+        //cerr << revstr+mirrorIdx << endl;
+
+        if(h1 == h2)
+            ++cnt;
+    }
+    return cnt;
+}
+
+pii BSeven(int lo, int hi, int len) {
+    pii ans = {0, 0};
+    while(lo <= hi) {
+        int mid = (lo+hi)>>1;
+        int eLen = 2*mid+1;
+        int cnt = checker(eLen, len);
+
+        if(cnt > 0) {
+            ans = max(ans, mp(eLen, cnt));
+            lo = mid+1;
+        }
+        else
+            hi = mid-1;
+    }
+    return ans;
+}
+
+pii BSodd(int lo, int hi, int len) {
+    pii ans = {0, 0};
+    while(lo <= hi) {
+        int mid = (lo+hi)>>1;
+        int eLen = 2*mid;
+        int cnt = checker(eLen, len);
+
+        if(cnt > 0) {
+            ans = max(ans, mp(eLen, cnt));
+            lo = mid+1;
+        }
+        else
+            hi = mid-1;
+    }
+    return ans;
+}
+
 
 
 int main() {
-    //fileRead("in");
-    //fileWrite("out");
     int t;
     sf("%d", &t);
+    PowerGen(7000+100);
 
     while(t--) {
         sf("%s", str);
         int len = strlen(str);
-        cerr << "len " << len << endl;
-        strActualLen = len, maxPalinLen = maxPalinCount = 0;
+        for(int i = 0, j = len-1; i < len; ++i, --j)
+            revstr[i] = str[j];
+        revstr[len] = '\0';
 
-        str[len] = '#';
-        for(int i = len+1, j = len-1; j >= 0; ++i, --j)
-            str[i] = str[j];
-        len += len+1;
-        str[len] = '\0';
+        //cerr << str << "\n" << revstr << endl;
 
-        cerr << str << endl;
+        H1 = Hash(str, len);
+        H2 = Hash(revstr, len);
 
-        SuffixArray(len, str);
-        Kasai(len, str);
-        buildSparseTableRMQ(len);
-
-        for(int i = 0; i < len; ++i)
-            cout << i << " : " << (str+suff[i].idx) << " = " << suff[i].idx << " lcp " << lcp[suff[i].idx] << endl;
-        //if(maxPalinLen == 1)
-        //    maxPalinCount = strActualLen;
-
-        for(int i = 0, j = len-1; i != j; ++i, --j) {
-            int l = idxToRank[i], r = idxToRank[j];
-            if(l < r) ++l;
-            else ++r;
-            int rmq = sparseQueryRMQ(l, r);
-            cerr << "Query idx " << i << " " << j << " :: " << l << " " << r << " = " << rmq << endl;
-            if(rmq > maxPalinLen) {
-                maxPalinLen = rmq;
-                maxPalinCount = 1;
-            }
-            else if(rmq == maxPalinLen)
-                maxPalinCount++;
-        }        
-
-        pf("%d %d\n", maxPalinLen, maxPalinCount);
+        pii ans = max(BSeven(1, len/2, len), max(BSodd(1, len/2, len), mp(1, len)));
+        pf("%d %d\n", ans.fi, ans.se);
     }
     return 0;
 }
