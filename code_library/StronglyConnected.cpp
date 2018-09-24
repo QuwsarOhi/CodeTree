@@ -25,7 +25,6 @@ void tarjanSSC(int u) {
         if(visited[v])
             dfs_low[u] = min(dfs_low[u], dfs_low[v]);
     }
-
     // in a SCC the first node of the SCC, node u is the first node in a SCC if dfs_low[u] == dfs_low[v]
     // as we implementing stack like data structure, the nodes from top to u are on the same SCC
     if(dfs_low[u] == dfs_num[u]) {
@@ -36,10 +35,8 @@ void tarjanSSC(int u) {
         while(1) {
             int v = SCC.back();
             SCC.pop_back();
-
             // node v is used, so marking it as false, so that the ancestor nodes
             // doesn't use this node to update it's value
-            
             visited[v] = 0;
             // printf("%d\n", v);
             Component[v] = SCC_no;      // Marking SCC nodes to as same component
@@ -47,12 +44,10 @@ void tarjanSSC(int u) {
                 break;
         }
         // printf("\n");
-    }
-}
+}}
 
 void ConnectNode() {                    // This function can convert Components to a new graph (G1)
-    map<int, int> :: iterator it = Component.begin();
-    
+    map<int, int> :: iterator it = Component.begin(); 
     for( ; it != Component.end(); ++it) {
         for(int i = 0; i < (int)G[it->first].size(); ++i) {
             int v = G[it->first][i];

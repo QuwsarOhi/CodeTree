@@ -141,7 +141,7 @@ pii LCA(int u, int v) {
             v = sparse[v][i];
     if(u == v) {               // if u WAS the parent
         //cerr << "puck " << vv << " " << uu << endl;
-        return {u, level[vv]-level[uu]};
+        return {u, level[vv]+level[uu]-2*level[u]};
     }
     for(int i = p; i >= 0; --i)                                     // Pull up u and v together while LCA not found
         if(sparse[v][i] != -1 && sparse[u][i] != sparse[v][i])      // -1 check is if 2^i is out of calculated range
@@ -151,17 +151,17 @@ pii LCA(int u, int v) {
 
 int Solve(int a, int b, int c, int d) {
     a = dfs_low[a], b = dfs_low[b], c = dfs_low[c], d = dfs_low[d];
-    //cerr << a << " " << b << " " << c << " " << d << endl;
+    cerr << a << " " << b << " " << c << " " << d << endl;
 
     pii parCD = LCA(c, d);
     pii parAB = LCA(a, b);
 
-    //cerr << "parCD " << parCD.fi << " " << parCD.se << endl;
-    //cerr << "parAB " << parAB.fi << " " << parAB.se << endl;
+    cerr << "parCD " << parCD.fi << " " << parCD.se << endl;
+    cerr << "parAB " << parAB.fi << " " << parAB.se << endl;
 
     if(a == c or b == c) {
         pii tt = LCA(parAB.fi, d);
-        //cerr << "C " << tt.fi << " " << tt.se << " " << d << " " << parAB.fi << endl;
+        cerr << "C " << tt.fi << " " << tt.se << " " << d << " " << parAB.fi << endl;
         return min(parCD.se, LCA(parAB.fi, d).se);
     }
     if(a == d or b == d) {
@@ -169,19 +169,27 @@ int Solve(int a, int b, int c, int d) {
         return min(parCD.se, LCA(parAB.fi, c).se);
     }
 
-    //cerr << "Passed 1" << endl;
+    cerr << "Passed 1" << endl;
 
     // check if adding edge a - b, if benificial, i.e check if the new node lies in the path c - d
 
-    if(parCD.fi == parAB.fi)
+    if(parCD.fi == parAB.fi) {
+        cerr << "Parent match\n";
         return min(parCD.se, (int)(parCD.se-parAB.se < 0 ? INF:parCD.se-parAB.se));
+    }
 
     // if parent of ab is also parent of c
-    if(LCA(parAB.fi, c).fi == parAB.fi)
+    if(LCA(parAB.fi, c).fi == parAB.fi) {
+        cerr << "parent of ab is parent of c\n";
         return min(parCD.se, LCA(parAB.fi, d).se);
+    }
     // if parent of ab is also parent of d
-    if(LCA(parAB.fi, d).fi == parAB.fi)
-        return min(parCD.se, LCA(parAB.fi, c).se);
+    if(LCA(parAB.fi, d).fi == parAB.fi) {
+        cerr << "parent of ab is parent of d ";
+        int tt = parCD.se-LCA(parAB.fi, c).se;
+        cerr << tt << endl;
+        return min(parCD.se, (int)(tt>0?tt:INF));
+    }
     return parCD.se;
 }
 
@@ -199,11 +207,14 @@ int main() {
     int treeV = FindBridge(V);
     LCAinit(treeV);
 
-    //cerr << "DONE\n";
+    cerr << "Tree Nodes " << treeV << endl;
 
     while(Q--) {
         sf("%d%d%d%d", &a, &b, &c, &d);
-        pf("%d\n", Solve(a, b, c, d));
+        if(dfs_low[a] == dfs_low[b])
+            pf("%d\n", LCA(c, d).se);
+        else
+            pf("%d\n", Solve(a, b, c, d));
     }
     return 0;
 }
