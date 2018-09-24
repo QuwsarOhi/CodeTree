@@ -6,8 +6,8 @@ using namespace std;
 #define MOD                 1000000007
 #define pb                  push_back
 #define mp                  make_pair
-#define xx                  first
-#define yy                  second
+#define fi                  first
+#define se                  second
 #define pi                  acos(-1)
 #define sf                  scanf
 #define pf                  printf
@@ -94,8 +94,8 @@ int BuildNewTree(int V) {
         int u = it.first, v = it.second;
         Tree[dfs_low[u]].pb(dfs_low[v]);
         Tree[dfs_low[v]].pb(dfs_low[u]);
-        cerr << dfs_low[u] << " -- " << dfs_low[v] << endl;
-        cerr << "Actual " << u << " -- " << v << endl;
+        //cerr << dfs_low[u] << " -- " << dfs_low[v] << endl;
+        //cerr << "Actual " << u << " -- " << v << endl;
     }
     return ncnt;
 }
@@ -106,8 +106,8 @@ int FindBridge(int V){                             //Bridge finding code
     for(int i = 1; i <= V; i++)
         if(dfs_num[i] == 0) 
             bridge(i);
-    for(int i = 1; i <= V; ++i)
-        cerr << i << " :: " << dfs_num[i] << " :: " << dfs_low[i] << endl;
+    //for(int i = 1; i <= V; ++i)
+        //cerr << i << " :: " << dfs_num[i] << " :: " << dfs_low[i] << endl;
     return BuildNewTree(V);
 }
 
@@ -117,7 +117,7 @@ void dfs(int u, int par, int lvl) {                 // Tracks distance as well (
     level[u] = lvl;                                 // parent[] and level[] is necessary
     parent[u] = par;                                
     for(int i = 0; i < (int)Tree[u].size(); ++i)
-        if(parent[u] != G[u][i])
+        if(parent[u] != Tree[u][i])
             dfs(Tree[u][i], u, lvl+1);
 }
 
@@ -133,21 +133,61 @@ void LCAinit(int V) {
                 sparse[u][p] = sparse[v][p-1];
 }
 
-int LCA(int u, int v) {
+pii LCA(int u, int v) {
     if(level[u] > level[v]) swap(u, v);         // v is deeper
-    int p = ceil(log2(level[v]));
+    int p = ceil(log2(level[v])), uu = u, vv = v;
     for(int i = p ; i >= 0; --i)                // Pull up v to same level as u
         if(level[v] - (1LL<<i) >= level[u])
             v = sparse[v][i];
-    if(u == v) return u;                // if u WAS the parent
+    if(u == v) {               // if u WAS the parent
+        //cerr << "puck " << vv << " " << uu << endl;
+        return {u, level[vv]-level[uu]};
+    }
     for(int i = p; i >= 0; --i)                                     // Pull up u and v together while LCA not found
         if(sparse[v][i] != -1 && sparse[u][i] != sparse[v][i])      // -1 check is if 2^i is out of calculated range
             u = sparse[u][i], v = sparse[v][i];
-    return parent[u];
+    return {parent[u], level[uu]+level[vv]-2*(parent[u] != -1 ? level[parent[u]]:0)};
 }
 
+int Solve(int a, int b, int c, int d) {
+    a = dfs_low[a], b = dfs_low[b], c = dfs_low[c], d = dfs_low[d];
+    //cerr << a << " " << b << " " << c << " " << d << endl;
+
+    pii parCD = LCA(c, d);
+    pii parAB = LCA(a, b);
+
+    //cerr << "parCD " << parCD.fi << " " << parCD.se << endl;
+    //cerr << "parAB " << parAB.fi << " " << parAB.se << endl;
+
+    if(a == c or b == c) {
+        pii tt = LCA(parAB.fi, d);
+        //cerr << "C " << tt.fi << " " << tt.se << " " << d << " " << parAB.fi << endl;
+        return min(parCD.se, LCA(parAB.fi, d).se);
+    }
+    if(a == d or b == d) {
+        cerr << "D" << endl;
+        return min(parCD.se, LCA(parAB.fi, c).se);
+    }
+
+    //cerr << "Passed 1" << endl;
+
+    // check if adding edge a - b, if benificial, i.e check if the new node lies in the path c - d
+
+    if(parCD.fi == parAB.fi)
+        return min(parCD.se, (int)(parCD.se-parAB.se < 0 ? INF:parCD.se-parAB.se));
+
+    // if parent of ab is also parent of c
+    if(LCA(parAB.fi, c).fi == parAB.fi)
+        return min(parCD.se, LCA(parAB.fi, d).se);
+    // if parent of ab is also parent of d
+    if(LCA(parAB.fi, d).fi == parAB.fi)
+        return min(parCD.se, LCA(parAB.fi, c).se);
+    return parCD.se;
+}
+
+
 int main() {
-    int V, E, Q, u, v;
+    int V, E, Q, u, v, a, b, c, d;
     sf("%d%d%d", &V, &E, &Q);
 
     for(int i = 0; i < E; ++i){
@@ -158,5 +198,12 @@ int main() {
 
     int treeV = FindBridge(V);
     LCAinit(treeV);
+
+    //cerr << "DONE\n";
+
+    while(Q--) {
+        sf("%d%d%d%d", &a, &b, &c, &d);
+        pf("%d\n", Solve(a, b, c, d));
+    }
     return 0;
 }
