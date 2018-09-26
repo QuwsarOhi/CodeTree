@@ -113,3 +113,46 @@ vector<int> LCA(int u, int v) {
     MERGE(T, W[sparse[v][0]][0]);   // we can also calculate summation of distance like this
     return T;
 }
+
+// --------------------------- Overlap Path of Tree --------------------------- 
+
+// Note: DfsTiming and isChild function required
+// a is upper node of path a-b and c is upper node of path c-d
+pii overlapPath(int a, int b, int c, int d) {      // returns number of common path of c-d and a-b
+    // path a-b and c-d overlaps iff b is a child of c or d or both of c&d
+    if(not isChild(b, c)) return {0, 0};
+    int u = LCA(b, d);              // u is the lowest point on which c-d and a-b overlaps
+    if(level[a]>level[c]) {             // a is below c 
+        if(isChild(u, a))           // also u is child of a
+            return {a, u};
+    }
+    else {                          // c is above a
+        if(isChild(u, c))
+            return {c, u};
+    }
+    return {0, 0};                  // no common path found
+}
+
+int EdgeCount(int a, int b, int c, int d) {             // Finds number of edges if we join nodes a, b and 
+    a = Convert(a), b = Convert(b), c = Convert(c), d = Convert(d); // want to find path from c to d
+    int u = LCA(a, b);
+    int v = LCA(c, d);
+    int ans = dist(c, d, v);
+    pii tt;
+    // connected paths are u->a & u->b
+    // query paths are v->c & v->d
+    // cases:
+    // u->a overlaps v->c
+    tt = overlapPath(v, c, u, a);
+    ans -= tt.fi == 0? 0:dist(tt.fi, tt.se, LCA(tt.fi, tt.se));
+    // u->a overlaps v->d
+    tt = overlapPath(v, c, u, b);
+    ans -= tt.fi == 0? 0:dist(tt.fi, tt.se, LCA(tt.fi, tt.se));
+    // u->b overlaps v->c
+    tt = overlapPath(v, d, u, a);
+    ans -= tt.fi == 0? 0:dist(tt.fi, tt.se, LCA(tt.fi, tt.se));
+    // u->b overlaps v->d
+    tt = overlapPath(v, d, u, b);
+    ans -= tt.fi == 0? 0:dist(tt.fi, tt.se, LCA(tt.fi, tt.se));
+    return ans;
+}

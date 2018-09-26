@@ -1,6 +1,6 @@
 #include <bits/stdc++.h>
 using namespace std;
-#define MAX                 100100
+#define MAX                 200100
 #define EPS                 1e-9
 #define INF                 1e7
 #define MOD                 1000000007
@@ -55,47 +55,53 @@ template<class T> using ordered_set = tree<T, null_type, less_equal<T>, rb_tree_
 
 vector<int> G[MAX], Tree[MAX];
 vector<pair<int, int> >ans;
-int dfs_num[MAX], dfs_low[MAX], parent[MAX], dfsCounter;
+int dfs_num[MAX], dfs_low[MAX], dfsCounter, timeToNode[MAX];
 
-void bridge(int u) {
+void bridge(int u, int par = -1) {
     // dfs_num[u] is the dfs counter of u node
     // dfs_low[u] is the minimum dfs counter of u node (it is minimum if a backedge exists)
     dfs_num[u] = dfs_low[u] = ++dfsCounter;
-    for(int i = 0; i < (int)G[u].size(); i++) {
-        int v = G[u][i];
+    //timeToNode[dfs_num[u]] = u;
+    for(auto v : G[u]) {
+        if(v == par) continue;
         if(dfs_num[v] == 0) {
-            parent[v] = u;
-            bridge(v);
+            bridge(v, u);
             // if dfs_num[u] is lower than dfs_low[v], then there is no back edge on u node
             // so u - v can be a bridge
+            dfs_low[u] = min(dfs_low[u], dfs_low[v]);
             if(dfs_num[u] < dfs_low[v])
                 ans.push_back(make_pair(min(u, v), max(u, v)));
-            // obtainig lower dfs counter (if found) from child nodes
-            dfs_low[u] = min(dfs_low[u], dfs_low[v]);
         }
         // if v is not parent of u then it is a back edge
         // also dfs_num[v] must be less than dfs_low[u]
         // so we update it
-        else if(parent[u] != v)
+        else if(v != par)
             dfs_low[u] = min(dfs_low[u], dfs_num[v]);
-}}
+    }
+    timeToNode[dfs_num[u]] = u;         // if BuildNewTree is used otherwise ignore it
+}
+
+
+int conv[MAX] = {0}, ncnt;
+int Convert(int u) {
+    if(conv[dfs_low[u]] == 0)
+        conv[dfs_low[u]] = ++ncnt;
+    return conv[dfs_low[u]];
+}
+
+int findMin(int u) {
+    if(dfs_low[u] == dfs_num[u]) return dfs_low[u];
+    return dfs_low[u] = findMin(timeToNode[dfs_low[u]]);
+}
 
 int BuildNewTree(int V) {
-    memset(dfs_num, 0, sizeof dfs_num);
-    int ncnt = 1;                                   // Tree's node starts from 1
-    for(int i = 1; i <= V; ++i)                     // dfs_low[i] contains new tree node mapping
-        if(dfs_num[dfs_low[i]] == 0)                // from the previous graph
-            dfs_num[dfs_low[i]] = ncnt++;
-
-    for(int i = 1; i <= V; ++i)
-        dfs_low[i] = dfs_num[dfs_low[i]];
-
+    ncnt = 0;
+    for(int i = 1; i <= V; ++i) 
+        findMin(i);
     for(auto it : ans) {
-        int u = it.first, v = it.second;
-        Tree[dfs_low[u]].pb(dfs_low[v]);
-        Tree[dfs_low[v]].pb(dfs_low[u]);
-        //cerr << dfs_low[u] << " -- " << dfs_low[v] << endl;
-        //cerr << "Actual " << u << " -- " << v << endl;
+        int u = Convert(it.first), v = Convert(it.second);
+        Tree[u].pb(v);
+        Tree[v].pb(u);
     }
     return ncnt;
 }
@@ -106,24 +112,21 @@ int FindBridge(int V){                             //Bridge finding code
     for(int i = 1; i <= V; i++)
         if(dfs_num[i] == 0) 
             bridge(i);
-    //for(int i = 1; i <= V; ++i)
-        //cerr << i << " :: " << dfs_num[i] << " :: " << dfs_low[i] << endl;
     return BuildNewTree(V);
 }
 
-int level[MAX], sparse[MAX][20];
-
+int level[MAX], sparse[MAX][25], parent[MAX];
 void dfs(int u, int par, int lvl) {                 // Tracks distance as well (From root 1 to all nodes)
     level[u] = lvl;                                 // parent[] and level[] is necessary
-    parent[u] = par;                                
-    for(int i = 0; i < (int)Tree[u].size(); ++i)
-        if(parent[u] != Tree[u][i])
-            dfs(Tree[u][i], u, lvl+1);
+    parent[u] = par;                             
+    for(auto v : Tree[u])
+        if(par != v)
+            dfs(v, u, lvl+1);
 }
 
 void LCAinit(int V) {
     memset(parent, -1, sizeof parent);
-    dfs(1, -1, 0);                               // DFS first
+    dfs(1, -1, 0);                                  // DFS first
     memset(sparse, -1, sizeof sparse);              // Main initialization of sparse table LCA starts here
     for(int u = 1; u <= V; ++u)                     // node u's 2^0 parent
         sparse[u][0] = parent[u];
@@ -133,88 +136,120 @@ void LCAinit(int V) {
                 sparse[u][p] = sparse[v][p-1];
 }
 
-pii LCA(int u, int v) {
+int LCA(int u, int v) {
     if(level[u] > level[v]) swap(u, v);         // v is deeper
-    int p = ceil(log2(level[v])), uu = u, vv = v;
+    int p = ceil(log2(level[v]));
     for(int i = p ; i >= 0; --i)                // Pull up v to same level as u
         if(level[v] - (1LL<<i) >= level[u])
             v = sparse[v][i];
-    if(u == v) {               // if u WAS the parent
-        //cerr << "puck " << vv << " " << uu << endl;
-        return {u, level[vv]+level[uu]-2*level[u]};
-    }
+    if(u == v) return u;                        // if u WAS the parent
     for(int i = p; i >= 0; --i)                                     // Pull up u and v together while LCA not found
         if(sparse[v][i] != -1 && sparse[u][i] != sparse[v][i])      // -1 check is if 2^i is out of calculated range
             u = sparse[u][i], v = sparse[v][i];
-    return {parent[u], level[uu]+level[vv]-2*(parent[u] != -1 ? level[parent[u]]:0)};
+    return parent[u];
+}
+
+int startTime[MAX], endTime[MAX], Time = 1;
+void dfsTiming(int u = 1, int par = -1) {
+    startTime[u] = Time;
+    for(auto v : Tree[u])
+        if(v != par) {
+            ++Time;
+            dfsTiming(v, u);
+        }
+    endTime[u] = Time;
+}
+
+int dist(int a, int b, int lca) {
+    return level[a]+level[b]-2*level[lca];
+}
+
+bool isChild(int child, int par) {                                  // returns true if a is child of b
+    return ((child == par) or ((startTime[par] <= startTime[child]) and (endTime[par] >= endTime[child])));
+}
+
+// a is upper node of path a-b and c is upper node of path c-d
+pii overlapPath(int a, int b, int c, int d) {      // returns number of common path of c-d and a-b
+    // path a-b and c-d overlaps iff b is a child of c or d or both of c&d
+    if(not isChild(b, c)) return {0, 0};
+    int u = LCA(b, d);              // u is the lowest point on which c-d and a-b overlaps
+    if(level[a]>level[c]) {             // a is below c 
+        if(isChild(u, a))           // also u is child of a
+            return {a, u};
+    }
+    else {                          // c is above a
+        if(isChild(u, c))
+            return {c, u};
+    }
+    return {0, 0};                  // no common path found
 }
 
 int Solve(int a, int b, int c, int d) {
-    a = dfs_low[a], b = dfs_low[b], c = dfs_low[c], d = dfs_low[d];
-    cerr << a << " " << b << " " << c << " " << d << endl;
+    a = Convert(a), b = Convert(b), c = Convert(c), d = Convert(d);
 
-    pii parCD = LCA(c, d);
-    pii parAB = LCA(a, b);
+    int u = LCA(a, b);
+    int v = LCA(c, d);
+    int ans = dist(c, d, v);
+    pii tt;
 
-    cerr << "parCD " << parCD.fi << " " << parCD.se << endl;
-    cerr << "parAB " << parAB.fi << " " << parAB.se << endl;
-
-    if(a == c or b == c) {
-        pii tt = LCA(parAB.fi, d);
-        cerr << "C " << tt.fi << " " << tt.se << " " << d << " " << parAB.fi << endl;
-        return min(parCD.se, LCA(parAB.fi, d).se);
-    }
-    if(a == d or b == d) {
-        cerr << "D" << endl;
-        return min(parCD.se, LCA(parAB.fi, c).se);
-    }
-
-    cerr << "Passed 1" << endl;
-
-    // check if adding edge a - b, if benificial, i.e check if the new node lies in the path c - d
-
-    if(parCD.fi == parAB.fi) {
-        cerr << "Parent match\n";
-        return min(parCD.se, (int)(parCD.se-parAB.se < 0 ? INF:parCD.se-parAB.se));
-    }
-
-    // if parent of ab is also parent of c
-    if(LCA(parAB.fi, c).fi == parAB.fi) {
-        cerr << "parent of ab is parent of c\n";
-        return min(parCD.se, LCA(parAB.fi, d).se);
-    }
-    // if parent of ab is also parent of d
-    if(LCA(parAB.fi, d).fi == parAB.fi) {
-        cerr << "parent of ab is parent of d ";
-        int tt = parCD.se-LCA(parAB.fi, c).se;
-        cerr << tt << endl;
-        return min(parCD.se, (int)(tt>0?tt:INF));
-    }
-    return parCD.se;
+    // connected paths are u->a & u->b
+    // query paths are v->c & v->d
+    // cases:
+    // u->a overlaps v->c
+    tt = overlapPath(v, c, u, a);
+    ans -= tt.fi == 0? 0:dist(tt.fi, tt.se, LCA(tt.fi, tt.se));
+    // u->a overlaps v->d
+    tt = overlapPath(v, c, u, b);
+    ans -= tt.fi == 0? 0:dist(tt.fi, tt.se, LCA(tt.fi, tt.se));
+    // u->b overlaps v->c
+    tt = overlapPath(v, d, u, a);
+    ans -= tt.fi == 0? 0:dist(tt.fi, tt.se, LCA(tt.fi, tt.se));
+    // u->b overlaps v->d
+    tt = overlapPath(v, d, u, b);
+    ans -= tt.fi == 0? 0:dist(tt.fi, tt.se, LCA(tt.fi, tt.se));
+    return ans;
 }
+
+/*
+9 11 0
+2 1
+6 2
+5 4
+7 2
+3 4
+5 3
+1 3
+6 7
+2 3
+1 8
+4 9
+*/
+
 
 
 int main() {
+    //fileRead("in");
+    //fileWrite("out");
+
     int V, E, Q, u, v, a, b, c, d;
     sf("%d%d%d", &V, &E, &Q);
 
-    for(int i = 0; i < E; ++i){
+    for(int i = 0; i < E; ++i) {
+        if(u > v) swap(u, v);
         sf("%d%d", &u, &v);
         G[u].pb(v);
         G[v].pb(u);
+
     }
 
     int treeV = FindBridge(V);
     LCAinit(treeV);
-
-    cerr << "Tree Nodes " << treeV << endl;
+    dfsTiming();
 
     while(Q--) {
         sf("%d%d%d%d", &a, &b, &c, &d);
-        if(dfs_low[a] == dfs_low[b])
-            pf("%d\n", LCA(c, d).se);
-        else
-            pf("%d\n", Solve(a, b, c, d));
+        int ret = Solve(a, b, c, d);
+        pf("%d\n", ret);
     }
     return 0;
 }
