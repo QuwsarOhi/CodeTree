@@ -1,6 +1,9 @@
+// LightOJ
+// 1314 - Names for Babies
+
 #include <bits/stdc++.h>
 using namespace std;
-#define MAX                 20000
+#define MAX                 10010
 #define EPS                 1e-9
 #define INF                 1e7
 #define MOD                 1000000007
@@ -52,74 +55,100 @@ int cmp(int *r,int a,int b,int l){
     return (r[a]==r[b]) && (r[a+l]==r[b+l]);
 }
 
-int wa[MAX],wb[MAX],wws[MAX],wv[MAX];
-int rank[MAX],height[MAX];
 
-void DA(char str[], int *sa, int n, int m = 256){           // str, suff, len, max_ascii_val
-    int i,j,p,*x=wa,*y=wb,*t;
-    for(i = 0; i < m; i++) wws[i]=0;
-    for(i = 0; i < n; i++) wws[x[i]=str[i]]++;
-    for(i = 1; i < m; i++) wws[i]+=wws[i-1];
-    for(i = n-1; i >= 0; i--) sa[--wws[x[i]]]=i;
-    for(j=1, p = 1; p < n; j *= 2, m = p) {
-        for(p = 0, i = n-j; i < n; i++) y[p++]=i;
-        for(i = 0; i < n; i++) if(sa[i]>=j) y[p++]=sa[i]-j;
-        for(i= 0; i < n; i++) wv[i]=x[y[i]];
-        for(i= 0; i < m; i++) wws[i]=0;
-        for(i= 0; i < n; i++) wws[wv[i]]++;
-        for(i= 1; i < m; i++) wws[i]+=wws[i-1];
-        for(i= n-1; i >= 0; i--) sa[--wws[wv[i]]]=y[i];
-        for(t = x, x = y, y = t, p = 1, x[sa[0]] = 0, i = 1; i < n; i++)
-            x[sa[i]]=cmp(y,sa[i-1],sa[i],j)?p-1:p++;
+//typedef int LL;
+//typedef long long int LL;
+//typedef __int64 LL;
+ 
+//Does not store intermediate order for lcp
+ 
+char str[MAX];
+int o[2][MAX], t[2][MAX];
+ 
+//rank[i] = the rank (in suffix array) of the ith suffix
+//sa[i]   = ith suffix in suffix array begins from where?
+//lcp[i]  = ith suffix in suffix array has lcp[i] lcp with (i - 1)th suffix in suffix array
+int idxToRank[MAX], rankToIdx[MAX];
+
+int A[MAX], B[MAX], C[MAX], D[MAX];
+
+void SuffixArray(char str[], int len, int maxAscii = 256) {
+    int x = 0;
+    /*t = new int*[2];
+    t[0] = new int[len+26];
+    t[1] = new int[len+26];*/
+
+    memset(A, 0, sizeof A);
+    memset(C, 0, sizeof C);
+    memset(D, 0, sizeof D);
+    memset(o, 0, sizeof o);
+    memset(t, 0, sizeof t);
+
+    for(int i = 0; i < len; ++i) A[(str[i]-'a')] = 1;
+    for(int i = 1; i < maxAscii; ++i) A[i] += A[i-1];
+    for(int i = 0; i < len; ++i) o[0][i] = A[(int)(str[i]-'a')];
+ 
+    for (int j = 0, jj = 1, k = 0; jj < len && k < len; ++j, jj <<= 1) {
+        memset(A, 0, sizeof A);
+        memset(B, 0, sizeof B);
+        for(int i = 0; i < len; ++i) {
+            ++A[ t[0][i] = o[x][i] ];
+            ++B[ t[1][i] = (i+jj<len) ? o[x][i+jj] : 0 ];
+        }
+        for(int i = 1; i <= len; ++i) {
+            A[i] += A[i-1];
+            B[i] += B[i-1];
+        }
+        for(int i = len-1; i >= 0; --i)
+            C[--B[t[1][i]]] = i;
+        for(int i = len-1; i >= 0; --i)
+            D[--A[t[0][C[i]]]] = C[i];
+        x^=1;
+        o[x][D[0]] = k = 1;
+        for(int i = 1; i < len; ++i)
+            o[x][D[i]]= (k += (t[0][D[i]] != t[0][D[i-1]] || t[1][D[i]] != t[1][D[i-1]]));
+    }
+    for(int i = 0; i < len; i++) {
+        idxToRank[i] = o[x][i]-1;
+        rankToIdx[o[x][i]-1] = i;
 }}
 
-void calheight(int *r,int *sa,int n) {
-    int i,j,k=0;
-    for(i=1;i<=n;i++) rank[sa[i]]=i;
-    for(i=0;i<n;height[rank[i++]]=k)
-        for(k?k--:0,j=sa[rank[i]-1];r[i+k]==r[j+k];k++);
-}
+int lcp[MAX];
+void Kasai(char str[], int len) {               // Matches Same charechters with i'th rank & (i+1)'th rank
+    int match = 0;
+    memset(lcp, 0, sizeof lcp);
 
-int sa[N],data[N],n;
-char str[N];
-int lcp[N];
+    for(int idx = 0; idx < len; ++idx) {
+        if(idxToRank[idx] == len-1) {
+            match = 0;
+            continue;
+        }
+        int nxtRankIdx = rankToIdx[idxToRank[idx]+1];
+        //cerr << idx << "(" << idxToRank[idx] << ") " << " -- " << nxtRankIdx << "(" << idxToRank[nxtRankIdx] << ")" << endl;
+        while(idx+match < len and nxtRankIdx+match < len and str[idx+match] == str[nxtRankIdx+match])
+            ++match;
+        lcp[nxtRankIdx] = match;                // the lcp match of i'th & (i+1)'th is stored in
+        match -= match>0;                       // the index of (i+1)'th suffix's index
+}}
+
+int totUniqueSubstr(int len, int lo, int hi) {                  // Returns total number of unique substring
+    int ans = 0;
+    for(int rank = 0; rank < len; ++rank) {
+        //cerr << "Rank " << rank << " ";
+        int idx = rankToIdx[rank];
+        int tmp = min(len-idx >= lo?len-idx:0, hi);
+        tmp -= lo-1;
  
-LL Deal (int p,int q)
-{
-    DA(data,sa,n+1,128);
-    calheight(data,sa,n);
+        if(lcp[idx] >= lo)
+            tmp -= lcp[idx] - (lo-1);
+        tmp = max(tmp, 0);
+        ans += tmp;
  
-    //here rank said in which position a suffix is situated
-    //in the sorted suffix list.
- 
-    //height gives the LCP of id && id-1
- 
-    //sa gives the sorted suffix indexes
- 
-    LL ans = 0;
- 
-    for (int i=1;i<=n;i++){
-        int st,ed;
-        int ltr = n-sa[i];
- 
-        if (ltr < p)    continue;
- 
-        st = height[i]+1;
-        ed = ltr;
- 
-        st = max(st,p);
-        ed = min(ed,q);
- 
-        //cout << height[i] << " & " << ltr << " so " << st << " to " << ed << endl;
- 
-        if (st <= ed)            ans += ed - st + 1;
+        //cerr << tmp << " " << lcp[idx] << endl;
+        //cerr << min(len-idx >= lo?len-idx:0, hi) << " : " << min(lcp[idx] >= lo?lcp[idx]:0, hi) << endl;
     }
- 
     return ans;
 }
- */
-char str[MAX];
-int SA[MAX];
 
 int main() {
     //fileRead("in");
@@ -131,23 +160,9 @@ int main() {
     for(int Case = 1; Case <= t; ++Case) {
         sf("%s%d%d", str, &lo, &hi);
         len = strlen(str);
+        SuffixArray(str, len, 128);
+        Kasai(str, len);
 
-       /* memset(idxToRank, 0, sizeof idxToRank);
-        memset(lcp, 0, sizeof lcp);
-        for(int i = 0; i < MAX; ++i)
-            suff[i].idx = 0, suff[i].rank = mp(0, 0);*/
-
-
-        DA(str, SA, len);
-        //Kasai(len, str);
-
-        //for(int i = 0; i < len; ++i)
-        //    cerr << i << " : " << suff[i].idx << " = " << str+suff[i].idx << " " << lcp[suff[i].idx] << endl;
-
-        for(int i = 0; i < len; ++i)
-            cerr << i << " :: " << SA[i] << endl;
-
-        //pf("Case %d: %d\n", Case, totUniqueSubstr(len, lo, hi));
+        pf("Case %d: %d\n", Case, totUniqueSubstr(len, lo, hi));
     }
-    return 0;
 }
