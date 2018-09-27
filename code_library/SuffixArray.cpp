@@ -77,6 +77,17 @@ int consecutiveMaxLCP(int idx, int len) {       // calculates max LCP of index i
     return ret;
 }
 
+int totUniqueSubstr(int len) {                  // Returns total number of unique substring
+    int ans = 0;
+    for(int rank = 0; rank < len; ++rank) {
+        int idx = suff[rank].idx;
+        ans += len-idx;
+        if(rank != 0)
+            ans -= lcp[idx];
+    }
+    return ans;
+}
+
 // Longest Common Prefix [Sparse Table after running Kasai]
 
 int table[MAX][14];

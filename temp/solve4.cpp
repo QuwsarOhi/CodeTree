@@ -1,48 +1,72 @@
+// LCP
+// https://pastebin.com/qzA189mu
+
 #include <bits/stdc++.h>
+#define MAX_N 1000
 using namespace std;
-#define MAX                 200000
-#define EPS                 1e-9
-#define INF                 1e7
-#define MOD                 1000000007
-#define pb                  push_back
-#define mp                  make_pair
-#define fi                  first
-#define se                  second
-#define pi                  acos(-1)
-#define sf                  scanf
-#define pf                  printf
-#define SIZE(a)             ((int)a.size())
-#define All(S)              S.begin(), S.end()
-#define Equal(a, b)         (abs(a-b) < EPS)
-#define Greater(a, b)       (a >= (b+EPS))
-#define GreaterEqual(a, b)  (a > (b-EPS))
-#define fr(i, a, b)         for(register int i = (a); i < (int)(b); i++)
-#define FastRead            ios_base::sync_with_stdio(false); cin.tie(NULL); cout.tie(NULL);
-#define fileRead(S)         freopen(S, "r", stdin);
-#define fileWrite(S)        freopen(S, "w", stdout);
-#define Unique(X)           X.erase(unique(X.begin(), X.end()), X.end())
- 
-#define isOn(S, j)          (S & (1 << j))
-#define setBit(S, j)        (S |= (1 << j))
-#define clearBit(S, j)      (S &= ~(1 << j))
-#define toggleBit(S, j)     (S ^= (1 << j))
-#define lowBit(S)           (S & (-S))
-#define setAll(S, n)        (S = (1 << n) - 1)
- 
-typedef unsigned long long ull;
-typedef long long ll;
-typedef map<int, int> mii;
-typedef map<ll, ll>mll;
-typedef map<string, int> msi;
-typedef vector<int> vi;
-typedef vector<long long>vl;
-typedef pair<int, int> pii;
-typedef pair<ll, ll> pll;
-typedef vector<pair<int, int> > vii;
-typedef vector<pair<ll, ll> >vll;
 
- 
-//int dx[] = {-1, 0, 1, 0}, dy[] = {0, 1, 0, -1};
-//int dx[] = {-1, -1, -1, 0, 0, 1, 1, 1}, dy[] = {-1, 0, 1, -1, 1, -1, 0, 1};
-//----------------------------------------------------------------------------------------------------------
 
+char str [MAX_N];
+int N, m, SA [MAX_N], LCP [MAX_N];
+int x [MAX_N], y [MAX_N], w [MAX_N], c [MAX_N];
+ 
+inline bool cmp (const int a, const int b, const int l) { return (y [a] == y [b] && y [a + l] == y [b + l]); }
+ 
+void SSort () {
+    for (int i = 0; i < m; ++i) w [i] = 0;
+    for (int i = 0; i < N; ++i) ++w [x [y [i]]];
+    for (int i = 0; i < m - 1; ++i) w [i + 1] += w [i];
+    for (int i = N - 1; i >= 0; --i) SA [--w [x [y [i]]]] = y [i];
+}
+
+void DDA () {
+    for (int i = 0; i < N; ++i) x [i] = str[i], y[i] = i;
+    SSort ();
+    for (int i, j = 1, p = 1; p < N; j <<= 1, m = p) {
+        for (p = 0, i = N - j; i < N; i++) y [p++] = i;
+        for (int k = 0; k < N; ++k) if (SA [k] >= j) y [p++] = SA [k] - j;
+        SSort ();
+        for (swap (x, y), p = 1, x [SA [0]] = 0, i = 1; i < N; ++i) x [SA [i]] = cmp (SA [i - 1], SA [i], j) ? p - 1 : p++;
+	}
+		
+	int offset = MAX_N/2, lim = -1;
+	memset(x, 0, sizeof x);
+	for(int i = 0; i < N; ++i) {
+		x[SA[i]+offset] = 1;
+		lim = max(SA[i]+offset, lim);
+	}
+
+	for(int i = 0, j = 0; i < lim; ++i)
+		if(x[SA[i]+offset] == 1)
+			x[SA[i]+offset] = j++;
+
+	for(int i = 0; i < N; ++i)
+		SA[i] = x[SA[i]+offset];
+}
+
+int rank[MAX_N], height[MAX_N];
+
+
+
+void kasaiLCP () {
+    for (int i = 0; i < N; i++) c [SA [i]] = i;
+    for (int i = 0, j, k = 0; i < N; LCP [c [i++]] = k)
+        if (c [i] > 0) for (k ? k-- : 0, j = SA [c [i] - 1]; str [i + k] == str [j + k]; k++);
+        else k = 0;
+}
+ 
+int main() {
+    m = 256;
+    cin >> str;
+    N = strlen (str);
+    DDA ();
+    //calheight(str, SA, N);
+
+    for(int i = 0; i < N; ++i) {
+    	cout << i << " " << SA[i] << " " << rank[i] << endl;
+    }
+
+    kasaiLCP ();
+
+    return 0;
+}
