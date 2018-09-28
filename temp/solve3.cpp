@@ -51,33 +51,11 @@ typedef vector<pair<ll, ll> >vll;
 // Suffix Array
 // Complexity : N log(N)
 
-int cmp(int *r,int a,int b,int l){
-    return (r[a]==r[b]) && (r[a+l]==r[b+l]);
-}
-
-
-//typedef int LL;
-//typedef long long int LL;
-//typedef __int64 LL;
- 
-//Does not store intermediate order for lcp
- 
-char str[MAX];
 int o[2][MAX], t[2][MAX];
- 
-//rank[i] = the rank (in suffix array) of the ith suffix
-//sa[i]   = ith suffix in suffix array begins from where?
-//lcp[i]  = ith suffix in suffix array has lcp[i] lcp with (i - 1)th suffix in suffix array
-int idxToRank[MAX], rankToIdx[MAX];
-
-int A[MAX], B[MAX], C[MAX], D[MAX];
+int idxToRank[MAX], rankToIdx[MAX], A[MAX], B[MAX], C[MAX], D[MAX];
 
 void SuffixArray(char str[], int len, int maxAscii = 256) {
     int x = 0;
-    /*t = new int*[2];
-    t[0] = new int[len+26];
-    t[1] = new int[len+26];*/
-
     memset(A, 0, sizeof A);
     memset(C, 0, sizeof C);
     memset(D, 0, sizeof D);
@@ -149,6 +127,8 @@ int totUniqueSubstr(int len, int lo, int hi) {                  // Returns total
     }
     return ans;
 }
+
+char str[MAX];
 
 int main() {
     //fileRead("in");
