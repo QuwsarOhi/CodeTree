@@ -1,9 +1,28 @@
-try {
-	Scanner sc = new Scanner(new File("in"));
-	PrintStream o = new PrintStream(new File("out"));
-	System.setOut(o);
-	//other input works should be done here!
-}
-catch(FileNotFoundException ex) {
-	System.out.println("file not found");
+import java.io.*;
+import java.util.*;
+
+
+public class test {
+	public static void main(String[] args) throws Exception {
+		// Saving current console output (STDOUT)
+		PrintStream stdout = System.out;
+
+		// Linking scanner and system out with apropiate files
+		Scanner sc = new Scanner(new File("in"));
+		System.setOut(new PrintStream(new File("out")));
+
+		// Output in file
+		while(sc.hasNext()) {
+			System.out.println(sc.next());
+		}
+
+		// Reset Current file pointer by re-initializing input file
+		sc = new Scanner(new File("in"));
+		// Linking System out to old console output object
+		System.setOut(stdout);
+		
+		while(sc.hasNext()) {
+			System.out.println(sc.next());
+		}
+	}
 }
