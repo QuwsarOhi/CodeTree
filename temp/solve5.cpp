@@ -1,6 +1,9 @@
+// UVa
+// 10605 - Mines For Diamonds
+
 #include <bits/stdc++.h>
 using namespace std;
-#define MAX                 100100
+#define MAX                 15
 #define EPS                 1e-9
 #define INF                 0x3f3f3f3f
 #define pb                  push_back
@@ -55,10 +58,12 @@ template<class T> using ordered_set = tree<T, null_type, less_equal<T>, rb_tree_
 //----------------------------------------------------------------------------------------------------------
 
 char g[MAX][MAX];
-int dist[MAX][MAX], dx[] = {-1, 0, 0, 1}, dy[] = {0, -1, 1, 0};
+int dist[MAX][MAX], dx[] = {-1, 0, 0, 1}, dy[] = {0, -1, 1, 0}, r, c;
+vii point;
+
 int BFS(int x, int y) {
 	queue<pii>q;
-	q.pb({x, y});
+	q.push({x, y});
 	
 	memset(dist, INF, sizeof dist);
 	dist[x][y] = 0;
@@ -70,7 +75,7 @@ int BFS(int x, int y) {
 			return dist[x][y];
 		for(int i = 0; i < 4; ++i) {
 			int xx = x+dx[i], yy = y+dy[i];
-			if(dist[xx][yy] != INF)
+			if(xx < 0 or yy < 0 or xx >= r or yy >= c or dist[xx][yy] != INF) 
 				continue;
 			dist[xx][yy] = dist[x][y]+1;
 			q.push({xx, yy});
@@ -83,7 +88,7 @@ int HamDist(int p, int q) {
 	return abs(point[p].fi-point[q].fi) + abs(point[p].se-point[q].se);
 }
 
-int dp[1<<12][12], seg[1<<12], startDist[12];
+int dp[1<<12][12], seg[1<<12], startDist[12], ans[1<<12];
 int maskDP() {
 	// dp[mask(the_position_which_i've_visited)][the_position_where_im_at_right_now]
 	memset(dp, INF, sizeof dp);
@@ -97,12 +102,13 @@ int maskDP() {
 			for(int to = 0; to < SIZE(point); ++to) {
 				if(not (mask & (1<<to))) continue;
 				if(from == to) continue;
-
-				int pastMask = mask ^ to;
-				dp[mask][to] = (dp[pastMask][from] + HamDist(from, to));
+				int pastMask = mask^(1<<to);
+				dp[mask][to] = min(dp[mask][to], dp[pastMask][from] + HamDist(from, to));
 			}
-			seg[mask] = min(seg[mask], dp[mask][from]);		// contains minimum of all states of mask
 		}
+
+		for(int i = 0; i < SIZE(point); ++i)
+			seg[mask] = min(seg[mask], dp[mask][i]);		// contains minimum of all states of mask
 	}
 
 	for(int mask1 = 1; mask1 < (1<<SIZE(point)); ++mask1) {		// slicing masked set to half and calculating the minimum
@@ -111,12 +117,15 @@ int maskDP() {
 				seg[mask1] = min(seg[mask1], seg[mask1 ^ mask2] + seg[mask2]);
 		}
 	}
-
 	return seg[(1<<(SIZE(point)))-1];
 }
 
 
 int main() {
+	//fileRead("in");
+	//fileWrite("out");
+
+	int t;
 	sf("%d", &t);
 	while(t--) {
 		sf("%d%d", &r, &c);
@@ -128,7 +137,12 @@ int main() {
 			}
 		for(int i = 0; i < SIZE(point); ++i)
 			startDist[i] = BFS(point[i].fi, point[i].se);
+
+		//for(int i = 0; i < SIZE(point); ++i)
+		//	cerr << point[i].fi << " " << point[i].se << " :: " << startDist[i] << endl;
+
 		pf("%d\n", maskDP());
+		point.clear();
 	}
 	return 0;
 }

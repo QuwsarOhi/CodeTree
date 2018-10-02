@@ -4,12 +4,12 @@
 using namespace std;
 #define MAX                 510000
 #define EPS                 1e-9
-#define INF                 1e7
+#define INF                 0x3f3f3f3f
 #define MOD                 1000000007
 #define pb                  push_back
 #define mp                  make_pair
-#define fi                  first
-#define se                  second
+#define xx                  first
+#define yy                  second
 #define pi                  acos(-1)
 #define pf                  printf
 #define sf(XX)              scanf("%lld", &XX)
