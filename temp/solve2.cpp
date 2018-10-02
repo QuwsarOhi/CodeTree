@@ -1,3 +1,6 @@
+// Hackerrank
+// https://www.hackerrank.com/contests/101hack26/challenges/sherlock-and-queries-on-the-graph
+
 #include <bits/stdc++.h>
 using namespace std;
 #define MAX                 200100

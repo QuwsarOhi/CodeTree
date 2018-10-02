@@ -401,7 +401,6 @@ struct MergeSortTree {
             tree[pos].push_back(val[l]);
             return;
         }
-    
         int mid = (l+r)>>1;
         init(pos<<1, l, mid, val);
         init(pos<<1|1, mid+1, r, val);

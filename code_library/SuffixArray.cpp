@@ -56,7 +56,7 @@ void SuffixArray(int len, char str[]) {             // First initial 1st and 2nd
 int o[2][MAX], t[2][MAX];
 int idxToRank[MAX], rankToIdx[MAX], A[MAX], B[MAX], C[MAX], D[MAX];
 
-void SuffixArray(char str[], int len, int maxAscii = 256) {
+void SuffixArray(char str[], int len, int maxAscii = 256) {     // use ~ as a distinguishing charechter
     int x = 0;
     memset(A, 0, sizeof A);
     memset(C, 0, sizeof C);
@@ -131,20 +131,22 @@ int totUniqueSubstr(int len) {                  // Returns total number of uniqu
 }
 
 // Longest Common Prefix [Sparse Table after running Kasai]
-
 int table[MAX][14];
 void buildSparseTableRMQ(int n) {                           //  O(n Log n)
     for(int i = 0; i < n; ++i)
         table[i][0] = i;
     for(int j = 1; (1 << j) <= n; ++j)                      // 2^j
         for(int i = 0; i + (1 << j) - 1< n; ++i) {          // For every node
-            if(lcp[suff[table[i][j-1]].idx] < lcp[suff[table[i + (1 << (j-1))][j-1]].idx])
+            if(lcp[rankToIdx[table[i][j-1]]] < lcp[rankToIdx[table[i + (1 << (j-1))][j-1]]])
                 table[i][j] = table[i][j-1];
             else
                 table[i][j] = table[i + (1 << (j-1))][j-1];
 }}
 
 int sparseQueryRMQ(int l, int r) {                          // Gives LCP of index l, r in O(1)
+    l = idxToRank[l], r = idxToRank[r];
+    if(l > r) swap(l, r);
+    ++l;
     int k = log2(r - l + 1);                                // log(2);
-    return min(lcp[suff[table[l][k]].idx], lcp[suff[table[r - (1 << k) + 1][k]].idx]);
+    return min(lcp[rankToIdx[table[l][k]]], lcp[rankToIdx[table[r - (1 << k) + 1][k]]]);
 }
