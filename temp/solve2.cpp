@@ -1,12 +1,11 @@
-// Hackerrank
-// https://www.hackerrank.com/contests/101hack26/challenges/sherlock-and-queries-on-the-graph
+// Stored in solved
+// add in template
 
 #include <bits/stdc++.h>
 using namespace std;
-#define MAX                 200100
+#define MAX                 15
 #define EPS                 1e-9
-#define INF                 1e7
-#define MOD                 1000000007
+#define INF                 0x3f3f3f3f
 #define pb                  push_back
 #define mp                  make_pair
 #define fi                  first
@@ -52,207 +51,98 @@ using namespace std;
 using namespace __gnu_pbds;
 template<class T> using ordered_set = tree<T, null_type, less_equal<T>, rb_tree_tag, tree_order_statistics_node_update>;
 
+
+//0x3f3f3f3f : 1061109567
 //int dx[] = {-1, 0, 1, 0}, dy[] = {0, 1, 0, -1};
 //int dx[] = {-1, -1, -1, 0, 0, 1, 1, 1}, dy[] = {-1, 0, 1, -1, 1, -1, 0, 1};
 //----------------------------------------------------------------------------------------------------------
 
-vector<int> G[MAX], Tree[MAX];
-vector<pair<int, int> >ans;
-int dfs_num[MAX], dfs_low[MAX], dfsCounter, timeToNode[MAX];
+char g[MAX][MAX];
+int dist[MAX][MAX], dx[] = {-1, 0, 0, 1}, dy[] = {0, -1, 1, 0}, r, c;
+vii point;
 
-void bridge(int u, int par = -1) {
-    // dfs_num[u] is the dfs counter of u node
-    // dfs_low[u] is the minimum dfs counter of u node (it is minimum if a backedge exists)
-    dfs_num[u] = dfs_low[u] = ++dfsCounter;
-    //timeToNode[dfs_num[u]] = u;
-    for(auto v : G[u]) {
-        if(v == par) continue;
-        if(dfs_num[v] == 0) {
-            bridge(v, u);
-            // if dfs_num[u] is lower than dfs_low[v], then there is no back edge on u node
-            // so u - v can be a bridge
-            dfs_low[u] = min(dfs_low[u], dfs_low[v]);
-            if(dfs_num[u] < dfs_low[v])
-                ans.push_back(make_pair(min(u, v), max(u, v)));
+int BFS(int x, int y) {
+    queue<pii>q;
+    q.push({x, y});
+    
+    memset(dist, INF, sizeof dist);
+    dist[x][y] = 0;
+
+    while(not q.empty()) {
+        x = q.front().fi, y = q.front().se;
+        q.pop();
+        if(g[x][y] == '#')
+            return dist[x][y];
+        for(int i = 0; i < 4; ++i) {
+            int xx = x+dx[i], yy = y+dy[i];
+            if(xx < 0 or yy < 0 or xx >= r or yy >= c or dist[xx][yy] != INF) 
+                continue;
+            dist[xx][yy] = dist[x][y]+1;
+            q.push({xx, yy});
         }
-        // if v is not parent of u then it is a back edge
-        // also dfs_num[v] must be less than dfs_low[u]
-        // so we update it
-        else if(v != par)
-            dfs_low[u] = min(dfs_low[u], dfs_num[v]);
     }
-    timeToNode[dfs_num[u]] = u;         // if BuildNewTree is used otherwise ignore it
+    return -1;
 }
 
-
-int conv[MAX] = {0}, ncnt;
-int Convert(int u) {
-    if(conv[dfs_low[u]] == 0)
-        conv[dfs_low[u]] = ++ncnt;
-    return conv[dfs_low[u]];
+int HamDist(int p, int q) {
+    return abs(point[p].fi-point[q].fi) + abs(point[p].se-point[q].se);
 }
 
-int findMin(int u) {
-    if(dfs_low[u] == dfs_num[u]) return dfs_low[u];
-    return dfs_low[u] = findMin(timeToNode[dfs_low[u]]);
-}
+int dp[1<<12][12], seg[1<<12], startDist[12], ans[1<<12];
+int maskDP() {
+    // dp[mask(the_position_which_i've_visited)][the_position_where_im_at_right_now]
+    memset(dp, INF, sizeof dp);
+    memset(seg, INF, sizeof seg);
+    for(int i = 0; i < SIZE(point); ++i)
+        dp[1<<i][i] = startDist[i];
 
-int BuildNewTree(int V) {
-    ncnt = 0;
-    for(int i = 1; i <= V; ++i) 
-        findMin(i);
-    for(auto it : ans) {
-        int u = Convert(it.first), v = Convert(it.second);
-        Tree[u].pb(v);
-        Tree[v].pb(u);
-    }
-    return ncnt;
-}
-
-int FindBridge(int V){                             //Bridge finding code
-    memset(dfs_num, 0, sizeof(dfs_num));
-    dfsCounter = 0;
-    for(int i = 1; i <= V; i++)
-        if(dfs_num[i] == 0) 
-            bridge(i);
-    return BuildNewTree(V);
-}
-
-int level[MAX], sparse[MAX][25], parent[MAX];
-void dfs(int u, int par, int lvl) {                 // Tracks distance as well (From root 1 to all nodes)
-    level[u] = lvl;                                 // parent[] and level[] is necessary
-    parent[u] = par;                             
-    for(auto v : Tree[u])
-        if(par != v)
-            dfs(v, u, lvl+1);
-}
-
-void LCAinit(int V) {
-    memset(parent, -1, sizeof parent);
-    dfs(1, -1, 0);                                  // DFS first
-    memset(sparse, -1, sizeof sparse);              // Main initialization of sparse table LCA starts here
-    for(int u = 1; u <= V; ++u)                     // node u's 2^0 parent
-        sparse[u][0] = parent[u];
-    for(int p = 1, v; (1LL<<p) <= V; ++p)
-        for(int u = 1; u <= V; ++u)
-            if((v = sparse[u][p-1]) != -1)      // node u's 2^x parent = parent of node v's 2^(x-1) [ where node v : (node u's 2^(x-1) parent) ]
-                sparse[u][p] = sparse[v][p-1];
-}
-
-int LCA(int u, int v) {
-    if(level[u] > level[v]) swap(u, v);         // v is deeper
-    int p = ceil(log2(level[v]));
-    for(int i = p ; i >= 0; --i)                // Pull up v to same level as u
-        if(level[v] - (1LL<<i) >= level[u])
-            v = sparse[v][i];
-    if(u == v) return u;                        // if u WAS the parent
-    for(int i = p; i >= 0; --i)                                     // Pull up u and v together while LCA not found
-        if(sparse[v][i] != -1 && sparse[u][i] != sparse[v][i])      // -1 check is if 2^i is out of calculated range
-            u = sparse[u][i], v = sparse[v][i];
-    return parent[u];
-}
-
-int startTime[MAX], endTime[MAX], Time = 1;
-void dfsTiming(int u = 1, int par = -1) {
-    startTime[u] = Time;
-    for(auto v : Tree[u])
-        if(v != par) {
-            ++Time;
-            dfsTiming(v, u);
+    for(int mask = 1; mask < (1<< SIZE(point)); ++mask) {
+        for(int from = 0; from < SIZE(point); ++from) {
+            if(not (mask & (1<<from))) continue;
+            for(int to = 0; to < SIZE(point); ++to) {
+                if(not (mask & (1<<to))) continue;
+                if(from == to) continue;
+                int pastMask = mask^(1<<to);
+                dp[mask][to] = min(dp[mask][to], dp[pastMask][from] + HamDist(from, to));
+            }
         }
-    endTime[u] = Time;
-}
 
-int dist(int a, int b, int lca) {
-    return level[a]+level[b]-2*level[lca];
-}
-
-bool isChild(int child, int par) {                                  // returns true if a is child of b
-    return ((child == par) or ((startTime[par] <= startTime[child]) and (endTime[par] >= endTime[child])));
-}
-
-// a is upper node of path a-b and c is upper node of path c-d
-pii overlapPath(int a, int b, int c, int d) {      // returns number of common path of c-d and a-b
-    // path a-b and c-d overlaps iff b is a child of c or d or both of c&d
-    if(not isChild(b, c)) return {0, 0};
-    int u = LCA(b, d);              // u is the lowest point on which c-d and a-b overlaps
-    if(level[a]>level[c]) {             // a is below c 
-        if(isChild(u, a))           // also u is child of a
-            return {a, u};
+        for(int i = 0; i < SIZE(point); ++i)
+            seg[mask] = min(seg[mask], dp[mask][i]);        // contains minimum of all states of mask
     }
-    else {                          // c is above a
-        if(isChild(u, c))
-            return {c, u};
+
+    for(int mask1 = 1; mask1 < (1<<SIZE(point)); ++mask1) {     // slicing masked set to half and calculating the minimum
+        for(int mask2 = 1; mask2 < mask1; ++mask2) {
+            if(mask1 & mask2 == mask2)                          // mask2 is subset of mask1
+                seg[mask1] = min(seg[mask1], seg[mask1 ^ mask2] + seg[mask2]);
+        }
     }
-    return {0, 0};                  // no common path found
+    return seg[(1<<(SIZE(point)))-1];
 }
-
-int Solve(int a, int b, int c, int d) {
-    a = Convert(a), b = Convert(b), c = Convert(c), d = Convert(d);
-
-    int u = LCA(a, b);
-    int v = LCA(c, d);
-    int ans = dist(c, d, v);
-    pii tt;
-
-    // connected paths are u->a & u->b
-    // query paths are v->c & v->d
-    // cases:
-    // u->a overlaps v->c
-    tt = overlapPath(v, c, u, a);
-    ans -= tt.fi == 0? 0:dist(tt.fi, tt.se, LCA(tt.fi, tt.se));
-    // u->a overlaps v->d
-    tt = overlapPath(v, c, u, b);
-    ans -= tt.fi == 0? 0:dist(tt.fi, tt.se, LCA(tt.fi, tt.se));
-    // u->b overlaps v->c
-    tt = overlapPath(v, d, u, a);
-    ans -= tt.fi == 0? 0:dist(tt.fi, tt.se, LCA(tt.fi, tt.se));
-    // u->b overlaps v->d
-    tt = overlapPath(v, d, u, b);
-    ans -= tt.fi == 0? 0:dist(tt.fi, tt.se, LCA(tt.fi, tt.se));
-    return ans;
-}
-
-/*
-9 11 0
-2 1
-6 2
-5 4
-7 2
-3 4
-5 3
-1 3
-6 7
-2 3
-1 8
-4 9
-*/
-
 
 
 int main() {
     //fileRead("in");
     //fileWrite("out");
 
-    int V, E, Q, u, v, a, b, c, d;
-    sf("%d%d%d", &V, &E, &Q);
+    int t;
+    sf("%d", &t);
+    while(t--) {
+        sf("%d%d", &r, &c);
+        for(int i = 0; i < r; ++i)
+            for(int j = 0; j < c; ++j) {
+                sf(" %c", &g[i][j]);
+                if(g[i][j] == '*')
+                    point.pb({i, j});
+            }
+        for(int i = 0; i < SIZE(point); ++i)
+            startDist[i] = BFS(point[i].fi, point[i].se);
 
-    for(int i = 0; i < E; ++i) {
-        if(u > v) swap(u, v);
-        sf("%d%d", &u, &v);
-        G[u].pb(v);
-        G[v].pb(u);
+        //for(int i = 0; i < SIZE(point); ++i)
+        //  cerr << point[i].fi << " " << point[i].se << " :: " << startDist[i] << endl;
 
-    }
-
-    int treeV = FindBridge(V);
-    LCAinit(treeV);
-    dfsTiming();
-
-    while(Q--) {
-        sf("%d%d%d%d", &a, &b, &c, &d);
-        int ret = Solve(a, b, c, d);
-        pf("%d\n", ret);
+        pf("%d\n", maskDP());
+        point.clear();
     }
     return 0;
 }
