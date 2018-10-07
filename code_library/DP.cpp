@@ -170,9 +170,6 @@ ll digitSum(int idx, int sum, ll value, bool tight, int mod, vector<int>&MaxDigi
 // Tight is initially on
 // pairs are number of paired bits, prevOn shows if previous bit was on (it is for this problem)
 
-#define isOn(x, i) (x & (1LL<<i))
-#define On(x, i) (x | (1LL<<i))
-#define Off(x, i) (x & ~(1LL<<i))
 int N, lastBit;
 long long dp[33][33][2][2];
 ll bitDP(int pos, int mask, int pairs, bool prevOn, bool tight) {
@@ -224,7 +221,6 @@ ll CountNumberofWays(int r, int c, int n) {
 // dist[u][v] = distance from u to v
 // dp[u][bitmask] = dp[node][set_of_taken_nodes]  (saves the best(min/max) path)
 // call with tsp(starting node, 1)
-
 int n, x[11], y[11], dist[11][11], memo[11][1 << 11], dp[11][1 << 11];
 int TSP(int u, int bitmask) {			    // startin node and bitmask of taken nodes
     if(bitmask == ((1 << (n)) - 1))	        // when it steps in this node, if all nodes are visited
@@ -237,4 +233,26 @@ int TSP(int u, int bitmask) {			    // startin node and bitmask of taken nodes
         if(u != v && !(bitmask & (1 << v)))		// if this node is not the same node, and if this node is not used yet(in bitmask)
             ans = min(ans, dist[u][v] + tsp(v, bitmask | (1 << v)));	// min(past_val, dist u->v + dist(v->all other untaken nodes))
     return dp[u][bitmask] = ans;				// save in dp and return
+}
+
+// [[SIMPLE CYCLE]] CF :: http://codeforces.com/contest/11/problem/D
+// states : [contains nodes which can be visited from the first ON node][currently the node which I'm at]
+// contains how many times I can come to each state
+ull SimpleCycle() {
+    for(int i = 0; i < V; ++i) dp[1<<i][i] = 1;             // Initial state (V = vertices)
+    ull ans = 0, first;
+    for(int mask = 1; mask < (1<<V); ++mask) {
+        for(first = 0; first < V and not isOn(mask, first); ++first);       // Finding first node
+        for(int from = first; from < V; ++from) {           // Finding all possible answers where
+            if(not isOn(mask, from)) continue;              // we start from 'first' and come to 
+            for(int to = first+1; to < V; ++to) {           // 'to' node visiting all other ON nodes
+                if(not isOn(mask, to) or not G[from][to] or from == to) continue;
+                dp[mask][to] += dp[mask^(1<<to)][from];
+        }}
+        // Double Counting occurs : 1-2-3-4-1 and 1-3-2-4-1 is considered same (As they are rings)
+        for(int from = first+1; from < V; ++from)           // If we can go to the first node, this means
+            if(isOn(mask, from) and G[from][first] and __builtin_popcount(mask) >= 3)   // we can traverse
+                ans += dp[mask][from];                      //  all the nodes and go to the starting node
+    }
+    return ans/2;
 }
