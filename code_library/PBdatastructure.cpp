@@ -9,7 +9,7 @@
 #include <ext/pb_ds/assoc_container.hpp>    // rb_tree_tag
 #include <ext/pb_ds/tree_policy.hpp>        // tree_order_statistics_node_update
 #define at(X)          find_by_order(X)
-#define lessThan(x)    order_of_key(X)
+#define lessThan(X)    order_of_key(X)
 using namespace std;
 using namespace __gnu_pbds;
 template<class T> using ordered_set = tree<T, null_type, less_equal<T>, rb_tree_tag, tree_order_statistics_node_update>;

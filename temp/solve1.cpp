@@ -109,7 +109,7 @@ void Kasai(char str[], int len) {               // Matches Same charechters with
             continue;
         }
         int nxtRankIdx = rankToIdx[idxToRank[idx]+1];
-        while(idx+match < len and nxtRankIdx+match < len and str[idx+match] == str[nxtRankIdx+match])
+        while(idx+match < len and nxtRankIdx+match < len and str[idx+match] == str[nxtRankIdx+match] and str[idx+match] != '~')
             ++match;
         lcp[nxtRankIdx] = match;                // the lcp match of i'th & (i+1)'th is stored in
         match -= match>0;                       // the index of (i+1)'th suffix's index
@@ -218,8 +218,11 @@ int main() {
 
     cerr << str << endl;
 
+    //for(int i = 0; i < len; ++i)
+    //    cerr << i << " : " << rankToIdx[i] << " = " << str+rankToIdx[i] << " :: " << lcp[rankToIdx[i]] << endl;
+
     for(int i = 0; i < len; ++i)
-        cerr << i << " : " << rankToIdx[i] << " = " << str+rankToIdx[i] << " :: " << lcp[rankToIdx[i]] << endl;
+        pf("%-2d : %-2d : %-2d = %s\n", i, rankToIdx[i], lcp[rankToIdx[i]], str+rankToIdx[i]);
 
     /*for(int i = 0; i < n; ++i)
         for(int j = i+1; j < n; ++j)
@@ -232,7 +235,7 @@ int main() {
     for(int i = 1; i <= n; ++i)
         cout << arr[i] << " ";*/
 
-    for(int rnk = 0; rnk < len; ++rnk)
+    /*for(int rnk = 0; rnk < len; ++rnk)
         if(lcp[rankToIdx[rnk]] == 0)
             ZEROS.insert(rnk);
 
@@ -247,9 +250,9 @@ int main() {
     }
 
     for(int i = 0; i < len; ++i)
-        rankLcp[i] = lcp[rankToIdx[i]];
+        rankLcp[i] = lcp[rankToIdx[i]];*/
 
-    ST.init(len, rankToIdx, rankLcp);
+    /*ST.init(len, rankToIdx, rankLcp);
 
     cerr << "Rank to IDX" << " :: ";
     for(int i = 0; i < len; ++i)
@@ -271,7 +274,7 @@ int main() {
             cerr << l << " and " << r << " k " << k << endl;
             pf("%lld\n", ST.query(rr.fi, rr.se, l, r, k)+1);
         }
-    }
+    }*/
 
     return 0;
 }
