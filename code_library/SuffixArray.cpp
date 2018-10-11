@@ -131,8 +131,12 @@ int totUniqueSubstr(int len) {                  // Returns total number of uniqu
 }
 
 // Longest Common Prefix [Sparse Table after running Kasai]
-int table[MAX][14];
+int table[MAX][14], lg[MAX];
 void buildSparseTableRMQ(int n) {                           //  O(n Log n)
+    for(ll i = 0; 1LL << i < n; i++)
+        lg[1LL << i] = i;
+    for(ll i = 1; i < n; i++)
+        lg[i] = max(lg[i], lg[i - 1]);
     for(int i = 0; i < n; ++i)
         table[i][0] = i;
     for(int j = 1; (1 << j) <= n; ++j)                      // 2^j
@@ -147,6 +151,37 @@ int sparseQueryRMQ(int l, int r) {                          // Gives LCP of inde
     l = idxToRank[l], r = idxToRank[r];
     if(l > r) swap(l, r);
     ++l;
-    int k = log2(r - l + 1);                                // log(2);
+    int k = lg[r - l + 1];                                // log(2);
     return min(lcp[rankToIdx[table[l][k]]], lcp[rankToIdx[table[r - (1 << k) + 1][k]]]);
+}
+
+
+// Gives Upper (lower index) for which the Range minimum LCP is tlen
+// Call : 0, PosRank, strlen, totstring_len
+int rankUP(int lo, int hi, int tlen, int len) {
+    int mid, ret = hi, pos = hi;
+    --hi;
+    while(lo <= hi) {
+        mid = (lo+hi)>>1;
+        if(sparseQueryRMQ(mid, pos) >= tlen)
+            hi = mid-1, ret = mid;
+        else
+            lo = mid+1;
+    }
+    return ret;
+}
+
+// Gives Lower (higher index) for which the Range minimum LCP is tlen
+// Call : PosRank, len-1 strlen, totstring_len
+int rankDown(int lo, int hi, int tlen, int len) {
+    int mid, ret = lo, pos = lo;
+    ++lo;
+    while(lo <= hi) {
+        mid = (lo+hi)>>1;
+        if(sparseQueryRMQ(mid, pos) >= tlen)
+            lo = mid+1, ret = mid;
+        else
+            hi = mid-1;
+    }
+    return ret;
 }

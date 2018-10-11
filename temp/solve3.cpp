@@ -73,7 +73,7 @@ ull SimpleCycle() {
             if(isOn(mask, from) and G[from][first] and __builtin_popcount(mask) >= 3)   // we can traverse
                 ans += dp[mask][from];                      //  all the nodes and go to the starting node
     }
-    return ans/2;
+    return ans/2;                   // Every cycle is counted twice
 }
 
 int main() {
