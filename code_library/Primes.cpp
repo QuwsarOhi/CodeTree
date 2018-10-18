@@ -172,7 +172,7 @@ vector<int> factorize(long long x) {    // This function only iterates over the 
 // This function is called for all k trials. It returns false if n is composite and returns false if n is probably prime.
 // d is an odd number such that  d*(2^r) = n-1 for some r >= 1
 
-bool miillerTest(int d, int n) {        
+bool millerTest(int d, int n) {        
     int a = 2 + rand() % (n - 4);       // Pick a random number in [2..n-2]. 
     int x = Pow(a, d, n);               // Compute a^d % n
     if (x == 1  || x == n-1)

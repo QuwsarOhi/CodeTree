@@ -1,12 +1,11 @@
 // Math Template
 
 #define for0(i,a) for(int i = 0; i < a; i++)
-
 namespace Factor {
-	const int N=2010000;
-	ll C,fac[10010],n,mut,a[1001000];
+	const int N=20010000;
+	ll C,fac[MAX],n,mut,a[MAX];
 	int T,cnt,i,l,prime[N],p[N],psize,_cnt;
-	ll _e[100],_pr[100];
+	ll _e[10000],_pr[10000];
 	vector<ll> d;
 	inline ll mul(ll a,ll b,ll p) {
 		if (p<=1000000000) return a*b%p;
@@ -147,4 +146,4 @@ namespace Factor {
 		for0(i,D.size()) if (powl(a,(p-1)/D[i].first,p)==1) return 0;
 		return 1;
 	}
-};
+}

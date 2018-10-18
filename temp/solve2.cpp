@@ -1,11 +1,13 @@
-// Stored in solved
-// add in template
+// LightOJ
+// 1070 - Algebraic Problem
+// Matrix Expo
 
 #include <bits/stdc++.h>
 using namespace std;
 #define MAX                 15
 #define EPS                 1e-9
 #define INF                 0x3f3f3f3f
+#define MOD					1000000007
 #define pb                  push_back
 #define mp                  make_pair
 #define fi                  first
@@ -43,106 +45,73 @@ typedef pair<ll, ll> pll;
 typedef vector<pair<int, int> > vii;
 typedef vector<pair<ll, ll> >vll;
 
-#include <ext/pb_ds/assoc_container.hpp>    // rb_tree_tag
-#include <ext/pb_ds/tree_policy.hpp>        // tree_order_statistics_node_update
-#define at(X)          find_by_order(X)
-#define lessThan(X)    order_of_key(X)
-using namespace std;
-using namespace __gnu_pbds;
-template<class T> using ordered_set = tree<T, null_type, less_equal<T>, rb_tree_tag, tree_order_statistics_node_update>;
-
-
-//0x3f3f3f3f : 1061109567
 //int dx[] = {-1, 0, 1, 0}, dy[] = {0, 1, 0, -1};
 //int dx[] = {-1, -1, -1, 0, 0, 1, 1, 1}, dy[] = {-1, 0, 1, -1, 1, -1, 0, 1};
 //----------------------------------------------------------------------------------------------------------
 
-char g[MAX][MAX];
-int dist[MAX][MAX], dx[] = {-1, 0, 0, 1}, dy[] = {0, -1, 1, 0}, r, c;
-vii point;
+/*
+How the Eqn works...
+a^2 + b^2 = (a+b)^2 - 2ab
+a^3 + b^3 = (a^2+b^2)*(a+b) - ab*(a+b)
+.
+.
+a^n + b^n = (a^(n-1)+b^(n-1))*(a+b) - ab*(a^(n-2)+b^(n-2))
+*/
 
-int BFS(int x, int y) {
-    queue<pii>q;
-    q.push({x, y});
-    
-    memset(dist, INF, sizeof dist);
-    dist[x][y] = 0;
 
-    while(not q.empty()) {
-        x = q.front().fi, y = q.front().se;
-        q.pop();
-        if(g[x][y] == '#')
-            return dist[x][y];
-        for(int i = 0; i < 4; ++i) {
-            int xx = x+dx[i], yy = y+dy[i];
-            if(xx < 0 or yy < 0 or xx >= r or yy >= c or dist[xx][yy] != INF) 
-                continue;
-            dist[xx][yy] = dist[x][y]+1;
-            q.push({xx, yy});
-        }
-    }
-    return -1;
+struct matrix {
+	ull mat[3][3];
+	matrix() {memset(mat, 0, sizeof mat);}
+};
+
+matrix mul(matrix a, matrix b, int p, int q, int r) {
+	matrix ans;
+	for(int i = 0; i < p; ++i)
+		for(int j = 0; j < r; ++j)
+			for(int k = 0; k < q; ++k)
+				ans.mat[i][j] += a.mat[i][k] * b.mat[k][j];
+	return ans;
 }
 
-int HamDist(int p, int q) {
-    return abs(point[p].fi-point[q].fi) + abs(point[p].se-point[q].se);
+matrix matPow(matrix base, ll p, int s) {
+	if(p == 1) return base;
+	if(p&1) return mul(base, matPow(base, p-1, s), s, s, s);
+	matrix tmp = matPow(base, p/2, s);
+	return mul(tmp, tmp, s, s, s); 
 }
-
-int dp[1<<12][12], seg[1<<12], startDist[12], ans[1<<12];
-int maskDP() {
-    // dp[mask(the_position_which_i've_visited)][the_position_where_im_at_right_now]
-    memset(dp, INF, sizeof dp);
-    memset(seg, INF, sizeof seg);
-    for(int i = 0; i < SIZE(point); ++i)
-        dp[1<<i][i] = startDist[i];
-
-    for(int mask = 1; mask < (1<< SIZE(point)); ++mask) {
-        for(int from = 0; from < SIZE(point); ++from) {
-            if(not (mask & (1<<from))) continue;
-            for(int to = 0; to < SIZE(point); ++to) {
-                if(not (mask & (1<<to))) continue;
-                if(from == to) continue;
-                int pastMask = mask^(1<<to);
-                dp[mask][to] = min(dp[mask][to], dp[pastMask][from] + HamDist(from, to));
-            }
-        }
-
-        for(int i = 0; i < SIZE(point); ++i)
-            seg[mask] = min(seg[mask], dp[mask][i]);        // contains minimum of all states of mask
-    }
-
-    for(int mask1 = 1; mask1 < (1<<SIZE(point)); ++mask1) {     // slicing masked set to half and calculating the minimum
-        for(int mask2 = 1; mask2 < mask1; ++mask2) {
-            if(mask1 & mask2 == mask2)                          // mask2 is subset of mask1
-                seg[mask1] = min(seg[mask1], seg[mask1 ^ mask2] + seg[mask2]);
-        }
-    }
-    return seg[(1<<(SIZE(point)))-1];
-}
-
 
 int main() {
-    //fileRead("in");
-    //fileWrite("out");
+	int t;
+	ull AplusB, AmulB, n;
+	scanf("%d", &t);
 
-    int t;
-    sf("%d", &t);
-    while(t--) {
-        sf("%d%d", &r, &c);
-        for(int i = 0; i < r; ++i)
-            for(int j = 0; j < c; ++j) {
-                sf(" %c", &g[i][j]);
-                if(g[i][j] == '*')
-                    point.pb({i, j});
-            }
-        for(int i = 0; i < SIZE(point); ++i)
-            startDist[i] = BFS(point[i].fi, point[i].se);
+	for(int Case = 1; Case <= t; ++Case) {
+		scanf("%llu%llu%llu", &AplusB, &AmulB, &n);
+		printf("Case %d: ", Case);
+		ull AsqBsq = ((AplusB*AplusB) - (2ULL*AmulB));
 
-        //for(int i = 0; i < SIZE(point); ++i)
-        //  cerr << point[i].fi << " " << point[i].se << " :: " << startDist[i] << endl;
+		if(n <= 2) {
+			if(n == 0)
+				printf("2\n");
+			else if(n == 1)
+				printf("%llu\n", AplusB);
+			else
+				printf("%llu\n", AsqBsq);
+			continue;
+		}
 
-        pf("%d\n", maskDP());
-        point.clear();
-    }
-    return 0;
+		matrix base;
+		base.mat[0][0] = AplusB, base.mat[0][1] = -AmulB;
+		base.mat[1][0] = 1;
+
+		base = matPow(base, n-2, 2);
+
+		/*cerr << AsqBsq << endl;
+		for(int i = 0; i < 2; ++i, cerr << endl)
+			for(int j = 0; j < 2; ++j)
+				cerr << base.mat[i][j] << " ";*/
+
+		printf("%llu\n", base.mat[0][0]*AsqBsq+ base.mat[0][1]*AplusB);
+	}
+	return 0;
 }

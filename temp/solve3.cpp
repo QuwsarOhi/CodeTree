@@ -1,28 +1,30 @@
+// LightOJ
+// 1244 - Tiles
+// Matrix Expo
+
 #include <bits/stdc++.h>
 using namespace std;
-#define MAX                 20
+#define MAX                 15
 #define EPS                 1e-9
 #define INF                 0x3f3f3f3f
-#define MOD                 1000000007
+#define MOD                 10007
 #define pb                  push_back
 #define mp                  make_pair
-#define xx                  first
-#define yy                  second
+#define fi                  first
+#define se                  second
 #define pi                  acos(-1)
+#define sf                  scanf
 #define pf                  printf
-#define sf(XX)              scanf("%lld", &XX)
-#define SIZE(a)             ((ll)a.size())
-#define ALL(S)              S.begin(), S.end()              
+#define SIZE(a)             ((int)a.size())
+#define All(S)              S.begin(), S.end()
 #define Equal(a, b)         (abs(a-b) < EPS)
 #define Greater(a, b)       (a >= (b+EPS))
 #define GreaterEqual(a, b)  (a > (b-EPS))
-#define FOR(i, a, b)        for(register int i = (a); i < (int)(b); ++i)
-#define FORR(i, a, b)       for(register int i = (a); i > (int)(b); --i)
-#define FastIO              ios_base::sync_with_stdio(false); cin.tie(NULL);
-#define FileRead(S)         freopen(S, "r", stdin);
-#define FileWrite(S)        freopen(S, "w", stdout);
+#define fr(i, a, b)         for(register int i = (a); i < (int)(b); i++)
+#define FastRead            ios_base::sync_with_stdio(false); cin.tie(NULL); cout.tie(NULL);
+#define fileRead(S)         freopen(S, "r", stdin);
+#define fileWrite(S)        freopen(S, "w", stdout);
 #define Unique(X)           X.erase(unique(X.begin(), X.end()), X.end())
-#define STOLL(X)            stoll(X, 0, 0)
 
 #define isOn(S, j)          (S & (1 << j))
 #define setBit(S, j)        (S |= (1 << j))
@@ -37,7 +39,7 @@ typedef map<int, int> mii;
 typedef map<ll, ll>mll;
 typedef map<string, int> msi;
 typedef vector<int> vi;
-typedef vector<ll>vl;
+typedef vector<long long>vl;
 typedef pair<int, int> pii;
 typedef pair<ll, ll> pll;
 typedef vector<pair<int, int> > vii;
@@ -47,65 +49,56 @@ typedef vector<pair<ll, ll> >vll;
 //int dx[] = {-1, -1, -1, 0, 0, 1, 1, 1}, dy[] = {-1, 0, 1, -1, 1, -1, 0, 1};
 //----------------------------------------------------------------------------------------------------------
 
-ull G[MAX][MAX], dp[1<<MAX][MAX], V, E;
+/* Recursive Function: F(n) = 2*F(n-1) + F(n-3) */
 
-string bit(int x) {
-    bitset<4>b(x);
-    return b.to_string();
+struct matrix {
+    ull mat[3][3];
+    matrix() {memset(mat, 0, sizeof mat);}
+};
+
+matrix mul(matrix a, matrix b, int p, int q, int r) {
+    matrix ans;
+    for(int i = 0; i < p; ++i)
+        for(int j = 0; j < r; ++j)
+            for(int k = 0; k < q; ++k)
+                ans.mat[i][j] = (ans.mat[i][j] + (a.mat[i][k] * b.mat[k][j])%MOD)%MOD;
+    return ans;
 }
 
-// CF :: http://codeforces.com/contest/11/problem/D
-// states : [contains nodes which can be visited from the first ON node][currently the node which I'm at]
-// contains how many times I can come to each state
-ull SimpleCycle() {
-    for(int i = 0; i < V; ++i) dp[1<<i][i] = 1;             // Initial state (V = vertices)
-    ull ans = 0, first;
-    for(int mask = 1; mask < (1<<V); ++mask) {
-        for(first = 0; first < V and not isOn(mask, first); ++first);       // Finding first node
-        for(int from = first; from < V; ++from) {           // Finding all possible answers where
-            if(not isOn(mask, from)) continue;              // we start from 'first' and come to 
-            for(int to = first+1; to < V; ++to) {           // 'to' node visiting all other ON nodes
-                if(not isOn(mask, to) or not G[from][to] or from == to) continue;
-                dp[mask][to] += dp[mask^(1<<to)][from];
-        }}
-        // Double Counting occurs : 1-2-3-4-1 and 1-3-2-4-1 is considered same (As they are rings)
-        for(int from = first+1; from < V; ++from)           // If we can go to the first node, this means
-            if(isOn(mask, from) and G[from][first] and __builtin_popcount(mask) >= 3)   // we can traverse
-                ans += dp[mask][from];                      //  all the nodes and go to the starting node
-    }
-    return ans/2;                   // Every cycle is counted twice
+matrix matPow(matrix base, ll p, int s) {
+    if(p == 1) return base;
+    if(p&1) return mul(base, matPow(base, p-1, s), s, s, s);
+    matrix tmp = matPow(base, p/2, s);
+    return mul(tmp, tmp, s, s, s); 
 }
 
 int main() {
-    int u, v;
-    cin >> V >> E;
-    for(int i = 0; i < E; ++i) {
-        cin >> u >> v;
-        --u, -- v;
-        G[u][v] = G[v][u] = 1;
-    }
+    int t;
+    ll n;
+    scanf("%d", &t);
 
-    cout << SimpleCycle() << endl;
+    for(int Case = 1; Case <= t; ++Case) {
+        scanf("%lld", &n);
+        printf("Case %d: ", Case);
+
+        if(n <= 3) {
+            if(n == 3)
+                printf("5\n");
+            else if(n == 2)
+                printf("2\n");
+            else
+                printf("1\n");
+            continue;
+        }
+
+        matrix base;
+        base.mat[0][0] = 2, base.mat[0][2] = 1;
+        base.mat[1][0] = 1;
+        base.mat[2][1] = 1;
+
+        base = matPow(base, n-3, 3);
+
+        printf("%llu\n", ((base.mat[0][0]*5)%MOD+ (base.mat[0][1]*2)%MOD + base.mat[0][2])%MOD);
+    }
     return 0;
 }
-
-/*
-
-3 3
-1 2
-2 3
-3 1
-
-5 10
-1 2
-1 3
-1 4
-1 5
-2 3
-2 4
-2 5
-3 4
-3 5
-4 5
-
-*/

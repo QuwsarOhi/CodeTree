@@ -56,7 +56,7 @@ void SuffixArray(int len, char str[]) {             // First initial 1st and 2nd
 int o[2][MAX], t[2][MAX];
 int idxToRank[MAX], rankToIdx[MAX], A[MAX], B[MAX], C[MAX], D[MAX];
 
-void SuffixArray(char str[], int len, int maxAscii = 256) {     // use ~ as a distinguishing charechter
+void SuffixArray(char str[], int len, int maxAscii = 256) {     // use ~ as a distinguishing charachter
     int x = 0;
     memset(A, 0, sizeof A);
     memset(C, 0, sizeof C);
@@ -147,8 +147,8 @@ void buildSparseTableRMQ(int n) {                           //  O(n Log n)
                 table[i][j] = table[i + (1 << (j-1))][j-1];
 }}
 
-int sparseQueryRMQ(int l, int r) {                          // Gives LCP of index l, r in O(1)
-    l = idxToRank[l], r = idxToRank[r];
+int sparseQueryRMQ(int l, int r) {          // Gives LCP of index l, r in O(1)
+    l = idxToRank[l], r = idxToRank[r];     // Remove this line if rankUp or rankDown is used
     if(l > r) swap(l, r);
     ++l;
     int k = lg[r - l + 1];                                // log(2);
