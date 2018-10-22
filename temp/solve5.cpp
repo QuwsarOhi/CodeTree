@@ -1,12 +1,12 @@
 #include <bits/stdc++.h>
 using namespace std;
 #define MAX                 6
-#define EPS                 1e-7
+#define EPS                 1e-9
 #define INF                 0x3f3f3f3f
 #define pb                  push_back
 #define mp                  make_pair
-#define xx                  first
-#define yy                  second
+#define fi                  first
+#define se                  second
 #define pi                  acos(-1)
 #define sf                  scanf
 #define pf                  printf
@@ -43,32 +43,3 @@ typedef vector<pair<ll, ll> >vll;
 //int dx[] = {-1, 0, 1, 0}, dy[] = {0, 1, 0, -1};
 //int dx[] = {-1, -1, -1, 0, 0, 1, 1, 1}, dy[] = {-1, 0, 1, -1, 1, -1, 0, 1};
 //----------------------------------------------------------------------------------------------------------
-
-double slope(pii x, pii y) {
-    int xxx = x.xx-y.xx;
-    int yyy = x.yy-y.yy;
-    if(xxx == 0 or yyy == 0)
-        return 0;
-    return yyy/(double)xxx;
-}
-
-
-
-int main() {
-    int n;
-    cin >> n;
-    vii v(20);
-
-    for(int i = 0; i < n; ++i)
-        cin >> v[i].xx >> v[i].yy;
-
-    double s = slope(v[0], v[1]);
-    bool ok = s == 0;
-    for(int i = 2; i < n; ++i)
-        if(slope(v[0], v[i]) != 0)
-            ok = 0;
-
-    //cerr << s << endl;
-    cout << (ok?"YES":"NO") << endl;
-    return 0;
-}

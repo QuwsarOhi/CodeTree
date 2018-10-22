@@ -256,3 +256,33 @@ ull SimpleCycle() {
     }
     return ans/2;           // Every cycle is counted twice, converting to single count
 }
+
+// UVA 10605 - Mines For Diamonds
+// all possible min cost graph traversal + path segment min summation 
+int dp[1<<12][12], seg[1<<12], startDist[12], ans[1<<12];
+int maskDP() {
+    // dp[mask(the_position_which_i've_visited)][the_position_where_im_at_right_now]
+    memset(dp, INF, sizeof dp);
+    memset(seg, INF, sizeof seg);
+    for(int i = 0; i < SIZE(point); ++i)
+        dp[1<<i][i] = startDist[i];
+    
+    for(int mask = 1; mask < (1<< SIZE(point)); ++mask) {
+        for(int from = 0; from < SIZE(point); ++from) {
+            if(not (mask & (1<<from))) continue;
+            for(int to = 0; to < SIZE(point); ++to) {
+                if(not (mask & (1<<to))) continue;
+                if(from == to) continue;
+                int pastMask = mask^(1<<to);
+                dp[mask][to] = min(dp[mask][to], dp[pastMask][from] + HamDist(from, to));
+        }}
+        for(int i = 0; i < SIZE(point); ++i)
+            seg[mask] = min(seg[mask], dp[mask][i]);        // contains minimum of all states of mask
+    }
+    for(int mask1 = 1; mask1 < (1<<SIZE(point)); ++mask1) {     // slicing masked set to half and calculating the minimum
+        for(int mask2 = 1; mask2 < mask1; ++mask2) {
+            if(mask1 & mask2 == mask2)                          // mask2 is subset of mask1
+                seg[mask1] = min(seg[mask1], seg[mask1 ^ mask2] + seg[mask2]);
+    }}
+    return seg[(1<<(SIZE(point)))-1];
+}

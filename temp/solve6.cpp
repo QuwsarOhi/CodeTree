@@ -1,7 +1,7 @@
 #include <bits/stdc++.h>
 using namespace std;
 #define MAX                 6
-#define EPS                 1e-9
+#define EPS                 1e-2
 #define INF                 0x3f3f3f3f
 #define pb                  push_back
 #define mp                  make_pair
@@ -44,3 +44,51 @@ typedef vector<pair<ll, ll> >vll;
 //int dx[] = {-1, -1, -1, 0, 0, 1, 1, 1}, dy[] = {-1, 0, 1, -1, 1, -1, 0, 1};
 //----------------------------------------------------------------------------------------------------------
 
+double Pow(ll val, ll p) {
+	if(p == 0) return 1;
+	if(p == 1) return val;
+	if(p & 1)  return val * Pow(val, p-1);
+	double tmp = Pow(val, p/2);
+	return tmp*tmp;
+}
+
+double calZ(ll x, ll k, ll b, ll Time) {
+	double z = Pow(k, Time)*(double)x;
+	//cerr << "First " << z << endl;
+	if(Time-1 >= 0) {
+		if(k > 1)
+			z += b * ((Pow(k, Time) - 1) / (k-1));
+		else if(k == 1)
+			z += b * Time;
+	}
+	return z;
+}
+
+int main() {
+	ll k, b, n, t;
+	cin >> k >> b >> n >> t;
+
+	double z = calZ(1, k, b, n);
+	cerr << "Z " << z << endl;
+	ll lo = 0, hi = 1000010, ans = 0, mid;
+
+	while(lo <= hi) {
+		mid = (lo+hi)/2;
+		double tmp = calZ(t, k, b, mid);
+		cerr << "T " << mid << " " << tmp << endl;
+		if(isinf(tmp))
+			hi = mid-1;
+		else if(tmp >= z) {
+			cerr << "Less\n" << endl;
+			ans = mid, hi = mid-1;
+		}
+		else
+			lo = mid+1;
+	}
+
+	//for(int i = 0; i <= hi; ++i)
+	//	cerr << "Time " << i << " " << calZ(t, k, b, i) << endl;
+
+	cout << ans << endl;
+	return 0;
+}
