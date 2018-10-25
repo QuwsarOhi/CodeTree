@@ -1,3 +1,7 @@
+// LightOJ
+// 1145 - Dice (I)
+// Dynamic Programming
+
 #include <bits/stdc++.h>
 using namespace std;
 #define MAX                 6
