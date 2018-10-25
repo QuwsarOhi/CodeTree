@@ -1,13 +1,16 @@
+// LightOJ
+// 1191 - Bar Codes
+// Dynamic Programming
+
 #include <bits/stdc++.h>
 using namespace std;
 #define MAX                 6
-#define EPS                 1e-9
+#define EPS                 1e-7
 #define INF                 0x3f3f3f3f
-#define MOD                 100000007
 #define pb                  push_back
 #define mp                  make_pair
-#define fi                  first
-#define se                  second
+#define xx                  first
+#define yy                  second
 #define pi                  acos(-1)
 #define sf                  scanf
 #define pf                  printf
@@ -45,44 +48,32 @@ typedef vector<pair<ll, ll> >vll;
 //int dx[] = {-1, -1, -1, 0, 0, 1, 1, 1}, dy[] = {-1, 0, 1, -1, 1, -1, 0, 1};
 //----------------------------------------------------------------------------------------------------------
 
-// Loop Reduction
-// + Double DP state
+int n, k, m;
+ll dp[52][52][52];
 
-ll dp[2][15010];
-
-ll BottomUP(int n, int k, int s) {
-    memset(dp, 0, sizeof dp);
-
-    bool present = 0, past = 1;
-    dp[present][0] = 1;
-    ll sum = 0;
-
-    for(int Throw = 1; Throw <= n; ++Throw) {
-        present ^= 1, past ^= 1;
-        sum = 0;
-        for(int tot = 0; tot <= s; ++tot) {
-            // sum contains cumulative value of past k positions
-            //cout << Throw << " " << tot << " " << sum << endl;
-
-            dp[present][tot] = sum;
-            dp[present][tot] %= MOD;
-            sum -= tot-k >= 0 ?dp[past][tot-k]:0;
-            sum = (sum + MOD)%MOD;
-            sum += dp[past][tot];
-            sum = (sum + MOD)%MOD;
-        }
+ll recur(int pos, int bars) {
+    if(pos <= 0 || bars <= 0) {
+        if(pos == 0 && bars == 0)
+            return 1;
+        return 0;
     }
-    return dp[present][s]%MOD;
+
+    ll &ret = dp[pos][bars][m];
+    if(ret != -1) return ret;
+    ret = 0;
+
+    for(int i = 1; i <= m; ++i)
+        ret += recur(pos-i, bars-1);
+    return ret;
 }
 
 int main() {
-    //fileWrite("out");
-    int t, n, k, s;
+    int t;
     scanf("%d", &t);
-
+    memset(dp, -1, sizeof dp);
     for(int Case = 1; Case <= t; ++Case) {
-        scanf("%d%d%d", &n, &k, &s);
-        printf("Case %d: %lld\n", Case, BottomUP(n, k, s));
+        scanf("%d%d%d", &n, &k, &m);
+        printf("Case %d: %lld\n", Case, recur(n, k));
     }
     return 0;
 }

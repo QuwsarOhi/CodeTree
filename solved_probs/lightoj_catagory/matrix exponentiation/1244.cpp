@@ -1,9 +1,13 @@
+// LightOJ
+// 1244 - Tiles
+// Matrix Expo
+
 #include <bits/stdc++.h>
 using namespace std;
-#define MAX                 6
+#define MAX                 15
 #define EPS                 1e-9
 #define INF                 0x3f3f3f3f
-#define MOD                 100000007
+#define MOD                 10007
 #define pb                  push_back
 #define mp                  make_pair
 #define fi                  first
@@ -45,44 +49,56 @@ typedef vector<pair<ll, ll> >vll;
 //int dx[] = {-1, -1, -1, 0, 0, 1, 1, 1}, dy[] = {-1, 0, 1, -1, 1, -1, 0, 1};
 //----------------------------------------------------------------------------------------------------------
 
-// Loop Reduction
-// + Double DP state
+/* Recursive Function: F(n) = 2*F(n-1) + F(n-3) */
 
-ll dp[2][15010];
+struct matrix {
+    ull mat[3][3];
+    matrix() {memset(mat, 0, sizeof mat);}
+};
 
-ll BottomUP(int n, int k, int s) {
-    memset(dp, 0, sizeof dp);
+matrix mul(matrix a, matrix b, int p, int q, int r) {
+    matrix ans;
+    for(int i = 0; i < p; ++i)
+        for(int j = 0; j < r; ++j)
+            for(int k = 0; k < q; ++k)
+                ans.mat[i][j] = (ans.mat[i][j] + (a.mat[i][k] * b.mat[k][j])%MOD)%MOD;
+    return ans;
+}
 
-    bool present = 0, past = 1;
-    dp[present][0] = 1;
-    ll sum = 0;
-
-    for(int Throw = 1; Throw <= n; ++Throw) {
-        present ^= 1, past ^= 1;
-        sum = 0;
-        for(int tot = 0; tot <= s; ++tot) {
-            // sum contains cumulative value of past k positions
-            //cout << Throw << " " << tot << " " << sum << endl;
-
-            dp[present][tot] = sum;
-            dp[present][tot] %= MOD;
-            sum -= tot-k >= 0 ?dp[past][tot-k]:0;
-            sum = (sum + MOD)%MOD;
-            sum += dp[past][tot];
-            sum = (sum + MOD)%MOD;
-        }
-    }
-    return dp[present][s]%MOD;
+matrix matPow(matrix base, ll p, int s) {
+    if(p == 1) return base;
+    if(p&1) return mul(base, matPow(base, p-1, s), s, s, s);
+    matrix tmp = matPow(base, p/2, s);
+    return mul(tmp, tmp, s, s, s); 
 }
 
 int main() {
-    //fileWrite("out");
-    int t, n, k, s;
+    int t;
+    ll n;
     scanf("%d", &t);
 
     for(int Case = 1; Case <= t; ++Case) {
-        scanf("%d%d%d", &n, &k, &s);
-        printf("Case %d: %lld\n", Case, BottomUP(n, k, s));
+        scanf("%lld", &n);
+        printf("Case %d: ", Case);
+
+        if(n <= 3) {
+            if(n == 3)
+                printf("5\n");
+            else if(n == 2)
+                printf("2\n");
+            else
+                printf("1\n");
+            continue;
+        }
+
+        matrix base;
+        base.mat[0][0] = 2, base.mat[0][2] = 1;
+        base.mat[1][0] = 1;
+        base.mat[2][1] = 1;
+
+        base = matPow(base, n-3, 3);
+
+        printf("%llu\n", ((base.mat[0][0]*5)%MOD+ (base.mat[0][1]*2)%MOD + base.mat[0][2])%MOD);
     }
     return 0;
 }
