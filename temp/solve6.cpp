@@ -44,34 +44,6 @@ typedef vector<pair<ll, ll> >vll;
 //int dx[] = {-1, -1, -1, 0, 0, 1, 1, 1}, dy[] = {-1, 0, 1, -1, 1, -1, 0, 1};
 //----------------------------------------------------------------------------------------------------------
 
-struct BIT {
-    ll tree[MAX];
-    int MaxVal;
-    void init(int sz=1e7) {
-        memset(tree, 0, sizeof tree);
-        MaxVal = sz+1;
-    }
-    void update(int idx, ll val) {
-        for( ;idx <= MaxVal; idx += (idx & -idx))
-            tree[idx] += val;
-    }
-    void update(int l, int r, ll val) {
-        if(l > r) swap(l, r);
-        update(l, val);
-        update(r+1, -val);
-    }
-    ll read(int idx) {
-        ll sum = 0;
-        for( ;idx > 0; idx -= (idx & -idx))
-            sum += tree[idx];
-        return sum;
-    }
-    ll read(int l, int r) {
-        ll ret = read(r) - read(l-1);
-        return ret;
-    }
-};
-
 // Suffix Array
 // Complexity : N log(N)
 
@@ -186,8 +158,8 @@ int rankDown(int lo, int hi, int tlen, int len) {
     return ret;
 }
 
-char str[100100];
-BIT FT;
+char str[MAX];
+int sum[MAX];
 
 int main() {
 	int t, len1, len2, len;
@@ -207,14 +179,31 @@ int main() {
 		SuffixArray(str, len);
 		Kasai(str, len);
 		buildSparseTableRMQ(len);
-		FT.init(len);
 
+		memset(sum, 0, sizeof sum);
 		for(int idx = len1+1; idx < len; ++idx)
-			FT.update(idxToRank[idx], 1);
+			sum[idxToRank[idx]] = 1;
+		for(int idx = 1; idx < len; ++idx)
+			sum[idx] += sum[idx-1];
 
+		for(int i = 0; i < len; ++i)
+			pf("%2d ", sum[i]);
+		pf("\n");
+
+		for(int i = 0; i < len; ++i)
+			pf("%2d %2d %2d %s\n", i, rankToIdx[i], lcp[rankToIdx[i]], str+rankToIdx[i]);
+
+
+		int ans = 0;
 		for(int idx = 0; idx < len1; ++idx) {
-			
+			int up = rankUP(0, idxToRank[idx], len2, len);
+			int down = rankDown(idxToRank[idx], len, len2, len);
+
+			cout << idx << " " << idxToRank[idx] << " " << up << " " << down << " " << (sum[down] - (up-1>=0?sum[up-1]:0)) << endl;
+			ans += (sum[down] - (up-1>=0?sum[up-1]:0)) == 0;
 		}
+
+		pf("Case %d: %d\n", Case, ans);
 	}
 	return 0;
 }
