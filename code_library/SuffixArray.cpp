@@ -97,7 +97,7 @@ void SuffixArray(char str[], int len, int maxAscii = 256) {     // use ~ as a di
 // Complexity: O(n)
 
 int lcp[MAX];
-void Kasai(int len, char str[]) {               // Matches Same charechters with i'th rank & (i+1)'th rank
+void Kasai(char str[], int len) {               // Matches Same charechters with i'th rank & (i+1)'th rank
     int match = 0;
     for(int idx = 0; idx < len; ++idx) {
         if(idxToRank[idx] == len-1) {
