@@ -50,8 +50,12 @@ int main() {
 	cin >> seed;
 	cout << t << endl;
 	srand(seed);
-	for(int i = 0; i < t; ++i) {
-		cout << rand()%15+1 << " " << rand()%15+1 << endl;
+	int n = 5, k = 2;
+	cout << n << " " << k << endl;
+	for(int i = 0; i < 5; ++i) {
+		int l = rand()%10+1, r = rand()%10+1;
+		if(l > r) swap(l, r);
+		cout << l << " " << r << endl;
 	}
 	return 0;
 }

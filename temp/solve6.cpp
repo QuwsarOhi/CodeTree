@@ -1,209 +1,208 @@
 #include <bits/stdc++.h>
 using namespace std;
-#define MAX                 100100
-#define EPS                 1e-2
-#define INF                 0x3f3f3f3f
-#define pb                  push_back
-#define mp                  make_pair
-#define fi                  first
-#define se                  second
-#define pi                  acos(-1)
-#define sf                  scanf
-#define pf                  printf
-#define SIZE(a)             ((int)a.size())
-#define All(S)              S.begin(), S.end()
-#define Equal(a, b)         (abs(a-b) < EPS)
-#define Greater(a, b)       (a >= (b+EPS))
-#define GreaterEqual(a, b)  (a > (b-EPS))
-#define fr(i, a, b)         for(register int i = (a); i < (int)(b); i++)
-#define FastRead            ios_base::sync_with_stdio(false); cin.tie(NULL); cout.tie(NULL);
-#define fileRead(S)         freopen(S, "r", stdin);
-#define fileWrite(S)        freopen(S, "w", stdout);
-#define Unique(X)           X.erase(unique(X.begin(), X.end()), X.end())
-
-#define isOn(S, j)          (S & (1 << j))
-#define setBit(S, j)        (S |= (1 << j))
-#define clearBit(S, j)      (S &= ~(1 << j))
-#define toggleBit(S, j)     (S ^= (1 << j))
-#define lowBit(S)           (S & (-S))
-#define setAll(S, n)        (S = (1 << n) - 1)
-
-typedef unsigned long long ull;
 typedef long long ll;
-typedef map<int, int> mii;
-typedef map<ll, ll>mll;
-typedef map<string, int> msi;
-typedef vector<int> vi;
-typedef vector<long long>vl;
-typedef pair<int, int> pii;
 typedef pair<ll, ll> pll;
-typedef vector<pair<int, int> > vii;
-typedef vector<pair<ll, ll> >vll;
 
-//int dx[] = {-1, 0, 1, 0}, dy[] = {0, 1, 0, -1};
-//int dx[] = {-1, -1, -1, 0, 0, 1, 1, 1}, dy[] = {-1, 0, 1, -1, 1, -1, 0, 1};
-//----------------------------------------------------------------------------------------------------------
+struct Trie {
+    struct node {
+        ll val1, val2;
+        node *next[15];
+        node() {
+            for(int i = 0; i < 15; ++i)
+                next[i] = NULL;
 
-// Suffix Array
-// Complexity : N log(N)
+    node *root;
+    int fixLen, v[20];
 
-int o[2][MAX], t[2][MAX];
-int idxToRank[MAX], rankToIdx[MAX], A[MAX], B[MAX], C[MAX], D[MAX];
-
-void SuffixArray(char str[], int len, int maxAscii = 256) {     // use ~ as a distinguishing charachter
-    int x = 0;
-    memset(A, 0, sizeof A);
-    memset(C, 0, sizeof C);
-    memset(D, 0, sizeof D);
-    memset(o, 0, sizeof o);
-    memset(t, 0, sizeof t);
-
-    for(int i = 0; i < len; ++i) A[(str[i]-'a')] = 1;
-    for(int i = 1; i < maxAscii; ++i) A[i] += A[i-1];
-    for(int i = 0; i < len; ++i) o[0][i] = A[(int)(str[i]-'a')];
- 
-    for (int j = 0, jj = 1, k = 0; jj < len && k < len; ++j, jj <<= 1) {
-        memset(A, 0, sizeof A);
-        memset(B, 0, sizeof B);
-        for(int i = 0; i < len; ++i) {
-            ++A[ t[0][i] = o[x][i] ];
-            ++B[ t[1][i] = (i+jj<len) ? o[x][i+jj] : 0 ];
-        }
-        for(int i = 1; i <= len; ++i) {
-            A[i] += A[i-1];
-            B[i] += B[i-1];
-        }
-        for(int i = len-1; i >= 0; --i)
-            C[--B[t[1][i]]] = i;
-        for(int i = len-1; i >= 0; --i)
-            D[--A[t[0][C[i]]]] = C[i];
-        x^=1;
-        o[x][D[0]] = k = 1;
-        for(int i = 1; i < len; ++i)
-            o[x][D[i]]= (k += (t[0][D[i]] != t[0][D[i-1]] || t[1][D[i]] != t[1][D[i-1]]));
+    Trie(int len = 13) {
+        root = new node();
+        fixLen = len;
     }
-    for(int i = 0; i < len; i++) {
-        idxToRank[i] = o[x][i]-1;
-        rankToIdx[o[x][i]-1] = i;
-}}
 
-
-int lcp[MAX];
-void Kasai(char str[], int len) {               // Matches Same charechters with i'th rank & (i+1)'th rank
-    int match = 0;
-    for(int idx = 0; idx < len; ++idx) {
-        if(idxToRank[idx] == len-1) {
-            match = 0;
-            continue;
+    void insert(pll p, int pos, node *cur) {
+        if(cur == NULL)
+            cur = new node();
+        if(pos == fixLen) {
+            cur->val1 = p.first, cur->val2 = p.second;
+            return;
         }
-        int nxtRankIdx = rankToIdx[idxToRank[idx]+1];
-        while(idx+match < len and nxtRankIdx+match < len and str[idx+match] == str[nxtRankIdx+match])
-            ++match;
-        lcp[nxtRankIdx] = match;                // the lcp match of i'th & (i+1)'th is stored in
-        match -= match>0;                       // the index of (i+1)'th suffix's index
-}}
-
-// Longest Common Prefix [Sparse Table after running Kasai]
-int table[MAX][14], lg[MAX];
-void buildSparseTableRMQ(int n) {                           //  O(n Log n)
-    for(ll i = 0; 1LL << i < n; i++)
-        lg[1LL << i] = i;
-    for(ll i = 1; i < n; i++)
-        lg[i] = max(lg[i], lg[i - 1]);
-    for(int i = 0; i < n; ++i)
-        table[i][0] = i;
-    for(int j = 1; (1 << j) <= n; ++j)                      // 2^j
-        for(int i = 0; i + (1 << j) - 1< n; ++i) {          // For every node
-            if(lcp[rankToIdx[table[i][j-1]]] < lcp[rankToIdx[table[i + (1 << (j-1))][j-1]]])
-                table[i][j] = table[i][j-1];
-            else
-                table[i][j] = table[i + (1 << (j-1))][j-1];
-}}
-
-int sparseQueryRMQ(int l, int r) {          // Gives LCP of index l, r in O(1)
-    //l = idxToRank[l], r = idxToRank[r];     // Remove this line if rankUp or rankDown is used
-    if(l > r) swap(l, r);
-    ++l;
-    int k = lg[r - l + 1];                                // log(2);
-    return min(lcp[rankToIdx[table[l][k]]], lcp[rankToIdx[table[r - (1 << k) + 1][k]]]);
-}
-
-// Gives Upper (lower index) for which the Range minimum LCP is tlen
-// Call : 0, PosRank, strlen, totstring_len
-int rankUP(int lo, int hi, int tlen, int len) {
-    int mid, ret = hi, pos = hi;
-    --hi;
-    while(lo <= hi) {
-        mid = (lo+hi)>>1;
-        if(sparseQueryRMQ(mid, pos) >= tlen)
-            hi = mid-1, ret = mid;
-        else
-            lo = mid+1;
+        if(cur->next[v[pos]] == NULL)
+            cur->next[v[pos]] = new node();
+        insert(p, pos+1, cur->next[v[pos]]);
     }
+
+    void clear() {
+        cclear(root);
+        root = new node();
+    }
+
+    void cclear(node *cur) {
+        for(int i = 0; i < 15; ++i)
+            if(cur->next[i] != NULL)
+                cclear(cur->next[i]);
+        delete cur;
+    }
+
+    pll check(int pos, node *cur) {
+        if(cur == NULL)
+            return make_pair(-1, -1);
+        if(pos == fixLen)
+            return make_pair(cur->val1, cur->val2);
+        if(cur->next[v[pos]] == NULL)
+            return make_pair(-1, -1);
+        return check(pos+1, cur->next[v[pos]]);
+    }
+
+    void convert(int pos, int cnt[], bool tight, bool firstZero) {
+        v[0] = pos;
+        for(int i = 0; i < 10; ++i)
+            v[i+1] = cnt[i];
+        v[11] = tight;
+        v[12] = firstZero;
+    }
+};
+
+Trie DP(13);
+vector<int>mxDigit;
+
+/*
+unordered_map<string, pll>DP;
+string conv(int pos, int cnt[], bool tight, bool firstZero) {
+    string ret;
+    if(pos < 10)
+        ret += "0";
+    ret += to_string(pos);
+
+    for(int i = 0; i < 10; ++i) {
+        if(cnt[i] < 10)
+            ret += "0";
+        ret += to_string(cnt[i]);
+    }
+
+    ret += tight? "1":"0";
+    ret += firstZero? "1":"0";
+
+    return ret;
+}*/
+
+int CntCal(int val, int cnt[]) {
+    int ret = 0;
+    for(int i = 0; i < val; ++i)
+        ret += cnt[i];
     return ret;
 }
 
-// Gives Lower (higher index) for which the Range minimum LCP is tlen
-// Call : PosRank, len-1 strlen, totstring_len
-int rankDown(int lo, int hi, int tlen, int len) {
-    int mid, ret = lo, pos = lo;
-    ++lo;
-    while(lo <= hi) {
-        mid = (lo+hi)>>1;
-        if(sparseQueryRMQ(mid, pos) >= tlen)
-            lo = mid+1, ret = mid;
-        else
-            hi = mid-1;
+// {total_number_of_values, DI(K)_for_the_next_vals}
+
+pll recur(int pos, int cnt[], bool tight = 1, bool firstZero = 1) {
+    if(pos == -1)
+        return make_pair(1, 0);
+
+    // Unordered Map DP
+    /*string ss = conv(pos, cnt, tight, firstZero);
+    if(DP.find(ss) != DP.end())
+        return DP[ss];*/
+
+    DP.convert(pos, cnt, tight, firstZero);
+    pll tmp = DP.check(0, DP.root);
+
+    if(tmp.first != -1) {
+        cerr << "HIT\n";
+        return tmp;
     }
+
+    pll ret = {0, 0};
+    int lim = tight ? mxDigit[pos]:9;
+    for(int i = 0; i <= lim; ++i) {
+        bool newTight = (mxDigit[pos] == i)?tight:0;
+        bool newZero = (i == 0) and firstZero;
+        int newCnt = CntCal(i, cnt);
+        
+        if(not newZero)
+            ++cnt[i];
+
+        tmp = recur(pos-1, cnt, newTight, newZero);
+        ret.first += tmp.first;
+        ret.second += tmp.second + tmp.first*newCnt;
+
+        if(not newZero)
+            --cnt[i];
+    }
+
+    // Unordered Map DP
+    //DP[ss] = ret;
+
+    DP.convert(pos, cnt, tight, firstZero);
+    DP.insert(ret, 0, DP.root);
+
     return ret;
 }
-
-char str[MAX];
-int sum[MAX];
 
 int main() {
-	int t, len1, len2, len;
-	scanf("%d", &t);
+    ll x, y;
+    int t, cnt[10];
 
+    // Unordered Map DP bucket increse
+    //DP.rehash(10000000);
+    scanf("%d", &t);
 
-	for(int Case = 1; Case <= t; ++Case) {
-		scanf("%s", str);
-		len1 = strlen(str);
-		str[len1] = '~';
-		scanf("%s", str+len1+1);
-		len = strlen(str);
-		len2 = len - (len1+1);
+    for(int Case = 1; Case <= t; ++Case) {
+        scanf("%lld%lld", &y, &x);
+        if(x < y) swap(x, y);
 
-		cerr << str << " " << len1 << " " << len2 << " " << len << endl;
+        mxDigit.clear();
+        
+        // Unordered Map DP
+        //DP.clear();
+        //cerr << "Bucket Size " << DP.bucket_count() << endl;
+        
+        while(x) {
+            mxDigit.push_back(x%10);
+            x/=10;
+        }
 
-		SuffixArray(str, len);
-		Kasai(str, len);
-		buildSparseTableRMQ(len);
+        memset(cnt, 0, sizeof cnt);
+        ll ans = recur((int)mxDigit.size()-1, cnt, 1).second;
+            
+        y -= 1;
+        if(y > 0) {
+            mxDigit.clear();
 
-		memset(sum, 0, sizeof sum);
-		for(int idx = len1+1; idx < len; ++idx)
-			sum[idxToRank[idx]] = 1;
-		for(int idx = 1; idx < len; ++idx)
-			sum[idx] += sum[idx-1];
+            // Unordered Map DP
+            //DP.clear();
 
-		for(int i = 0; i < len; ++i)
-			pf("%2d ", sum[i]);
-		pf("\n");
+            while(y) {
+                mxDigit.push_back(y%10);
+                y/=10;
+            }
 
-		for(int i = 0; i < len; ++i)
-			pf("%2d %2d %2d %s\n", i, rankToIdx[i], lcp[rankToIdx[i]], str+rankToIdx[i]);
+            memset(cnt, 0, sizeof cnt);
+            ans -= recur((int)mxDigit.size()-1, cnt, 1).second;
+        }
 
-
-		int ans = 0;
-		for(int idx = 0; idx < len1; ++idx) {
-			int up = rankUP(0, idxToRank[idx], len2, len);
-			int down = rankDown(idxToRank[idx], len, len2, len);
-
-			cout << idx << " " << idxToRank[idx] << " " << up << " " << down << " " << (sum[down] - (up-1>=0?sum[up-1]:0)) << endl;
-			ans += (sum[down] - (up-1>=0?sum[up-1]:0)) == 0;
-		}
-
-		pf("Case %d: %d\n", Case, ans);
-	}
-	return 0;
+        printf("Case %d: %lld\n", Case, ans);
+    }
+    
+    // Trie DP clear
+    DP.clear();
+    return 0;
 }
+
+/*
+
+6
+1 9
+1 100
+50 60
+23 2343
+345 99373
+1 100000000000000
+
+Case 1: 0
+Case 2: 36
+Case 3: 4
+Case 4: 6083
+Case 5: 410008
+Case 6: 3966111111111111
+
+*/
