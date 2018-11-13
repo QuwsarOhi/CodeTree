@@ -146,6 +146,7 @@ void dfs(int mask, int last, string ret) {          // PRINTING part of LIGHT OJ
 // Complexity : O(10*idx*sum*tight)     : LightOJ 1068
 // Tight contains if there is any restriction to number (Tight is initially 1)
 // Initial Params: (MaxDigitSize-1, 0, 0, 1, modVal, allowed_digit_vector)
+// MaxDigit contains values in reverse order, (123 will be stored as {3, 2, 1})
 
 ll dp[15][100][100][2];
 ll digitSum(int idx, int sum, ll value, bool tight, int mod, vector<int>&MaxDigit) {
@@ -184,6 +185,30 @@ ll bitDP(int pos, int mask, int pairs, bool prevOn, bool tight) {
     return dp[pos][pairs][prevOn][tight] = ans;
 }
 
+//-----------------------Double Bounded Digit Dp Technique-----------------------
+
+vector<int>tt, mn = {0, 5, 4}, mx = {1, 3, 0};
+int LIM;
+
+void recur(int pos = 0, bool lower = 1, bool higher = 1) {
+    if(pos == LIM) {
+        for(auto it : tt) cout << it;
+        cout << endl;
+        return;
+    }
+    int lo = lower ? mn[pos]:0;
+    int hi = higher ? mx[pos]:9;
+
+    for(int d = lo; d <= hi; ++d) {
+        bool newLower = (d == mn[pos]) ? lower:0;
+        bool newHigher = (d == mx[pos]) ? higher:0;
+
+        tt.push_back(d);
+        recur(pos+1, newLower, newHigher);
+        tt.pop_back();
+}}
+
+
 // Memory Optimized DP + Bottom Up solution (LOJ : 1126 - Building Twin Towers)
 // given array v of n elements, make two value x1 and x2 where x1 == x2, output maximum of it 
  
@@ -216,6 +241,7 @@ ll CountNumberofWays(int r, int c, int n) {
     }                                               // Number of ways we can reach from (1, 1) to (r, c)
     return dp[n];                                   // The last state is always (r, c), which is the answer                   
 }
+
 
 // Travelling Salesman
 // dist[u][v] = distance from u to v
