@@ -1,76 +1,118 @@
 #include <bits/stdc++.h>
-#define MOD 1000000007;
 using namespace std;
+typedef long long ll;
 
-vector<int> mn, mx, tmp;
-int LIM, tt, m;
+vector<int> mn, mx, tt;
+int LIM;
 
-long long dp[2001][2][2][2001][2];
+int getMirrorIndex(int nonZero, int pos, int lim) {
+    int len = lim - nonZero;
+    if(len&1 and (len+1)/2 >= pos-nonZero+1)
+        return -1;
+    if(not (len&1) and len/2 >= pos-nonZero+1)
+        return -1;
+    return nonZero+(lim-pos-1);
+}
 
-long long recur(int pos, bool lower, bool higher, int sum, bool found) {
+ll dp[19][2][2][2][10];
+
+ll recur(int pos, bool lower, bool higher, int nonZero, int pstPlaced) {
     if(pos == LIM) {
-        if(pos == 1)
-            return sum == 0;
-        if(sum != 0 or not found) return 0;
-
-        //for(auto it : tmp) cout << it;
-        //cout << endl;
-
+        /*for(auto it : tt)
+            cout << it;
+        cout << " " << nonZero << endl;*/
         return 1;
     }
 
-    long long &ret = dp[pos][lower][higher][sum][found];
-    if(ret != -1) return ret;
-    ret = 0;
+    ll &ret = dp[pos][lower][higher][nonZero][pstPlaced];
+    /*if(ret != -1) {
+        cerr << "HIT\n";
+        return ret;
+    }*/
 
-    //long long ret = 0;
+    ret = 0;
+    //ll ret = 0;
     int lo = lower ? mn[pos]:0;
     int hi = higher ? mx[pos]:9;
+    int mirrorPos = getMirrorIndex(nonZero, pos, LIM);
 
-    if(pos%2 != 0) {
-        if(lo <= tt and tt <= hi)
-            lo = hi = tt;
-        else
+    if(mirrorPos != -1 and nonZero != -1) {
+        int d = tt[mirrorPos];
+        if(not(lo <= d and d <= hi))
             return 0;
+
+        bool newLower = (d == mn[pos]) ? lower:0;
+        bool newHigher = (d == mx[pos]) ? higher:0;
+
+        if(dp[pos][newLower][newHigher][nonZero][d] != -1)
+            return dp[pos][newLower][newHigher][nonZero][d];
+
+        tt.push_back(d);
+        ret = recur(pos+1, newLower, newHigher, nonZero, d);
+        tt.pop_back();
+        return ret;
     }
 
     for(int d = lo; d <= hi; ++d) {
-        if(pos%2 == 0 and tt == d)
-            continue;
+        bool newLower = (d == mn[pos]) ? lower:0;
+        bool newHigher = (d == mx[pos]) ? higher:0;
+        int newNonZero = nonZero >= 0 ? nonZero: (d > 0 ? pos:-1);
 
-        bool newLower = d == mn[pos] ? lower:0;
-        bool newHigher = d == mx[pos] ? higher:0;
-
-        //tmp.push_back(d);
-        ret = (ret + recur(pos+1, newLower, newHigher, (sum*10 + d)%m, found or (d == tt)))%MOD;
-        //tmp.pop_back();
+        tt.push_back(d);
+        ret += recur(pos+1, newLower, newHigher, newNonZero, -1);
+        tt.pop_back();
     }
     return ret;
 }
 
-string a, b;
 
-void genVal() {
+void genVal(ll a, ll b) {
     mn.clear(), mx.clear();
-    LIM = b.size();
 
-    for(auto it : b)
-        mx.push_back(it-'0');
+    while(b) {
+        mx.push_back(b%10);
+        b/=10;
+    }
+    while(a) {
+        mn.push_back(a%10);
+        a/=10;
+    }
 
-    while(a.size() < LIM)
+    LIM = mx.size();
+    while(mn.size() < LIM)
         mn.push_back(0);
 
-    for(auto it : a)
-        mn.push_back(it-'0');
+    reverse(mn.begin(), mn.end());
+    reverse(mx.begin(), mx.end());
 }
+
 
 int main() {
-    cin >> m >> tt;
-    cin >> a >> b;
-    
-    genVal();
+    int t;
+    ll a, b;
+    scanf("%d", &t);
 
-    memset(dp, -1, sizeof dp);
-    cout << recur(0, 1, 1, 0, 0) << endl;
+    for(int Case = 1; Case <= t; ++Case) {
+        scanf("%lld%lld", &a, &b);
+
+        if(a > b) swap(a, b);
+        genVal(a, b);
+
+        memset(dp, -1, sizeof dp);
+        printf("Case %d: %lld\n", Case, recur(0, 1, 1, -1, -1));
+    }
+
     return 0;
 }
+
+
+/*
+
+5
+1 10
+100 1
+1 1000
+1 10000
+1 100000000000000000
+
+*/
