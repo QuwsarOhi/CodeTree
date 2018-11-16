@@ -1,118 +1,87 @@
 #include <bits/stdc++.h>
 using namespace std;
-typedef long long ll;
 
-vector<int> mn, mx, tt;
-int LIM;
+int tt[20], dp[18][18][2][2][2];
+vector<int>mx;
 
-int getMirrorIndex(int nonZero, int pos, int lim) {
-    int len = lim - nonZero;
-    if(len&1 and (len+1)/2 >= pos-nonZero+1)
-        return -1;
-    if(not (len&1) and len/2 >= pos-nonZero+1)
-        return -1;
-    return nonZero+(lim-pos-1);
-}
+int recur(int l, int r, bool nonZero, bool lftTight, bool rhtTight) {
+    if(l > r) {
+        // fuck this shit
+        for(int i = 0; i < mx.size(); ++i)
+            printf("%d", tt[i]);
+        //printf("\n");
 
-ll dp[19][2][2][2][10];
+        if(lftTight == 1 && rightGreater == 1) {
+            printf(" NO\n");
+            return 0;
+        }
 
-ll recur(int pos, bool lower, bool higher, int nonZero, int pstPlaced) {
-    if(pos == LIM) {
-        /*for(auto it : tt)
-            cout << it;
-        cout << " " << nonZero << endl;*/
+        printf(" YES %d %d\n", lftTight, rightGreater);
         return 1;
     }
 
-    ll &ret = dp[pos][lower][higher][nonZero][pstPlaced];
-    /*if(ret != -1) {
-        cerr << "HIT\n";
-        return ret;
-    }*/
+    //int &ret = dp[l][r][nonZero][lftTight][rightGreater];
+    //if(ret != -1) {
+    //    cerr << "HIT mother fucker" << endl;
+    //    return ret;
+    //}
 
-    ret = 0;
-    //ll ret = 0;
-    int lo = lower ? mn[pos]:0;
-    int hi = higher ? mx[pos]:9;
-    int mirrorPos = getMirrorIndex(nonZero, pos, LIM);
+    int ret = 0;
+    int lftlim = lftTight ? mx[l]:9;
+    int rhtlim = rhtTight ? mx[r]:9;
 
-    if(mirrorPos != -1 and nonZero != -1) {
-        int d = tt[mirrorPos];
-        if(not(lo <= d and d <= hi))
-            return 0;
+    //cerr << "Range :: " << l << " " << r << " :: " << lim << endl;
+    for(int d = 0; d <= lftlim; ++d) {
+        bool newTight = d == lftlim ? lftTight:0;
+        bool rhtTight = d == rhtlim ? rhtTight:0;
+        
+        if(l == r)
+            newRightGreater = rightGreater;
 
-        bool newLower = (d == mn[pos]) ? lower:0;
-        bool newHigher = (d == mx[pos]) ? higher:0;
+        if(nonZero == 0 && d == 0) {
+            tt[l] = 0;
+            //cerr << "Place " << "0" << " range " << l << " " << r << endl;
+            ret += recur(l+1, r, nonZero, newTight, newRightGreater);
+            continue;
+        }
 
-        if(dp[pos][newLower][newHigher][nonZero][d] != -1)
-            return dp[pos][newLower][newHigher][nonZero][d];
-
-        tt.push_back(d);
-        ret = recur(pos+1, newLower, newHigher, nonZero, d);
-        tt.pop_back();
-        return ret;
+        //cerr << "Place " << d << " range " << l << " " << r <<endl;
+        tt[l] = tt[r] = d;
+        ret += recur(l+1, r-1, 1, newTight, newRightGreater);
     }
 
-    for(int d = lo; d <= hi; ++d) {
-        bool newLower = (d == mn[pos]) ? lower:0;
-        bool newHigher = (d == mx[pos]) ? higher:0;
-        int newNonZero = nonZero >= 0 ? nonZero: (d > 0 ? pos:-1);
-
-        tt.push_back(d);
-        ret += recur(pos+1, newLower, newHigher, newNonZero, -1);
-        tt.pop_back();
-    }
     return ret;
 }
 
 
-void genVal(ll a, ll b) {
-    mn.clear(), mx.clear();
+int solve(long long x) {
+    if(x < 0) return 0;
+    if(x == 0) return 1;
 
-    while(b) {
-        mx.push_back(b%10);
-        b/=10;
+    cerr << "VAL " << x << endl;
+
+    mx.clear();
+    while(x) {
+        mx.push_back(x%10);
+        x/=10;
     }
-    while(a) {
-        mn.push_back(a%10);
-        a/=10;
-    }
 
-    LIM = mx.size();
-    while(mn.size() < LIM)
-        mn.push_back(0);
-
-    reverse(mn.begin(), mn.end());
     reverse(mx.begin(), mx.end());
+    memset(dp, -1, sizeof dp);
+    return recur(0, (int)mx.size()-1, 0, 1, 0);
 }
-
 
 int main() {
     int t;
-    ll a, b;
+    long long a, b;
     scanf("%d", &t);
 
     for(int Case = 1; Case <= t; ++Case) {
         scanf("%lld%lld", &a, &b);
-
         if(a > b) swap(a, b);
-        genVal(a, b);
 
-        memset(dp, -1, sizeof dp);
-        printf("Case %d: %lld\n", Case, recur(0, 1, 1, -1, -1));
+        printf("%d %d\n", solve(a-1), solve(b));
     }
 
     return 0;
 }
-
-
-/*
-
-5
-1 10
-100 1
-1 1000
-1 10000
-1 100000000000000000
-
-*/
