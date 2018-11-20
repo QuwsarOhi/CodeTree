@@ -1,209 +1,121 @@
 #include <bits/stdc++.h>
 using namespace std;
-typedef long long ll;
-typedef pair<ll, ll> pll;
 
-struct Trie {
-    struct node {
-        ll val1, val2;
-        node *next[15];
-        node() {
-            for(int i = 0; i < 15; ++i)
-                next[i] = NULL;
-    }};
-
-    node *root;
-    int fixLen, v[20];
-
-    Trie(int len = 13) {
-        root = new node();
-        fixLen = len;
-    }
-
-    void insert(pll p, int pos, node *cur) {
-        if(cur == NULL)
-            cur = new node();
-        if(pos == fixLen) {
-            cur->val1 = p.first, cur->val2 = p.second;
-            return;
-        }
-        if(cur->next[v[pos]] == NULL)
-            cur->next[v[pos]] = new node();
-        insert(p, pos+1, cur->next[v[pos]]);
-    }
-
-    void clear() {
-        cclear(root);
-        root = new node();
-    }
-
-    void cclear(node *cur) {
-        for(int i = 0; i < 15; ++i)
-            if(cur->next[i] != NULL)
-                cclear(cur->next[i]);
-        delete cur;
-    }
-
-    pll check(int pos, node *cur) {
-        if(cur == NULL)
-            return make_pair(-1, -1);
-        if(pos == fixLen)
-            return make_pair(cur->val1, cur->val2);
-        if(cur->next[v[pos]] == NULL)
-            return make_pair(-1, -1);
-        return check(pos+1, cur->next[v[pos]]);
-    }
-
-    void convert(int pos, int cnt[], bool tight, bool firstZero) {
-        v[0] = pos;
-        for(int i = 0; i < 10; ++i)
-            v[i+1] = cnt[i];
-        v[11] = tight;
-        v[12] = firstZero;
-    }
-};
-
-Trie DP(13);
-vector<int>mxDigit;
-
+vector<int> mn, mx;
+int cntLim[10], tt[20], lim;
 /*
-unordered_map<string, pll>DP;
-string conv(int pos, int cnt[], bool tight, bool firstZero) {
+long long dp[19][2][2][2][2][2][2][2][2][2][2][2][2][2];
+
+bool tmpBool[10];
+long long getVal(int pos, int cnt[], bool nonZero, bool lowTight, bool hiTight) {
+    for(int i = 0; i < 10; ++i)
+        tmpBool[i] = cnt[i] == cntLim[i];
+    return dp[pos][tmpBool[0]][tmpBool[1]][tmpBool[2]][tmpBool[3]][tmpBool[4]][tmpBool[5]][tmpBool[6]][tmpBool[7]][tmpBool[8]][tmpBool[9]][nonZero][lowTight][hiTight];
+}
+
+void setVal(int pos, int cnt[], bool nonZero, bool lowTight, bool hiTight, long long val) {
+    for(int i = 0; i < 10; ++i)
+        tmpBool[i] = cnt[i] == cntLim[i];
+    dp[pos][tmpBool[0]][tmpBool[1]][tmpBool[2]][tmpBool[3]][tmpBool[4]][tmpBool[5]][tmpBool[6]][tmpBool[7]][tmpBool[8]][tmpBool[9]][nonZero][lowTight][hiTight] = val;
+}*/
+
+
+unordered_map<string, long long>dp;
+
+string Convert(int pos, int cnt[], bool nonZero, bool lowTight, bool hiTight) {
     string ret;
     if(pos < 10)
         ret += "0";
     ret += to_string(pos);
-
     for(int i = 0; i < 10; ++i) {
         if(cnt[i] < 10)
             ret += "0";
         ret += to_string(cnt[i]);
     }
 
-    ret += tight? "1":"0";
-    ret += firstZero? "1":"0";
+    ret += to_string(nonZero);
+    ret += to_string(lowTight);
+    ret += to_string(hiTight);
 
-    return ret;
-}*/
-
-int CntCal(int val, int cnt[]) {
-    int ret = 0;
-    for(int i = 0; i < val; ++i)
-        ret += cnt[i];
     return ret;
 }
 
-// {total_number_of_values, DI(K)_for_the_next_vals}
 
-pll recur(int pos, int cnt[], bool tight = 1, bool firstZero = 1) {
-    if(pos == -1)
-        return make_pair(1, 0);
-
-    // Unordered Map DP
-    /*string ss = conv(pos, cnt, tight, firstZero);
-    if(DP.find(ss) != DP.end())
-        return DP[ss];*/
-
-    DP.convert(pos, cnt, tight, firstZero);
-    pll tmp = DP.check(0, DP.root);
-
-    if(tmp.first != -1) {
-        cerr << "HIT\n";
-        return tmp;
+long long recur(int pos, int cnt[], bool nonZero, bool lowTight, bool hiTight) {
+    if(pos == lim) {
+        for(int i = 0; i < 10; ++i)
+            if(cnt[i] == cntLim[i])
+                return 0;
+        /*for(int i = 0; i < lim; ++i)
+            cout << tt[i];
+        cout << endl;*/
+        return 1;
     }
 
-    pll ret = {0, 0};
-    int lim = tight ? mxDigit[pos]:9;
-    for(int i = 0; i <= lim; ++i) {
-        bool newTight = (mxDigit[pos] == i)?tight:0;
-        bool newZero = (i == 0) and firstZero;
-        int newCnt = CntCal(i, cnt);
-        
-        if(not newZero)
-            ++cnt[i];
-
-        tmp = recur(pos-1, cnt, newTight, newZero);
-        ret.first += tmp.first;
-        ret.second += tmp.second + tmp.first*newCnt;
-
-        if(not newZero)
-            --cnt[i];
+    string tag = Convert(pos, cnt, nonZero, lowTight, hiTight);
+    if(dp.find(tag) != dp.end()) {
+        //cerr << "HIT" << endl;
+        return dp[tag];
     }
 
-    // Unordered Map DP
-    //DP[ss] = ret;
 
-    DP.convert(pos, cnt, tight, firstZero);
-    DP.insert(ret, 0, DP.root);
+    long long ret = 0;
+    int lo = lowTight ? mn[pos]:0;
+    int hi = hiTight ? mx[pos]:9; 
 
+    for(int d = lo; d <= hi; ++d) {
+        bool newLowTight = d == mn[pos] ? lowTight:0;
+        bool newHiTight = d == mx[pos] ? hiTight:0; 
+        bool newNonZero = nonZero or d > 0;
+
+        //tt[pos] = d;
+        if(newNonZero)
+            cnt[d] += 1;
+        ret += recur(pos+1, cnt, newNonZero, newLowTight, newHiTight);
+        if(newNonZero)
+            cnt[d] -= 1;
+    }
+
+    dp[tag] = ret;
     return ret;
 }
 
 int main() {
-    ll x, y;
+    //dp.rehash(10000);
     int t, cnt[10];
+    long long a, b;
+    cin >> t;
 
-    // Unordered Map DP bucket increse
-    //DP.rehash(10000000);
-    scanf("%d", &t);
 
-    for(int Case = 1; Case <= t; ++Case) {
-        scanf("%lld%lld", &y, &x);
-        if(x < y) swap(x, y);
+    while(t--) {
+        cin >> a >> b;
+        if(a > b) swap(a, b);
 
-        mxDigit.clear();
-        
-        // Unordered Map DP
-        //DP.clear();
-        //cerr << "Bucket Size " << DP.bucket_count() << endl;
-        
-        while(x) {
-            mxDigit.push_back(x%10);
-            x/=10;
+        for(int i = 0; i < 10; ++i)
+            cin >> cntLim[i];
+
+        mx.clear();
+        while(b) {
+            mx.push_back(b%10);
+            b/=10;
+        }
+        lim = mx.size();
+
+        mn.clear();
+        while(a) {
+            mn.push_back(a%10);
+            a/=10;
         }
 
+        while(mn.size() < lim)
+            mn.push_back(0);
+
+        reverse(mx.begin(), mx.end());
+        reverse(mn.begin(), mn.end());
         memset(cnt, 0, sizeof cnt);
-        ll ans = recur((int)mxDigit.size()-1, cnt, 1).second;
-            
-        y -= 1;
-        if(y > 0) {
-            mxDigit.clear();
 
-            // Unordered Map DP
-            //DP.clear();
-
-            while(y) {
-                mxDigit.push_back(y%10);
-                y/=10;
-            }
-
-            memset(cnt, 0, sizeof cnt);
-            ans -= recur((int)mxDigit.size()-1, cnt, 1).second;
-        }
-
-        printf("Case %d: %lld\n", Case, ans);
+        dp.clear();
+        cout << recur(0, cnt, 0, 1, 1) << endl;
     }
-    
-    // Trie DP clear
-    DP.clear();
     return 0;
 }
-
-/*
-
-6
-1 9
-1 100
-50 60
-23 2343
-345 99373
-1 100000000000000
-
-Case 1: 0
-Case 2: 36
-Case 3: 4
-Case 4: 6083
-Case 5: 410008
-Case 6: 3966111111111111
-
-*/
