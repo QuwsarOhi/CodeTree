@@ -1,75 +1,76 @@
+// LightOJ
+// 1257 - Farthest Nodes in a Tree (II)
+
 #include <bits/stdc++.h>
 using namespace std;
+
 #define MAX 30100
+typedef pair<int, int> pii;
 
-/*struct pair_hash {
-	size_t operator()(const pair<int,int> &p)const {
-		return hash<long long>()(((long long)p.first)^(((long long)p.second)<<32));
-	}
-};*/
-
-struct HASH{
-  size_t operator()(const pair<int,int>&x)const{
-    return hash<long long>()(((long long)x.first)^(((long long)x.second)<<32));
-  }
-};
-unordered_map<pair<int,int>,long long,HASH>dp;
 
 vector<int> G[MAX], W[MAX];
-//map<pair<int, int>, long long, pair_hash> dp;
 
+int dst[MAX];
 
-
-long long dfs(int u, int par, int w) {
-	long long ret = 0;
-
-	for(int i = 0; i < G[u].size(); ++i) {
-		int v = G[u][i];
-		if(v == par)
-			continue;
-
-		if(dp.find(make_pair(v, u)) != dp.end()) {
-			// DO SOMETHING??
-			//printf("HIT  %d - %d :: %lld\n", u, v, dp[make_pair(v, u)]);
-			ret = max(ret, dp[make_pair(v, u)]);
-			continue;
-		}
-
-		ret = max(ret, dfs(v, u, W[u][i]));
-	}
-
-	//printf("From %d to %d :: %lld\n", par, u, ret + w);
-	return dp[make_pair(u, par)] = ret + w;
+pii dfs(int u, int par, int d) {
+    pii ret(d, u);                                      // {distance, node}
+    for(int i = 0; i < (int)G[u].size(); ++i)
+        if(G[u][i] != par)
+            ret = max(ret, dfs(G[u][i], u, d+W[u][i]));
+    return ret;
 }
+
+
+void distDfs(int u, int par, int d) {
+	dst[u] = max(dst[u], d);
+	for(int i = 0; i < G[u].size(); ++i) {
+		if(G[u][i] == par) 
+			continue;
+
+		dst[u] = max(d, dst[u]);
+		distDfs(G[u][i], u, d+W[u][i]);
+	}
+}
+
+
+int GetDistance() {
+    pii left = dfs(0, -1, 0);
+    pii right = dfs(left.second, -1, 0);
+
+    distDfs(left.second, -1, 0);
+    distDfs(right.second, -1, 0);
+
+    return right.first;
+}
+
 
 int main() {
 	//freopen("in", "r", stdin);
 	//freopen("out", "w", stdout);
 
-	int t, u, v, w, E;
+	int t, u, v, w, V;
 	scanf("%d", &t);
 
 	for(int Case = 1; Case <= t; ++Case) {
-		scanf("%d", &E);
+		scanf("%d", &V);
 
-		for(int i = 1; i < E; ++i) {
-			scanf("%d%d%d", &v, &u, &w);
+		for(int i = 1; i < V; ++i) {
+			scanf("%d%d%d", &u, &v, &w);
 			G[u].push_back(v);
 			G[v].push_back(u);
 			W[u].push_back(w);
 			W[v].push_back(w);
 		}
 
+		memset(dst, 0, sizeof dst);
+		GetDistance();
+
 		printf("Case %d:\n", Case);
+		for(int i = 0; i < V; ++i)
+			printf("%d\n", dst[i]);
 
-		for(int i = 0; i < E; ++i) {
-			//printf("Start %d\n", i);
-			printf("%lld\n", dfs(i, -1, 0));
-		}
-
-		for(int i = 0; i < E; ++i)
+		for(int i = 0; i < V; ++i)
 			G[i].clear(), W[i].clear();
-		dp.clear();
 	}
 
 	return 0;
