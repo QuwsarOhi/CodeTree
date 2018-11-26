@@ -1,71 +1,49 @@
-// LightOJ
-// 1205 - Palindromic Numbers
-// Digit DP
-
 #include <bits/stdc++.h>
 using namespace std;
 
-int dp[18][18][2][2][2];
-vector<int>mx;
+int dx[] = {-1, 0, 0, 1}, dy[] = {0, -1, 1, 0};
 
-int recur(int l, int r, bool nonZero, bool lftTight, bool biggerRight) {
-    if(l > r) {
-        if(lftTight == 1 && biggerRight == 1)
-            return 0;
-        return 1;
+char G[503][503];
+int mem[503][503], n, m;
+bool vis[503][503];
+vector<pair<int, int> >p;
+
+int dfs(int x, int y) {
+    vis[x][y] = 1;
+    p.push_back(make_pair(x, y));
+
+    int ret = vis[x][y] == 'C';
+    for(int i = 0; i < 4; ++i) {
+        int xx = x + dx[i];
+        int yy = y + dy[i];
+
+        if(xx >= 0 and yy >= 0 and xx < n and yy < m and not vis[xx][yy])
+            ret += dfs(xx, yy);
     }
-
-    int &ret = dp[l][r][nonZero][lftTight][biggerRight];
-    if(ret != -1)
-        return ret;
-    ret = 0;
-
-    int lim = lftTight ? mx[l]:9;
-
-    for(int d = 0; d <= lim; ++d) {
-        bool newNonZero = nonZero or d > 0;
-        bool newLftTight = d == mx[l] ? lftTight:0;
-
-        if(d == 0 && newNonZero == 0) {
-            ret += recur(l+1, r, newNonZero, newLftTight, biggerRight);
-            continue;
-        }
-        else if(l == r) {
-            ret += recur(l+1, r-1, newNonZero, newLftTight, biggerRight);
-            continue;
-        }
-        ret += recur(l+1, r-1, newNonZero, newLftTight, (d >= mx[r] and biggerRight) or d > mx[r]);
-    }
-
     return ret;
 }
 
-int solve(long long x) {
-    if(x < 0) return 0;
-    if(x == 0) return 1;
-
-    mx.clear();
-    while(x) {
-        mx.push_back(x%10);
-        x/=10;
-    }
-
-    reverse(mx.begin(), mx.end());
-    memset(dp, -1, sizeof dp);
-    return recur(0, (int)mx.size()-1, 0, 1, 0);
-}
-
 int main() {
-    int t;
-    long long a, b;
+    int t, q, tmp;
     scanf("%d", &t);
 
     for(int Case = 1; Case <= t; ++Case) {
-        scanf("%lld%lld", &a, &b);
-        if(a > b) swap(a, b);
+        scanf("%d%d%d", &n, &m, &q);
 
-        printf("Case %d: %d\n", Case, solve(b)-solve(a-1));
+        for(int i = 0; i < n; ++i)
+            scanf(" %s", G[i]);
+
+        for(int i = 0; i < n; ++i)
+            for(int j = 0; j < m; ++j)
+                if(not vis[i][j]) {
+                    tmp = dfs(i, j);
+
+                    while(not p.empty()) {
+                        mem[p.back().first][p.back().second] = tmp;
+                        p.pop_back();
+                    }
+                }
+
+
     }
-
-    return 0;
 }
