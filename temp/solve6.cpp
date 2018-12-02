@@ -1,50 +1,56 @@
+// LightOJ
+// 1357 - Corrupted Friendship
+
 #include <bits/stdc++.h>
-#define MAX 100009
+#define MAX 101000
 using namespace std;
 
-vector<int>G[MAX];
-set<int>SET;
+vector<long long>G[MAX];
+set<long long>SET;
+set<pair<long long, long long> >EDGE;
 long long cnt;
+bitset<MAX> vis;
 
 long long dfs(int u, int par = -1) {
-    int ret = 0;
-
+    long long ret = 0;
+    vis[u] = 1;
     SET.erase(u);
-    //--cnt;
     for(int i = 0; i < G[u].size(); ++i) {
         int v = G[u][i];
 
-        if(v != par)
+        if(not vis[v])
             ret += dfs(v, u);
     }
 
     ret += SET.size();
-    //ret += cnt;
     return ret;
 }
 
 int main() {
-    int t, u, v, V;
-    scanf("%d", &t);
+    long long t, u, v, V;
+    scanf("%lld", &t);
 
     for(int Case = 1; Case <= t; ++Case) {
-        scanf("%d", &V);
+        scanf("%lld", &V);
 
         for(int i = 1; i < V; ++i) {
-            scanf("%d%d", &u, &v);
-            G[u].push_back(v);
-            //G[v].push_back(u);
-        }
+            scanf("%lld%lld", &u, &v);
+            if(u > v) swap(u, v);
+            if(not EDGE.count(make_pair(u, v))) {
+                G[u].push_back(v);
+                G[v].push_back(u);
+        }}
 
         for(int i = 1; i <= V; ++i)
             SET.insert(i);
 
-        //cnt = V;
-        printf("Case %d: %d %lld\n", Case, V-1, dfs(1));
+        vis.reset();
+        printf("Case %d: %lld %lld\n", Case, V-1, dfs(1));
 
         for(int i = 0; i <= V; ++i)
             G[i].clear();
         SET.clear();
+        EDGE.clear();
     }
     return 0;
 }
