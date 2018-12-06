@@ -1,28 +1,22 @@
-// LightOJ
-// 1412 - Visiting Islands
-
 #include <bits/stdc++.h>
-#define MAX 100005
-#define INF 0x3f3f3f3f
+#define MAX 210000
 using namespace std;
 
-bitset<MAX> compo, vis;
-vector<int> G[MAX];
-int ans[MAX];
+vector<int>G[MAX];
+bitset<MAX>vis, compoVis;
+set<int>NODE;
+vector<vector<int> > chain;
 
-int dfs(int u) {
-    compo[u] = 1;
-    int ret = 1;
-    for(int i = 0; i < G[u].size(); ++i) {
-        int v = G[u][i];
-        if(not compo[v])
-            ret += dfs(v);
-    }
-    return ret;
+bool cmp(vector<int> &a, vector<int> &b) {
+    int lim = min(a.size(), b.size());
+    for(int i = 0; i < lim; ++i)
+        if(a[i] > b[i])
+            return 1;
+    return 0;
 }
 
 int maxLen, startNode;
-void LongestChain(int u, int len) {
+void FindNode(int u, int len) {
     vis[u] = 1;
 
     if(len > maxLen) {
@@ -32,17 +26,50 @@ void LongestChain(int u, int len) {
 
     for(int i = 0; i < G[u].size(); ++i) {
         int v = G[u][i];
-        if(not vis[v]) LongestChain(v, len+1);
+        if(not vis[v])
+            FindNode(v, len+1);
+    }
+    vis[u] = 0;
+}
+
+bool MarkChain(int u, int len, bool first) {
+    vis[u] = 1;
+    if(len == maxLen)
+        return 1;
+
+    for(int i = 0; i < G[u].size(); ++i) {
+        int v = G[u][i];
+        if(vis[v] == 0 and MarkChain(v, len+1, 0)) {
+            NODE.erase(v);
+            return 1;
+        }
     }
 
     vis[u] = 0;
+    if(first) {
+        vis[u] = 1;
+        NODE.erase(u);
+    }
+
+    return 0;
+}
+
+void dfs(int u) {
+    compoVis[u] = 1;
+    NODE.insert(u);
+
+    for(int i = 0; i < G[u].size(); ++i) {
+        int v = G[u][i];
+        if(not compoVis[v])
+            dfs(v);
+    }
 }
 
 int main() {
     //freopen("in", "r", stdin);
     //freopen("out", "w", stdout);
 
-    int t, u, v, V, E, k, q;
+    int t, V, E, u, v, q, k;
     scanf("%d", &t);
 
     for(int Case = 1; Case <= t; ++Case) {
@@ -54,33 +81,41 @@ int main() {
             G[v].push_back(u);
         }
 
-        memset(ans, INF, sizeof ans);
-        compo.reset();
         vis.reset();
+        compoVis.reset();
 
-        //cerr << "DONE\n";
-
-        // Process each Graph Component
-        int maxCompo = 0;
+        int maxTot = 0, maxChain = 0;
         for(int i = 1; i <= V; ++i) {
-            if(compo[i]) continue;
+            if(compoVis[i]) continue;
+            dfs(i);
+            chain.push_back(vector<int>());
 
-            int totNode = dfs(i);
-            maxCompo = max(maxCompo, totNode);
+            while(not NODE.empty()) {
+                maxLen = -1, startNode = -1;
+                FindNode(*NODE.begin(), 1);
+                maxLen = -1;
+                FindNode(startNode, 1);
+                MarkChain(startNode, 1, 1);
 
-            //cerr << "DFS DONE\n";
+                if(NODE.count(startNode))
+                    NODE.erase(startNode);
 
-            maxLen = -1, startNode = -1;
-            LongestChain(i, 1);
-            maxLen = -1;
-            LongestChain(startNode, 1);
-
-            for(int k = 1; k <= totNode; ++k) {
-                if(k <= maxLen)
-                    ans[k] = min(ans[k], k-1);
-                else
-                    ans[k] = min(ans[k], maxLen-1 + (k-maxLen)*2);
+                chain.back().push_back(maxLen);
+                maxChain = max(maxChain, maxLen);
             }
+        }
+
+        for(int i = 0; i < chain.size(); ++i)
+            sort(chain[i].begin(), chain[i].end(), greater<int>());
+        sort(chain.begin(), chain.end(), cmp);
+
+
+        for(int i = 0; i < chain.size(); ++i) {
+            int tot = 0;
+            for(int j = 0; j < chain[i].size(); ++j)
+                tot += chain[i][j];
+            chain[i].push_back(tot);
+            maxTot = max(maxTot, tot);
         }
 
         printf("Case %d:\n", Case);
@@ -88,13 +123,38 @@ int main() {
 
         while(q--) {
             scanf("%d", &k);
-            if(k > maxCompo)
+
+            if(maxChain >= k) {
+                printf("%d\n", max(k-1, 0));
+                continue;
+            }
+
+            if(maxTot < k) {
                 printf("impossible\n");
-            else
-                printf("%d\n", ans[k]);
+                continue;
+            }
+
+            for(int i = 0; i < chain.size(); ++i) {
+                if(chain[i].empty() or chain[i].back() < k) continue;
+
+                int totCost = chain[i][0]-1, kSum = chain[i][0];
+                for(int j = 1; j < (int)chain[i].size()-1 and kSum < k; ++j) {
+                    if(kSum+chain[i][j] <= k)
+                        totCost += chain[i][j]*2;
+                    else
+                        totCost += chain[i][j]*2 - ((kSum+chain[i][j])-k)*2;
+                    kSum += chain[i][j];
+                }
+
+                printf("%d\n", totCost);
+                break;
+            }
         }
 
-        for(int i = 0; i <= V; ++i) G[i].clear();
+        for(int i = 0; i <= V; ++i)
+            G[i].clear();
+        chain.clear();
+        NODE.clear();
     }
 
     return 0;
