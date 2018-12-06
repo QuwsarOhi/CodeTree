@@ -1,58 +1,100 @@
 // LightOJ
-// 1337 - The Crystal Maze
+// 1412 - Visiting Islands
 
 #include <bits/stdc++.h>
+#define MAX 100005
+#define INF 0x3f3f3f3f
 using namespace std;
 
-int dx[] = {-1, 0, 0, 1}, dy[] = {0, -1, 1, 0};
+bitset<MAX> compo, vis;
+vector<int> G[MAX];
+int ans[MAX];
 
-char G[503][503];
-int mem[503][503], n, m;
-int vis[503][503], cnt;
-vector<pair<int, int> >p;
-
-int dfs(int x, int y) {
-    vis[x][y] = cnt;
-    p.push_back(make_pair(x, y));
-
-    int ret = G[x][y] == 'C';
-    for(int i = 0; i < 4; ++i) {
-        int xx = x + dx[i];
-        int yy = y + dy[i];
-
-        if(xx >= 0 and yy >= 0 and xx < n and yy < m and vis[xx][yy] != cnt and G[xx][yy] != '#')
-            ret += dfs(xx, yy);
+int dfs(int u) {
+    compo[u] = 1;
+    int ret = 1;
+    for(int i = 0; i < G[u].size(); ++i) {
+        int v = G[u][i];
+        if(not compo[v])
+            ret += dfs(v);
     }
     return ret;
 }
 
+int maxLen, startNode;
+void LongestChain(int u, int len) {
+    vis[u] = 1;
+
+    if(len > maxLen) {
+        maxLen = len;
+        startNode = u;
+    }
+
+    for(int i = 0; i < G[u].size(); ++i) {
+        int v = G[u][i];
+        if(not vis[v]) LongestChain(v, len+1);
+    }
+
+    vis[u] = 0;
+}
+
 int main() {
-    int t, q, tmp;
+    //freopen("in", "r", stdin);
+    //freopen("out", "w", stdout);
+
+    int t, u, v, V, E, k, q;
     scanf("%d", &t);
 
     for(int Case = 1; Case <= t; ++Case) {
-        scanf("%d%d%d", &n, &m, &q);
+        scanf("%d%d", &V, &E);
 
-        for(int i = 0; i < n; ++i)
-            scanf(" %s", G[i]);
+        for(int i = 0; i < E; ++i) {
+            scanf("%d%d", &u, &v);
+            G[u].push_back(v);
+            G[v].push_back(u);
+        }
 
-        ++cnt;
-        for(int i = 0; i < n; ++i)
-            for(int j = 0; j < m; ++j)
-                if(vis[i][j] != cnt) {
-                    tmp = dfs(i, j);
-                    //cerr << i << " " << j << " :: " << tmp << endl;
-                    while(not p.empty()) {
-                        mem[p.back().first][p.back().second] = tmp;
-                        p.pop_back();
-                    }
-                }
+        memset(ans, INF, sizeof ans);
+        compo.reset();
+        vis.reset();
+
+        //cerr << "DONE\n";
+
+        // Process each Graph Component
+        int maxCompo = 0;
+        for(int i = 1; i <= V; ++i) {
+            if(compo[i]) continue;
+
+            int totNode = dfs(i);
+            maxCompo = max(maxCompo, totNode);
+
+            //cerr << "DFS DONE\n";
+
+            maxLen = -1, startNode = -1;
+            LongestChain(i, 1);
+            maxLen = -1;
+            LongestChain(startNode, 1);
+
+            for(int k = 1; k <= totNode; ++k) {
+                if(k <= maxLen)
+                    ans[k] = min(ans[k], k-1);
+                else
+                    ans[k] = min(ans[k], maxLen-1 + (k-maxLen)*2);
+            }
+        }
 
         printf("Case %d:\n", Case);
+        scanf("%d", &q);
+
         while(q--) {
-            scanf("%d%d", &n, &m);
-            printf("%d\n", mem[n-1][m-1]);
+            scanf("%d", &k);
+            if(k > maxCompo)
+                printf("impossible\n");
+            else
+                printf("%d\n", ans[k]);
         }
+
+        for(int i = 0; i <= V; ++i) G[i].clear();
     }
 
     return 0;
