@@ -1,91 +1,75 @@
 #include <bits/stdc++.h>
-#define MAX 20100
+#define MAX 301000
 using namespace std;
 
-vector<int>G[MAX];
-int indegree[MAX], vis[MAX], timer, leaf;
-set<int>SET;
+typedef long long ll;
 
-/*void dfs(int u) {
-	timer++;
-	if(vis[u] != -1) {
-		SET.insert(vis[u]);
-		return;
-	}
+vector<ll>G[MAX], C[MAX];
+ll w[MAX];
+vector<pair<ll, ll> >wp;
+bitset<MAX>vis;
 
-	cnt += G[u].empty();
+map<pair<int, int>, ll>mem;
 
-	for(int i = 0; i < G[u].size(); ++i) {
-		int v = G[u][i];
-		dfs(v);
-	}
+void dfs(int u, ll fuel, int par = -1) {
+    vis[u] = 1;    
 
-	vis[u] = timer;
-}*/
+    if(fuel < 0) {
+        vis[u] = 0; 
+        return;
+    }
 
-void dfs(int u) {
-	vis[u] = 1;
-	leaf += G[u].empty();
+    if(mem.find({u, par}) != mem.end() and mem[{u, par}] > fuel) {
+        vis[u] = 0;
+        return;
+    }
 
-	for(int i = 0; i < G[u].size(); ++i) {
-		int v = G[u][i];
 
-		if(vis[v] == -1)
-			dfs(v);
-	}
+    auto &it = mem[{u, par}];
+    it = fuel;
+
+    for(int i = 0; i < G[u].size(); ++i) {
+        int v = G[u][i];
+        int cst = C[u][i];
+
+        if(not vis[v]) {
+            dfs(v, fuel+w[v]-cst, u);
+            it = max(it, mem[{v, u}]);
+        }
+    }
+
+    vis[u] = 0;
 }
 
 int main() {
-	freopen("in", "r", stdin);
-	freopen("out", "w", stdout);
+    long long V, u, v, c;
+    scanf("%lld", &V);
 
-	int t, V, u, v;
-	scanf("%d", &t);
+    long long ans = 0;
+    for(int i = 1; i <= V; ++i) {
+        scanf("%lld", &w[i]);
+        ans = max(ans, w[i]);
+        wp.push_back({w[i], i});
+    }
 
-	for(int Case = 1; Case <= t; ++Case) {
-		scanf("%d", &V);
-		memset(indegree, 0, sizeof indegree);
+    for(int i = 1; i < V; ++i) {
+        scanf("%lld", &u);
+        scanf("%lld", &v);
+        scanf("%lld", &c);
+        G[u].push_back(v);
+        G[v].push_back(u);
+        C[u].push_back(c);
+        C[v].push_back(c);
+    }
 
-		for(int i = 1; i < V; ++i) {
-			scanf("%d%d", &u, &v);
-			G[u].push_back(v);
-			//rG[v].push_back(u);
-			indegree[v]++;
-		}
+    for(auto it : wp) {
+        c = it.first;
+        u = it.second;
 
-		memset(vis, -1, sizeof vis);
+        dfs(u, c);
+        ans = max(ans, mem[{u, -1}]);
+    }   
 
-		leaf = 0;
-		int root = 0;
-		for(u = 0; u < V; ++u) {
-			if(indegree[u] != 0)
-				continue;
-
-			++root;
-			dfs(u);
-
-			/*if(SET.empty())
-				cout << "empty";
-			for(auto it : SET)
-				cout << it << " ";
-			cout << endl;
-
-			cout << "CNT " << leaf << endl;
-			leaf += SET.size();
-			SET.clear();*/
-		}
-
-		//cout << "Root " << root << endl;
-
-		int ans = 0;
-		if(root > leaf)
-			ans = leaf + root - leaf;
-		else
-			ans = leaf;
-
-		printf("Case %d: %d\n", Case, ans);
-
-		for(int i = 0; i <= V; ++i) G[i].clear();
-	}
-	return 0;
+    cout << ans << endl;
+    return 0;
 }
