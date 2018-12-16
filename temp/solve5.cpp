@@ -1,64 +1,73 @@
 #include <bits/stdc++.h>
+#define INF 0x3f3f3f3f
 using namespace std;
 
+int n, m;
+
 void trigger(int x, int y, int G[]) {
-	// horizontal 
-    for(int i = 0; i < m; ++i)
-        G[x] ^= (1 << i);
-    
-    // vertical
-    for(int i = 0; i < n; ++i)
-        G[i] ^= (1 << y);
-    
-    // diagonals
-    int xx = x, yy = y;
-    while(xx >= 0 and yy >= 0)
-    	G[xx--] ^= (1 << yy--);
-    xx = x, yy = y;
-    while(xx < n and yy < m)
-    	G[xx++] ^= (1 << yy++);
-
-    //
-    xx = x, yy = y;
-    while(xx < n and yy >= 0)
-        G[xx++] ^= (1 << yy--);
-    xx = x, yy = y;
-    while(xx >= 0 and yy < m)
-        G[xx--] ^= (1 << yy++);
-
-    Toggle(x, y, v);
-    G[x] ^= (1 << y);
-    return v;
+	G[x] ^= (1 << y);
+	if(x-1 >= 0 and y-1 >= 0)
+		G[x-1] ^= (1 << (y-1));
+	if(x-1 >= 0)
+		G[x-1] ^= (1 << y);
+	if(x-1 >= 0 and y+1 < m)
+		G[x-1] ^= (1 << (y+1));
+	if(y-1 >= 0)
+		G[x] ^= (1 << (y-1));
+	if(y+1 < m)
+		G[x] ^= (1 << (y+1));
+	if(x+1 < n and y-1 >= 0)
+		G[x+1] ^= (1 << (y-1));
+	if(x+1 < n)
+		G[x+1] ^= (1 << y);
+	if(x+1 < n and y+1 < m)
+		G[x+1] ^= (1 << (y+1)); 
 }
 
 bool isOK(const int G[]) {
 	for(int i = 0; i < n; ++i)
-		if(G[i] != (1 << j)-1)
+		if(G[i] != (1 << m)-1)
 			return 0;
 	return 1;
 }
 
+void printer(int G[]) {
+	for(int i = 0; i < n; ++i, printf("\n"))
+		for(int j = 0; j < m; ++j)
+			printf("%c ", (G[i] & (1 << j)) ? '*':'.');
+	printf("\n");
+}
+
 int G[8], dp[(1<<7)+10][(1<<7)+10];
 
-
-int recur(int pst, int pres) {
-	if(pres == n)
-		return isOK(G) ? 0:INF;
+int recur(int pstR, int presR) {
+	//printer(G);
+	if(pstR == n)
+		return 0;
 
 	int ret = INF;
 	for(int i = 0; i < m; ++i) {
-		if(pst != -1 and pst == (1 << m)-1)
-			ret = min(ret, recur(pres, pres+1));
-		trigger(i, j, G);
-		ret = min(ret, recur(pres, pres+1)+1);
-		trigger(i, j, G);
+		if(pstR == -1 or G[pstR] == (1 << m)-1) {
+			//cout << "skip " << pstR << ", " << presR << endl;
+			ret = min(ret, recur(presR, presR+1));
+		}
+		//if(presR < n) {
+			trigger(presR, i, G);
+			//cout << presR << ", " << i << endl;
+			if(G[pstR] == (1 << m) - 1)
+				ret = min(ret, recur(presR, presR+1)+1);
+			trigger(presR, i, G);
+		//}
 	}
 
 	return ret;
 }
 
 int main() {
+	freopen("out", "w", stdout);
+
 	int t;
+	char cc;
 	scanf("%d", &t);
 
 	for(int Case = 1; Case <= t; ++Case) {
@@ -73,6 +82,23 @@ int main() {
 			}
 		}
 
+		//printer(G);
 
+		int ans = recur(-1, 0);
+		printf("Case %d: %d\n", Case, ans);
 	}
+
+	return 0;
 }
+
+/*
+
+1
+
+3 3
+
+***
+*.*
+***
+
+*/
