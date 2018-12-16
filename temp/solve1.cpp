@@ -17,22 +17,24 @@ ll dfs(int u, int par = -1) {
         seg.push_back(dfs(v.first, u) - v.second);
     }
 
-    if(G[u].size() == 1) {
+    if(seg.size() == 0) {
         ans = max(ans, w[u]);
         return w[u];
     }
 
-    sort(seg.begin(), seg.end(), greater<ll>);
+    sort(seg.begin(), seg.end(), greater<ll>());
     ll ret = max(seg[0], 0LL) + w[u];
 
     ans = max(ans, ret);
-    ans = max(ans, w[u]);
+    //ans = max(ans, w[u]);
+    if(seg.size() > 1)
+        ans = max(ans, ret + seg[1]);
 
     return ret;
 }
 
 int main() {
-    int V;
+    ll V, u, v, c;
     cin >> V;
 
     for(int i = 1; i <= V; ++i)
