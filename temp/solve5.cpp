@@ -1,3 +1,6 @@
+// LightOJ
+// 1092 - Lighted Panels
+
 #include <bits/stdc++.h>
 #define INF 0x3f3f3f3f
 using namespace std;
@@ -6,66 +9,54 @@ int n, m;
 
 void trigger(int x, int y, int G[]) {
 	G[x] ^= (1 << y);
-	if(x-1 >= 0 and y-1 >= 0)
+	G[x-1] ^= (1 << y);
+	G[x+1] ^= (1 << y);
+
+	if(y-1 >= 0) {
 		G[x-1] ^= (1 << (y-1));
-	if(x-1 >= 0)
-		G[x-1] ^= (1 << y);
-	if(x-1 >= 0 and y+1 < m)
-		G[x-1] ^= (1 << (y+1));
-	if(y-1 >= 0)
 		G[x] ^= (1 << (y-1));
-	if(y+1 < m)
-		G[x] ^= (1 << (y+1));
-	if(x+1 < n and y-1 >= 0)
 		G[x+1] ^= (1 << (y-1));
-	if(x+1 < n)
-		G[x+1] ^= (1 << y);
-	if(x+1 < n and y+1 < m)
+	}
+	
+	if(y+1 < m) {
+		G[x-1] ^= (1 << (y+1));
+		G[x] ^= (1 << (y+1));
 		G[x+1] ^= (1 << (y+1)); 
+	}
 }
 
-bool isOK(const int G[]) {
-	for(int i = 0; i < n; ++i)
-		if(G[i] != (1 << m)-1)
+int G[10], dp[8][(1<<8)+10][(1<<8)+10], cur[8][(1<<8)+10][(1<<8)+10], curCnt = 0;
+
+int recur(int r, int pstMsk, int presMsk) {
+	if(r == n) {
+		if(pstMsk == ((1 << m)-1))
 			return 0;
-	return 1;
-}
+		return INF;
+	}
 
-void printer(int G[]) {
-	for(int i = 0; i < n; ++i, printf("\n"))
+	if(cur[r][pstMsk][presMsk] == curCnt)
+		return dp[r][pstMsk][presMsk];
+
+	cur[r][pstMsk][presMsk] = curCnt;
+	int &ret = dp[r][pstMsk][presMsk];
+	ret = INF;
+
+	for(int i = 0; i < (1 << m); ++i) {
+		int g[] = {pstMsk, presMsk, G[r+1]};
+		int toggle = 0;
+
 		for(int j = 0; j < m; ++j)
-			printf("%c ", (G[i] & (1 << j)) ? '*':'.');
-	printf("\n");
-}
+			if(i & (1 << j))
+				++toggle, trigger(1, j, g);
 
-int G[8], dp[(1<<7)+10][(1<<7)+10];
-
-int recur(int pstR, int presR) {
-	//printer(G);
-	if(pstR == n)
-		return 0;
-
-	int ret = INF;
-	for(int i = 0; i < m; ++i) {
-		if(pstR == -1 or G[pstR] == (1 << m)-1) {
-			//cout << "skip " << pstR << ", " << presR << endl;
-			ret = min(ret, recur(presR, presR+1));
-		}
-		//if(presR < n) {
-			trigger(presR, i, G);
-			//cout << presR << ", " << i << endl;
-			if(G[pstR] == (1 << m) - 1)
-				ret = min(ret, recur(presR, presR+1)+1);
-			trigger(presR, i, G);
-		//}
+		if(g[0] == (1 << m)-1 or r == 0)
+			ret = min(ret, recur(r+1, g[1], g[2])+toggle);
 	}
 
 	return ret;
 }
 
 int main() {
-	freopen("out", "w", stdout);
-
 	int t;
 	char cc;
 	scanf("%d", &t);
@@ -82,23 +73,15 @@ int main() {
 			}
 		}
 
-		//printer(G);
+		++curCnt;
+		int ans = recur(0, 0, G[0]);
+		printf("Case %d: ", Case);
 
-		int ans = recur(-1, 0);
-		printf("Case %d: %d\n", Case, ans);
+		if(ans >= INF)
+			printf("impossible\n");
+		else
+			printf("%d\n", ans);
 	}
 
 	return 0;
 }
-
-/*
-
-1
-
-3 3
-
-***
-*.*
-***
-
-*/
