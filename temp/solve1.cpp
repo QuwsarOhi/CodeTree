@@ -1,52 +1,77 @@
 #include <bits/stdc++.h>
-#define MAX 300100
 using namespace std;
 
-typedef long long ll;
 
-vector<pair<ll, ll> > G[MAX];
-ll w[MAX];
+bool valid(pii x) {
+    if(x.first < 0 or x.first >= 8)
+        return 0;
+    if(x.second < 0 or x.second >= 8)
+        return 0;
+    return 1;
+}
 
-ll ans = 0;
+int dist[8][8], mem[8][8][8][8];
 
-ll dfs(int u, int par = -1) {
-    vector<ll>seg;
+int bfs(pii s, pii t) {
+    if(mem[u.first][u.second] != -1)
+        return mem[u.first][u.second];
 
-    for(auto v : G[u]) {
-        if(v.first == par) continue;
-        seg.push_back(dfs(v.first, u) - v.second);
+    queue<pii>q;
+    q.push(s);
+    dist[s.first][s.second] = 0;
+
+    pii u, v;
+    while(not q.empty()) {
+        u = q.front();
+        q.pop();
+
+        if(u == t)
+            return mem[u.first][u.second] = dist[u.first][u.second];
+
+        for(int i = 0; i < 8; ++i) {
+            v.first = u.first + dx[i];
+            v.second = u.second + dy[i];
+
+            if(not valid(v)) 
+                continue;
+            if(G[v.first][v.second] != '.' and G[v.first][v.second] != 'P')
+                continue;
+
+            dist[v.first][v.second] = dist[u.first][u.second] + 1;
+            q.push(v);
+        }
     }
 
-    if(seg.size() == 0) {
-        ans = max(ans, w[u]);
-        return w[u];
-    }
+    return -1;
+}
 
-    sort(seg.begin(), seg.end(), greater<ll>());
-    ll ret = max(seg[0], 0LL) + w[u];
 
-    ans = max(ans, ret);
-    //ans = max(ans, w[u]);
-    if(seg.size() > 1)
-        ans = max(ans, ret + seg[1]);
-
-    return ret;
+int recur(int placed, int x, int y, int mask) {
+    if(placed == )
 }
 
 int main() {
-    ll V, u, v, c;
-    cin >> V;
+    int t;
+    scanf("%d", &t);
 
-    for(int i = 1; i <= V; ++i)
-        cin >> w[i];
+    while(t--) {
+        scanf("%d", &step);
 
-    for(int i = 1; i < V; ++i) {
-        cin >> u >> v >> c;
-        G[u].push_back({v, c});
-        G[v].push_back({u, c});
+        for(int i = 0; i < 8; ++i)
+            scanf("%s", &G[i]);
+
+
     }
-
-    dfs(1);
-    cout << ans << endl;
-    return 0;
 }
+
+/*
+3
+
+...pP...
+..P..k.K
+p.....p.
+...p....
+...p....
+........
+.p......
+........
