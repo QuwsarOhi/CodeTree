@@ -1,144 +1,98 @@
 #include <bits/stdc++.h>
+#define isON(xx, jj)    (xx & (1 << jj))
+#define ON(xx, jj)      (xx | (1 << jj))
+#define INF             0x3f3f3f3f
 using namespace std;
-typedef long long ll;
 
 
-bool Get(int x, int y, const ll &v) {
-    int idx = x*8+y;
-    return v & (1LL << idx);
-}
+int recur(int pos, int mask0, int mask1) {
+    if(mask0 == (1 << S)-1 and mask1 == (1 << S)-1)
+        return 0;
+    if(pos == N)
+        return INF;
 
-void Set(int x, int y, ll &v) {
-    int idx = x*8+y;
-    v |= (1LL << idx);
-}
+    int ret = recur(pos+1, mask0, mask1);
 
-void Reset(int x, int y, ll &v) {
-    int idx = x*8+y;
-    v &= ~(1LL << idx);
-}
-
-void Toggle(int x, int y, ll &v) {
-    int idx = x*8+y;
-    v ^= (1LL << idx);
-}
-
-int n, m;
-
-bool OK(const ll &v) {
-    for(int i = 0; i < n; ++i)
-        for(int j = 0; j < m; ++j)
-            if(not Get(i, j, v))
-                return 0;
-    return 1;
-}
-
-ll turnOn(int x, int y, ll v) {
-    // horizontal 
-    for(int i = 0; i < m; ++i)
-        Toggle(x, i, v);
-    
-    // vertical
-    for(int i = 0; i < n; ++i)
-        Toggle(i, y, v);
-    
-    // diagonals
-    int xx = x, yy = y;
-    while(xx >= 0 and yy >= 0)
-        Toggle(xx--, yy--, v);
-    xx = x, yy = y;
-    while(xx < n and yy < m)
-        Toggle(xx++, yy++, v);
-
-    //
-
-    xx = x, yy = y;
-    while(xx < n and yy >= 0)
-        Toggle(xx++, yy--, v);
-
-    xx = x, yy = y;
-    while(xx >= 0 and yy < m)
-        Toggle(xx--, yy++, v);
-
-    Toggle(x, y, v);
-    return v;
-}
-
-
-void printer(ll vv) {
-    for(int i = 0; i < n; ++i, printf("\n"))
-        for(int j = 0; j < m; ++j)
-            printf("%c ", Get(i, j, vv) ? '*':'.');
-}
-
-map<ll, int>dist;
-
-int bfs(ll u) {
-    queue<ll> q;
-    q.push(u);
-    dist[u] = 0;
-
-    ll v;
-    while(not q.empty()) {
-        u = q.front();
-        q.pop();
-
-        if(OK(u))
-            return dist[u];
-
-        int tmp = dist[u] + 1;
-        for(int i = 0; i < n; ++i) {
-            for(int j = 0; j < m; ++j) {
-                v = turnOn(i, j, u);
-
-                if(i == 2 and j == 2) {
-                    cerr << "NEW " << tmp << endl;
-                    printer(v);
-                    getchar();
-                }
-
-                if(dist.find(v) != dist.end()) continue;
-                dist[v] = tmp;
-
-                q.push(v);
-            }
-        }
+    for(auto it : sub[pos]) {
+        // check
     }
-
-    return -1;
 }
-
 
 int main() {
-    int t;
-    char cc;
-    scanf("%d", &t);
+    int S, N, M, x;
 
-    for(int Case = 1; Case <= t; ++Case) {
-        scanf("%d%d", &n, &m);
+    while(1) {
+        cin >> S >> M >> N;
 
-        ll gg = 0;
-        for(int i = 0; i < n; ++i)
-            for(int j = 0; j < m; ++j) {
-                scanf(" %c", &cc);
-                if(cc == '*') {
-                    cerr << i << " " << j << endl;
-                    Set(i, j, gg);
-                }
+        if(S == 0) break;
+
+        for(int i = 0; i < M; ++i) {
+            cin.ignore();
+            getline(cin, s);
+            ss.clear();
+            ss << s;
+
+            ss >> x;
+            totCost += x;
+
+            while(ss >> x) {
+                x--;
+                if(not isON(mask0, x))
+                    ON(mask0, x);
+                else
+                    ON(mask1, x);
             }
+        }
+
+        for(int i = 0; i < N; ++i) {
+            getline(cin, s);
+            ss.clear();
+            ss << s;
+            ss >> cst[i];
+
+            sub[i].clear();
+            while(ss >> x)
+                sub[i].push_back(x-1);
+        }
 
 
-        printer(gg);
-
-        dist.clear();
-        int ans = bfs(gg);
-
-        printf("Case %d: ", Case);
-        if(ans == -1)
-            printf("impossible\n");
-        else
-            printf("%d\n", ans);
     }
+}
+
+/*
+#include<bits/stdc++.h>
+using namespace std;
+
+#define MAX 1000000
+
+bool isPrime[MAX];
+int totalPrime, primes[MAX];
+
+void sieve(int N) {
+    for(int i = 0; i < MAX; ++i)
+        isPrime[i] = 1;
+
+    isPrime[0] = isPrime[1] = 0;
+    totalPrime = 0;
+
+    for(int i = 2; i <= N; i++) {      // change lim to N, if all primes in range N is needed
+        if(isPrime[i] == 1) {
+            primes[totalPrime++] = i;
+
+            for(int j = i*i; j <= N; j+= i)
+                isPrime[j] = 0;
+        }
+    }
+}
+
+int main() {
+    int num;
+    scanf("%d",&num);
+
+    sieve(num);
+
+    for(int i = 0; i < totalPrime; ++i)
+        printf("%d ", primes[i]);
 
     return 0;
-}
+}*/
