@@ -185,6 +185,23 @@ ll bitDP(int pos, int mask, int pairs, bool prevOn, bool tight) {
     return dp[pos][pairs][prevOn][tight] = ans;
 }
 
+//-----------------------Sequence Dp-----------------------
+
+// Finding number of subsequences for which mod of d is zero
+// for any subsequence, the mod of d is zero iff the cumulative sum 
+// of the subsequence is same as previously found cumulative sum
+ll subSeqSum(ll v[], ll n, ll d) {
+    ll ans = 0, sum = 0;
+    memset(dp, 0, sizeof dp);
+    dp[0] = 1;
+
+    for(int i = 0; i < n; ++i) {
+        sum = (sum + v[i])%d;
+        ans += dp[sum]++;
+    }
+    return ans;
+}
+
 //-----------------------Double Bounded Digit Dp Technique-----------------------
 
 vector<int>tt, mn = {0, 5, 4}, mx = {1, 3, 0};
