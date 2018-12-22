@@ -1,44 +1,61 @@
+// CodeChef
+// Subarray LCM
+// DP + Prime Factor
+
 #include <bits/stdc++.h>
 using namespace std;
 
-map<int, int> lft, rht, par;
+bitset<1000010> isPrime;
+vector<int>PF[1000010];
+int dp[1000010], pfPos[1000010], v[1000010];
 
-int process(int root, int x) {
-    if(root == 0) {
-        root = x;
+void sieveGen(long long N) {
+    isPrime.set();
+    isPrime[0] = isPrime[1] = 0;
+    for(long long i = 2; i <= N; i++) {
+        if(isPrime[i]) {
+            PF[i].push_back(i);
+            for(long long j = i+i; j <= N; j+= i)
+                isPrime[j] = 0, PF[j].push_back(i);
+}}}
+
+int CAL(int x) {
+    int maxCommonPos = 0;
+    
+    for(auto p : PF[v[x]]) {
+        maxCommonPos = max(maxCommonPos, pfPos[p]);
+        pfPos[p] = x;
     }
-    else if(root < x) {
-        if(rht[root] == 0) {
-            rht[root] = x;
-            par[x] = root;
-        }
-        else
-            process(rht[root], x);
-    }
-    else {
-        if(lft[root] == 0) {
-            lft[root] = x;
-            par[x] = root;
-        }
-        else
-            process(lft[root], x);
-    }
-    return root;
+
+    return maxCommonPos;
 }
 
-int v[100100];
-
 int main() {
-    int n, root = 0;
-    cin >> n;
+    sieveGen(1000000);
+    int t, n, ans, pstPos, totLen;
 
-    for(int i = 0; i < n; ++i) {
-        cin >> v[i];
-        root = process(root, v[i]);
+    scanf("%d", &t);
+
+    while(t--) {
+        scanf("%d", &n);
+
+        for(int i = 1; i <= n; ++i)
+            scanf("%d", &v[i]);
+
+        memset(dp, 0, sizeof dp);
+        memset(pfPos, 0, sizeof pfPos);
+        ans = 0;
+
+        for(int i = 1; i <= n; ++i) {
+            pstPos = CAL(i);
+            totLen = min(i - pstPos, dp[i-1]+1);
+
+            dp[i] = totLen;
+            ans = max(ans, totLen);
+        }
+
+        printf("%d\n", ans < 2?-1:ans);
     }
-
-    for(int i = 1; i < n; ++i)
-        cout << par[v[i]] << " ";
 
     return 0;
 }

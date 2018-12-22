@@ -1,36 +1,60 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-map<int, int>lft, rht;
-set<int>tree;
+
+bitset<1000010> isPrime;
+vector<int>PF[1000010];
+int dp[1000010], pfPos[1000010], v[1000010];
+
+
+void sieveGen(long long N) {
+    isPrime.set();
+    isPrime[0] = isPrime[1] = 0;
+    for(long long i = 2; i <= N; i++) {
+        if(isPrime[i]) {
+            PF[i].push_back(i);
+            for(long long j = i+i; j <= N; j+= i)
+                isPrime[j] = 0, PF[j].push_back(i);
+}}}
+
+
+int CAL(int x) {
+    int maxCommonPos = 0;
+    
+    for(auto p : PF[v[x]]) {
+        maxCommonPos = max(maxCommonPos, pfPos[p]);
+        pfPos[p] = x;
+    }
+    
+    return maxCommonPos;
+}
 
 int main() {
-    int n, x, par;
-    cin >> n;
+    sieveGen(1000000);
+    int t, n, ans, pstPos, totLen;
 
-    cin >> x;
-    tree.insert(x);
+    scanf("%d", &t);
 
-    for(int i = 1; i < n; ++i) {
-        cin >> x;
-        auto p = tree.upper_bound(x);
+    while(t--) {
+        scanf("%d", &n);
 
-        if(p != tree.end() and lft[*p] == 0) {
-            //cerr << "lft" << endl;
-            lft[*p] = x;
-            par = *p;
+        for(int i = 1; i <= n; ++i)
+            scanf("%d", &v[i]);
+
+        memset(dp, 0, sizeof dp);
+        memset(pfPos, 0, sizeof pfPos);
+        ans = 0;
+
+        for(int i = 1; i <= n; ++i) {
+            pstPos = CAL(i);
+            totLen = min(i - pstPos, dp[i-1]+1);
+
+            dp[i] = totLen;
+            ans = max(ans, totLen);
         }
-        else {
-            //cerr << "rht" << endl;
-            p--;
-            rht[*p] = x;
-            par = *p;
-        }
 
-        tree.insert(x);
-        cout << par << " ";
+        printf("%d\n", ans < 2?-1:ans);
     }
 
-    cout << endl;
     return 0;
 }
