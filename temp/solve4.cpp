@@ -1,59 +1,74 @@
 #include <bits/stdc++.h>
+#define MAX 1000010
 using namespace std;
 
+typedef long long ll;
+typedef unsigned int ui;
 
-bitset<1000010> isPrime;
-vector<int>PF[1000010];
-int dp[1000010], pfPos[1000010], v[1000010];
+bitset<MAX>isPrime;
+vector<int>primes;
 
+int Power(int x, int y) {                   // Can find modular inverse by a^(MOD-2),  a and MOD must be co-prime
+    int res = 1;
+    while(y > 0) {
+        if(y&1) res = (res*x);          // If y is odd, multiply x with result
+        y = y >> 1, x = (x * x);
+    }
+    return res;
+}
 
-void sieveGen(long long N) {
+void sieveGen(ll N) {
     isPrime.set();
     isPrime[0] = isPrime[1] = 0;
-    for(long long i = 2; i <= N; i++) {
+    for(ll i = 2; i <= N; i++) {        //Note, N isn't square rooted!
         if(isPrime[i]) {
-            PF[i].push_back(i);
-            for(long long j = i+i; j <= N; j+= i)
-                isPrime[j] = 0, PF[j].push_back(i);
+            for(ll j = i*i; j <= N; j+= i)
+                isPrime[j] = 0;
+            primes.push_back(i);
 }}}
 
+ui BS(int val, int lim) {
+    int lo = 1, hi = 27, mid = 1, p = 1;
 
-int CAL(int x) {
-    int maxCommonPos = 0;
-    
-    for(auto p : PF[v[x]]) {
-        maxCommonPos = max(maxCommonPos, pfPos[p]);
-        pfPos[p] = x;
+    while(lo <= hi) {
+        mid = (lo+hi)/2;
+        int tmp = Power(val, mid);
+
+        if(tmp < 0 or tmp >= lim)
+            hi = mid-1;
+        else {
+            p = mid;
+            lo = mid+1;
+        }
     }
-    
-    return maxCommonPos;
+    //cerr << val << " P " << p << endl;
+    return Power(val, p);
+}
+
+ui PF(int n) {
+    ui ans = 1;
+    ll t = n;
+
+    for(int i = 0; i < primes.size() and primes[i] <= n; ++i)
+        ans *= BS(primes[i], t);
+
+    for(int i = 0; i < primes.size() and primes[i] <= n; ++i)
+        while(n % primes[i] == 0)
+            n /= primes[i];
+    if(n != 1)
+        ans *= (unsigned int)n;
+    return ans;
 }
 
 int main() {
+    int t, n;
     sieveGen(1000000);
-    int t, n, ans, pstPos, totLen;
 
     scanf("%d", &t);
 
-    while(t--) {
+    for(int Case = 1; Case <= t; ++Case) {
         scanf("%d", &n);
-
-        for(int i = 1; i <= n; ++i)
-            scanf("%d", &v[i]);
-
-        memset(dp, 0, sizeof dp);
-        memset(pfPos, 0, sizeof pfPos);
-        ans = 0;
-
-        for(int i = 1; i <= n; ++i) {
-            pstPos = CAL(i);
-            totLen = min(i - pstPos, dp[i-1]+1);
-
-            dp[i] = totLen;
-            ans = max(ans, totLen);
-        }
-
-        printf("%d\n", ans < 2?-1:ans);
+        printf("Case %d: %u\n", Case, PF(n));
     }
 
     return 0;
