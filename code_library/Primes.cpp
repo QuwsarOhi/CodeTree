@@ -19,15 +19,19 @@ void sieve(unsigned long long N) {
                 isPrime[j] = 0;
 }}
 
-void sieveGen(unsigned long long N) {
+void sieveGen(ll N) {                   // Faster, Will generate all primes <= N
     isPrime.set();
-	isPrime[0] = isPrime[1] = 0;
-	for(unsigned long long i = 2; i <= N; i++) {		//Note, N isn't square rooted!
-		if(isPrime[i]) {
-			for(unsigned long long j = i*i; j <= N; j+= i)
+    isPrime[0] = isPrime[1] = 0;
+    for(ll i = 3; i*i <= N; i+=2) {
+        if(isPrime[i]) {
+            for(ll j = i*i; j <= N; j += i)
                 isPrime[j] = 0;
-			primes.push_back(i);
-}}}
+    }}
+    primes.push_back(2);
+    for(int i = 3; i <= N; i+=2)
+        if(isPrime[i])
+            primes.push_back(i);
+}
 
 vector<pair<ull, ull> > primeFactor(ull n) {      
     vector<pair<ull, ull> >factor;

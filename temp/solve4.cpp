@@ -1,68 +1,58 @@
 #include <bits/stdc++.h>
-#define MAX 1000010
+#define MAX 100000000
 using namespace std;
 
 typedef long long ll;
 typedef unsigned int ui;
 
-bitset<MAX>isPrime;
-vector<int>primes;
-
-int Power(int x, int y) {                   // Can find modular inverse by a^(MOD-2),  a and MOD must be co-prime
-    int res = 1;
-    while(y > 0) {
-        if(y&1) res = (res*x);          // If y is odd, multiply x with result
-        y = y >> 1, x = (x * x);
-    }
-    return res;
-}
+bitset<MAX+5>isPrime;
+ui primes[5761499], cum[5761499], pLen;
 
 void sieveGen(ll N) {
     isPrime.set();
     isPrime[0] = isPrime[1] = 0;
-    for(ll i = 2; i <= N; i++) {        //Note, N isn't square rooted!
+    for(ll i = 3; i*i <= N; i+=2) {        //Note, N isn't square rooted!
         if(isPrime[i]) {
-            for(ll j = i*i; j <= N; j+= i)
+            for(ll j = i*i; j <= N; j += i)
                 isPrime[j] = 0;
-            primes.push_back(i);
-}}}
-
-ui BS(int val, int lim) {
-    int lo = 1, hi = 27, mid = 1, p = 1;
-
-    while(lo <= hi) {
-        mid = (lo+hi)/2;
-        int tmp = Power(val, mid);
-
-        if(tmp < 0 or tmp >= lim)
-            hi = mid-1;
-        else {
-            p = mid;
-            lo = mid+1;
+    }}
+    pLen = 1;
+    cum[0] = primes[0] = 2;
+    for(int i = 3; i <= N; i += 2)
+        if(isPrime[i]) {
+            cum[pLen] = cum[pLen-1]*((ui)i);
+            primes[pLen++] = i;
         }
-    }
-    //cerr << val << " P " << p << endl;
-    return Power(val, p);
+}
+
+ui getPow(ll v, ll lim) {
+    ll ret = v;
+    while(ret * v <= lim)
+        ret *= v;
+
+    //cerr << v << " :: " << ret << endl; 
+    return (unsigned int)ret;
 }
 
 ui PF(int n) {
     ui ans = 1;
-    ll t = n;
 
-    for(int i = 0; i < primes.size() and primes[i] <= n; ++i)
-        ans *= BS(primes[i], t);
+    for(int i = 0; i < pLen and primes[i]*primes[i] <= n; ++i)
+        ans *= getPow(primes[i], n)/primes[i];
 
-    for(int i = 0; i < primes.size() and primes[i] <= n; ++i)
-        while(n % primes[i] == 0)
-            n /= primes[i];
-    if(n != 1)
-        ans *= (unsigned int)n;
+    int pos = (upper_bound(primes, primes+pLen, n)-primes)-1;
+    
+    //cerr << "pos " << pos << " :: " << cum[pos] << endl;
+    ans *= cum[pos];
     return ans;
 }
 
 int main() {
+    //freopen("in", "r", stdin);
+    //freopen("out", "w", stdout);
+
     int t, n;
-    sieveGen(1000000);
+    sieveGen(MAX);
 
     scanf("%d", &t);
 

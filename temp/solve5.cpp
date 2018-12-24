@@ -55,6 +55,7 @@ int main()
         }
  
         int ind = (upper_bound(prime,prime+k,n)-prime)-1;
+        cerr << prime[ind] << endl;
         ans = ans*cum[ind];
         printf("Case %d: %u\n",cas++, ans);
     }
