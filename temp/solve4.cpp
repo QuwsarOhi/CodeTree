@@ -11,7 +11,7 @@ ui primes[5761499], cum[5761499], pLen;
 void sieveGen(ll N) {
     isPrime.set();
     isPrime[0] = isPrime[1] = 0;
-    for(ll i = 3; i*i <= N; i+=2) {        //Note, N isn't square rooted!
+    for(ll i = 3; i*i <= N; i+=2) {        // Note, N isn't square rooted!
         if(isPrime[i]) {
             for(ll j = i*i; j <= N; j += i)
                 isPrime[j] = 0;

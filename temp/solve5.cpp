@@ -1,63 +1,70 @@
-#include<bits/stdc++.h>
-#define ll long long
-#define ull unsigned long long
-#define maxi 100000000
+// LightOJ
+// 1289 - LCM from 1 to n
+
+#include <bits/stdc++.h>
+#define MAX 100000000
 using namespace std;
  
-bitset<maxi+2>b;
-unsigned int prime[5761499],cum[5761499];
+typedef long long ll;
+typedef unsigned int ui;
  
-unsigned int k=0;
- 
-void Prime()
-{
-    b[0]=true;
-    for(int i=3; i*i<=maxi; i+=2) if(!b[i]) for(int j=i*i; j<=maxi; j=j+i )b[j]=true;
-    k=1;
-    prime[0]=2;
-    cum[0]=2;
-    for(int i=3; i<=maxi; i+=2)if(!b[i] ) prime[k++]=i;
-    for(int i=1; i<k; i++) cum[i] = (cum[i-1]*prime[i]);
-}
- 
-unsigned int Bigmod(unsigned int base, ll power)
-{
-    if( power == 0) return 1;
-    unsigned  int x = Bigmod(base,power/2);
-    x= (x*x);
-    if(power%2 == 1) x = (x*base);
- 
-    return x;
-}
- 
-ll Power(unsigned int n, unsigned int p)
-{
-    ll cnt=0;
-    for(ll i= (ll)p; i<=(ll)n; i = i*p) cnt++;
-    return cnt;
-}
-int main()
-{
-    int t,cas=1;
-    Prime();
-    scanf("%d",&t);
-    while(t--)
-    {
-        unsigned int n;
-        scanf("%u",&n);
- 
-        unsigned int ans=1;
-        for(int i=0; prime[i]*prime[i] <= n && i<k; i++)
-        {
- 
-            ll power = Power(n,prime[i])-1;
-            if(power > 0) ans= (ans*Bigmod(prime[i],power));
+bitset<MAX+5>isPrime;
+vector<int>primes;
+vector<ui>mul;
+
+void sieveGen(ll N) {
+    isPrime.set();
+    isPrime[0] = isPrime[1] = 0;
+    for(ll i = 3; i*i <= N; i+=2) {        //Note, N isn't square rooted!
+        if(isPrime[i]) {
+            for(ll j = i*i; j <= N; j += i)
+                isPrime[j] = 0;
+    }}
+    
+    primes.push_back(2);
+    mul.push_back(2);
+
+    for(int i = 3; i <= N; i+=2)
+        if(isPrime[i]) {
+            primes.push_back(i);
+            mul.push_back(mul.back() * (ui)i);
         }
+}
  
-        int ind = (upper_bound(prime,prime+k,n)-prime)-1;
-        cerr << prime[ind] << endl;
-        ans = ans*cum[ind];
-        printf("Case %d: %u\n",cas++, ans);
+ui getPow(ll v, ll lim) {
+    ll ret = v;
+    while(ret * v <= lim)
+        ret *= v;
+ 
+    //cerr << v << " :: " << ret << endl;
+    return (unsigned int)ret;
+}
+ 
+ui PF(int n) {
+    ui ans = 1;
+ 
+    for(int i = 0; i < primes.size() and primes[i]*primes[i] <= n; ++i)
+        ans *= getPow(primes[i], n)/primes[i];
+    
+    vector<int> :: iterator it = upper_bound(primes.begin(), primes.end(), n);
+    --it;
+
+    ans *= mul[int(it-primes.begin())];
+    return ans;
+}
+ 
+int main() {
+    primes.reserve(5761499);
+    mul.reserve(5761499);
+
+    int t, n;
+    sieveGen(MAX);
+    scanf("%d", &t);
+
+    for(int Case = 1; Case <= t; ++Case) {
+        scanf("%d", &n);
+        printf("Case %d: %u\n", Case, PF(n));
     }
+ 
     return 0;
 }

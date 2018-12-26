@@ -1,67 +1,122 @@
 #include <bits/stdc++.h>
-#define MAX 100000000
+#define isON(x, pos)        (x & (1 << pos)) 
 using namespace std;
- 
-typedef long long ll;
-typedef unsigned int ui;
- 
-bitset<MAX+5>isPrime;
-vector<int>primes;
-vector<ui>mul;
 
-void sieveGen(ll N) {
-    isPrime.set();
-    isPrime[0] = isPrime[1] = 0;
-    for(ll i = 3; i*i <= N; i+=2) {        //Note, N isn't square rooted!
-        if(isPrime[i]) {
-            for(ll j = i*i; j <= N; j += i)
-                isPrime[j] = 0;
-    }}
-    
-    primes.push_back(2);
-    mul.push_back(2);
 
-    for(int i = 3; i <= N; i+=2)
-        if(isPrime[i]) {
-            primes.push_back(i);
-            mul.push_back(mul.back() * (ui)i);
+// 20
+
+const int LIM = 2;
+
+struct node {
+    int cnt;
+    node *nxt[2];
+
+    node() {
+        cnt = 0;
+        nxt[0] = NULL;
+        nxt[1] = NULL;
+}};
+
+void Insert(const int val, node *cur, int pos = LIM) {
+    //cout << "at " << pos << endl;
+    if(pos < 0)
+        return;
+    /*if(cur == NULL) {
+        cerr << "NEW NODE\n"; 
+        cur = new node();
+    }*/
+
+    cur->cnt++;
+    int nxtIdx = (val & (1 << pos)) > 0;
+    //cerr << "nxt IDX " << nxtIdx << endl;
+    if(cur->nxt[nxtIdx] == NULL)
+        cur->nxt[nxtIdx] = new node();
+    Insert(val, cur->nxt[nxtIdx], pos-1);
+}
+
+void Traverse(node *cur, int pos = LIM) {
+    if(cur == NULL) {
+        cerr << "END\n";
+        return;
+    }
+    if(cur->nxt[0] != NULL) {
+        cerr << "got " << 0 << " at " << pos << endl;
+        Traverse(cur->nxt[0], pos-1);
+    }
+    if(cur->nxt[1] != NULL) {
+        cerr << "got " << 1 << " at " << pos << endl;
+        Traverse(cur->nxt[1], pos-1);
+    }
+}
+
+void Erase(node *cur, int pos = LIM) {
+    //cerr << "AT " << pos << endl;
+    if(cur->nxt[0] != NULL)
+        Erase(cur->nxt[0], pos+1);
+    if(cur->nxt[1] != NULL)
+        Erase(cur->nxt[1], pos+1);
+    delete cur;
+}
+
+int CalMin(const int val, const int lim, node *cur, int pos = LIM) {
+    if(pos < 0 or not cur)
+        return 0;
+    int ret = 0;
+
+    if(isON(lim, pos)) {      // Bit is on
+        if(isON(val, pos)) {
+            // take the 0 position, as it is smaller, and go through the 1 position
+            // pos 1 is for 1 ^ 0
+            ret += CalMin(val, lim, cur->nxt[0], pos-1);
+            if(pos > 0 and cur->nxt[1])
+                ret += cur->nxt[1]->cnt;
         }
-}
- 
-ui getPow(ll v, ll lim) {
-    ll ret = v;
-    while(ret * v <= lim)
-        ret *= v;
- 
-    //cerr << v << " :: " << ret << endl;
-    return (unsigned int)ret;
-}
- 
-ui PF(int n) {
-    ui ans = 1;
- 
-    for(int i = 0; i < primes.size() and primes[i]*primes[i] <= n; ++i)
-        ans *= getPow(primes[i], n)/primes[i];
-    
-    vector<int> :: iterator it = upper_bound(primes.begin(), primes.end(), n);
-    --it;
+        else {
+            ret += CalMin(val, lim, cur->nxt[1], pos-1);
+            if(pos > 0 and cur->nxt[0])
+                ret += cur->nxt[0]->cnt;
+        }
+    }
+    else {
+        if(isON(val, pos))
+            ret += CalMin()
+    }
 
-    ans *= mul[int(it-primes.begin())];
-    return ans;
+    return ret;
 }
- 
+
 int main() {
-    primes.reserve(5761499);
-    mul.reserve(5761499);
-
-    int t, n;
-    sieveGen(MAX);
+    int t, n, x, k, ans, CUMxor;
     scanf("%d", &t);
 
-    for(int Case = 1; Case <= t; ++Case) {
-        scanf("%d", &n);
-        printf("Case %d: %u\n", Case, PF(n));
+    while(t--) {
+        scanf("%d%d", &n, &k);
+        CUMxor = 0;
+        ans = 0;
+        node *root = new node();
+
+        for(int i = 0; i < n; ++i) {
+            scanf("%d", &x);
+            CUMxor ^= x;
+
+            ans += CalMin(CUMxor, k, root);
+            cerr << i << " CalMIN done\n";
+            Insert(CUMxor, root);
+            cerr << i << " Insert done\n";
+            Traverse(root);
+            cerr << "ANS " << ans << endl;
+        }
+
+        printf("%d\n", ans);
+        cerr << "DONE\n";
+        Erase(root);
     }
- 
+
+    /*node *root = new node();
+    Insert(3, root);
+    Traverse(root);
+    Insert(3, root);
+    Traverse(root);
+    Erase(root);*/
     return 0;
 }
