@@ -1,11 +1,11 @@
+// SPOJ
+// SUBXOR - SubXor
+
 #include <bits/stdc++.h>
 #define isON(x, pos)        (x & (1 << pos)) 
 using namespace std;
 
-
-// 20
-
-const int LIM = 2;
+const int LIM = 20;
 
 struct node {
     int cnt;
@@ -40,11 +40,11 @@ void Traverse(node *cur, int pos = LIM) {
         return;
     }
     if(cur->nxt[0] != NULL) {
-        cerr << "got " << 0 << " at " << pos << endl;
+        //cerr << "got " << 0 << " at " << pos << endl;
         Traverse(cur->nxt[0], pos-1);
     }
     if(cur->nxt[1] != NULL) {
-        cerr << "got " << 1 << " at " << pos << endl;
+        //cerr << "got " << 1 << " at " << pos << endl;
         Traverse(cur->nxt[1], pos-1);
     }
 }
@@ -79,44 +79,42 @@ int CalMin(const int val, const int lim, node *cur, int pos = LIM) {
     }
     else {
         if(isON(val, pos))
-            ret += CalMin()
+            ret += CalMin(val, lim, cur->nxt[1], pos-1);
+        else
+            ret += CalMin(val, lim, cur->nxt[0], pos-1);
     }
 
     return ret;
 }
 
 int main() {
-    int t, n, x, k, ans, CUMxor;
+    int t, n, x, k, CUMxor;
+    long long ans;
     scanf("%d", &t);
+    node *root;
 
     while(t--) {
         scanf("%d%d", &n, &k);
         CUMxor = 0;
         ans = 0;
-        node *root = new node();
+        root = new node();
+        Insert(CUMxor, root);
 
         for(int i = 0; i < n; ++i) {
             scanf("%d", &x);
             CUMxor ^= x;
 
             ans += CalMin(CUMxor, k, root);
-            cerr << i << " CalMIN done\n";
+            //cerr << i << " CalMIN done\n";
             Insert(CUMxor, root);
-            cerr << i << " Insert done\n";
-            Traverse(root);
-            cerr << "ANS " << ans << endl;
+            //cerr << i << " Insert done\n";
+            //Traverse(root);
+            //cerr << "ANS " << ans << endl;
         }
 
-        printf("%d\n", ans);
-        cerr << "DONE\n";
-        Erase(root);
+        printf("%lld\n", ans);
+        //Erase(root);
     }
 
-    /*node *root = new node();
-    Insert(3, root);
-    Traverse(root);
-    Insert(3, root);
-    Traverse(root);
-    Erase(root);*/
     return 0;
 }
