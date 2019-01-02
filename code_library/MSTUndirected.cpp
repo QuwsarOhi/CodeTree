@@ -52,11 +52,14 @@ int main() {
         w = -pq.top().first;
         v = -pq.top().second;
         pq.pop();
+
         //if the node is not taken, then use this node
         //as it contains the minimum edge
+        
         if(!taken[v])
             mst_cost += w, process(v);
     }
+    
     printf("Prim's MST cost : %d\n", mst_cost);
     return 0;
 }
