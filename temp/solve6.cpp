@@ -1,48 +1,65 @@
+// LightOJ
+// 1424 - New Land
+
 #include <bits/stdc++.h>
-#define MOD 998244353
-#define MAX 100000
-#define dd(XX)       cerr << #XX << " :: " << XX << endl;
 using namespace std;
-typedef long long ll;
 
-vector<int>G[MAX];
-ll c[MAX], sum[MAX];
+int g[2010][2010];
 
-ll dfs1(int u, int par = -1, int lvl = 1) {
-    ll retCst = 0;
-    sum[u] = c[u];
+int maxHistogram(int idx, int n) {
+    stack<int>s;
+    int area = 0;
 
-    for(auto v : G[u]) {
-        if(v == par) continue;
-        retCst += dfs1(v, u, lvl+1);
-        sum[u] += sum[v];
+    int i = 0;
+    while(i < n) {
+        if(s.empty() or g[s.top()][idx] <= g[i][idx])
+            s.push(i++);
+        else {
+            int r = s.top(), d = i;
+            s.pop();
+            if(not s.empty())
+                d -= s.top() + 1;
+
+            area = max(area, g[r][idx] * d);
+    }}
+
+    while(not s.empty()) {
+        int r = s.top(), d = i;
+        s.pop();
+        if(not s.empty())
+            d -= s.top() + 1;
+        area = max(area, g[r][idx] * d);
     }
 
-    cst[u] = retCst;
-    return retCst + lvl * c[u];
+    return area;
 }
 
-void dfs2(int u, int par = -1, int lvl = 1) {
-    ll cst = (rootCst - lvl*c[u] - cst[u])*lvl + cst[u];
-    for(auto v : G[u]) {
-        if(v == par) continue;
-        dfs2(v, u, lvl+1, );
-    }
-}
 
 int main() {
-    cin >> V;
+    int t, n, m;
+    char c;
+    scanf("%d", &t);
 
-    for(int i = 1; i <= V; ++i)
-        cin >> c[i];
+    for(int Case = 1; Case <= t; ++Case) {
+        scanf("%d%d", &n, &m);
 
-    for(int i = 1; i < V; ++i) {
-        cin >> u >> v;
-        G[u].push_back(v);
-        G[v].push_back(u);
+        memset(g, 0, sizeof g);
+        for(int i = 0; i < n; ++i)
+            for(int j = 0; j < m; ++j) {
+                scanf(" %c", &c);
+                if(c == '0')
+                    g[i][j] = 1 + (j-1 >= 0 ? g[i][j-1]:0);
+                else
+                    g[i][j] = 0;
+            }
+
+        int ans = 0;
+        for(int i = 0; i < m; ++i)
+            ans = max(ans, maxHistogram(i, n));
+
+        printf("Case %d: %d\n", Case, ans);
     }
-
-    dfs1(1);
 
     return 0;
 }
+
