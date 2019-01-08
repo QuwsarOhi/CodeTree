@@ -45,55 +45,114 @@ typedef vector<pair<ll, ll> >vll;
 //int dx[] = {-1, -1, -1, 0, 0, 1, 1, 1}, dy[] = {-1, 0, 1, -1, 1, -1, 0, 1};
 //----------------------------------------------------------------------------------------------------------
 
-vector<pll> a, b;
-set<ll>s;
 
-int BS(int idx, int m) {
-    int lo = 0, hi = m, ans = m;
+int n, m, g[60][60], mx[51][51];
+vector< vector<int> > v[51][51];
 
-    while(lo <= hi) {
-        int mid = (lo+hi)>>1;
 
-        if(s.count(a[idx].first + b[mid].first))
-            lo = mid+1;
-        else {
-            ans = min(ans, mid);
-            hi = mid-1;
+bool check(int x, int y, int v) {
+    if(x-2 >= 0 and g[x-2][y] == v)
+        return 0;
+    if(y-2 >= 0 and g[x][y-2] == v)
+        return 0;
+    if(x+2 < n and g[x+2][y] == v)
+        return 0;
+    if(y+2 < m and g[x][y+2] == v)
+        return 0;
+    if(x-1 >= 0 and y-1 >= 0 and g[x-1][y-1] == v)
+        return 0;
+    if(x-1 >= 0 and y+1 < m and g[x-1][y+1] == v)
+        return 0;
+    if(x+1 < n and y-1 >= 0 and g[x+1][y-1] == v)
+        return 0;
+    if(x+1 < n and y+1 < m and g[x+1][y+1] == v)
+        return 0;
+    return 1;
+}
+
+int ans;
+
+bool recur(int x, int y, int tt, bool eve) {
+    if(y == m)
+        return recur(x+1, 0, tt, not eve);
+    if(x == n) {
+        //printf("%d -------------\n", tt);
+        /*printf("%d\n", tt);
+        for(int i = 0; i < n; ++i, printf("\n")) {
+            printf("%d", g[i][0]);
+            for(int j = 1; j < m; ++j)
+                printf(" %d", g[i][j]);
+        }*/
+        mx[n][m] = tt;
+        ans = tt;
+        for(int i = 0; i < n; ++i) {
+            v[n][m].push_back(vector<int>());
+            for(int j = 0; j < m; ++j)
+                v[n][m][i].push_back(g[i][j]);
         }
+        return 1;
     }
 
-    return ans;
+    for(int i = 1+eve; i <= 5; ++i)
+        if(check(x, y, i)) {
+            g[x][y] = i;
+            //cerr << x << " " << y << " :: " << i << endl;
+            if(recur(x, y+1, max(i, tt), not eve)) {
+                //g[x][y] = 0;
+                return 1;
+            }
+            g[x][y] = 0;
+        }
+    return 0;
 }
 
 int main() {
-    FastIO;
-    int n, m;
-    cin >> n >> m;
+    //freopen("in", "r", stdin);
+    freopen("out", "w", stdout);
 
-    a.resize(n);
-    for(int i = 0; i < n; ++i) {
-        cin >> a[i].first;
-        a[i].second = i;
-    }
+    int t;
+    scanf("%d", &t);
 
-    b.resize(m);
-    for(int i = 0; i < m; ++i) {
-        cin >> b[i].first;
-        b[i].second = i;
-    }
+    /*for(int i = 1; i <= 50; ++i)
+        for(int j = 1; j <= 50; ++j) {
+            n = i, m = j;
+            memset(g, 0, sizeof g);
+            recur(0, 0, 0);
+        }*/
+    //cerr << "DONE\n";
 
-    sort(ALL(a)), sort(ALL(b));
+    while(t--) {
+        scanf("%d%d", &n, &m);
+        cout << "working on " << n << " " << m << endl;
+        ans = -1;
+        memset(g, 0, sizeof g);
+        if(not recur(0, 0, 0, 0))
+            cout << "nooutput\n";
 
-    int cnt = 0, lim = n+m-1;
-    for(int i = 0; i < n and cnt < lim; ++i) {
-        int j = BS(i, m);
-
-        for( ; j < m and cnt < lim; ++j) {
-            s.insert(a[i].first + b[j].first);
-            ++cnt;
-            cout << a[i].second << " " << b[j].second << "\n";
+        printf("%d\n", ans);
+        for(int i = 0; i < n; ++i, printf("\n")) {
+            printf("%d", g[i][0]);
+            for(int j = 1; j < m; ++j)
+                printf(" %d", g[i][j]);
         }
+        /*printf("%d\n", mx[n][m]);
+        for(int i = 0; i < v[n][m].size(); ++i, printf("\n")) {
+            printf("%d", v[n][m][i][0]);
+            for(int j = 1; j < v[n][m][i].size(); ++j)
+                printf(" %d", v[n][m][i][j]);
+        }*/
     }
 
     return 0;
 }
+
+/*
+
+4
+1 2 2 3 1
+1 3 4 4 1
+2 3 1 2 2
+2 4 1 3 4
+1 4 2 3 1
+
+*/
