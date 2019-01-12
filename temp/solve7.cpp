@@ -1,11 +1,24 @@
 #include <bits/stdc++.h>
-#define MAX 1000000
-#define INF 0x3f3f3f3f
 using namespace std;
-typedef long long ll;
-
 
 int main() {
-	
+	long long n, x, y, xx = 0, yy = 0;
+	scanf("%lld", &n);
+	char q;
 
+	while(n--) {
+		scanf(" %c%lld%lld", &q, &x, &y);
+		if(x > y) swap(x, y);
+
+		if(q == '+')
+			xx = max(x, xx), yy = max(yy, y);
+		else {
+			if(xx <= x and yy <= y)
+				printf("YES\n");
+			else
+				printf("NO\n");
+		}
+	}
+
+	return 0;
 }
