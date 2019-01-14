@@ -1,86 +1,89 @@
 #include <bits/stdc++.h>
+#define MAX 110000
 using namespace std;
-#define MAX                 510000
-#define EPS                 1e-9
-#define INF                 0x3f3f3f3f
-#define MOD                 1000000007
-#define pb                  push_back
-#define mp                  make_pair
-#define xx                  first
-#define yy                  second
-#define PI                  acos(-1)
-#define pf                  printf
-#define sf(XX)              scanf("%lld", &XX)
-#define SIZE(a)             ((ll)a.size())
-#define ALL(S)              S.begin(), S.end()              
-#define Equal(a, b)         (abs(a-b) < EPS)
-#define Greater(a, b)       (a >= (b+EPS))
-#define GreaterEqual(a, b)  (a > (b-EPS))
-#define FastIO              ios_base::sync_with_stdio(false); cin.tie(NULL);
-#define FileRead(S)         freopen(S, "r", stdin);
-#define FileWrite(S)        freopen(S, "w", stdout);
-#define Unique(X)           X.erase(unique(X.begin(), X.end()), X.end())
-#define STOLL(X)            stoll(X, 0, 0)
 
-#define isOn(S, j)          (S & (1 << j))
-#define setBit(S, j)        (S |= (1 << j))
-#define clearBit(S, j)      (S &= ~(1 << j))
-#define toggleBit(S, j)     (S ^= (1 << j))
-#define lowBit(S)           (S & (-S))
-#define setAll(S, n)        (S = (1 << n) - 1)
-
-typedef unsigned long long ull;
-typedef long long ll;
-typedef map<int, int> mii;
-typedef map<ll, ll>mll;
-typedef map<string, int> msi;
-typedef vector<int> vi;
-typedef vector<ll>vl;
-typedef pair<int, int> pii;
-typedef pair<ll, ll> pll;
-typedef vector<pair<int, int> > vii;
-typedef vector<pair<ll, ll> >vll;
-
-//int dx[] = {-1, 0, 1, 0}, dy[] = {0, 1, 0, -1};
-//int dx[] = {-1, -1, -1, 0, 0, 1, 1, 1}, dy[] = {-1, 0, 1, -1, 1, -1, 0, 1};
-//----------------------------------------------------------------------------------------------------------
-
-double n, r;
-
-double getAngle(double AB, double BC, double CA) {      // Returns the angle(IN RADIAN) opposide of side CA
-    return acos((AB*AB + BC*BC - CA*CA)/(2.0*AB*BC));
-}
-
-double RAD_to_DEG(double rad) {
-    return (180.0/PI)*rad;
-}
-
-double Check(double R) {
-    double a = r+R;
-    double b = R;
-    double c = sqrt(a*a + b*b);
-    double theta = RAD_to_DEG(getAngle(a, c, b));
-
-    return theta*n*2.0;
-}
+struct MergeSortTree {
+    vector<int>tree[MAX*4];
+    void init(int pos, int l, int r, int val[]) {
+        tree[pos].clear();                              // Clears past values
+        if(l == r) {
+            tree[pos].push_back(val[l]);
+            return;
+        }
+        int mid = (l+r)>>1;
+        init(pos<<1, l, mid, val);
+        init(pos<<1|1, mid+1, r, val);
+        merge(tree[pos<<1].begin(), tree[pos<<1].end(), tree[pos<<1|1].begin(), tree[pos<<1|1].end(), back_inserter(tree[pos]));
+    }
+    int query(int pos, int l, int r, int L, int R, int k) {
+        if(r < L || R < l) return 0;
+        if(L <= l && r <= R)
+            return (int)(upper_bound(tree[pos].begin(), tree[pos].end(), k) - lower_bound(tree[pos].begin(), tree[pos].end(), k));        // MODIFY
+        int mid = (l+r)>>1;
+        return query(pos<<1, l, mid, L, R, k) + query(pos<<1|1, mid+1, r, L, R, k);
+}};
 
 
-int main() {
-    scanf("%lf%lf", &n, &r);
-    cerr << Check(6.4641016) << endl;
+vector<int>G[MAX];
+int timer = 0, sparse[MAX][22], lvl[MAX], st[MAX], ed[MAX];
+MergeSortTree T;
 
-    double lo = 0, hi = 100, mid, ans;
+void dfs(int u, int level = 0) {
+    ++timer;
+    st[u] = timer;
+    lvl[timer] = level;
 
-    for(int i = 0; i < 100; ++i) {
-        mid = (lo+hi)/2.0;
-        printf("%.2lf : %.6lf\n", mid, Check(mid));
-
-        if(Check(mid) > 360.0)
-            hi = mid;
-        else
-            lo = mid;
+    for(auto v : G[u]) {
+        if(st[v] != 0) continue;
+        dfs(v, level+1);
     }
 
-    printf("%.6lf\n", mid);
+    ed[u] = timer;
+}
+
+int BinaryLift(int u, int k) {
+    for(int i = 0; i < 30 and u > 0; ++i)
+        if(k&(1<<i)) u = sparse[u][i];
+    return u;
+}
+
+int main() {
+    int n, v, p, q;
+    scanf("%d", &n);
+    memset(sparse, -1, sizeof sparse);
+    
+    for(int i = 1; i <= n; ++i) {
+        scanf("%d", &p);
+        if(p != 0) {
+            G[i].push_back(p);
+            G[p].push_back(i);
+            sparse[i][0] = p;
+        }
+    }
+
+    for(int p = 1; (1 << p) <= n; ++p)
+        for(int u = 1; u <= n; ++u)
+            if(sparse[u][p-1] > 0)
+                sparse[u][p] = sparse[sparse[u][p-1]][p-1];
+
+    for(int i = 1; i <= n; ++i)
+        if(st[i] == 0)
+            dfs(i, 1);
+    T.init(1, 1, n, lvl);
+    cin >> q;
+    
+    while(q--) {
+        scanf("%d%d", &v, &p);
+        int u = BinaryLift(v, p);
+        //cerr << "Par " << u << endl;
+        if(u == -1 or u == v)
+            printf("0 ");
+        else {
+            //cerr << st[u] << ", " << ed[u] << ", " << lvl[v] << endl;
+            printf("%d ", T.query(1, 1, n, st[u], ed[u], lvl[v])-1);
+        }
+    }
+
+
     return 0;
 }
