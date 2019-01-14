@@ -1,85 +1,56 @@
 // LightOJ
-// 1383 - Underwater Snipers
+// 1072 - Calm Down 
 
 #include <bits/stdc++.h>
+#define PI acos(-1.0)
+#define EPS 1e-9
 using namespace std;
-typedef long long ll;
-typedef pair<ll, ll> pll;
-
-
-bool cmp(pll &x, pll y) {
-	if(x.second != y.second)
-		return x.second < y.second;
-	return x.first < y.first;
+ 
+inline bool isEqual(double a, double b) {
+    if(abs(a - b) <= EPS)
+        return 1;
+    return 0;
 }
-
-vector<pll> interval, p;
-
-bool Check(ll yy, ll d, ll s) {
-	ll y1, cover;
-	//cerr << "TRY " << yy << endl;
-
-	for(int i= 0; i < p.size(); ++i) {
-		y1 = p[i].second - yy;
-		if(y1 > d) return 0;
-
-		cover = sqrt(1.0*d*d - 1.0*y1*y1);
-		interval[i].first = p[i].first - cover;
-		interval[i].second= p[i].first + cover;
-	}
-
-	sort(interval.begin(), interval.end(), cmp);
-	int cnt = 0, p;
-
-	for(int i = 0; i < interval.size(); ) {
-		p = interval[i++].second, ++cnt;
-		if(cnt > s) return 0;
-		while(i < interval.size() and interval[i].first <= p) ++i;
-	}
-
-	return cnt <= s;
+ 
+inline bool isGreater(double a, double b) {
+    if(a >= b+EPS)
+        return 1;
+    return 0;
 }
-
-ll BS(ll lo, ll hi, ll d, ll s) {
-	ll mid, ans = hi+1;
-
-	for(int i = 0; i < 60; ++i) {
-		mid = (lo+hi)/2;
-
-		if(Check(mid, d, s))
-			hi = mid-1, ans = mid;
-		else
-			lo = mid+1;
-	}
-
-	return ans;
+ 
+int n;
+double R;
+ 
+double BinarySearch(double lo, double hi) {
+    double ans = -1, r;
+   
+    for(int i = 0; i < 200; ++i) {
+        r = (lo+hi)/2;
+        double a = R-r;
+        double b = r+r;
+        double theta = acos((2*a*a - b*b) / (2*a*a));
+        //printf("ans : %lf, theta : %lf, 2PI : %lf : %lf :: %lf\n", ans, theta, 2*PI, theta*n, (2*a*a - b*b) / (2*a*a));
+        if(isEqual(theta*n, 2*PI)) {
+            ans = r;
+            lo = r;
+        }
+        else if(isGreater(theta*n, 2*PI))
+            hi = r;
+        else
+            lo = r;
+    }
+    return ans;
 }
-
-
+ 
 int main() {
-	//freopen("in", "r", stdin);
-	//freopen("out", "w", stdout);
-
-	ll t, k, n, s, d;
-	scanf("%lld", &t);
-
-	for(int Case = 1; Case <= t; ++Case) {
-		scanf("%lld%lld%lld%lld", &k, &n, &s, &d);
-
-		p.resize(n), interval.resize(n);
-		for(int i = 0; i < n; ++i)
-			scanf("%lld%lld", &p[i].first, &p[i].second);
-
-		sort(p.begin(), p.end());
-		ll ans = BS(k-d-10, k, d, s);
-
-		printf("Case %d: ", Case);
-
-		if(ans > k)
-			printf("impossible\n");
-		else
-			printf("%lld\n", k-ans);
-	}
-
-	return 0;
+    //freopen("in", "r", stdin);
+    //freopen("out", "w", stdout);
+   
+    int t;
+    scanf("%d", &t);
+    for(int Case = 1; Case <= t; ++Case) {
+        scanf("%lf %d", &R, &n);
+        printf("Case %d: %.6lf\n", Case, BinarySearch(0, R));
+    }
+    return 0;
 }

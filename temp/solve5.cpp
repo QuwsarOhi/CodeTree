@@ -1,120 +1,52 @@
 #include <bits/stdc++.h>
-#define MAX 301000
-#define INF 0x3f3f3f3f
 using namespace std;
+#define MAX                 510000
+#define EPS                 1e-9
+#define INF                 0x3f3f3f3f
+#define MOD                 1000000007
+#define pb                  push_back
+#define mp                  make_pair
+#define xx                  first
+#define yy                  second
+#define pi                  acos(-1)
+#define pf                  printf
+#define sf(XX)              scanf("%lld", &XX)
+#define SIZE(a)             ((ll)a.size())
+#define ALL(S)              S.begin(), S.end()              
+#define Equal(a, b)         (abs(a-b) < EPS)
+#define Greater(a, b)       (a >= (b+EPS))
+#define GreaterEqual(a, b)  (a > (b-EPS))
+#define FastIO              ios_base::sync_with_stdio(false); cin.tie(NULL);
+#define FileRead(S)         freopen(S, "r", stdin);
+#define FileWrite(S)        freopen(S, "w", stdout);
+#define Unique(X)           X.erase(unique(X.begin(), X.end()), X.end())
+#define STOLL(X)            stoll(X, 0, 0)
+
+#define isOn(S, j)          (S & (1 << j))
+#define setBit(S, j)        (S |= (1 << j))
+#define clearBit(S, j)      (S &= ~(1 << j))
+#define toggleBit(S, j)     (S ^= (1 << j))
+#define lowBit(S)           (S & (-S))
+#define setAll(S, n)        (S = (1 << n) - 1)
+
+typedef unsigned long long ull;
 typedef long long ll;
+typedef map<int, int> mii;
+typedef map<ll, ll>mll;
+typedef map<string, int> msi;
+typedef vector<int> vi;
+typedef vector<ll>vl;
+typedef pair<int, int> pii;
+typedef pair<ll, ll> pll;
+typedef vector<pair<int, int> > vii;
+typedef vector<pair<ll, ll> >vll;
 
-struct BIT {
-    ll tree[2*MAX][3];
-    int MaxVal;
-    BIT() {
-    	memset(tree, 0, sizeof tree);
-    }
-    void update(int idx, int pos, ll val = 1) {
-        for( ;idx <= MaxVal; idx += (idx & -idx))
-            tree[idx][pos] += val;
-    }
-    ll read(int idx, int pos) {
-        ll sum = 0;
-        for( ;idx > 0; idx -= (idx & -idx))
-            sum += tree[idx][pos];
-        return sum;
-    }
-	// Modified BIT, this section can be used to add/remove/read 1 to all elements from 1 to pos
-    // all of the inverse functions must be used, for any manipulation
-    ll invRead(int idx, int pos) {           // gives summation from 1 to idx
-        return read(MaxVal-idx, pos);
-    }
-    void invUpdate(int idx, int pos, ll val = 1) {
-        update(MaxVal-idx, pos, val);
-}};
+//int dx[] = {-1, 0, 1, 0}, dy[] = {0, 1, 0, -1};
+//int dx[] = {-1, -1, -1, 0, 0, 1, 1, 1}, dy[] = {-1, 0, 1, -1, 1, -1, 0, 1};
+//----------------------------------------------------------------------------------------------------------
 
-
-BIT ft, ftr;
-string s;
 
 int main() {
-	int n;
-	cin >> n;
-	cin >> s;
-
-	ft.MaxVal = s.size()+20;
-	ftr.MaxVal = (s.size()+20)*2;
-
-	for(int i = 0; i < n; ++i)
-		ft.update(i+1, s[i]-'0');
-
-	int tot = n/3;
-
-	// 2 -> 0, 1
-	for(int i = 0; i < n; ++i) {
-		if(s[i] == '2' and ft.read(ft.MaxVal, 2) > tot) {
-			//cerr << i << " 2* " << s[i] << " " << ft.read(ft.MaxVal, 2) << endl;
-
-			if(ft.read(ft.MaxVal, 0) < tot) {
-				s[i] = '0';
-				ft.update(i+1, 0);
-				
-			}
-			else {
-				s[i] = '1';
-				ft.update(i+1, 1);
-			}
-			ft.update(i+1, 2, -1);
-		}
-	}
-
-	// 1 -> 0
-	for(int i = 0; i < n; ++i) {
-		if(s[i] == '1' and ft.read(ft.MaxVal, 1) > tot) {
-			//cerr << i << " 1* " << s[i] << " " << ft.read(ft.MaxVal, 1) << endl;
-
-			if(ft.read(ft.MaxVal, 0) < tot) {
-				s[i] = '0';
-				ft.update(i+1, 0);
-				ft.update(i+1, 1, -1);
-			}
-		}
-	}
-
-	for(int i = 0; i < n; ++i) {
-		ftr.invUpdate(i+1, s[i]-'0');
-	}
-
-	// 0-> 1, 2
-	/*cerr << ftr.invRead(1, 0) << endl;
-	cerr << ftr.invRead(1, 1) << endl;
-	cerr << ftr.invRead(1, 2) << endl;*/
-
-	for(int i = n-1; i >= 0; --i) {
-		if(s[i] == '0' and ftr.invRead(1, 0) > tot) {
-			//cerr << i << " 0* " << s[i] << ftr.invRead(1, 0) << endl;
-
-			if(ftr.invRead(1, 2) < tot) {
-				s[i] = '2';
-				ftr.invUpdate(i+1, 2);
-			}
-			else {
-				s[i] = '1';
-				ftr.invUpdate(i+1, 1);
-			}
-			ftr.invUpdate(i+1, 0, -1);
-		}
-	}
-
-
-	// 1 -> 24
-	for(int i = n-1; i >= 0; --i) {
-		if(s[i] == '1' and ftr.invRead(1, 1) > tot) {
-			if(ftr.invRead(1, 2) < tot) {
-				s[i] = '2';
-				ftr.invUpdate(i+1, 2);
-				ftr.invUpdate(i+1, 1, -1);
-			}
-		}
-	}
-
-
-	cout << s << endl;
-	return 0;
+	
+	
 }

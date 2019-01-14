@@ -1,172 +1,85 @@
+// LightOJ
+// 1383 - Underwater Snipers
+
 #include <bits/stdc++.h>
 using namespace std;
-#define MAX                 510000
-#define EPS                 1e-9
-#define INF                 0x3f3f3f3f
-#define MOD                 1000000007
-#define pb                  push_back
-#define mp                  make_pair
-#define xx                  first
-#define yy                  second
-#define pi                  acos(-1)
-#define pf                  printf
-#define sf(XX)              scanf("%lld", &XX)
-#define SIZE(a)             ((ll)a.size())
-#define ALL(S)              S.begin(), S.end()              
-#define Equal(a, b)         (abs(a-b) < EPS)
-#define Greater(a, b)       (a >= (b+EPS))
-#define GreaterEqual(a, b)  (a > (b-EPS))
-#define FastIO              ios_base::sync_with_stdio(false); cin.tie(NULL);
-#define FileRead(S)         freopen(S, "r", stdin);
-#define FileWrite(S)        freopen(S, "w", stdout);
-#define Unique(X)           X.erase(unique(X.begin(), X.end()), X.end())
-#define STOLL(X)            stoll(X, 0, 0)
-
-#define isOn(S, j)          (S & (1 << j))
-#define setBit(S, j)        (S |= (1 << j))
-#define clearBit(S, j)      (S &= ~(1 << j))
-#define toggleBit(S, j)     (S ^= (1 << j))
-#define lowBit(S)           (S & (-S))
-#define setAll(S, n)        (S = (1 << n) - 1)
-
-typedef unsigned long long ull;
 typedef long long ll;
-typedef map<int, int> mii;
-typedef map<ll, ll>mll;
-typedef map<string, int> msi;
-typedef vector<int> vi;
-typedef vector<ll>vl;
-typedef pair<int, int> pii;
 typedef pair<ll, ll> pll;
-typedef vector<pair<int, int> > vii;
-typedef vector<pair<ll, ll> >vll;
 
-//int dx[] = {-1, 0, 1, 0}, dy[] = {0, 1, 0, -1};
-//int dx[] = {-1, -1, -1, 0, 0, 1, 1, 1}, dy[] = {-1, 0, 1, -1, 1, -1, 0, 1};
-//----------------------------------------------------------------------------------------------------------
 
-int n, m, g[60][60], gmx[60][60];
-vector< vector<int> > v[51][51];
-
-bool check(int x, int y, int v) {
-    if(x-2 >= 0 and g[x-2][y] == v)
-        return 0;
-    if(y-2 >= 0 and g[x][y-2] == v)
-        return 0;
-    if(x+2 < n and g[x+2][y] == v)
-        return 0;
-    if(y+2 < m and g[x][y+2] == v)
-        return 0;
-    if(x-1 >= 0 and y-1 >= 0 and g[x-1][y-1] == v)
-        return 0;
-    if(x-1 >= 0 and y+1 < m and g[x-1][y+1] == v)
-        return 0;
-    if(x+1 < n and y-1 >= 0 and g[x+1][y-1] == v)
-        return 0;
-    if(x+1 < n and y+1 < m and g[x+1][y+1] == v)
-        return 0;
-    return 1;
+bool cmp(pll &x, pll y) {
+    if(x.second != y.second)
+        return x.second < y.second;
+    return x.first < y.first;
 }
 
-int ans;
-void recur(int x, int y, int mx, bool push) {
-	if(ans <= min(n, m)+1) return;
-	if(mx >= ans) return;
-	if(mx > min(n, m)+1) return;
+vector<pll> interval, p;
 
-	if(y == m)
-		return void(recur(x+1, 0, mx, push));
-	if(x == n) {
-		ans = mx;
-		gmx[n][m] = mx;
+bool Check(ll yy, ll d, ll s) {
+    ll y1, cover;
+    //cerr << "TRY " << yy << endl;
 
-		if(push) {
-        	for(int i = 0; i < n; ++i) {
-            	v[n][m].push_back(vector<int>());
-            	for(int j = 0; j < m; ++j)
-                	v[n][m][i].push_back(g[i][j]);
-		}}
-        else {
-        	printf("%d\n", ans);
-        	//ans = -1;
-        	for(int i = 0; i < n; ++i, printf("\n")) {
-            	printf("%d", g[i][0]);
-            	for(int j = 1; j < m; ++j)
-                	printf(" %d", g[i][j]);
-        }}
+    for(int i= 0; i < p.size(); ++i) {
+        y1 = p[i].second - yy;
+        if(y1 > d) return 0;
 
-		return;
-	}
+        cover = sqrt(1.0*d*d - 1.0*y1*y1);
+        interval[i].first = p[i].first - cover;
+        interval[i].second= p[i].first + cover;
+    }
 
-	for(int i = 1; i <= 5; ++i) {
-		if(not check(x, y, i)) continue;
-		g[x][y] = i;
-		recur(x, y+1, max(i, mx), push);
-		g[x][y] = 0;
-	}
+    sort(interval.begin(), interval.end(), cmp);
+    int cnt = 0, p;
+
+    for(int i = 0; i < interval.size(); ) {
+        p = interval[i++].second, ++cnt;
+        if(cnt > s) return 0;
+        while(i < interval.size() and interval[i].first <= p) ++i;
+    }
+
+    return cnt <= s;
 }
+
+ll BS(ll lo, ll hi, ll d, ll s) {
+    ll mid, ans = hi+1;
+
+    for(int i = 0; i < 60; ++i) {
+        mid = (lo+hi)/2;
+
+        if(Check(mid, d, s))
+            hi = mid-1, ans = mid;
+        else
+            lo = mid+1;
+    }
+
+    return ans;
+}
+
 
 int main() {
-	//freopen("out", "w", stdout);
+    //freopen("in", "r", stdin);
+    //freopen("out", "w", stdout);
 
-	/*ans = 100;
-	n = 50, m = 50;
-	recur(0, 0, 0);
+    ll t, k, n, s, d;
+    scanf("%lld", &t);
 
-	g[0][0] = 0;
-	for(int i = 1; i <= 50; ++i)
-		for(int j = 1; j <= 50; ++j)
-			g[i][j] = max(a[i][j], max(g[i][j-1], g[i-1][j]));*/
+    for(int Case = 1; Case <= t; ++Case) {
+        scanf("%lld%lld%lld%lld", &k, &n, &s, &d);
 
+        p.resize(n), interval.resize(n);
+        for(int i = 0; i < n; ++i)
+            scanf("%lld%lld", &p[i].first, &p[i].second);
 
+        sort(p.begin(), p.end());
+        ll ans = BS(k-d-10, k, d, s);
 
-	int t;
-	scanf("%d", &t);
+        printf("Case %d: ", Case);
 
-	/*for(int i = 1; i <= 3; ++i)
-		for(int j = 1; j <= 3; ++j) {
-			ans = 100;
-			n = i, m = j;
-			recur(0, 0, 0);
-			cerr << "DONE " << i << ", " << j << endl;
-		}*/
-	n = m = 50;
-	ans = 100;
-	recur(0, 0, 0, 1);
+        if(ans > k)
+            printf("impossible\n");
+        else
+            printf("%lld\n", k-ans);
+    }
 
-	while(t--) {
-		scanf("%d%d", &n, &m);
-
-		/*ans = 100;
-		recur(0, 0, 0);
-        
-        printf("%d\n", ans);
-        for(int i = 0; i < n; ++i, printf("\n")) {
-            printf("%d", a[i][0]);
-            for(int j = 1; j < m; ++j)
-                printf(" %d", a[i][j]);
-        }*/
-
-		int nt = n, mt = m;
-
-		if(n >= 3 and m >= 3) {
-			n = 50, m = 50;
-
-        	printf("%d\n", gmx[n][m]);
-        	for(int i = 0; i < v[n][m].size() and i < nt; ++i, printf("\n")) {
-            	printf("%d", v[n][m][i][0]);
-            	for(int j = 1; j < v[n][m][i].size() and j < mt; ++j)
-                	printf(" %d", v[n][m][i][j]);
-        	}
-        }
-        else {
-        	cerr << "BruteForce\n";
-        	ans = 100;
-        	memset(g, 0, sizeof g);
-        	recur(0, 0, 0, 0);
-        }
-	}
-
-
-	return 0;
+    return 0;
 }
