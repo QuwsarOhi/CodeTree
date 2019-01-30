@@ -1,148 +1,60 @@
 #include <bits/stdc++.h>
-#define MAX 100100
 using namespace std;
 
-int sparse[MAX][22], lvl[MAX], tot[MAX];
-vector<int>G[MAX];
+struct treap {
+	struct node {
+		int val, idx, sz;
+		node *l, *r;
 
-int dfs(int u, int par, int l) {
-	lvl[u] = l;
-	sparse[u][0] = par;
-	tot[u] = 1;
-	for(auto v : G[u])
-		if(v != par)
-			tot[u] += dfs(v, u, l+1);
-	return tot[u];
-}
+		node() {
+			l = r = NULL;
+	}};
 
-int FindPar(int u, int p) {
-	for(int i = 20; i >= 0 and u >= 0; --i) {
-		if(p & (1 << i))
-			u = sparse[u][i];
-	}
-	return u;
-}
+	typedef *node pnode;
 
-int LCA(int a, int b) {
-	if(lvl[a] < lvl[b])
-		swap(a, b);
-
-	for(int i = 20; i >= 0; --i)
-		if(lvl[a] - (1 << i) >= lvl[b])
-			a = sparse[a][i];
-
-	if(a == b)
-		return a;
-
-	for(int i = 20; i >= 0; --i)
-		if(sparse[a][i] != sparse[b][i] and sparse[a][i] != -1)
-			a = sparse[a][i], b = sparse[b][i];
-
-	return sparse[a][0];
-}
-
-int Nodes(int a, int b) {
-	int d = abs(lvl[a] - lvl[b]) + 1;
-	return d;
-}
-
-
-pair<int, int> SubLCA(int a, int b) {
-	if(lvl[a] != lvl[b]) return make_pair(-MAX, -MAX);
-
-	int c = 0;
-	for(int i = 20; i >= 0; --i)
-		if(sparse[a][i] != sparse[b][i] and sparse[a][i] != -1)
-			a = sparse[a][i], b = sparse[b][i];
-
-	return make_pair(a, b);
-}
-
-int solve(int a, int b) {
-	if(lvl[a] < lvl[b])			// b is on top
-		swap(a, b);
-
-	int c = LCA(a, b);
-	int d = lvl[a] + lvl[b] - 2*lvl[c] - 1;
-
-	if(d <= 0 or d%2 == 0)
-		return 0;
-
-	cerr << "LCA " << c << endl;
-	
-	// if b is parent of a
-	/*if(b == c) {
-		//return FindPar(a, (d+1)/2);
-		int p = (d+1)/2;
-		return tot[FindPar(a, p)] - tot[FindPar(a, p-1)];
-
-	}*/
-
-	// if LCA is the answer
-	if(lvl[a] - lvl[c] == lvl[b] - lvl[c]) {
-		pair<int, int> x = SubLCA(a, b);
-		return tot[1] - tot[x.first] - tot[x.second];
+	int size(pnode n) {
+		return n?n->sz:0;
 	}
 
-	// if answer is on left chain (parent of a)
+	void update_size(pnode n) {
+		if(n) n->sz = size(n->l) + 1 + size(n->r);
+	}
 
-	cerr << a << ", " << ((d+1)/2) << ", " << d << endl;
-	int x = FindPar(a, (d+1)/2);
+	void split(pnode t, pnode &l, pnode &r, int key) {
+		if(not t) 
+			l = r = NULL;
+		else if(t->val <= key) 
+			split(t->r, t->r, r, key), l = t;
+		else
+			split(t->l, l, t->l) r = t;
+		update_size(t);
+	}
 
-	cerr << "GOT " << x << endl;
-	int p = (d+1)/2;
-	return tot[FindPar(a, p)] - tot[FindPar(a, p-1)];
-	return x;
-}
+	void merge(pnode &t, pnode l, pnode r) {
+		if(not l or not r) 
+			t = l ? l:r;
+		else if(l->idx > r->idx)
+			merge(l->r, l->r, r), t = l;
+		else
+			merge(r->l, l, r->l), t = r;
+		update_size(t);
+	}
+
+	void insert(pnode &t, pnode it) {
+		if(not t) 
+			t = it;
+		else if(it->idx > t->idx)
+			split(it, t->l, t->r, it->val);
+		else
+			insert(t->val <= it->val ? t->r:t->l, it);
+		update_size(t);
+	}
+
+	void erase(pnode &t, int key) {
+		if(not t) return;
+	}
+};
 
 int main() {
-	int n, u, v;
-	cin >> n;
-
-	for(int i = 1; i < n; ++i) {
-		cin >> u >> v;
-		G[u].push_back(v);
-		G[v].push_back(u);
-	}
-
-	memset(sparse, -1, sizeof sparse);
-	tot[1] = dfs(1, -1, 0);
-
-	for(int p = 1; (1 << p) <= n; ++p)
-		for(u = 1; u <= n; ++u)
-			sparse[u][p] = sparse[sparse[u][p-1]][p-1];
-
-	int q;
-	cin >> q;
-
-	while(q--) {
-		cin >> u >> v;
-		cout << solve(u, v) << endl;
-	}
-
 	return 0;
 }
-
-/*
-
-13
-1 2
-2 3
-2 12
-2 13
-3 10
-10 11
-2 4
-4 5
-5 6
-6 7
-6 8
-8 9
-
-1 3
-1 11
-10 5
-10 8
-5 7
-
-*/

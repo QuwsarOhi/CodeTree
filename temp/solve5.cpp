@@ -1,111 +1,73 @@
-#include <bits/stdc++.h>
+#include<cstdio>
+#include<iostream>
+#include<string>
+#include<cstring>
+#include<algorithm>
+#include<vector>
+#include<map>
+#include<unordered_map>
+#include<set>
+#include<unordered_set>
+#include<bitset>
 #define MAX 100100
 using namespace std;
 
-int sparse[MAX][22], lvl[MAX], tot[MAX];
-vector<int>G[MAX];
 
-int dfs(int u, int par, int l) {
-	lvl[u] = l;
-	sparse[u][0] = par;
-	tot[u] = 1;
-	for(auto v : G[u])
-		if(v != par)
-			tot[u] += dfs(v, u, l+1);
-	return tot[u];
+
+
+void dfs(int u, int p, long long w) {
+	par[u][0] = p;
+	lvl[u] = lvl[v]+1;
+	timer[vis[u] = ++dfsTime] = u;
+
+	for(int i = 1; i <= 20; ++i)
+		par[u][i] = par[par[u][i-1]][i-1];
+
+	for(int i = 0; i < G[u].size(); ++i)
+		if(G[u][i] != p)
+			dfs(G[u][i], u, w+W[u][i]);
 }
 
-int FindPar(int u, int p) {
-	for(int i = 20; i >= 0 and u >= 0; --i) {
-		if(p & (1 << i))
-			u = sparse[u][i];
-	}
-	return u;
-}
+int LCA(int u, int v) {
+	if(lvl[u] < lvl[v]) swap(u, v);
 
-int LCA(int a, int b) {
-	if(lvl[a] < lvl[b])
-		swap(a, b);
+	for(int p = 20; p >= 0; --p)
+		if(lvl[u] - (1 << p) >= lvl[v])
+			u = par[u][p];
 
-	for(int i = 20; i >= 0; --i)
-		if(lvl[a] - (1 << i) >= lvl[b])
-			a = sparse[a][i];
+	if(u == v) return u;
+	
+	for(int p = 20; p >= 0; --p)
+		if(par[u][p] != par[v][p])
+			u = par[u][p], v = par[v][p];
 
-	if(a == b)
-		return a;
-
-	for(int i = 20; i >= 0; --i)
-		if(sparse[a][i] != sparse[b][i] and sparse[a][i] != -1)
-			a = sparse[a][i], b = sparse[b][i];
-
-	return sparse[a][0];
-}
-
-int Nodes(int a, int b) {
-	int d = abs(lvl[a] - lvl[b]) + 1;
-	return d;
-}
-
-
-pair<int, int> SubLCA(int a, int b) {
-	if(lvl[a] != lvl[b]) return make_pair(-MAX, -MAX);
-
-	int c = 0;
-	for(int i = 20; i >= 0; --i)
-		if(sparse[a][i] != sparse[b][i] and sparse[a][i] != -1)
-			a = sparse[a][i], b = sparse[b][i];
-
-	return make_pair(a, b);
-}
-
-int solve(int a, int b) {
-	if(a == b) return tot[1];
-
-	if(lvl[a] < lvl[b])			// b is on top
-		swap(a, b);
-
-	int c = LCA(a, b);
-	int d = lvl[a] + lvl[b] - 2*lvl[c] - 1;
-
-	if(d <= 0 or d%2 == 0)
-		return 0;
-
-	// if LCA is the answer
-	if(lvl[a] - lvl[c] == lvl[b] - lvl[c]) {
-		pair<int, int> x = SubLCA(a, b);
-		return tot[1] - tot[x.first] - tot[x.second];
-	}
-
-	// if answer is on left chain (parent of a)
-	int p = (d+1)/2;
-	return tot[FindPar(a, p)] - tot[FindPar(a, p-1)];
+	return par[u][p];
 }
 
 int main() {
-	int n, u, v;
+	ios_base::sync_with_stdio(false);
+	cin.tie(NULL);
+
+	int n, m;
 	cin >> n;
 
 	for(int i = 1; i < n; ++i) {
-		cin >> u >> v;
+		cin >> u >> v >> w;
 		G[u].push_back(v);
 		G[v].push_back(u);
+		W[u].push_back(w);
+		W[v].push_back(w);
 	}
 
-	memset(sparse, -1, sizeof sparse);
-	tot[1] = dfs(1, -1, 0);
-
-	for(int p = 1; (1 << p) <= n; ++p)
-		for(u = 1; u <= n; ++u)
-			if(sparse[u][p-1] != -1)
-				sparse[u][p] = sparse[sparse[u][p-1]][p-1];
-
-	int q;
 	cin >> q;
+	dfs(1, 0, 0);
 
 	while(q--) {
-		cin >> u >> v;
-		cout << solve(u, v) << endl;
+		cin >> ch >> x;
+
+		int l[]
+
 	}
 
-	return 0;
+	
 }

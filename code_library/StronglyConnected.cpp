@@ -18,6 +18,7 @@ void tarjanSSC(int u) {
     for(int i = 0; i < (int)G[u].size(); i++) {
         int v = G[u][i];
         // if it is not visited yet, backtrack it
+        // for undirected graph, check if v != parent_of_u
         if(dfs_num[v] == 0)
             tarjanSSC(v);
 
