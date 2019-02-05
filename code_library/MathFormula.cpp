@@ -1,5 +1,13 @@
 // Math Formulas
 
+// Counts number of values in range [l, r] for which dividing by x returns mod value modVal
+ll GetModVals(ll l, ll r, ll modVal, ll x) {
+    ll low = ceil((l-modVal)/(double)x);
+    ll hi = floor((r-modVal)/(double)x);
+
+    return hi-low+1;
+}
+
 // Find the number of b for which [b1, b2] | [a1, a2]
 int FindDivisorInRange(int a1, int a2, int b1, int b2) {
     int a = abs(a1 - a2);
