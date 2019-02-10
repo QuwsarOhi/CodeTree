@@ -68,9 +68,8 @@ void HLD(int u, int par) {
 		HLD(v, u);
 }}
 
-ll GetHash(int u, int v) {
-	int lca = LCA(u, v), idx = 1;
-	int len = lvl[u] + lvl[v] - 2*lvl[lca] + (u == v ? 1:2);
+ll GetHash(int u, int v, int lca) {
+	int len = lvl[u] + lvl[v] - 2*lvl[lca] + (u == v ? 1:2), idx = 1;
 	pll hashCheck;
 
 	while(ChainNo[lca] != ChainNo[u]) {
@@ -87,8 +86,27 @@ ll GetHash(int u, int v) {
 		hashCheck.second = (hashCheck.second + tmp.second)%mod2;
 		idx += abs(lvl[lca] - lvl[u])+1;
 	}
+	while(ChainNo[lca] != ChainNo[v]) {
+		int topNode = ChainTop[ChainNo[v]];
+		pll tmp = SubHash(topNode, v, idx);
+		hashCheck.first = (hashCheck.first +  tmp.first)%mod1;
+		hashCheck.second = (hashCheck.second + tmp.second)%mod2;
+		v = par[topNode][0];
+		idx += abs(lvl[topNode] - lvl[v])+1;
+	}
+	if(v != lca) {
+		pll tmp = SubHash(topNode, v, idx);
+		hashCheck.first = (hashCheck.first +  tmp.first)%mod1;
+		hashCheck.second = (hashCheck.second + tmp.second)%mod2;
+		idx += abs(lvl[lca] - lvl[v])+1;
+	}
+	return hashCheck;
+}
 
-
+int solve(int a, int b, int c, int d) {
+	int e = LCA(a, b), f = LCA(c, d);
+	int len1 = lvl[a] + lvl[b] - 2*lvl[e] + (a == b ? 1:2);
+	int len2 = lvl[c] + lvl[d] - 2*lvl[f] + (c == d ? 1:2);
 }
 
 int main() {
