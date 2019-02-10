@@ -1,87 +1,105 @@
 #include <bits/stdc++.h>
-#define MAX 100100
+#define MAX 101000
 using namespace std;
 
 typedef long long ll;
+typedef pair<ll, ll> pll;
 
-int par[MAX][21], lvl[MAX];
-vector<int>G[MAX];
+pll Power[LIM];
+void PowerGen() {
+    Power[0] = {1, 1};
+    for(int i = 1; i < LIM; ++i) {
+        Power[i].first = (Power[i-1].first * p)%mod1;
+        Power[i].second = (Power[i-1].second * p)%mod2;
+}}
 
-int getPar(int u, int p) {
-	for(int i = 20; i >= 0; --i)
-		if(p & (1 << i))
-			u = par[u][i];
-	return u;
-} 
+pll hash[MAX];
+void doubleHash(char *s, int len) {      // Returns Double Hash vector for a full string
+    ll hashVal1 = 0, hashVal2 = 0;
+    for(int i = 0; i < len; ++i) {
+        hashVal1 = (hashVal1 + (s[idxToNode[i]-1] - 'a' + 1)* Power[i].fi)%mod1;
+        hashVal2 = (hashVal2 + (s[idxToNode[i]-1] - 'a' + 1)* Power[i].se)%mod2;
+        hash[i].first = hashVal1, hash[i].second = hashVal2;
+}}
+
+pll SubHash(int l, int r, int idx) {    // Produce SubString Hash
+    pll H;
+    l = nodeToIdx[l], r = nodeToIdx[r];
+    H.fi = (Hash[r].fi - (l-1 >= 1 ? Hash[l-1].fi:0) + mod1)%mod1;
+    H.se = (Hash[r].se - (l-1 >= 1 ? Hash[l-1].se:0) + mod2)%mod2;
+    H.fi = (H.fi * Power[LIM-l-idx].fi)%mod1;
+    H.se = (H.se * Power[LIM-l-idx].se)%mod2;
+    return H;
+}
 
 void dfs(int u, int p = 0) {
+	lvl[u] += lvl[p]+1;
+	ChainSize[u] = 1;
+	NextNode[u] = 0;
 	par[u][0] = p;
-	lvl[u] = lvl[p]+1;
 
 	for(int i = 1; i <= 20; ++i)
-		par[u][i] = par[par[u][i-1]][i-1];
+		par[u][i] = par[par[u][i-1]]par[i-1];
 
-	for(int i = 0; i < G[u].size(); ++i)
-		if(G[u][i] != p)
-			dfs(G[u][i], u);
+	for(auto v : G[u]) {
+		if(v == p) continue;
+		dfs(v, u);
+		if(NextNode[u] == 0 or ChainSize[NextNode[u]] < ChainSize[v])
+			NextNode[u] = v;
+	}
+	ChainSize[u] += ChainSize[NextNode[u]];
 }
 
-int LCA(int u, int v) {
-	if(lvl[u] < lvl[v]) swap(u, v);
+void HLD(int u, int par) {
+	if(ChainSize[ChainCnt] == 0)
+		ChainTop[ChainCnt] = u;
+	
+	nodeToIdx[u] = ++NodeCnt;
+	idxToNode[NodeCnt] = u;
+	ChainNo[u] = ChainCnt;
+	++ChainSize[u];
 
-	for(int p = 20; p >= 0; --p)
-		if(lvl[u] - (1 << p) >= lvl[v])
-			u = par[u][p];
+	if(NextNode[u])
+		HLD(NextNode[u], u);
 
-	if(u == v) return u;
+	for(auto v : G[u]) {
+		if(v == NextNode[u]) continue;
+		++ChainCnt;
+		HLD(v, u);
+}}
 
-	for(int p = 20; p >= 0; --p)
-		if(par[u][p] != par[v][p])
-			u = par[u][p], v = par[v][p];
+ll GetHash(int u, int v) {
+	int lca = LCA(u, v), idx = 1;
+	int len = lvl[u] + lvl[v] - 2*lvl[lca] + (u == v ? 1:2);
+	pll hashCheck;
 
-	return par[u][0];
+	while(ChainNo[lca] != ChainNo[u]) {
+		int topNode = ChainTop[ChainNo[u]];
+		pll tmp = SubHash(topNode, u, idx);
+		hashCheck.first = (hashCheck.first +  tmp.first)%mod1;
+		hashCheck.second = (hashCheck.second + tmp.second)%mod2;
+		u = par[topNode][0];
+		idx += abs(lvl[topNode] - lvl[u])+1;
+	}
+	if(u != lca) {
+		pll tmp = SubHash(topNode, u, idx);
+		hashCheck.first = (hashCheck.first +  tmp.first)%mod1;
+		hashCheck.second = (hashCheck.second + tmp.second)%mod2;
+		idx += abs(lvl[lca] - lvl[u])+1;
+	}
+
+
 }
-
 
 int main() {
-	int t, u, v, x, y, n, typ, q;
-	
-	scanf("%d", &t);
+	int n;
+	cin >> n >> str;
 
-	while(t--) {
-		scanf("%d", &n);
-
-		for(int i = 0; i < n; ++i) {
-			scanf("%d%d", &u, &v);
-			G[u].push_back(v);
-			G[v].push_back(u);
-		}
-
-		dfs(0);
-		scanf("%d", &q);
-
-		while(q--) {
-			scanf("%d", &typ);
-
-			if(typ == 0) {
-				scanf("%d%d", &x, &y);
-				par[y][0] = x;
-
-				for(int p = 1; p <= 20; ++p)
-					par[y][p] = par[par[y][p-1]][p-1];
-			}
-			else if(typ == 1) {
-				scanf("%d", &x);
-				memset(par[x], 0, sizeof par[x]);
-			}
-			else {
-				scanf("%d%d", &x, &y);
-				printf("%d\n", getPar(x, y));
-			}
-		}
-
-		for(int i = 0; i < MAX; ++i)
-			G[i].clear();
-		memset(par, 0, sizeof par);
+	for(int i = 1; i < n; ++i) {
+		cin >> u >> v;
+		G[u].push_back(v);
+		G[v].push_back(u);
 	}
+
+	dfs(1);
 }
