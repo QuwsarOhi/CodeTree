@@ -107,6 +107,7 @@ int LCA(int u, int v, int root) {
 	}
 
 	int x = LCA(u, v), y = LCA(u, root), z = LCA(v, root);
+	// check :: dist, not level ??
 	int a = lvl[root] - lvl[x], b = lvl[root] - lvl[y], c = lvl[root] - lvl[z];
 
 	cerr << "LCA " << u << " " << v << " " << root << " :: " << x << " " << y << " " << z << " " << a << " " << b << " " << c << endl;
@@ -198,7 +199,6 @@ ll subTreeQuery(int u, int v, int root) {
 	if(isChild(lca, root))
 		return DS.query(in[lca], out[lca]);
 
-	
 }
 
 
