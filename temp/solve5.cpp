@@ -4,8 +4,8 @@
 #define LIM 1
 using namespace std;
 
-typedef long long ll;
-typedef unsigned long long ull;
+typedef unsigned long long ll;
+//typedef unsigned long long ull;
 typedef pair<ll, ll> pll;
 
 const ll mod1 = 1e9+7;
@@ -24,7 +24,7 @@ void PowerGen() {
     //ll p1 = 31, p2 = 51;
     // mod inv : 129032259, 686274516
     
-    ll rp1 = 129032259;
+    ll rp1 = 1190112520884487201ULL;
     for(int i = 1; i < MAX; ++i) {
         Power[i] = (Power[i-1] * p1) % mod1;
         rPower[i] = (rPower[i-1] * rp1) % mod1;
@@ -71,6 +71,7 @@ int LCA(int u, int v) {
 	return par[u][0];
 }
 
+// return k'th node if we traverse from node u to v of a tree
 int getKthNode(int u, int v, int k, int lca) {
 	int lftChain = lvl[u] - lvl[lca] + 1;
 	int rhtChain = lvl[v] - lvl[lca];
@@ -107,6 +108,7 @@ int getKthNode(int u, int v, int k, int lca) {
 	return u;
 }
 
+// returns path hash of a tree from u to v [power starts with 1]
 ll getPathHash(int u, int v, int lca, int k) {
 	//cerr << "pathHash " << u << " " << v << " " << lca << " " << k << endl;
 	if(k == 1)
