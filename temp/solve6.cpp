@@ -14,6 +14,7 @@ struct SegTreeRSQ {
     void init(int pos, int l, int r, int val[]) {
         if(l == r) {
             sum[pos] = val[l];
+            cerr << "ST " << l << " : " << sum[pos] << endl;
             return;
         }
         int mid = (l+r)>>1;
@@ -58,11 +59,12 @@ struct SegTreeRSQ {
 SegTreeRSQ DS;
 
 vector<int>G[MAX];
-int timer, in[MAX], out[MAX], node[MAX], par[MAX][21], lvl[MAX], val[MAX];
+int timer, in[MAX], out[MAX], node[MAX], par[MAX][21], lvl[MAX], val[MAX], tval[MAX];
 
 void dfs(int u, int p) {
 	node[in[u] = ++timer] = u;
 	par[u][0] = p, lvl[u] = lvl[p]+1;
+	tval[timer] = val[u];
 
 	for(int i = 1; i <= 20; ++i)
 		par[u][i] = par[par[u][i-1]][i-1];
@@ -152,55 +154,39 @@ int getKthNode(int u, int v, int k, int lca) {
 	return u;
 }
 
-void subTreeUpdate(int u, int val, int root) {
-	int lca = LCA(u, root);
-
-	if(root == 1) {
-		cerr << "*update " << u << endl;
-		DS.update(in[u], out[u], val);
-	}
-	else if(lca == u and u != root) {
-		int lcaChild = getKthNode(root, u, lvl[u] + lvl[root] - 2*lvl[lca], lca);
-		cerr << "update " << 1 << " and lcaChild " << lcaChild << " u " << u << endl; 
-		DS.update(in[1], out[1], val);
-		DS.update(in[lcaChild], out[lcaChild], -val);
-	}
-	else {
-		cerr << "update " << u << endl;
-		DS.update(in[u], out[u], val);
-	}
-}
-
-/*ll subTreeQuery(int u, int root) {
-	int lca = LCA(u, root);
-
-	if(root == 1) {
-		cerr << "*query " << u << endl;
-		return DS.query(in[u], out[u]);
-	}
-	else if(lca == u and u != root) {
-		int lcaChild = getKthNode(root, u, lvl[u] + lvl[root] - 2*lvl[lca], lca);
-		cerr << "query " << 1 << " and lcaChild " << lcaChild << " u " << u << endl; 
-		return DS.query(in[1], out[1]) - DS.query(in[lcaChild], out[lcaChild]);
-	}
-	else {
-		cerr << "query " << u << endl;
-		return DS.query(in[u], out[u]);
-	}
-}*/
-
-ll subTreeQuery(int u, int v, int root) {
-	if(isChild(root, u) and isChild(v, root))
-		return DS.query(in[1], out[1]);
-	else if(isChild(root, v) and isChild(u, root))
-		return DS.query(in[1], out[1]);
+void subTreeUpdate(int u, int v, int root, int val) {
+	// dfs fixed root is 1
+	// if u, v & root is in the same chain and root is in the middle
+	// update the whole tree, as, the lca is root node itself
 	int lca = LCA(u, v, root);
+	if((isChild(root, u) and isChild(v, root)) or (isChild(root, v) and isChild(u, root)))
+		DS.update(in[1], out[1], val);
 
-	if(isChild(lca, root))
-		return DS.query(in[lca], out[lca]);
+	// if LCA(u, v, root) is child of root node, then update the lca
+	else if(isChild(lca, root))
+		DS.update(in[lca], out[lca], val);
 
+	// if LCA(u, v, root) is in the upper part of root
+
+	// if LCA(u, v, root) is parent of root
+	else if(isChild(root, lca)) {
+		int x = getKthNode(root, lca, lvl[root] + lvl[lca] - 2*lvl[lca], lca);
+		DS.update(in[1], out[1], val);
+		DS.update(in[x], out[x], -val);
+	}
+
+	// if LCA(i, v, root) is not parent of root
+	else
+		DS.update(in[lca], out[lca], val);
 }
 
+
+int getall(int n) {
+	cerr << "\n------------------------\n";
+	for(int i = 1; i <= n; ++i)
+		cerr << i << " :: " << DS.query(in[i], in[i]) << endl;
+	cerr << "------------------------\n";
+}
 
 int main() {
 	int n, q, u, v, x, typ;
@@ -219,21 +205,29 @@ int main() {
 	int root = 1;
 	dfs(root, 0);
 	DS.Resize(n);
-	DS.init(1, 1, n, val);
+	DS.init(1, 1, n, tval);
+
+	getall(n);
 
 	while(q--) {
 		scanf("%d", &typ);
 
-		if(typ == 1)
+		if(typ == 1) {
 			scanf("%d", &root);
+			cerr << "ROOT changed to " << root << endl;
+		}
 		else if(typ == 2) {
 			scanf("%d%d%d", &u, &v, &x);
-			subTreeUpdate(LCA(u, v, root), x, root);
+			cerr << "ADD " << u << " " << v << " " << x << endl;
+			subTreeUpdate(u, v, root, x);
 		}
 		else {
 			scanf("%d", &v);
-			printf("%lld\n", subTreeQuery(v, root));
+			//printf("%lld\n", subTreeQuery(u, v, root));
+			cerr << "ACTUAL " << DS.query(in[1], out[1]) << endl;
 		}
+
+		getall(n);
 	}
 
 	return 0;
