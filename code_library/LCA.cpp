@@ -156,3 +156,36 @@ int EdgeCount(int a, int b, int c, int d) {             // Finds number of edges
     ans -= tt.fi == 0? 0:dist(tt.fi, tt.se, LCA(tt.fi, tt.se));
     return ans;
 }
+
+// NOT TESTED!!
+// return k'th node if we traverse from node u to v of a tree
+int getKthNode(int u, int v, int k, int lca) {
+    int lftChain = lvl[u] - lvl[lca] + 1;
+    int rhtChain = lvl[v] - lvl[lca];
+    if(k == 1) return u;
+    if(lca == v) {
+        for(int i = 20; i >= 0; --i)
+            if(k - (1 << i) >= 1)
+                u = par[u][i], k -= (1 << i);
+        return u;
+    }
+    if(lca == u) {
+        k = rhtChain+1-k;
+        for(int i = 20; i >= 0; --i)
+            if(k - (1 << i) >= 0)
+                v = par[v][i], k -= (1 << i);
+        return v;
+    }
+    if(k > lftChain) {
+        k -= lftChain;
+        k = rhtChain - k;
+        for(int i = 20; i >= 0; --i)
+            if(k - (1 << i) >= 0)
+                v = par[v][i], k -= (1 << i);
+        return v;
+    }
+    for(int i = 20; i >= 0; --i)
+        if(k - (1 << i) >= 1)
+            u = par[u][i], k -= (1 << i);
+    return u;
+}

@@ -222,3 +222,53 @@ pll SubHash2D(vector<vll> &H, int x, int y, int r, int c) {       // generates h
     ret.second = (ret.second*Power[LIM-(x*lineOffset+y)].second)%mod2;
     return ret;
 }
+
+// ------------ HASH ON TREE -------------
+
+/*
+up[u]   : hash from u to root node
+down[u] : hash from root node to u (according to level) 
+**hash power starts from 1
+*/
+
+void dfs(int u, int par = 0) {
+    int h = str[u-1]-'a'+1;
+
+    lvl[u] = lvl[par]+1;
+    up[u] = (h*p1 + (up[par] * p1)%mod1)%mod1;
+    down[u] = (down[par] + (h*Power[lvl[u]])%mod1)%mod1;
+    
+    for(auto v : G[u]) if(v != par) dfs(v, u);
+}
+
+// NOT TESTED
+// returns path hash of a tree from u to v [power starts with 1]
+ll getPathHash(int u, int v, int lca, int k) {
+    if(k == 1)
+        return str[u-1];
+    if(v == lca) {
+        v = getKthNode(u, v, k, lca);
+        return (up[u] - (up[par[v][0]] * Power[lvl[u]-lvl[par[v][0]]])%mod1 + mod1)%mod1;
+    }
+    if(u == lca) {
+        v = getKthNode(u, v, k, lca);
+        ll h = (down[v] - down[lvl[lca]-1] + mod1)%mod1;
+        h = (h * rPower[par[lca][0]])%mod1;
+        return h;
+    }
+    int d = lvl[u] - lvl[lca] + 1;
+    if(d >= k) {
+        v = getKthNode(u, v, k, lca);
+        return (up[u] - (up[par[v][0]] * Power[lvl[u]-lvl[par[v][0]]])%mod1 + mod1)%mod1;
+    }
+    // v is on right side
+    v = getKthNode(u, v, k, lca);
+    ll lft = (up[u] - (up[par[lca][0]] * Power[lvl[u]-lvl[par[lca][0]]])%mod1 + mod1)%mod1;
+    ll rht = (down[v] - down[lca] + mod1)%mod1;
+    int l = lvl[lca]+1;
+    if(l > d+1)
+        rht = (rht * rPower[l-d-1])%mod1;
+    else if(l < d+1)
+        rht = (rht * Power[d-l+1])%mod1;
+    return (lft + rht)%mod1;
+}
