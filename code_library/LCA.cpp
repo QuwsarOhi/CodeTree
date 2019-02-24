@@ -41,6 +41,19 @@ int LCA(int u, int v) {
     return parent[u];
 }
 
+// LCA if the root changes, [first dfs is done with root 1 or any other fixed node]
+int LCA(int u, int v, int root) {
+    if(isChild(u, root) and isChild(v, root))
+        return LCA(u, v);
+    if(isChild(u, root) != isChild(v, root))
+        return root;
+    int x = LCA(u, v), y = LCA(u, root), z = LCA(v, root);
+    int a = lvl[root] - lvl[x], b = lvl[root] - lvl[y], c = lvl[root] - lvl[z];
+    if(a <= b and a <= c) return x;
+    if(b <= a and b <= c) return y;
+    return z;
+}
+
 // --------------------------- LCA WITH DISTANCE --------------------------- 
 void distDP(int V) {                    // initialiser for LCA_with_DIST, call after LCAinit()
     for(int u = 1; u <= V; ++u)         // NOTE : DIST[u][0] = weight of node u
@@ -188,4 +201,37 @@ int getKthNode(int u, int v, int k, int lca) {
         if(k - (1 << i) >= 1)
             u = par[u][i], k -= (1 << i);
     return u;
+}
+
+// -------- SUBTREE UPDATE FUNCTIONS --------
+
+void subTreeUpdate(int u, int root, int val) {
+    // if u is child of root, then subtree of u
+    if(u == root)
+        DS.update(in[1], out[1], val);
+    else if(isChild(u, root))
+        DS.update(in[u], out[u], val);
+    // if root is child of u
+    else if(isChild(root, u)) {
+        int x = getChild(root, u);      // get the first child of u
+        DS.update(in[1], out[1], val);
+        DS.update(in[x], out[x], -val);
+    }
+    else
+        DS.update(in[u], out[u], val);
+}
+
+ll getSubTreeSum(int u, int root) {
+    // if u is child of root, then subtree of u
+    if(u == root)
+        return DS.query(in[1], out[1]);
+    if(isChild(u, root))
+        return DS.query(in[u], out[u]);
+    // if root is child of u
+    else if(isChild(root, u)) {
+        int x = getChild(root, u);      // get the first child of u
+        return DS.query(in[1], out[1]) - DS.query(in[x], out[x]);
+    }
+    else
+        return DS.query(in[u], out[u]);
 }
