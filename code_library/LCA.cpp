@@ -1,44 +1,29 @@
 // LCA
 // Least Common Ancestor with sparse table
 
-vl G[MAX], W[MAX];
-int level[MAX], parent[MAX], sparse[MAX][20];
-ll dist[MAX], DIST[MAX][20];
-
-void dfs(int u, int par, int lvl, ll d) {           // Tracks distance as well (From root 1 to all nodes)
-    level[u] = lvl;                                 // parent[] and level[] is necessary
-    parent[u] = par;                                
-    dist[u] = d;                                    // remove distance if not needed
-    for(int i = 0; i < (int)G[u].size(); ++i)
-        if(parent[u] != G[u][i])
-            dfs(G[u][i], u, lvl+1, d+W[u][i]);
-}
-
-void LCAinit(int V) {
-    memset(parent, -1, sizeof parent);
-    dfs(0, -1, 0);                               // DFS first
-    memset(sparse, -1, sizeof sparse);              // Main initialization of sparse table LCA starts here
-    for(int u = 1; u <= V; ++u)                     // node u's 2^0 parent
-        sparse[u][0] = parent[u];
-    for(int p = 1, v; (1LL<<p) <= V; ++p)
-        for(int u = 1; u <= V; ++u)
-            if((v = sparse[u][p-1]) != -1)      // node u's 2^x parent = parent of node v's 2^(x-1) [ where node v : (node u's 2^(x-1) parent) ]
-                sparse[u][p] = sparse[v][p-1];
+void dfs(int u, int p) {
+    in[u] = ++cnt;
+    revIn[cnt] = u, par[u][0] = p, lvl[u] = lvl[p]+1;
+    
+    for(int i = 1; i <= 20; ++i)
+        par[u][i] = par[par[u][i-1]][i-1];
+    
+    for(auto v : G[u])
+        if(v != p)
+            dfs(v, u);
+    out[u] = cnt;
 }
 
 int LCA(int u, int v) {
-    if(level[u] > level[v]) swap(u, v);         // v is deeper
-    int p = ceil(log2(level[v]));
-    
-    for(int i = p ; i >= 0; --i)                // Pull up v to same level as u
-        if(level[v] - (1LL<<i) >= level[u])
-            v = sparse[v][i];
-    if(u == v) return u;                // if u WAS the parent
-
-    for(int i = p; i >= 0; --i)                                     // Pull up u and v together while LCA not found
-        if(sparse[v][i] != -1 && sparse[u][i] != sparse[v][i])      // -1 check is if 2^i is out of calculated range
-            u = sparse[u][i], v = sparse[v][i];
-    return parent[u];
+    if(lvl[u] < lvl[v]) swap(u, v);
+    for(int p = 20; p >= 0; --p)
+        if(lvl[u] - (1 << p) >= lvl[v])
+            u = par[u][p];
+    if(u == v) return u;
+    for(int p = 20; p >= 0; --p)
+        if(par[u][p] != par[v][p])
+            u = par[u][p], v = par[v][p];
+    return par[u][0];
 }
 
 // LCA if the root changes, [first dfs is done with root 1 or any other fixed node]
@@ -52,44 +37,6 @@ int LCA(int u, int v, int root) {
     if(a <= b and a <= c) return x;
     if(b <= a and b <= c) return y;
     return z;
-}
-
-// --------------------------- LCA WITH DISTANCE --------------------------- 
-void distDP(int V) {                    // initialiser for LCA_with_DIST, call after LCAinit()
-    for(int u = 1; u <= V; ++u)         // NOTE : DIST[u][0] = weight of node u
-        DIST[u][0] = W[u];              // Where W[u] = weight of node u
-    for(int p = 1; (1<<p)<=V; ++p)
-        for(int u = 1; u <=V; ++u) {
-            int v = sparse[u][p-1];
-            if(v == -1) continue;
-            DIST[u][p] += DIST[u][p-1] + DIST[v][p-1];
-}}
-
-int LCA_with_DIST(int u, int v, long long &w) {     // w retuns distance from u -> v
-    w = 0;
-    if(level[u] > level[v]) swap(u, v);             // v is deeper
-    int p = ceil(log2(level[v]));
-    for(int i = p ; i >= 0; --i)                    // Pull up v to same level as u
-        if(level[v] - (1LL<<i) >= level[u]) {
-            w += DIST[v][i];
-            v = sparse[v][i];
-        }
-    if(u == v) {                                    // if u WAS the parent
-        w += DIST[v][0];
-        return u;
-    }
-    for(int i = p; i >= 0; --i)                     // Pull up u and v together while LCA not found
-        if(sparse[v][i] != -1 && sparse[u][i] != sparse[v][i])      // -1 check is if 2^i is out of calculated range
-            u = sparse[u][i], v = sparse[v][i];
-    w += DIST[v][0];
-    w += DIST[u][0];
-    w += DIST[sparse[v][0]][0];
-    return parent[u];
-}
-
-ll Distance(int u, int v) {
-    int lca = LCA(u, v);
-    return dist[v] + dist[u] - 2*dist[lca];
 }
 
 // --------------------------- LCA WITH Sparse Table Vector --------------------------- 
@@ -170,8 +117,9 @@ int EdgeCount(int a, int b, int c, int d) {             // Finds number of edges
     return ans;
 }
 
+// ----- return k'th node if we traverse from node u to v of a tree
+
 // NOT TESTED!!
-// return k'th node if we traverse from node u to v of a tree
 int getKthNode(int u, int v, int k, int lca) {
     int lftChain = lvl[u] - lvl[lca] + 1;
     int rhtChain = lvl[v] - lvl[lca];
@@ -204,6 +152,7 @@ int getKthNode(int u, int v, int k, int lca) {
 }
 
 // -------- SUBTREE UPDATE FUNCTIONS --------
+// if the root changes
 
 void subTreeUpdate(int u, int root, int val) {
     // if u is child of root, then subtree of u
@@ -234,4 +183,30 @@ ll getSubTreeSum(int u, int root) {
     }
     else
         return DS.query(in[u], out[u]);
+}
+
+
+// ------- Can Give Total Spanning Tree edges for an particular set of nodes
+
+set<int>nodes;                  // contains nodes according to dfs order
+int nodeCost(int u) {           // returns node Query/Insert updated distance    
+    auto it = nodes.insert(in[u]).first;        // inserted according to dfs in-timing
+    auto l = it, r = it;                        // iterator of the inserted index
+    if(it == nodes.begin())
+        l = --nodes.end();
+    else --l;
+    
+    if(it == --nodes.end())
+        r = nodes.begin();
+    else ++r;
+    
+    int L = revIn[*l], R = revIn[*r];     // nodes are retrieved from dfs in-timing 
+    
+    // dst is the spanning distance if the new node is added
+    int dst = lvl[u] + lvl[LCA(L, R)] - lvl[LCA(u, L)] - lvl[LCA(u, R)];
+    return dst;
+}
+
+void removeNode(int u) {
+    nodes.erase(in[u]);
 }
