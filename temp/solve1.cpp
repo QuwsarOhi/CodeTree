@@ -1,146 +1,101 @@
 #include <bits/stdc++.h>
-#define MAX 100100
+#define dbug(x)     cerr << #x << " = " << x << endl
+#define MAX 300010
 using namespace std;
-
 typedef long long ll;
 
-int in[MAX], out[MAX], lvl[MAX], par[MAX][21], cnt;
-vector<int>G[MAX];
+ll v[MAX], seg[MAX];
+int block;
 
-// Can generate LCA of a set of nodes
-// Can Also calculate the Spanning Path (connected total distance) of the nodes
-// must do dfs first, generate dfs in out time, and generate sparse table parent 'par'
-
-struct LCATree {
-    int tree[MAX*4], lca, n, cost;
-    set<int>nodes;
-
-    void init(int sz) { n = sz, lca = -1, cost = 0; }
-    void update(int pos, int l, int r, int idx, int v) {
-        if(l == r) {
-            tree[pos] += v;
-            return;
+void build(int n) {
+    block = sqrt(n + .0) + 1;
+    int l = 0, r = 0;
+    for( ; r < n; ++r) {
+        if(r%block == 0 and r != 0) {
+            sort(seg+l, seg+r);
+            cerr << l << " -- " << r << endl;
+            l = r;
         }
-        int mid = (l+r)>>1;
-        if(idx <= mid)  update(pos<<1, l, mid, idx, v);
-        else            update(pos<<1|1, mid+1, r, idx, v);
-        tree[pos] = tree[pos<<1] + tree[pos<<1|1];
+        seg[r] = v[r];
     }
-    int query(int pos, int l, int r, int L, int R) {
-        if(r < L or R < l)      return 0;
-        if(L <= l and r <= R)   return tree[pos];
-        int mid = (l+r)>>1;
-        return query(pos<<1, l, mid, L, R) + query(pos<<1|1, mid+1, r, L, R);
-    }
-    int getPar(int u, int p) {
-        for(int i = 20; i >= 0; --i)
-            if(p & (1 << i))
-                u = par[u][i];          // parent sparse table
-        return u;
-    }
-    int LCA() {
-        int u = *nodes.begin(), tot = nodes.size(), v, ret = *nodes.begin();
-        int lo = 0, hi = lvl[u]-1;
-        while(lo <= hi) {
-            int mid = (lo+hi)>>1;
-            v = getPar(u, mid);
-            if(query(1, 1, n, in[v], out[v]) == tot)
-                hi = mid-1, ret = v;            // in : dfs in time
-            else                                // out : dfs out time
-                lo = mid+1;
-        }
-        return ret;
-    }
-    int findChainPar(int u, int t) {                // finds parent node of u having 
-        int lo = 0, hi = lvl[u]-1, ret = u, v, mid; // active child node more than t
-        while(lo <= hi) {
-            mid = (lo+hi)>>1;
-            v = getPar(u, mid);
-            if(query(1, 1, n, in[v], out[v]) > t)
-                hi = mid-1, ret = v;
-            else
-                lo = mid+1;
-        }
-        return ret;
-    }
-    void addNode(int u) {
-        int pstLca = lca;
-        nodes.insert(u), update(1, 1, n, in[u], 1);
-        if(lca == -1) {
-            lca = u;
-            return;
-        }
-        else
-            lca = LCA();
-        // if new LCA is same but the new node is on different chain
-        if(pstLca == lca and query(1, 1, n, in[u], out[u]) == 1) {
-            int v = findChainPar(u, 1);
-            cost += lvl[u] - lvl[v];
-        }
-        // if new LCA changes, newLCA will always be upper from past LCA
-        // also the node u is on different chain
-        else if(lca != pstLca)
-            cost += lvl[u] + lvl[pstLca] - 2*lvl[lca];
-    }
-    void removeNode(int u) {
-        int pstLca = lca;
-        nodes.erase(u), update(1, 1, n, in[u], -1);
-        if(nodes.empty()) {
-            lca = -1, cost = 0;
-            return;
-        }
-        else
-            lca = LCA();
-        if(pstLca == lca and query(1, 1, n, in[u], out[u]) == 0) {
-            int v = findChainPar(u, 0);
-            cost -= lvl[u] - lvl[v];
-        }
-        else if(lca != pstLca)
-            cost -= lvl[lca] + lvl[u] - 2*lvl[pstLca];
-}};
-
-void dfs(int u, int p) {
-    in[u] = ++cnt;
-    par[u][0] = p, lvl[u] = lvl[p]+1;
-    
-    for(int i = 1; i <= 20; ++i)
-        par[u][i] = par[par[u][i-1]][i-1];
-    
-    for(auto v : G[u])
-        if(v != p)
-            dfs(v, u);
-    out[u] = cnt;
+    cerr << l << " -- " << r << endl;
+    sort(seg+l, seg+r);
 }
 
-LCATree tree;
+void getRange(int idx, int n, int &l, int &r) {
+    int segIndx = idx/block;
+    l = segIndx*block;
+    r = l+block-1;
+}
+
+void update(int idx, int n, ll val) {
+    int l, r;
+    getRange(idx, n, l, r);
+    ++r;
+
+    v[idx] = seg[idx] = val;
+    cerr << "Update at " << idx << " val " << val << " " << l << " -- " << min(r, n) << endl;
+    sort(seg+l, seg+min(r, n));
+}
+
+ll query(int ql, int qr, ll val) {
+    ll ret = 0;
+    cerr << "Query " << ql << " " << qr << " val " << val << endl;
+    while(ql <= qr) {
+        if(ql % block == 0 and ql + block - 1 <= qr) {
+            int t = lower_bound(seg+ql, seg+ql+block, val) - seg;
+            ret += t - ql;
+            cerr << t - ql << endl;
+            ql += block;
+        }
+        else
+            ret += v[ql++] < val;
+    }
+    return ret;
+}
+
+void printer(int n) {
+    cerr << "Block " << block <<  endl;
+    for(int i = 0; i < n; ++i) {
+        if(i > 0 and i%block == 0)
+            cerr << endl;
+        cerr << seg[i] << "(" << i << ") ";
+    }
+    cerr << endl;
+}
 
 int main() {
-    ios_base::sync_with_stdio(false);
-    cin.tie(NULL);
+    ll n, m, u, l, r, vv, p;
+    cin >> n >> m >> u;
 
-    int n, k, u, v;
-    cin >> n >> k;
-    for(int i = 1; i < n; ++i) {
-        cin >> u >> v;
-        G[u].push_back(v);
-        G[v].push_back(u);
+    for(int i = 0; i < n; ++i) 
+        cin >> v[i];
+    build(n);
+
+    while(m--) {
+        cin >> l >> r >> vv >> p;
+        --l, --r, --p;
+        ll k = query(l, r, vv);
+        update(p, n, (k*u)/(r-l+1));
     }
 
-    dfs(1, 0);
-    tree.init(n);
+    //printer(n);
 
-    int l = 1, r = 0, ans = 0;
-    --k;
-
-    while(++r <= n) {
-        tree.addNode(r);
-        while(tree.cost > k and l < r)
-            tree.removeNode(l++);
-        if(tree.cost <= k)
-            ans = max(ans, r-l+1);
-    }
-
-    cout << ans << endl;
+    for(int i = 0; i < n; ++i)
+        cout << v[i] << "\n";
 
     return 0;
 }
+
+/*
+
+10 1 11
+1 6 8 3 7 5 2 9 10 4
+
+10 1 11
+1 1 1 1 1 1 1 1 1 1
+
+10 1 11
+10 10 10 10 10 10 10 10 10 10
+
+*/
