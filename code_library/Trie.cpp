@@ -1,11 +1,7 @@
 //Trie
 //Complexity : making a trie : O(S), searching : O(S)
 
-#include <bits/stdc++.h>
-using namespace std;
-
 bool found;
-
 struct node {
     bool isEnd;
     node *next[11];
@@ -13,14 +9,12 @@ struct node {
         isEnd = false;
         for(int i = 0; i < 10; i++)
             next[i] = NULL;
-    }
-};
+    }};
 
 //trie of a string abc, ax
 // [start] --> [a] --> [b] --> [c] --> endMark
 //				|
 //			   [x] --> endMark
-
 //creates trie, returns true if the trie we are creating is a segment of a string
 //to only create a trie remove lines which are comment marked
 
@@ -49,39 +43,56 @@ void check(node *current) {
         if(current->next[i] != NULL)
             check(current->next[i]);
     }
-    if(found)
-        return;
+    if(found) return;
     if(current->isEnd && !found) {
         for(int i = 0; i < 10 && !found; i++)
             if(current->next[i] != NULL) {
                 found = 1;
-            }
-    }
-}
+}}}
 
-int main() {
-    //freopen("in", "r", stdin);
-    //freopen("out", "w", stdout);
-    int t, n;
-    char S[15];
-    scanf("%d", &t);
-    while(t--) {
-        found = 0;
-        node* root = new node();		//important part of the code
-        scanf("%d", &n);
-        while(n--) {
-            scanf(" %s", S);
-            if(!found)
-                if(create(S, strlen(S), root))
-                    found = 1;
-        }
-        if(!found)
-            check(root);
-        if(found)
-            printf("NO\n");
-        else
-            printf("YES\n");
-        del(root);
+// NON-Dynamic implementation
+// root node is at 0 index of tree
+// root node counter contains total number of string insertion
+// each inserted char counter is on the child node of the edges
+
+struct Trie {
+	struct node {
+		int cnt;
+		int nxt[60];
+	};
+	int nodes;
+	node tree[MAX];
+    void newNode() {
+        tree[nodes].cnt = 0;
+        memset(tree[nodes].nxt, -1, sizeof tree[nodes].nxt);
+        ++nodes;
     }
-    return 0;
-}
+    void init() {
+        nodes = 0;
+        newNode();
+    }
+	int getId(char x) {
+        if(x >= 'A' and  x <= 'Z')
+            return (x - 'A' + 27);
+        return (x - 'a' + 1);
+	}
+	void insert(string &str, int len = 0, int idx = 0) {
+		tree[idx].cnt++;
+		if(len == str.size()) return;
+		int id = getId(str[len]);
+		if(tree[idx].nxt[id] == -1) {
+			tree[idx].nxt[id] = nodes;
+			newNode();
+		}
+		insert(str, len+1, tree[idx].nxt[id]);
+	}
+	int search(string &str, int len = 0, int idx = 0) {
+		if(len == str.size())
+			return -2;
+		int id = getId(str[len]);
+		if(tree[idx].nxt[id] == -1)
+			return -1;
+		if(tree[idx].cnt == 1)
+			return len;
+		return search(str, len+1, tree[idx].nxt[id]);
+}};
