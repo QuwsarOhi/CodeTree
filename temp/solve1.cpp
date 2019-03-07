@@ -1,72 +1,88 @@
 #include <bits/stdc++.h>
-#define MAX 300100
+#define MAX 100009
 using namespace std;
-typedef long long ll;
 
-int block;
-ll val[MAX];
-vector<ll>seg[MAX];
+int block, pos[MAX], v[MAX], jump[MAX];
 
-void built(int n) {
-    block = sqrt(n + .0) + 1;
-    
-    for(int i = 0; i < n; ++i)
-        seg[i/block].push_back(val[i]);
-    
-    int len = n/block + 1;
-    for(int i = 0; i < len; ++i)
-        sort(seg[i].begin(), seg[i].end());
+// retuns block range of index
+void getRange(int idx, int n, int &l, int &r) {
+    l = (idx/block)*block;
+    r = l+block-1;
+    r = min(r, n-1);
 }
 
-void update(int idx, ll newVal) {
-    int blockIdx = idx/block;
-    ll pst = val[idx];
-    for(int i = 0; i < seg[blockIdx].size(); ++i)
-        if(seg[blockIdx][i] == pst) {
-            seg[blockIdx][i] = newVal;
-            break;
-        }
-    
-    val[idx] = newVal;
-    sort(seg[blockIdx].begin(), seg[blockIdx].end());
-}
+void segmentCal(int idx, int n) {
+    int l, r;
+    getRange(idx, n, l, r);
+    //cerr << "BLOCK " << idx/block << endl;
 
-ll query(int l, int r, ll qval) {
-    ll ret = 0;
-    for(int i=l; i<=r; ) {
-        if(i % block == 0 && i + block - 1 <= r) {
-            int idx = i/block;
-            ret += ll(lower_bound(seg[idx].begin(), seg[idx].end(), qval) - seg[idx].begin());
-            i += block;
-        }
-        else {
-            ret += val[i] < qval;
-            ++i;
-        }
+    for(int i = r; i >= l; --i) {
+        if(i+v[i] <= r)
+            pos[i] = pos[i+v[i]] + v[i];
+        else
+            pos[i] = v[i];
     }
-    return ret;
+    
+    for(int i = r; i >= l; --i) {
+        if(i+v[i] <= r)
+            jump[i] = jump[i+v[i]]+1;
+        else
+            jump[i] = 1;
+        //cerr << i << " --> " << pos[i] << " " << jump[i] << endl;
+    }
 }
 
+void update(int idx, int val, int n) {
+    v[idx] = val;
+    segmentCal(idx, n);
+}
+
+pair<int, int> query(int idx, int n) {
+    int jumps = 0;
+    //cerr << "Query " << idx << endl;
+    while(idx + pos[idx] < n) {
+        jumps += jump[idx];
+        idx = idx + pos[idx];
+        //cerr << idx << " ** " << jumps << endl;
+    }
+    while(idx + v[idx] < n) {
+        idx = idx + v[idx], ++jumps;
+        //cerr << idx << " ** " << jumps << endl;
+    }
+    return make_pair(idx, jumps);
+}
+
+void build(int n) {
+    block = sqrt(n + .0) + 1;
+    //cerr << "BLOCK SIZE " << block << endl;
+    for(int i = 0; i-1 < n; i += block)
+        segmentCal(i, n);
+}
 
 int main() {
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
 
-    ll n, u, k, l, r, v, p, q;
+    int n, m, typ, a, b;
+    cin >> n >> m;
 
-    cin >> n >> q >> u;
     for(int i = 0; i < n; ++i)
-        cin >> val[i];
+        cin >> v[i];
 
-    built(n);
-    while(q--) {
-        cin >> l >> r >> v >> p;
-        k = query(--l, --r, v);
-        update(--p, (u*k)/double(r-l+1));
+    build(n);
+
+    while(m--) {
+        cin >> typ >> a;
+        
+        if(typ == 1) {
+            pair<int, int> p;
+            p = query(--a, n);
+            cout << p.first+1 << " " << p.second+1 << "\n";
+        }
+        else {
+            cin >> b;
+            update(--a, b, n);
+        }
     }
-
-    for(int i = 0; i < n; ++i)
-        cout << val[i] << "\n";
-
     return 0;
 }
