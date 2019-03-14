@@ -1,25 +1,37 @@
 // MO's Algo
-// Complexity : Q*sqrt(N)
+// Complexity : (N+Q)*sqrt(N)
 
 struct query {
     int l, r, id;
 };
 
+
+// block must be declared as const, as compilers do fast division with const values
 const int block = 320;          // For 100000
 query q[MAX];
 int ans[MAX];
 
-bool cmp(query &a, query &b) {
-    int block_a = a.l/block, block_b = b.l/block;
-    if(block_a == block_b)
-        return a.r < b.r;
-    return block_a < block_b;
-}
-
-bool cmp2(query &a,query &b){                       // Faster Comparison function
+bool cmp(query &a,query &b){                       // Faster Comparison function
 	if(a.l/block !=b.l/block)   return a.l < b.l;
 	if((a.l/block)&1)           return a.r < b.r;
 	return a.r > b.r;
+}
+
+// MO's Tree Ordering
+bool cmp(query &a,query &b) {
+    if(a.l/block !=b.l/block)   return a.l < b.l;
+    return a.r < b.r;
+}
+
+// MO's Sub-Tree DFS Timing
+int timer = -1;
+void dfs(int u, int p) {
+    in[u] = ++timer;
+    node.push_back(u);
+    for(auto v : G[u])
+        if(v != p)
+            dfs(v, u);
+    out[u] = timer;
 }
 
 void add(int x) {}       // Add x'th value in range 

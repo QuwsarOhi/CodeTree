@@ -1,66 +1,86 @@
-#pragma GCC optimize("Ofast")
-#include <iostream>
-#include <algorithm>
-#include <string>
-#include <vector>
-#include <math.h>
-#define pb push_back
-#define ll long long
+#include <bits/stdc++.h>
+#define MAX 100010
 using namespace std;
+typedef long long ll;
 
-ll tag_A[350],sum_B[350],tag_B[350],A[100000],B[100000];
+vector<int>G[MAX];
+int sz[MAX], heavy[MAX];
+ll val[MAX];
 
-int main() {
-    ll i,j,n,q,sqn,k,ql,qr,l,r,x,id,re;
-    
-    cin >> n >> q;
-    sqn=sqrt(n);
-    
-    for(i=0;i<n;i++)
-        A[i]=i+1; 
-    
-    while(q--) {
+int init(int u, int p) {
+    int heavyChild = -1;
+    sz[u] = 1;
+    for(int v : G[u])
+        if(v != p) {
+            sz[u] += init(v, u);
+            if(heavyChild == -1 or sz[heavyChild] < sz[v])
+                heavyChild = v;
+        }
+    heavy[u] = heavyChild;
+    return sz[u];
+}
 
-        cin >> k >> ql >> qr;
-        ql--,qr--;
+ll ans;
+map<ll, ll> *child[MAX];
 
-        if(k==1) {
-            cin >> x;
-            for(i=ql;i<=qr;) {
+void dfs(int u, int p) {
+    cerr << "AT " << u << " " << p << endl;
+    int heavyChild = heavy[u];
 
-                id=i/sqn,l=id*sqn,r=min(n,l+sqn);
-                
-                if(i==l && qr>=r-1) {
-                    if(tag_A[id])
-                        sum_B[id]+=abs(tag_A[id]-x)*(r-l),tag_B[id]+=abs(tag_A[id]-x);
-                    else
-                        for(j=l;j<r;j++) B[j]+=abs(A[j]-x),sum_B[id]+=abs(A[j]-x);
-                    tag_A[id]=x,i=r;
-                }
-                
-                else {
-                    if(tag_A[id])
-                    {
-                        for(j=l;j<r;j++) A[j]=tag_A[id];
-                        tag_A[id]=0;
+    for(int v : G[u])
+        if(v != p and v != heavyChild)
+            dfs(v, u);
+
+    if(heavyChild != -1) {
+        dfs(heavyChild, u);
+        child[val[u]] = child[val[heavyChild]];
+    }
+    else
+        child[u] = new map<ll, ll>();
+
+    cerr << "NOW " << u << endl;
+    ll rootval = val[u];
+
+    for(int v : G[u])
+        if(v != p and v != heavyChild) {
+            cerr << "COUNTING " << v << endl;
+            for(auto w : *child[v]) {
+                cerr << w.first << ", " << w.second << endl;
+                if(rootval%w.first == 0) {
+                    cerr << "ADDCOUNT\n";
+                    auto it = (*child[u]).find(rootval/w.first);
+                    cerr << "FOUND\n";
+                    if(it != (*child[u]).end()) {
+                        cerr << "ADDFOUND\n";
+                        ans += it->second*w.second;
                     }
-                    sum_B[id]+=abs(A[i]-x),B[i]+=abs(A[i]-x),A[i]=x;
-                    i++;
                 }
             }
+            cerr << "MERGE " << v << endl;
+            for(auto w : *child[v])
+                (*child[u])[w.first] += w.second;
         }
-        else
-        {
-            re=0;
-            for(i=ql;i<=qr;)
-            {
-                id=i/sqn,l=id*sqn,r=min(n,l+sqn);
-                if(i==l && qr>=r-1)
-                    re+=sum_B[id],i=r;
-                else
-                    re+=B[i]+tag_B[id],i++;
-            } 
-            cout << re << "\n";
-        }
+
+    cerr << u << " DONE ";
+    (*child[u])[rootval]++;
+    cerr << "ADDED\n";
+}
+
+int main() {
+    int n, u, v;
+    cin >> n;
+
+    for(int i = 1; i < n; ++i) {
+        cin >> u >> v;
+        G[u].push_back(v);
+        G[v].push_back(u);
     }
+
+    for(int i = 1; i <= n; ++i)
+        cin >> val[i];
+
+    init(1, 0);
+    dfs(1, 0);
+    cout << ans << endl;
+    return 0;
 }
