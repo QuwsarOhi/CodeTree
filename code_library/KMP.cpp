@@ -30,6 +30,35 @@ void KMP(int strLen, int patLen, char str[], char pat[], int table[]) {
             else		i = i+1;					    // if j == 0, then we need to go to next index of str
 }}}
 
+
+// p is the pattern where table[] is the pre-made prefix table of pattern
+// for any index idx the nxt[idx][j] returns the new index idx where the index
+// should point next, this optimizes the kmp in linear time
+
+void getState(string &p, int table[], int nxt[][27]) {
+    for(int i = 0; i < p.size(); ++i) {
+        for(int j = 0; j < 26; ++j) {
+            if(p[i]-'a' == j)
+                nxt[i][j] = i+1;
+            else
+                nxt[i][j] = i == 0 ? 0 : nxt[table[i-1]][j];
+}}}
+
+// check function using nxt[idx][j]
+// idx is the index from which the string should start matching with the pattern
+// by default idx = 0, also it refers the last index of the pattern to which
+// the string matched
+
+int match(string &s, int table[], int nxt[][27], int &idx) {
+    int ans = 0;
+    for(char c : s) {
+        idx = nxt[idx][c-'a'];
+        if(idx == p.size())
+            ++ans, idx = table[idx-1];
+    }
+    return ans;
+}
+
 // --------------- 2D KMP ---------------
 
 unordered_map<string, int>patt;             // Clear after each Kmp2D call
