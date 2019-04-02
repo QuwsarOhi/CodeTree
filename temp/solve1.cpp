@@ -1,108 +1,225 @@
-//satyaki3794
 #include <bits/stdc++.h>
-#include <ext/pb_ds/assoc_container.hpp> // Common file
-#include <ext/pb_ds/tree_policy.hpp> // Including tree_order_statistics_node_update
-#define ff first
-#define ss second
-#define pb push_back
-#define MOD (1000000007LL)
-#define LEFT(n) (2*(n))
-#define RIGHT(n) (2*(n)+1)
-
+#define MAX 100010
 using namespace std;
-using namespace __gnu_pbds;
 typedef long long ll;
-typedef unsigned long long ull;
-typedef pair<int, int> ii;
 
+struct DS {
+    map<ll, ll> s;
+    ll totVal;
 
-const int N = 500005;
-int n, h, par[N], cnt[N], depth[N], arr[N], subsize[N];
-vector<int> adj[N];
-bool big[N];
-int valid = 0;
-ll ans = 0;
+    void clear() {
+        s.clear();
+        totVal = 0;
+    }
+    void insert(ll val) {
+        s[val-totVal]++;
+    }
+    void erase(ll val) {
+        ll tmp = val-totVal;
+        if(s.count(tmp)) {
+            s[tmp]--;
+            if(s[tmp] <= 0)
+                s.erase(tmp);
+        }
+        //if(s.empty()) totVal = 0;
+    }
+    void addEdge(ll val) {
+        //if(s.size())
+            totVal += val;
+    }
+    int resize() {
+        while((not s.empty()) and ((s.begin())->first)+totVal < 0)
+            s.erase(s.begin());
+        //if(s.empty()) totVal = 0;
+        return s.size();
+    }
+    int size() {
+        return s.size();
+    }
+} Set, TmpSet;
 
-void dfs0(int v, int d){
-    depth[v] = d;
-    subsize[v] = 1;
-    for(auto vv : adj[v]){
-        dfs0(vv, d+1);
-        subsize[v] += subsize[vv];
+int sz[MAX];
+ll cst[MAX], joy[MAX], ans[MAX];
+vector<int>G[MAX];
+bitset<MAX>heavy;
+
+int getSZ(int u) {
+    sz[u] = 1;
+    for(auto v : G[u])
+        sz[u] += getSZ(v);
+    return sz[u];
+}
+
+void add(int u, bool first) {
+    for(auto v : G[u])
+        if(not heavy[v])
+            add(v, 0);
+
+    TmpSet.insert(joy[u]);
+    if(not first)
+        TmpSet.addEdge(cst[u]);
+    TmpSet.resize();
+}
+
+void remove(int u, ll carry) {
+    Set.erase(joy[u]+carry);
+    for(auto v : G[u])
+        remove(v, carry+cst[v]);
+}
+
+void dfs(int u, bool keep) {
+    int heavyChild = -1, mx = -1;
+
+    for(auto v : G[u])
+        if(sz[v] > mx)
+            mx = sz[v], heavyChild = v;
+
+    for(auto v : G[u])
+        if(v != heavyChild)
+            dfs(v, 0);
+
+    if(heavyChild != -1) {
+        dfs(heavyChild, 1);
+        heavy[heavyChild] = 1;
+        Set.addEdge(cst[heavyChild]);
+        Set.resize();
+    }
+        
+    cerr << "AT " << u << ", " << heavyChild << " :: (" << Set.totVal << ") ::";
+    for(auto it : Set.s)
+        cerr << " " << it.first+Set.totVal;
+    cerr << endl;
+
+    TmpSet.clear();
+    add(u, 1);
+
+    for(auto it : TmpSet.s) {
+        Set.insert(it.first+TmpSet.totVal);
+        cerr << "INSERTING " << it.first+TmpSet.totVal << endl;
+    }
+
+    ans[u] = Set.size();
+
+    cerr << "AT " << u << " ::";
+    for(auto it : Set.s)
+        cerr << " " << it.first+Set.totVal;
+    cerr << endl;
+
+    if(heavyChild != -1)
+        heavy[heavyChild] = 0;
+    if(not keep) {
+        TmpSet.clear();
+        Set.clear();
     }
 }
 
-void add(int v){
-    cnt[depth[v]]++;
-    if(cnt[depth[v]] == arr[depth[v]])
-        valid++;
-    for(auto vv: adj[v])
-        if(!big[vv])
-            add(vv);
-}
+int main() {
+    int t, n, p, root;
 
-void remove(int v){
-    cnt[depth[v]]--;
-    if(cnt[depth[v]] == arr[depth[v]]-1)
-        valid--;
-    for(auto vv: adj[v])
-        remove(vv);
-}
+    scanf("%d", &t);
+    for(int Case = 1; Case <= t; ++Case) {
+        scanf("%d", &n);
 
+        for(int i = 0; i < MAX; ++i)
+            G[i].clear();
+        Set.clear();
+        heavy.reset();
+        memset(sz, 0, sizeof sz);
 
-void dfs(int v, bool keep){
+        for(int i = 1; i <= n; ++i)
+            scanf("%lld", &joy[i]);
+        for(int i = 1; i <= n; ++i) {
+            scanf("%d", &p);
+            if(p == 0) root = i;
+            else G[p].push_back(i);
+        }
+        for(int i = 1; i <= n; ++i)
+            scanf("%lld", &cst[i]);
 
-    int mx = -1, bigChild = -1;
-    for(auto vv : adj[v])
-       if(subsize[vv] > mx)
-          mx = subsize[vv], bigChild = vv;
-    
-    for(auto vv : adj[v])
-        if(vv != bigChild)
-            dfs(vv, false);  // run a dfs on small childs and clear them from cnt
+        getSZ(root);
+        dfs(root, 0);
 
-    if(bigChild != -1){
-        dfs(bigChild, true), big[bigChild] = 1;  // bigChild marked as big and not cleared from cnt
+        printf("Case %d:\n", Case);
+        for(int i = 1; i <= n; ++i)
+            printf("%lld\n", ans[i]);
     }
-
-    add(v);
-    //now cnt[c] is the number of vertices in subtree of vertex v that has color c. You can answer the queries easily.
-
-    ans += valid;
-    if(bigChild != -1)
-        big[bigChild] = 0;
-    if(keep == false)
-        remove(v);
-}
-
-
-
-int main(){
-
-    ios_base::sync_with_stdio(0);
-    cin.tie(0);
-
-    cin>>n>>h;
-    for(int i=1;i<n;i++){
-        cin>>par[i];
-        adj[par[i]].pb(i);
-    }
-
-    for(int i=0;i<=h;i++)   cin>>arr[i];
-
-    dfs0(0, 0);
-
-    for(int i=0;i<=h;i++)
-        if(arr[i] == 0)
-            valid++;
-
-    dfs(0, true);
-    cout<<ans;
     return 0;
 }
 
 
+/*
+
+6
+
+5
+7 3 2 5 1
+0 1 1 3 3
+0 4 1 0 4
+
+2
+3 2
+0 1
+0 -5
+
+5
+7 3 2 5 1
+0 1 1 3 3
+0 2 -2 -4 -1
+
+9
+7 3 2 5 1 1 10 5 4
+0 1 1 3 3 5 5 2 2
+10 2 -2 -4 -1 2 2 0 12
 
 
+3
+2 5 1
+0 1 1
+-2 -4 -1
+
+8
+1 2 3 4 0 0 0 0
+0 1 2 3 1 5 6 7
+0 10 -5 0 0 0 0 0
 
 
+Case 1:
+3
+1
+2
+1
+1
+Case 2:
+1
+1
+Case 3:
+3
+1
+3
+1
+1
+Case 4:
+5
+3
+4
+1
+3
+1
+1
+1
+1
+Case 5:
+3
+1
+1
+Case 6:
+3
+1
+2
+1
+1
+1
+1
+1
+
+*/
