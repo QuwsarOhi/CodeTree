@@ -1,225 +1,111 @@
 #include <bits/stdc++.h>
-#define MAX 100010
+#define MAXVAL 100
 using namespace std;
-typedef long long ll;
 
-struct DS {
-    map<ll, ll> s;
-    ll totVal;
 
-    void clear() {
-        s.clear();
-        totVal = 0;
+int cnt[10009][MAXVAL+2], n, v[10009], ans[10009];
+
+void gen() {
+    for(int i = 0; i < n; ++i) {
+        cnt[i][v[i]]++;
+        if(i != 0)
+            for(int j = 0; j <= MAXVAL; ++j) {
+                cnt[i][j] += cnt[i-1][j];
+                //cerr << i << ", " << j << " = " << cnt[i][j] << endl;
+            }
     }
-    void insert(ll val) {
-        s[val-totVal]++;
-    }
-    void erase(ll val) {
-        ll tmp = val-totVal;
-        if(s.count(tmp)) {
-            s[tmp]--;
-            if(s[tmp] <= 0)
-                s.erase(tmp);
+    for(int i = 0; i < n; ++i) {
+        for(int j = 1; j <= MAXVAL; ++j) {
+            cnt[i][j] += cnt[i][j-1];
+            //cerr << i << ", " << j << " == " << cnt[i][j] << endl;
         }
-        //if(s.empty()) totVal = 0;
     }
-    void addEdge(ll val) {
-        //if(s.size())
-            totVal += val;
-    }
-    int resize() {
-        while((not s.empty()) and ((s.begin())->first)+totVal < 0)
-            s.erase(s.begin());
-        //if(s.empty()) totVal = 0;
-        return s.size();
-    }
-    int size() {
-        return s.size();
-    }
-} Set, TmpSet;
-
-int sz[MAX];
-ll cst[MAX], joy[MAX], ans[MAX];
-vector<int>G[MAX];
-bitset<MAX>heavy;
-
-int getSZ(int u) {
-    sz[u] = 1;
-    for(auto v : G[u])
-        sz[u] += getSZ(v);
-    return sz[u];
 }
 
-void add(int u, bool first) {
-    for(auto v : G[u])
-        if(not heavy[v])
-            add(v, 0);
-
-    TmpSet.insert(joy[u]);
-    if(not first)
-        TmpSet.addEdge(cst[u]);
-    TmpSet.resize();
+int Bigger(int r, int val) {
+    int ret = 0;
+    if(r)
+        ret = cnt[r-1][MAXVAL] - cnt[r-1][val];
+    return ret;
 }
 
-void remove(int u, ll carry) {
-    Set.erase(joy[u]+carry);
-    for(auto v : G[u])
-        remove(v, carry+cst[v]);
+int Smaller(int l, int val) {
+    int ret = 0;
+    if(val)
+        ret = cnt[n-1][val-1] - cnt[l][val-1];
+    return ret;
 }
 
-void dfs(int u, bool keep) {
-    int heavyChild = -1, mx = -1;
-
-    for(auto v : G[u])
-        if(sz[v] > mx)
-            mx = sz[v], heavyChild = v;
-
-    for(auto v : G[u])
-        if(v != heavyChild)
-            dfs(v, 0);
-
-    if(heavyChild != -1) {
-        dfs(heavyChild, 1);
-        heavy[heavyChild] = 1;
-        Set.addEdge(cst[heavyChild]);
-        Set.resize();
+void genInversion() {
+    for(int i = 0; i < n; ++i) {
+        ans[i] = cnt[n-1][v[i]-1] - cnt[i][v[i]-1] + (i > 0 ? ans[i-1]:0);
+        //cerr << cnt[n-1][v[i]-1] << " - " << cnt[i][v[i]-1] << " :: " << v[i] << " + " << (i > 0 ? ans[i-1]:0) << endl;
     }
-        
-    cerr << "AT " << u << ", " << heavyChild << " :: (" << Set.totVal << ") ::";
-    for(auto it : Set.s)
-        cerr << " " << it.first+Set.totVal;
-    cerr << endl;
+}
 
-    TmpSet.clear();
-    add(u, 1);
+int getAns(int pos) {
+    return ans[pos] - (pos ? ans[pos-1]:0);
+}
 
-    for(auto it : TmpSet.s) {
-        Set.insert(it.first+TmpSet.totVal);
-        cerr << "INSERTING " << it.first+TmpSet.totVal << endl;
+int swapQuery(int l, int r) {
+    if(l == r or v[l] == v[r]) return ans[n-1];
+    
+    //cerr << "QUERY " << l << ", " << r << " :: " << v[l] << ", " << v[r] << endl; 
+    int ret = ans[n-1] - getAns(l) - getAns(r);
+    //cerr << ans[n-1] << " - " << getAns(l) << " - " << getAns(r) << " = " << ret;
+
+    ret -= Bigger(l, v[l]);
+    ret -= Bigger(r, v[r]);
+    
+    //cerr << " - (" << Bigger(l, v[l]) << " + " << Bigger(r, v[r]) << ") = " << ret;
+
+    ret += Smaller(r, v[l]);
+    ret += Bigger(r, v[l]);
+    
+    ret += Smaller(l, v[r]);
+    ret += Bigger(l, v[r]);
+
+    //cerr << " + " << Smaller(l, v[r]) << " + " << Bigger(l, v[r]) << " + " << Smaller(r, v[l]) << " + " << Bigger(r, v[l]) << " = " << ret << endl;
+
+    return ret + 1;
+}
+
+int eraseQuery(int l, int r) {
+    return -1;
+    if(l > r) swap(l, r);
+    int ret = ans[n-1] - (ans[r] - (l > 0 ? ans[l-1]:0));
+
+    int x;
+    for(int i = 0; i <= MAXVAL; ++i) {
+        x = cnt[r][i] - (l > 0 ? cnt[l-1][i]:0);
+        if(x) {
+            ret -= Bigger(l, i)*x;
+            ret -= Smaller(r, i)*x;
+        }
     }
-
-    ans[u] = Set.size();
-
-    cerr << "AT " << u << " ::";
-    for(auto it : Set.s)
-        cerr << " " << it.first+Set.totVal;
-    cerr << endl;
-
-    if(heavyChild != -1)
-        heavy[heavyChild] = 0;
-    if(not keep) {
-        TmpSet.clear();
-        Set.clear();
-    }
+    return ret;
 }
 
 int main() {
-    int t, n, p, root;
+    scanf("%d", &n);
+    for(int i = 0; i < n; ++i) scanf("%d", &v[i]);
 
-    scanf("%d", &t);
-    for(int Case = 1; Case <= t; ++Case) {
-        scanf("%d", &n);
+    gen();
+    genInversion();
 
-        for(int i = 0; i < MAX; ++i)
-            G[i].clear();
-        Set.clear();
-        heavy.reset();
-        memset(sz, 0, sizeof sz);
+    for(int i = 0; i < n; ++i)
+        cerr << "* " << ans[i] << " " << Bigger(i, v[i]) << " " << Smaller(i, v[i]) << endl;
+    cerr << endl;
 
-        for(int i = 1; i <= n; ++i)
-            scanf("%lld", &joy[i]);
-        for(int i = 1; i <= n; ++i) {
-            scanf("%d", &p);
-            if(p == 0) root = i;
-            else G[p].push_back(i);
-        }
-        for(int i = 1; i <= n; ++i)
-            scanf("%lld", &cst[i]);
-
-        getSZ(root);
-        dfs(root, 0);
-
-        printf("Case %d:\n", Case);
-        for(int i = 1; i <= n; ++i)
-            printf("%lld\n", ans[i]);
+    int q, l, r, typ;
+    scanf("%d", &q);
+    while(q--) {
+        scanf("%d%d%d", &typ, &l, &r);
+        if(typ == 0)
+            printf("%d\n", swapQuery(l, r));
+        else
+            printf("%d\n", eraseQuery(l, r));
     }
+
     return 0;
 }
-
-
-/*
-
-6
-
-5
-7 3 2 5 1
-0 1 1 3 3
-0 4 1 0 4
-
-2
-3 2
-0 1
-0 -5
-
-5
-7 3 2 5 1
-0 1 1 3 3
-0 2 -2 -4 -1
-
-9
-7 3 2 5 1 1 10 5 4
-0 1 1 3 3 5 5 2 2
-10 2 -2 -4 -1 2 2 0 12
-
-
-3
-2 5 1
-0 1 1
--2 -4 -1
-
-8
-1 2 3 4 0 0 0 0
-0 1 2 3 1 5 6 7
-0 10 -5 0 0 0 0 0
-
-
-Case 1:
-3
-1
-2
-1
-1
-Case 2:
-1
-1
-Case 3:
-3
-1
-3
-1
-1
-Case 4:
-5
-3
-4
-1
-3
-1
-1
-1
-1
-Case 5:
-3
-1
-1
-Case 6:
-3
-1
-2
-1
-1
-1
-1
-1
-
-*/
