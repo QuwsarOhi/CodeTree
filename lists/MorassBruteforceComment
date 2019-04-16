@@ -1,0 +1,93 @@
+http://codeforces.com/contest/919/problem/B (1) //Simply simulate
+http://codeforces.com/contest/110/problem/A (1) //4 or 7
+http://codeforces.com/contest/911/problem/B (1)
+http://codeforces.com/contest/894/problem/A (1) //3-cycles
+http://codeforces.com/contest/94/problem/B (1) 	//3cycles
+http://codeforces.com/contest/68/problem/A (1) 	//Simple simulation
+
+http://codeforces.com/contest/922/problem/B (2) //Test all pairs — observe 3rd
+http://codeforces.com/contest/146/problem/B (2) //Test all bigger numbers
+http://codeforces.com/contest/907/problem/A (2) //try all triples 0→ 200
+http://codeforces.com/contest/898/problem/B (2) //Try all possibilities
+7671 What a Beautiful Lake (2) 					//Try up/down from every node
+http://codeforces.com/contest/106/problem/B (2) //Cycles -_-
+http://codeforces.com/contest/895/problem/A (2) //All segments [in circle]
+http://codeforces.com/contest/893/problem/B (2) //Try each divisor
+http://codeforces.com/contest/102/problem/A (2) //Iterate over all triples
+http://codeforces.com/contest/96/problem/B (2) 	//Check all
+http://codeforces.com/contest/66/problem/B (2) 	//Test always whole platform
+http://codeforces.com/contest/46/problem/C (2) 	//[2pointers][N^2 works too]
+UVA 12169 (2)
+11961 UVA (2)
+10732 UVA (2) 									//Brute-force passes .. just don't trust them O(N^2)
+http://codeforces.com/contest/31/problem/C (2) 	//LOW-Constaints: N^2
+http://codeforces.com/contest/44/problem/B (2) 	//N^2 works fine
+http://code-festival-2017-qualc.contest.atcoder.jp/tasks/code_festival_2017_qualc_b (2)
+
+
+http://codeforces.com/contest/124/problem/B (3) //next-permutation
+http://codeforces.com/contest/910/problem/C (3) //Next-permutation
+http://codeforces.com/contest/122/problem/C (3) //Just around 2^10 lucky [RECURSION]
+http://codeforces.com/contest/892/problem/C (3) //Try to find "1" ASAP
+http://codeforces.com/contest/887/problem/B (3) //Test all numbers
+http://codeforces.com/contest/879/problem/C (3) //[NICE] one of each operation is enough
+http://codeforces.com/contest/53/problem/B (3) 	//at most 60 possibilities
+http://codeforces.com/contest/55/problem/B (3) 	//Try all permutations & possibilities [NICE]
+http://codeforces.com/contest/877/problem/B (3) //NICE [N^2][PrefixSum]
+LA 6623 — Battle for Silver (3) //4 for-cycles inside ~ K4 search
+11548 UVA (3)
+http://www.spoj.com/problems/BOKAM143SOU/ (3) 	//just implement for-cycles
+13173 UVA (3) //just brute-force + branching
+http://codeforces.com/contest/813/problem/B (3) //All*All (BF) care for overflow! NICE & EASY
+http://codeforces.com/contest/817/problem/C (3) //Check S+Constant (NICE!)
+http://codeforces.com/contest/846/problem/B (3) //Brute-force
+http://codeforces.com/contest/861/problem/B (3) //Check all floor-sizes
+http://www.spoj.com/problems/RRANGE/ (3) 		//Compare all queries agains all updates + GAUSS
+http://codeforces.com/contest/598/problem/B (3) //Treap works too ;-)
+http://codeforces.com/contest/32/problem/D (3) 	//Simply try all possibilities
+http://codeforces.com/contest/876/problem/C (3) //Try N and ~100 lower
+http://codeforces.com/contest/724/problem/B 3
+
+
+7692 — Square Deal (4) 							//Permutations+Swap
+7899 — Mr. Panda and Strips (4) //Weak test-cases
+http://codeforces.com/gym/101597/problem/A (4) 	//[MATH][MODULO][SIMULATION]
+http://codeforces.com/contest/47/problem/D (4) 	//[Implementation][DFS]
+http://codeforces.com/contest/51/problem/D (4) 	//Check all/check without 1s/2nd
+http://codeforces.com/contest/725/problem/C 4
+11898 UVA (4)
+11659 UVA (4)
+11699 UVA (4)
+11127 UVA (4) 									//Simple dfs [just realize you can do so]
+http://www.spoj.com/problems/BLOPER/ (4) 		//dfs with little pruning
+http://codeforces.com/contest/799/problem/D (4) //VERY NICE [only top 34 needed] — trick with 2 [~20]
+10890 UVA (4) 									//Simple brute-force times out, but with simple pruning AC (answer detection
+http://codeforces.com/contest/818/problem/D (4) //NICE for each 'A' check all remaining (max SQRT)
+http://www.spoj.com/problems/JHAGIRLS/ (4) 		//Efficient — or store output in array
+http://www.spoj.com/problems/ALONE/ (4) 		//Generate everything <10^15 [NICE]
+http://www.spoj.com/problems/AMR10I/ (4) 		//Can be solved with brute-force with dp
+http://codeforces.com/contest/868/problem/C (4) //Brute-force (fixet at most 6 each bits)
+
+
+6160 — Countdown (5) 							//[NICE][DFS][EFFICIENT?]
+http://codeforces.com/contest/68/problem/C (5) 	//[VERY NICE][RECURSION][MAX COST MIN FLOW
+11471 UVA (5) 									//With dynamic programming
+10748 UVA (5) 									//VERY Nice (knights have K^2 moves not 8^K)
+http://codeforces.com/contest/834/problem/E (5) //NICE — hard to imple: all 11122...999 OK
+http://codeforces.com/contest/868/problem/D (5) //NICE: Maximal K is low (I assumed 15)
+
+
+
+http://codeforces.com/gym/101806/problem/X (6) //[VERY NICE][DFS][IFS][OBSERVATION]
+http://codeforces.com/contest/725/problem/E (6)
+11206 UVA (6) //4^20 (but somehow passes)
+11214 UVA (6) //Úvaha + pruning
+
+http://codeforces.com/contest/753/problem/C 7
+
+
+http://codeforces.com/contest/698/problem/D 8 	//with geometry
+
+
+8259 — High Score LA 							//[VERY NICE][TS works too] add only low number to minimum (NOT WORKING?)
+http://codeforces.com/gym/101840 F 				//[NICE][BS][DISTANCE]
