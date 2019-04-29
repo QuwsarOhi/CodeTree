@@ -1,79 +1,35 @@
-#include <bits/stdc++.h>
-#define INF 0x3f3f3f3f
+#include <iostream>
+#include <vector>
+#include <algorithm>
+#define MOD 1000000000
 using namespace std;
+typedef long long ll;
 
-char s[200], ans[400];
-int dp[104][104];
+ll dp[2][1000002], n;
+vector<int>v;
 
-int recur(int l, int r) {
-	int &ret = dp[l][r];
-	if(l > r)
-		return ret = 0;
-	if(l == r)
-		return ret = 2;
-	if(ret != -1) {
-		//cerr << "HIT\n";
-		return ret;
-	}
-	ret = INF;
-	char lft = s[l];
-	if(lft == '(' or lft == '[')
-	for(int i = l+1; i <= r; ++i)
-		if((lft == '(' and s[i] == ')') or (lft == '[' and s[i] == ']'))
-			ret = min(ret, recur(l+1, i-1)+recur(i+1, r)+2);
-	ret = min(ret, min(recur(l+1, r), recur(l, r-1))+2);
-	return ret;
+int cal() {
+    int prev = 0, curr = 1;
+    for(int i = 0; i < v.size(); ++i) {
+        dp[curr][0] = 1;
+        for(int tot = 1; tot <= n; ++tot) {
+            int tmp = tot-v[i];
+            dp[curr][tot] = (tmp >= 0 ? dp[curr][tmp]:0) + (i > 0 ? dp[prev][tot]:0);
+            if(dp[curr][tot] >= MOD)
+                dp[curr][tot] %= MOD;
+        }
+        prev ^= 1, curr ^= 1;
+    }
+    return dp[prev][n];
 }
 
-void go(int l, int r, int lp) {
-    //cerr << l << ", " << r << " :: " << lp << endl;
-    if(l > r) return;
-	if(l == r) {
-        if(s[l] == '(' or s[l] == ')')
-            ans[lp] = '(', ans[lp+1] = ')';
-        else
-            ans[lp] = '[', ans[lp+1] = ']';
-        return;
-	}
-
-	char lft = s[l];
-	if(lft == '(' or lft == '[')
-	for(int i = l+1; i <= r; ++i)
-		if(((lft == '(' and s[i] == ')') or (lft == '[' and s[i] == ']')) and (dp[l][r] = dp[l+1][i-1]+dp[i+1][r]+2)) {
-			int rp = lp + dp[l+1][i-1]+1;
-			//cerr << "PLACING " << lp << ", " << rp << endl;
-			if(lft == '(') 	ans[lp] = '(', ans[rp] = ')';
-			else			ans[lp] = '[', ans[rp] = ']';
-			go(l+1, i-1, lp+1);
-			go(i+1, r, rp+1);
-			return;
-		}
-
-	if(dp[l][r] == dp[l+1][r]+2) {
-		if(lft == ')' or lft == '(')
-			ans[lp] = '(', ans[lp+1] = ')';
-		else
-			ans[lp] = '[', ans[lp+1] = ']';
-		go(l+1, r, lp+2);
-	}
-	else {
-		int rp = lp + dp[l][r-1] + 1;
-		if(s[r] == ')' or s[r] == '(')
-			ans[rp] = '(', ans[rp+1] = ')';
-		else
-			ans[rp] = '[', ans[rp+1] = ']';
-		go(l, r-1, lp);
-	}
-}
 
 int main() {
-	scanf("%s", s);
-	int len = strlen(s);
-	memset(dp, -1, sizeof dp);
-	int ret = recur(0, len-1);
-	//cout << ret << endl;
-	go(0, len-1, 0);
-	ans[ret] = '\0';
-	printf("%s\n", ans);
-	return 0;
+    for(int i = 0; (1<<i) <= 1000000; ++i) {
+        //scerr << i << " :: " << (1<<i) << endl;
+        v.push_back(1<<i);
+    }
+    cin >> n;
+    cout << cal() << endl;
+    return 0;
 }

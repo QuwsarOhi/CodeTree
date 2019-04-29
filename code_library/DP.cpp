@@ -141,6 +141,26 @@ void dfs(int mask, int last, string ret) {          // PRINTING part of LIGHT OJ
             dfs(mask | (1<<i), i, ret + v[last].substr(0, cost));
 }}
 
+// FileName : 1141 - Brackets Sequence
+// Given a bracket sequence of () and [] which can be non-accurate
+// Have to make it accurate such as the accurate sequence length is minimum
+int recur(int l, int r) {
+    int &ret = dp[l][r];
+    if(l > r)                   // No more placing required
+        return ret = 0;
+    if(l == r)                  // We need to place an extra bracket
+        return ret = 2;
+    if(ret != INF)
+        return ret;
+    ret = min(recur(l+1, r), recur(l, r-1))+2;  // First we assume that we
+    char lft = s[l];                            // need to place brackets on first or on last
+    if(lft == '(' or lft == '[')                // If this segment starts with opening bracket
+        for(int i = l+1; i <= r; ++i)           // Then we try to slice the segment into two parts
+            if((lft == '(' and s[i] == ')') or (lft == '[' and s[i] == ']'))
+                ret = min(ret, recur(l+1, i-1)+recur(i+1, r)+2);    // +2 is the lenght of () or []
+    return ret;
+}
+
 //-----------------------Digit DP-----------------------
 
 // Complexity : O(10*idx*sum*tight)     : LightOJ 1068
