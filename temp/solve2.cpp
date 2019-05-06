@@ -1,51 +1,66 @@
-// ICPCLive
-// 4872 - Underground Cables
 #include <bits/stdc++.h>
+#define MAX 105
+#define INF 0x3f3f3f3f
 using namespace std;
 
-double dist(int x1, int y1, int x2, int y2) {
-    double dx = x1-x2, dy = y1-y2;
-    return sqrt(dx*dx + dy*dy);
-}
-
-priority_queue<pair<double, int> >pq;
-vector<pair<int, int> > p;
-bitset<1009>taken;
+bool g[MAX][MAX];
 int n;
 
-void process(int u) {
-    taken[u] = 1;
-    for(int v = 0; v < n; ++v) {
-        if(taken[v]) continue;
-        pq.push({-dist(p[u].first, p[u].second, p[v].first, p[v].second), -v});
+
+vector<pair<pair<int, int>, char> > ans, v;
+
+void go(int x, int y) {
+    if(x > n) {
+        if(v.size() < ans.size() or ans.empty()) 
+            ans = v;
+        return;
     }
+    if(y > n) {
+        go(x+1, 1);
+        return;
+    }
+
+    if(g[x][y]) {
+        if(g[x-1][y-1]) {
+            v.push_back({{x, y}, 'L'});
+            go(x, y+1);
+            v.pop_back();
+        }
+        else if(g[x-1][y+1]) {
+            v.push_back({{x, y}, 'R'});
+            go(x, y+1);
+            v.pop_back();
+        }
+        else
+            go(x, y+1);
+    }
+    else
+        go(x, y+1);
 }
 
+
 int main() {
-    int x, y;
-    while(cin >> n) {
-        if(n == 0) break;
+    int t;
+    char c;
+    scanf("%d", &t);
 
-        p.clear();
-        taken.reset();
+    while(t--) {
+        scanf("%d", &n);
+        memset(g, 0, sizeof g);
 
-        for(int i = 0; i < n; ++i) {
-            cin >> x >> y;
-            p.push_back({x, y});
-        }
+        for(int i = 1; i <= n; ++i)
+            for(int j = 1; j <= n; ++j) {
+                scanf(" %c", &c);
+                if(c == 'O') g[i][j] = 1;
+            }
 
-        double ans = 0;
-        process(0);
-        while(not pq.empty()) {
-            double w = -pq.top().first;
-            int v = -pq.top().second;
-            pq.pop();
-
-            if(not taken[v])
-                process(v), ans += w;
-        }
-
-        cout << fixed << setprecision(2) << ans << endl;
+        ans.clear(), v.clear();
+        go(1, 1);
+        printf("%d\n", (int)ans.size());
+        sort(ans.begin(), ans.end());
+        for(auto it : ans)
+            printf("%d %d %c\n", it.first.first, it.first.second, it.second);
     }
+
     return 0;
 }

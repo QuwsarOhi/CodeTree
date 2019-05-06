@@ -76,6 +76,10 @@ vector<int> LCA(int u, int v) {
 
 // --------------------------- Overlap Path of Tree --------------------------- 
 
+bool isChild(int child, int par) {                                  // returns true if a is child of b
+    return ((child == par) or ((startTime[par] <= startTime[child]) and (endTime[par] >= endTime[child])));
+}
+
 // Note: DfsTiming and isChild function required
 // a is upper node of path a-b and c is upper node of path c-d
 pii overlapPath(int a, int b, int c, int d) {      // returns number of common path of c-d and a-b

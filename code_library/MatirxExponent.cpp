@@ -18,3 +18,13 @@ matrix matPow(matrix base, ll p, int s) {               // O(logN), s : size of 
     matrix tmp = matPow(base, p/2, s);
     return mul(tmp, tmp, s, s, s);
 }
+MAT pow(MAT x, ll p, int sz) {                      // Power using loop
+    if(p == 1) return x;
+    MAT ret;
+    for(int i = 0; i < sz; ++i) ret.m[i][i] = 1;    // Diagonal Matrix
+    while(p > 0) {
+        if(p&1) ret = mul(ret, x, sz, sz, sz);
+        p = p >> 1, x = mul(x, x, sz, sz, sz);
+    }
+    return ret;
+}
