@@ -1,66 +1,28 @@
 #include <bits/stdc++.h>
-#define MAX 105
-#define INF 0x3f3f3f3f
 using namespace std;
+typedef long long ll;
 
-bool g[MAX][MAX];
-int n;
-
-
-vector<pair<pair<int, int>, char> > ans, v;
-
-void go(int x, int y) {
-    if(x > n) {
-        if(v.size() < ans.size() or ans.empty()) 
-            ans = v;
-        return;
-    }
-    if(y > n) {
-        go(x+1, 1);
-        return;
-    }
-
-    if(g[x][y]) {
-        if(g[x-1][y-1]) {
-            v.push_back({{x, y}, 'L'});
-            go(x, y+1);
-            v.pop_back();
-        }
-        else if(g[x-1][y+1]) {
-            v.push_back({{x, y}, 'R'});
-            go(x, y+1);
-            v.pop_back();
-        }
-        else
-            go(x, y+1);
-    }
-    else
-        go(x, y+1);
-}
+void dfs(int u, int p) {
+    tot[u] = tot[p] + 
 
 
 int main() {
     int t;
-    char c;
     scanf("%d", &t);
 
-    while(t--) {
-        scanf("%d", &n);
-        memset(g, 0, sizeof g);
-
+    for(int i = 1; i <= Case; ++i) {
+        scanf("%d%d", &n, &x);
+        
         for(int i = 1; i <= n; ++i)
-            for(int j = 1; j <= n; ++j) {
-                scanf(" %c", &c);
-                if(c == 'O') g[i][j] = 1;
-            }
+            scanf("%d", &c[i]);
 
-        ans.clear(), v.clear();
-        go(1, 1);
-        printf("%d\n", (int)ans.size());
-        sort(ans.begin(), ans.end());
-        for(auto it : ans)
-            printf("%d %d %c\n", it.first.first, it.first.second, it.second);
+        for(int i = 1; i < n; ++i) {
+            scanf("%d%d", &u, &v);
+            G[u].push_back(v);
+            G[v].push_back(u);
+        }
     }
 
-    return 0;
-}
+
+
+
