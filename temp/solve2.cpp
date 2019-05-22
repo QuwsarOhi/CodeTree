@@ -1,28 +1,39 @@
 #include <bits/stdc++.h>
 using namespace std;
-typedef long long ll;
-
-void dfs(int u, int p) {
-    tot[u] = tot[p] + 
 
 
 int main() {
-    int t;
-    scanf("%d", &t);
+    int vcnt = 0, hcnt = 0;
+    vector<pair<int, int> > v;
+    string s;
+    cin >> s;
 
-    for(int i = 1; i <= Case; ++i) {
-        scanf("%d%d", &n, &x);
-        
-        for(int i = 1; i <= n; ++i)
-            scanf("%d", &c[i]);
-
-        for(int i = 1; i < n; ++i) {
-            scanf("%d%d", &u, &v);
-            G[u].push_back(v);
-            G[v].push_back(u);
+    for(auto it : s) {
+        if(it == '0') {        // vertical
+            if(vcnt == 4)
+                vcnt = 0;
+            if(vcnt == 0)
+                v.push_back({1, 1});
+            else if(vcnt == 1)
+                v.push_back({1, 2});
+            else if(vcnt == 2)
+                v.push_back({1, 3});
+            else
+                v.push_back({1, 4});
+            ++vcnt;
+        }
+        else {
+            if(hcnt == 2)
+                hcnt = 0;
+            if(hcnt == 0)
+                v.push_back({4, 1});
+            else
+                v.push_back({4, 3});
+            hcnt++;
         }
     }
 
-
-
-
+    for(auto it : v)
+        cout << it.first << " " << it.second << endl;
+    return 0;
+}
