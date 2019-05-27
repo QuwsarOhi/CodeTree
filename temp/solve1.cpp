@@ -1,24 +1,24 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-long long area(long long a, long long b, long long c) {
-    long long s = (a+b+c)/2;
-    return s*(s-a)*(s-b)*(s-c);
-}
 
 int main() {
-    int n;
-    cin >> n;
+    int n, m;
+    cin >> n >> m;
+    ++n;
 
-    int ans = 0;
-    for(int c = 1; c <= n; ++c) {
-        for(int b = 1; b <= c; ++b) {
-            int a = c^b;
-            if(a <= b and area(a, b, c) > 0)
-                ++ans;
+    int cnt = 0;
+    for(int i = 1; i <= 5; ++i) {
+        int x = m+i;
+        if(x > n) {
+            if(x%n == 0)
+                x = n;
+            else
+                x = x%n;
         }
+        if(x != 1) 
+            ++cnt;
     }
-
-    cout << ans << endl;
+    cout << cnt << endl;
     return 0;
 }
