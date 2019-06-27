@@ -1,3 +1,54 @@
+<<<<<<< HEAD
+from sys import stdin, stdout
+#from fractions import *
+#from bisect import *
+#from collections import deque
+
+class scanner:
+    inputIDX = 0
+    Input = []
+    
+    # File Read/Write
+    stdin = stdin
+    #stdin = open('in', 'r')
+    #stdout = open('out', 'w')
+    
+    def __init__(self):
+        self.inputGrab()
+
+    def Out(self, x, end="\n"):
+        stdout.write(str(x) + end)
+
+    def In(self):
+        return stdin.readline().strip()
+
+    def inputGrab(self):
+        for line in self.stdin:
+            self.Input.extend(map(str, line.strip().split()))
+
+    def hasNext(self):
+        return True if self.inputIDX < len(self.Input) else False
+
+    def nextInt(self):
+        self.inputIDX += 1
+        return int(self.Input[self.inputIDX-1])
+
+    def nextString(self):
+        self.inputIDX += 1
+        return self.Input[self.inputIDX-1]
+
+'''--------------------------------------------------------------------------------'''
+
+v = [-1 for i in range(100)]    # Initializing array of size 100 by -1
+
+# bisect_left(array, val, lo, hi)
+# bisect_right(array, val, lo, hi)
+
+def main():
+    # Main Function
+
+
+=======
 from sys import *
 #from bisect import *
 #from collections import *
@@ -26,6 +77,7 @@ inputIDX = 0
 def hasNext():
     global inputIDX
     return (inputIDX < len(Input))
+>>>>>>> 70a5491588d00ec98f196356c1f76d863f3bdd71
 
 def nextInt():
     global inputIDX
@@ -55,3 +107,7 @@ def main():
     
 if __name__ == '__main__':
     main()
+<<<<<<< HEAD
+
+=======
+>>>>>>> 70a5491588d00ec98f196356c1f76d863f3bdd71

@@ -1,0 +1,19 @@
+# TestManager Keybindings:
+
+* ctrl+b (OSX) ctrl+alt+b (Linux + Win) compile and run
+* ctrl+enter new test
+* ctrl+c (OSX) ctrl+x (Linux + Win) kill process
+* ctrl+shift+b (OSX) run with debugger
+* ctrl+d delete test
+* ctrl+super+up/ctrl+super+down (OSX) ctrl+shift+up/ctrl+shift+down (Linux + Win) swap tests
+* cmd+k, cmd+p (OSX) ctrl+k, ctrl+p (Linux + Win) close/open right panel
+
+
+# Settings:
+* cmd+shift+p (OSX) ctrl+shift+p (Linux + Win) and type Open Settings or tools — FastOlympicCoding — settings
+
+
+# Stress Test:
+* <name>.cpp - program that works incorrect
+* <name>__Good.cpp - program that works correct
+* <name>__Generator.cpp - program that generates tests, you can read a seed for random in input
