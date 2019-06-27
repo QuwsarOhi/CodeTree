@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 #include <bits/stdc++.h>
 using namespace std;
 
@@ -30,5 +29,3 @@ int main() {
 	gen("");
 	return 0;
 }
-=======
->>>>>>> 70a5491588d00ec98f196356c1f76d863f3bdd71
