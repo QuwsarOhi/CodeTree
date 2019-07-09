@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 from sys import stdin, stdout
 #from fractions import *
 #from bisect import *
@@ -77,7 +76,6 @@ inputIDX = 0
 def hasNext():
     global inputIDX
     return (inputIDX < len(Input))
->>>>>>> 70a5491588d00ec98f196356c1f76d863f3bdd71
 
 def nextInt():
     global inputIDX
@@ -107,7 +105,3 @@ def main():
     
 if __name__ == '__main__':
     main()
-<<<<<<< HEAD
-
-=======
->>>>>>> 70a5491588d00ec98f196356c1f76d863f3bdd71

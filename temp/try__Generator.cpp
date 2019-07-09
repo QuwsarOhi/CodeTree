@@ -17,17 +17,13 @@ int main() {
 	cout << 1 << endl;
 	cin >> seed;
 	srand(seed);
-	ll lim = 1000000000;
-	ll k = scale(rand(), 1, lim);
-	ll n = scale(rand(), 1, max(k/3, 1LL));
-	
-	cout << n << " " << k << " ";
 
-	//for(int i= 0; i < n; ++i) {
-		ll a = scale(rand(), 2, max(n/4, 1LL));
-		ll b = scale(rand(), 1, a);
-		cout << a << " " << b << endl;
-	//}
+	int n = 6;
+	cout << n << endl;
+
+	for(int i= 0; i < n; ++i) {
+		cout << scale(rand(), 1, 100) << endl;
+	}
 
 	return 0;
 }

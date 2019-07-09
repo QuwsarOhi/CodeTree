@@ -1,148 +1,126 @@
-<<<<<<< HEAD
-#include <bits/stdc++.h>
-#define MAXN 5
-using namespace std;
-typedef long long ll;
-
-ll MOD;
-
-struct MAT {
-    MAT() { memset(m, 0, sizeof(m)); }
-    long long m[MAXN][MAXN];
-};
-
-MAT mul(MAT a, MAT b, int p, int q, int r) {		// O(n^3) :: r1, c1, c2  [c1 = r2]
-    MAT ans;
-    for(int i = 0; i < p; ++i)
-        for(int j = 0; j < r; ++j) {
-            ans.m[i][j] = 0;
-            for(int k = 0; k < q; ++k)
-                ans.m[i][j] = (ans.m[i][j]%MOD + (a.m[i][k]%MOD * b.m[k][j]%MOD)%MOD)%MOD;
+import java.math.BigInteger;
+import java.util.*;
+ 
+public class Main{
+ 
+    public static BigInteger a[] = new BigInteger[100010];
+    public static BigInteger temp, total, btemp, btemp1,btemp2,ftemp,mini;
+    public static int n,m,pos,tt;
+ 
+ 
+ 
+    public static BigInteger T(int from, int pos){
+ 
+        ftemp = BigInteger.valueOf(1);
+ 
+        for(int i=from; i<=pos; i++){
+ 
+            ftemp = ftemp.multiply(a[i]);
         }
-    return ans;
-}
-
-MAT pow(MAT x, ll p, int sz) {                      // Power using loop
-    if(p == 1) return x;
-    MAT ret;
-    for(int i = 0; i < sz; ++i) ret.m[i][i] = 1;    // Diagonal Matrix
-    while(p > 0) {
-        if(p&1) ret = mul(ret, x, sz, sz, sz);
-        p = p >> 1, x = mul(x, x, sz, sz, sz);
+ 
+        return ftemp;
+ 
     }
-    return ret;
+ 
+    public static Integer S(){
+ 
+        int l = 0, r = n-1,ans = n+3;
+ 
+        mini = total;
+ 
+        // System.out.println("GFD223S");
+        while(l <= r){
+ 
+            int mid = (r+l)/2;
+ 
+            btemp = T(0, mid);
+            btemp1 = T(mid+1, n-1);
+ 
+            btemp2 = btemp.subtract(btemp1);
+            btemp2 = btemp2.abs();
+ 
+          //  System.out.println("R  " + mid + "   " + btemp +"  " + btemp1 + "   "+ btemp2);
+ 
+            int check = btemp.compareTo(btemp1);
+ 
+            if(btemp2.compareTo(mini) == -1){
+                mini = btemp2;
+                ans = mid;
+               // System.out.println(ans+ "  " + mini + "   "+ btemp2);
+            }
+ 
+ 
+            if(btemp2.compareTo(mini) == 0){
+                if(ans > mid) ans = mid;
+               // System.out.println(ans+ "  " + mini + "   "+ btemp2);
+            }
+ 
+            if(check == -1){
+ 
+                l = mid+1;
+            }
+            else {
+                r = mid-1;
+            }
+ 
+ 
+ 
+ 
+        }
+ 
+        return ans+1;
+ 
+    }
+ 
+     public static void main(String []args) throws Exception {
+ 
+         Scanner input = new Scanner(System.in);
+ 
+         n = input.nextInt();
+         m = input.nextInt();
+ 
+         total = BigInteger.valueOf(1);
+ 
+         for(int i=0; i<n; i++) {
+             a[i] = input.nextBigInteger();
+             total = total.multiply(a[i]);
+         }
+ 
+         while( m!= 0 ){
+ 
+             tt = input.nextInt();
+ 
+             if(tt == 1){
+ 
+                pos = input.nextInt();
+                pos--;
+                temp = input.nextBigInteger();
+                a[pos] = a[pos].multiply(temp);
+                total = total.multiply(temp);
+ 
+             }
+             else{
+                // System.out.println("GFDS");
+                 System.out.println(S());
+             }
+         }
+ 
+     }
 }
-
-void printer(MAT x, int sz) {
-	for(int i = 0; i < sz; ++i) {
-		for(int j = 0; j < sz; ++j) {
-			cout << x.m[i][j] << " ";
-		}
-		cout << endl;
-	}
-}
-
-ll get(int q) {
-	if(q <= 2)
-		return 1;
-	if(q%2 == 0)
-		return 2*get(q-1) - get(q-2) + 2;
-	return 3*get(q-2);
-}
-
-MAT f, To, Te, T;
-
-MAT getEVEN(ll n) {
-	n -= 2;
-	MAT TT = pow(T, n/2, 4);
-	TT = mul(TT, f, 4, 4, 4);
-	return TT;
-}
-
-MAT getODD(ll n) {
-	n -= 3;
-	MAT TT = pow(T, n/2, 4);
-	TT = mul(To, TT, 4, 4, 4);
-	TT = mul(TT, f, 4, 4, 4);
-	return TT;
-}
-
-
-
-ll CAL(ll L, ll R) {
-	L -= 1;
-	if(L == 0)
-		L = 0;
-	else if(L == 1)
-		L = 1;
-	else if(L == 2)
-		L = 2;
-	else {
-		if(L%2 == 0)
-			L = getEVEN(L).m[0][0];
-		else
-			L = getODD(L).m[0][0];
-	}
-
-	//cout << "T\n";
-	//printer(T, 4);
-
-	if(R == 1)
-		R = 1;
-	else if(R == 2)
-		R = 2;
-	else {
-		if(R%2 == 0)
-			R = getEVEN(R).m[0][0];
-		else
-			R = getODD(R).m[0][0];
-	}
-
-	//cout << L << ", " << R << endl;
-	return ((((R-L)%MOD)+MOD)%MOD);
-}
-
-int main() {
-	ll t, l, r;
-	scanf("%lld%lld", &t, &MOD);
-
-	//MAT f;
-	f.m[0][0] = 2;
-	f.m[1][0] = 1;
-	f.m[2][0] = 1;
-	f.m[3][0] = 2;
-	//cout << "f\n"; printer(f, 4);
-
-	//MAT Te;
-	Te.m[0][0] = 1;
-	Te.m[0][1] = 2;
-	Te.m[0][2] = -1;
-	Te.m[0][3] = 1;
-	Te.m[1][1] = 2;
-	Te.m[1][2] = -1;
-	Te.m[1][3] = 1;
-	Te.m[2][1] = 1;
-	Te.m[3][3] = 1;
-	//cout << "Te\n"; printer(Te, 4);
-
-	//MAT To;
-	To.m[0][0] = 1;
-	To.m[0][2] = 3;
-	To.m[1][2] = 3;
-	To.m[2][1] = 1;
-	To.m[3][3] = 1;
-	//cout << "To\n"; printer(To, 4);
-
-	T = mul(Te, To, 4, 4, 4);
-	//cout << "T\n"; printer(T, 4);
-
-
-	while(t--) {
-		scanf("%lld%lld", &l, &r);
-		printf("%lld\n", CAL(l, r));
-	}
-
-	return 0;
-}
-=======
->>>>>>> 70a5491588d00ec98f196356c1f76d863f3bdd71
+ 
+ 
+/*
+ 
+ 
+8 9
+2 2 2 2 2 2 2 2
+2
+1 3 2
+2
+1 1 4
+2
+1 1 8
+2
+1 8 256
+2
+*/
