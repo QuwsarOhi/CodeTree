@@ -5,111 +5,44 @@ using namespace std;
 typedef long long ll;
 typedef vector<long long> vl;
 
-bitset<1000009>isPrime;
-vector<ll> primes;
+ll v[3][100009];
+ll dp[3][100009];
+ll n;
 
-void sieveGen(ll N) {                   // Faster, Will generate all primes <= N
-    isPrime.set();
-    isPrime[0] = isPrime[1] = 0;
-    for(ll i = 3; i*i <= N; i+=2) {
-        if(isPrime[i]) {
-            for(ll j = i*i; j <= N; j += i)
-                isPrime[j] = 0;
-    }}
-    primes.push_back(2);
-    for(int i = 3; i <= N; i+=2)
-        if(isPrime[i])
-            primes.push_back(i);
+ll recur(int pos, int lstIdx) {
+	if(pos == n)
+		return 0;
+
+	ll &ret = dp[lstIdx][pos];
+
+	//cout << pos << " " << lstIdx << " : " << ret << endl;
+	if(ret != -1)
+		return ret;
+
+	ret = 0;
+	if(lstIdx != 1)
+		ret = max(ret, recur(pos+1, 1)+v[1][pos]);
+	if(lstIdx != 2)
+		ret = max(ret, recur(pos+1, 2)+v[2][pos]);
+
+	ret = max(ret, recur(pos+1, 0));
+
+	//cout << pos << " " << lstIdx << " : " << ret << endl;
+	return ret;
 }
 
-vector<ll> f;
-
-void factor(ll n) {
-    for(int i = 0; i < primes.size() and primes[i] <= n; ++i) {
-        if(n%primes[i] == 0)
-            f.push_back(primes[i]);
-        while(n%primes[i] == 0)
-            n /= primes[i];
-    }
-    if(n != 1)
-        f.push_back(n);
-}
-
-vector<ll> tmp;
-
-ll getVal(ll x) {
-    cout << "1 " << x << endl;
-    cout.flush();
-    cin >> x;
-    return x;
-}
-
-set<ll>s;
 
 int main() {
-    sieveGen(1000000);
-    string nxt;
-    ll x, y, ans = 0;
-    int t;
+	cin >> n;
 
-    cin >> t;
+	for(int i = 1; i <= 2; ++i)
+		for(int j = 0; j < n; ++j)
+			cin >> v[i][j];
 
-    
-    while(t--) {
-        x = 100000;
+	for(int i = 0; i < 3; ++i)
+		for(int j = 0; j < 100000; ++j)
+			dp[i][j] = -1;
 
-        s.clear();
-        for(int i = 0; i < 10; ++i) {
-            y = getVal(x);
-            
-            if(y == -1)
-                return 0;
-
-            f.clear();
-            factor(x*x-y);
-
-            if(i == 0) {
-                for(auto it : f)
-                    s.insert(it);
-            }
-
-            /*for(auto it : f)
-                cout << it << " ";
-            cout << endl;*/
-
-            ll sum = 0;
-            for(int i = 0; i < f.size(); ++i) {
-                if(f[i] > y and x + sum + f[i] < 1e9)
-                    sum += f[i];
-            }
-
-            if(i != 0) {
-                for(auto it : f)
-                    if(s.count(it)) {
-                        ans = it;
-                        goto pass;
-                    }
-            }
-
-            x += sum;
-        }
-
-
-        pass:;
-        cout << "2 " << ans << endl;
-        cout.flush();
-        cin >> nxt;
-        if(nxt == "No")
-            return 0;
-    } 
-
+	cout << recur(0, 0) << endl;
     return 0;
 }
-
-
-
-/*
-Primes:
-999999929
-999999937
-*/
