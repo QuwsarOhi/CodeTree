@@ -102,12 +102,12 @@ void computeTotient(int n) {            // Computes phi or Euler Phi 1 to n
 // Complexity O(k)
 long long C(int n, int k) { 
     long long c = 1;
-    if(k > n - k)
+    if(k > n - k)       // as nCk = nC(n-k)
         k = n-k;
     for(int i = 0; i < k; i++) {
-        c *= (n-i);
-        c /= (i+1);
-    }
+        c *= (n-i);     // we can take 1 element from n-i element in c*(n-i) ways
+        c /= (i+1);     // due to combination rule, we devide with the number of taken value
+    }                   // otherwise it will remain as permutation
     return c;
 }
 

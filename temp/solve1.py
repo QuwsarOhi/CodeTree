@@ -1,31 +1,20 @@
+from math import *
 
 def main():
 	s = input()
-	t = input()
+	n = int(s, 2)
 
-	tcnt = dict()
-	scnt = dict()
+	k = 1
+	ans = 0
 
-	for c in t:
-		if c not in tcnt:
-			tcnt[c] = 1
-		else:
-			tcnt[c] += 1
+	if n != 0:
+		ans = 1
 
-	for c in s:
-		if c not in scnt:
-			scnt[c] = 1
-		else:
-			scnt[c] += 1
+	while k*4 < n:
+		k = k * 4
+		ans += 1
 
-	for x, y in t.items():
-		if x not in scnt:
-			print("-1")
-			return
-		else:
-			
-
-
+	print(ans)
 
 
 if __name__ == "__main__":

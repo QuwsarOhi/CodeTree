@@ -1,48 +1,114 @@
 #include <bits/stdc++.h>
+#define MAX 509
 using namespace std;
-typedef unsigned long long ll;
 
-vector<ll> v, on[70];
+int c[MAX], mem[MAX], memT[MAX];
+bool vis[MAX];
+vector<int> G[MAX], G_T[MAX];
 
-ll solve(ll mxLen) {
-	for(int i = 0; i < 64; ++i) {
-		queue<ll> q;
-		lvl.clear();
+int dfs(int u) {
+	if(vis[u])
+		return 0;
+	vis[u] = 1;
+	int ret = c[u];
+	if(mem[u] != -1)
+		return mem[u];
+	for(auto v : G[u])
+		ret += dfs(v);
+	mem[u] = ret;
+	return ret;
+}
 
-		for(auto it : on[i]) {
-			q.push(it);
-			lvl[it] = 1;
-		}
-
-		while()
-	}
+int dfsT(int u) {
+	if(vis[u])
+		return 0;
+	vis[u] = 1;
+	int ret = c[u];
+	if(memT[u] != -1)
+		return memT[u];
+	for(auto v : G_T[u])
+		ret += dfsT(v);
+	memT[u] = ret;
+	return ret;
 }
 
 int main() {
-	ll n;
-	cin >> n;
+	int V, E, u, v;
 
-	v.resize(n);
-	for(int i = 0; i < n; ++i) {
-		cin >> v[i];
+	for(int Case = 1; ; ++Case) {
+		cin >> V >> E;
+		if(V == 0 and E == 0)
+			break;
 
-		for(int j = 0; j < 64; ++j) {
-			if(v[i] & (1ULL << j)) {
-				on[j].push_back(v[i]);
-			}
+		for(int i = 0; i < MAX; ++i) {
+			G[i].clear();
+			G_T[i].clear();
 		}
-	}
 
-	for(int i = 0; i < 64; ++i) {
-		if(on[i].size()) {
-			cout << i << ": ";
-			for(auto it : on[i])
-				cout << it << " ";
-			cout << endl;
+		int tot = 0;
+		for(int i = 1; i <= V; ++i) {
+			cin >> c[i];
+			tot += c[i];
 		}
+
+		for(int i = 0; i < E; ++i) {
+			cin >> u >> v;
+			G_T[u].push_back(v);
+			G[v].push_back(u);
+		}
+
+		int q;
+		cin >> q;
+
+		memset(mem, -1, sizeof mem);
+		memset(memT, -1, sizeof memT);
+
+		cout << "Case #" << Case << ":\n";
+		while(q--) {
+			cin >> u;
+			int mn = dfsT(u);
+			memset(vis, 0, sizeof vis);
+			int mx = tot - dfs(u) + c[u];
+			memset(vis, 0, sizeof vis);
+			cout << mx << " " << mn << endl;
+			cout << mx - mn << "\n";
+		}
+		cout << "\n";
 	}
-
-
 
 	return 0;
 }
+
+
+/*
+
+6 5
+4 3 2 1 2 2
+2 1
+2 4
+3 1
+3 4
+5 6
+6
+1 2 3 4 5 6
+
+5 4
+1 2 3 4 5
+2 1
+4 2
+5 2
+3 1
+5
+1 2 3 4 5
+
+3 3
+1 2 3
+2 1
+3 2
+3 1
+3
+1 2 3
+
+0 0
+
+*/
