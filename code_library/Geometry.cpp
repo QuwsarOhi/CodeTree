@@ -62,9 +62,14 @@ double PointToArea(point p1, point p2, point p3) {                      // Retur
 	return (p1.x*(p2.y-p3.y) + p2.x*(p3.y-p1.y) + p3.x*(p1.y-p2.y));	// Divide by 2 if Triangle area is needed
 }
 
+/*
+if(slope==0): They are all colinear
+if(slope>0) : They are all clockwise
+if(slope<0) : They are counter clockwise
+*/
 double whichSide(point p, point q, point r) {     // returns on which side point r is w.r.t pq line
     double slope = (p.y-q.y)*(q.x-r.x) - (q.y-r.y)*(p.x-q.x);
-    return slope;                       // slope = 0 : linear, slope > 0 : right, slope < 0 : left
+    return slope;
 }
 
 // 1D Objects---------------------------------------------------------------
