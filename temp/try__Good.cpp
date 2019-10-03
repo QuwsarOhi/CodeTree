@@ -1,76 +1,35 @@
 #include <bits/stdc++.h>
-#define INF 1e17
+#define MAX 100011
+#define INF 0x3f3f3f3f
+#define MOD 1000000007
 using namespace std;
-typedef long long ll;
+typedef long long int ll;
 
-ll a[500], ans = INF, n;
+int u[MAX], v[MAX];
 
-set<int> s;
-pair<int, int> getLR(int v) {
-	auto it = s.find(v);
-	auto it2 = it;
-	pair<int, int> ret;
-
-	if(it == s.begin())
-		ret.first = *(--s.end());
-	else
-		ret.first = *(--it2);
-	it++;
-
-	if(it == s.end())
-		ret.second = *s.begin();
-	else
-		ret.second = *it;
-
-	return ret;
-}
-
-
-void recur(int vals, ll tot) {
-	//cout << vals << " " << tot << endl;
-	if(tot > ans)
-		return;
-
-	if(vals == 1) {
-		ans = min(ans, tot);
-		return;
-	}
-
-	for(int p = 0; p < n; ++p) {
-		if(s.count(p)) {
-			pair<int, int> x = getLR(p);
-			ll v0 = a[x.first], v1 = a[p], v2 = a[x.second];
-			s.erase(x.first);
-			a[p] = v0 + v1;
-			recur(vals-1, tot + v0 + v1);
-			s.insert(x.first);
-			s.erase(x.second);
-			a[p] = v1 + v2;
-			recur(vals-1, tot + v1 + v2);
-			a[p] = v1;
-			s.insert(x.second);
-		}
-	}
-}
-
+int lcs(int m, int n)   {  
+    if (m == 0 || n == 0)  
+        return 0;  
+    if(u[m] == v[n])  
+        return 1 + lcs(m-1, n-1);  
+    else
+        return max(lcs(m, n-1), lcs(m-1, n));  
+} 
 
 int main() {
-	int t;
-	cin >> t;
+	int t, n;
+	scanf("%d", &t);
 
-	while(t--) {
-		cin >> n;
+	for(int Case = 1; Case <= t; ++Case) {
+		scanf("%d", &n);
 
-		for(int i = 0; i < n; ++i)
-			cin >> a[i];
+		for(int i = 1; i <= n; ++i)
+			scanf("%d", &v[i]);
+		for(int i = 1; i <= n; ++i)
+			scanf("%d", &u[i]);
 
-		s.clear();
-		for(int i = 0; i < n; ++i)
-			s.insert(i);
-
-		ans = INF;
-		recur(n, 0);
-		cout << ans << endl;
+		int ret = lcs(n, n);
+		printf("Case %d: %d\n", Case, (n-ret)*2);
 	}
 
 	return 0;

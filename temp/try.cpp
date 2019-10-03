@@ -1,75 +1,68 @@
 #include <bits/stdc++.h>
-#define INF 1e17
+#define MAX 200011
+#define INF 0x3f3f3f3f
+#define MOD 1000000007
 using namespace std;
-typedef long long ll;
+typedef long long int ll;
 
-set<int>s;
-ll a[100009];
+struct BIT {
+    int tree[MAX];
+    int MaxVal;
+    void init(int sz) {
+        for(int i = 0; i <= sz+3; ++i)
+            tree[i] = 0;
+        MaxVal = sz+1;
+    }
+    void update(int idx, int val) {
+        for( ; idx <= MaxVal; idx += (idx & -idx))
+            tree[idx] += val;
+    }
+    int read(int idx) {
+        int ret = 0;
+        for( ; idx > 0; idx -= (idx & -idx))
+            ret += tree[idx];
+        return ret;
+    }
+};
 
-pair<int, int> getLR(int v) {
-    auto it = s.find(v);
-    auto it2 = it;
-    pair<int, int> ret;
+BIT d;
+int v[2][MAX], idx[2][MAX];
 
-    if(it == s.begin())
-        ret.first = *(--s.end());
-    else
-        ret.first = *(--it2);
-    it++;
+int check(int x, int y, int n) {
+    int ret = 0;
+    d.init(n);
 
-    if(it == s.end())
-        ret.second = *s.begin();
-    else
-        ret.second = *it;
+    int cst = 0;
+    for(int i = 1; i <= n; ++i) {
+        int val = v[x][i];
+
+        int p = d.read(idx[y][val]) + idx[y][val];
+        int q = i+cst;
+
+        if(p != q) {
+            --cst, ++ret;
+            d.update(idx[y][val], -1);
+        }
+    }
 
     return ret;
 }
 
-priority_queue<tuple<ll, int, int> > pq;
-
 int main() {
-    int n, t;
-    cin >> t;
+    int t, n;
+    scanf("%d", &t);
 
-    while(t--) {
-        cin >> n;
+    for(int Case = 1; Case <= t; ++Case) {
+        scanf("%d", &n);
 
-        while(pq.size()) pq.pop();
-
-        for(int i = 1; i <= n; ++i)
-            cin >> a[i];
-
-        for(int i = 1; i+1 <= n; ++i)
-            pq.push(make_tuple(-(a[i]+a[i+1]), i, i+1));
-        pq.push(make_tuple(-(a[1]+a[n]), 1, n));
-
-        s.clear();
-        for(int i = 1; i <= n; ++i)
-            s.insert(i);
-
-        ll tot = 0;
-        while(s.size() > 1) {
-            ll sum = -get<0>(pq.top());
-            int l = get<1>(pq.top());
-            int r = get<2>(pq.top());
-            int m = r;
-            pq.pop();
-
-            if(a[l] + a[r] != sum)
-                continue;
-
-            tot += sum;
-            //cerr << "GOT " << l << " " << r << " : " << sum << ", " << tot << endl;
-            s.erase(l);
-            a[l] = 3*INF, a[r] = sum;
-            pair<int, int> tmp = getLR(m);
-            l = tmp.first, r = tmp.second;
-
-            pq.push(make_tuple(-(a[l]+a[m]), l, m));
-            pq.push(make_tuple(-(a[m]+a[r]), m, r));
+        for(int i = 0; i < 2; ++i) {
+            for(int j = 1; j <= n; ++j) {
+                scanf("%d", &v[i][j]);
+                idx[i][v[i][j]] = j;
+            }
         }
 
-        cout << tot << endl;
+        printf("Case %d: %d\n", Case, min(check(0, 1, n), check(1, 0, n))*2);
     }
 
     return 0;
@@ -79,12 +72,27 @@ int main() {
 /*
 
 1
-6
-57
-89
-65
-57
-51
-30
+4
+2 3 4 1
+1 2 3 4
+
+
+2
+5
+1 3 5 4 2
+1 5 4 3 2
+4
+1 2 4 3
+3 4 2 1
+
+1
+4
+3 1 4 2
+2 1 3 4
+
+1
+5
+5 4 3 2 1
+3 2 5 1 4
 
 */
