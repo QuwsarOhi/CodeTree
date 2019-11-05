@@ -47,7 +47,10 @@ void SuffixArray(int len, char str[]) {             // First initial 1st and 2nd
             suff[i].rank.se = (nxtIdx < len) ? suff[idxToRank[nxtIdx]].rank.fi:-1;  
         }                                       // the newIdx contains next segments second half's rank
         sort(suff, suff+len);
-}}
+    }
+    for(int i = 0; i < len; ++i)
+        idxToRank[suff[i].idx] = i;
+}
 
 
 // Suffix Array
@@ -104,7 +107,7 @@ void Kasai(char str[], int len) {               // Matches Same charechters with
             match = 0;
             continue;
         }
-        int nxtRankIdx = rankToIdx[idxToRank[idx]+1];
+        int nxtRankIdx = suff[idxToRank[idx]+1].idx;
         while(idx+match < len and nxtRankIdx+match < len and str[idx+match] == str[nxtRankIdx+match])
             ++match;
         lcp[nxtRankIdx] = match;                // the lcp match of i'th & (i+1)'th is stored in

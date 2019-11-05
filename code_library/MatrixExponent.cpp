@@ -61,7 +61,6 @@ Let, S(n) = is the sum of first n values
 
 */
 
-
 struct matrix {
     matrix() { memset(mat, 0, sizeof(mat)); }
     long long mat[MAXN][MAXN];

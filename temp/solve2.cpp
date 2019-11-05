@@ -1,36 +1,64 @@
 #include <bits/stdc++.h>
-#define MAX 100011
-#define INF 0x3f3f3f3f
-#define MOD 1000000007
+#define MAX 100009
+#define MOD 1000000009
 using namespace std;
-typedef long long int ll;
+typedef unsigned long long ull;
+typedef long long ll;
 
-int u[MAX], v[MAX];
+ll cum[20], p[20];
 
-int lcs(int m, int n)   {  
-    if (m == 0 || n == 0)  
-        return 0;  
-    if(u[m] == v[n])  
-        return 1 + lcs(m-1, n-1);  
-    else
-        return max(lcs(m, n-1), lcs(m-1, n));  
-} 
+void powCal() {
+	p[0] = 1;
+	for(int i = 1; i <= 13; ++i)
+		p[i] = p[i-1]*10;
+}
+
+ll findPal(ll d, ll n) {
+	vector<int>v;
+	ll first = 1;
+
+	int tot = (d / 2) + (d % 2);
+
+	for(int i = 1; i < tot; i++) first *= 10;
+	//cout<<"F  "<<first<<endl;
+
+   ll now = first + n - 1;
+   ll temp = now;
+
+   while(temp){
+   	v.push_back(temp % 10);
+   	temp /= 10;
+   }
+   for(int i = 1; i < v.size(); i++){
+   	now = (now * 10) + v[i];
+   }
+   return now;
+
+}
 
 int main() {
-	int t, n;
-	scanf("%d", &t);
+	ll t, n;
+	
+	powCal();
+	for(int i = 0; i <= 10; ++i)
+		cum[i] = 9 * p[i];
 
-	for(int Case = 1; Case <= t; ++Case) {
-		scanf("%d", &n);
+ 	cin >> t;
+ 	for(int Case = 1; Case <= t; ++Case) {
+ 		cin >> n;
 
-		for(int i = 1; i <= n; ++i)
-			scanf("%d", &v[i]);
-		for(int i = 1; i <= n; ++i)
-			scanf("%d", &u[i]);
+ 		if(n <= 9) {
+ 			cout << "Case " << Case << ": " << n << endl;
+ 			continue;
+ 		}
 
-		int ret = lcs(n, n);
-		printf("Case %d: %d\n", Case, (n-ret)*2);
-	}
+ 		int len = 0, d = 1;
+ 		for( ; n-cum[len] >= 0; ++len, d += 2)
+ 			n -= cum[len];
+
+ 		//cout<<"N  "<<n<<"  "<<len<<endl;
+ 		cout << "Case " << Case << ": " << findPal(d, n) << endl;
+ 	}
 
 	return 0;
 }

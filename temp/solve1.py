@@ -1,38 +1,34 @@
-import numpy as np
-import matplotlib.pyplot as plt
 
-def circle_points(r, n):
-    circles = []
-    for r, n in zip(r, n):
-        t = np.linspace(0, 2*np.pi, n)
-        x = r * np.cos(t)
-        y = r * np.sin(t)
-        circles.append(np.c_[x, y])
-    return circles
+def compress(x):
+    ret = []
+    for i in range(100):
+        c = x.count(i)
+        if c%2 > 0:
+            ret.append(i)
+    return ret
+
+def f(x):
+    ret = []
+    for i in range(1, len(x)):
+        ret.append(compress(x[i-1]+x[i]))
+    return ret
+
+def brute(x):
+    y = []
+    for xx in x:
+        y.append([xx])
+    while len(y) > 1:
+        print(y)
+        y = f(y)
+    print(y)
+    return y
 
 
-n = [100000]
-r = [10.5]
-circles = np.array(circle_points(r, n))
+def test():
+    for i in range(1, 36):
+        print('For I =', i)
+        brute([j for j in range(1, i+1)])
+        print()
 
-#fig, ax = plt.subplots()
-#for circle in circles[-1:]:
-#    ax.scatter(circle[:, 0], circle[:, 1])
-#ax.set_aspect('equal')
-#plt.show()
-
-#print(circles.shape)
-
-points = [(0, 0)]
-for circle in circles[-1:]:
-    for x, y in zip(circle[:, 0], circle[:, 1]):
-        points.append((x, y))
-
-print(2)
-
-for i in range(2):
-    print(len(points)-1)
-    for x, y in points:
-        print(x, y)
-
-    points[0] = (1, 2)
+if __name__ == '__main__':
+    test()
