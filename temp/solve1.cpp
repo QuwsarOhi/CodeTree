@@ -1,35 +1,9 @@
 #include <bits/stdc++.h>
-#define MAX 1000009
+#define MAX 1000010
 #define MOD 1000000007
-#define fi first
-#define se second
 using namespace std;
 typedef pair<int, int> pii;
 typedef long long ll;
-
-struct FT {
-	ll tree[MAX], sz;
-	void init(int s) {
-		for(int i = 0; i <= s; ++i)
-			tree[i] = 0;
-		sz = s;
-	}
-	void update(int idx, int v) {
-		for(int i = idx; i <= sz; i += i &-i)
-			tree[i] += v;
-	}
-	ll query(int idx) {
-		ll ret = 0;
-		for(int i = ret; i > 0; i -= i &-i)
-			ret += tree[i];
-		return ret;
-	}
-	ll query(int l, int r) {
-		if(l > r)
-			swap(l, r);
-		return query(r) - query(l-1);
-}} F;
-
 
 struct suffix {
 	int idx;
@@ -42,7 +16,6 @@ struct suffix {
 int order(char x) {
 	return x;
 }
-
 
 int idxToRank[MAX];
 void SuffixArray(char str[], int len) {
@@ -72,16 +45,15 @@ void SuffixArray(char str[], int len) {
 		}
 		for(int i = 0; i < len; ++i) {
 			int nxtIdx = suff[i].idx + k/2;
-			suff[i].rank.se = (nxtIdx < len) ? suff[idxToRank[nxtIdx]].rank.first:-1;
+			suff[i].rank.second = (nxtIdx < len) ? suff[idxToRank[nxtIdx]].rank.first:-1;
 		}
 		sort(suff, suff+len);
 	}
-	
 	for(int i = 0; i < len; ++i)
 		idxToRank[suff[i].idx] = i;
 }
 
-ll lcp[MAX];
+int lcp[MAX];
 void Kasai(char str[], int len) {
 	int match = 0;
 	memset(lcp, 0, sizeof lcp);
@@ -99,20 +71,41 @@ void Kasai(char str[], int len) {
 }
 
 char s[MAX];
-ll p[MAX];
-void gen(int len) {
-	p[0] = 26;
+ll p[MAX], cum[MAX];
+
+void pgen() {
+	p[0] = 1;
 	for(int i = 1; i < MAX; ++i)
-		p[i] = (p[i-1] * 26) % MOD;
+		p[i] = (p[i-1] * 26LL) % MOD;
+	p[0] = 0;
+	for(int i = 1; i < MAX; ++i)
+		p[i] = (p[i] + p[i-1])%MOD;
+}
 
-	for(int i = 0; i < len; ++i) {
-		int l, r;
+void gen(int len) {
+	memset(cum, 0, sizeof cum);
+	for(int i = 0; i < len-1; ++i) {
+		int idx = suff[i].idx;
+		int r = len - idx - 1;
 
+		//cout << i << " -> " << r-lcp[idx] << " " << r << endl;
+		if(r-lcp[idx] > 0) {
+			cum[1] += 1;
+			cum[r-lcp[idx]+1] -= 1;
+		}
+	}
+
+	ll x = 0;
+	for(int i = 1; i <= len+1; ++i) {
+		x += cum[i];
+		cum[i] = (x + cum[i-1] + MOD)%MOD;
+		//printf("%d -> %lld\n", i, cum[i]);
 	}
 }
 
 int main() {
 	int t;
+	pgen();
 	scanf("%d", &t);
 
 	for(int Case = 1; Case <= t; ++Case) {
@@ -124,17 +117,42 @@ int main() {
 
 		SuffixArray(s, len);
 		Kasai(s, len);
+		gen(len);
 
 		//for(int i = 0; i < len; ++i)
 		//	printf("%d %d %d %s\n", i, suff[i].idx, lcp[suff[i].idx], s+suff[i].idx);
 
-		ll ans = 0;
-		for(int i = 0; i < len-1; ++i) {
-			//cout << i << " " << (len - suff[i].idx - 1) - lcp[suff[i].idx] << endl;
-			ans += (len - suff[i].idx - 1) - lcp[suff[i].idx];
-		}
+		int q, l, r;
+		scanf("%d", &q);
+		printf("Case %d:\n", Case);
 
-		printf("%lld\n", ans);
+		while(q--) {
+			scanf("%d%d", &l, &r);
+			ll ans = (p[r] - p[l-1] + MOD)%MOD;
+			ans = (ans - (cum[r] - cum[l-1] + MOD)%MOD + MOD)%MOD;
+			printf("%lld\n", ans);
+		}
 	}
 	return 0;
 }
+
+
+/*
+
+1
+abcab
+
+a
+b
+c
+ab
+bc
+ca
+abc
+bca
+cab
+abca
+bcab
+abcab
+
+*/

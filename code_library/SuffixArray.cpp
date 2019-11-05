@@ -18,6 +18,7 @@ int order(char x) {
 int idxToRank[MAX];                                 // index to position mapping
 suffix suff[MAX];
 
+// Add a '~' after the string
 void SuffixArray(int len, char str[]) {             // First initial 1st and 2nd ranks for all suffix and sort once
     for(int i = 0, j = 1; i < len; ++i, ++j) {
         suff[i].idx = i;
@@ -102,6 +103,7 @@ void SuffixArray(char str[], int len, int maxAscii = 256) {     // use ~ as a di
 int lcp[MAX];
 void Kasai(char str[], int len) {               // Matches Same charechters with i'th rank & (i+1)'th rank
     int match = 0;
+    memset(lcp, 0, sizeof lcp);
     for(int idx = 0; idx < len; ++idx) {
         if(idxToRank[idx] == len-1) {
             match = 0;
