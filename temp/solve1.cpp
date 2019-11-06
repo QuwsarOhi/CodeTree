@@ -12,7 +12,6 @@ struct suffix {
 		return rank < x.rank;
 }} suff[MAX];
 
-
 int order(char x) {
 	return x;
 }
@@ -22,7 +21,7 @@ void SuffixArray(char str[], int len) {
 	for(int i = 0, j = 1; i < len; ++i, ++j) {
 		suff[i].idx = i;
 		suff[i].rank.first = order(str[i]);
-		suff[i].rank.second = (j < len ? order(str[j]):-1);
+		suff[i].rank.second = (j < len ? order(str[j]):'~');
 		idxToRank[i] = 0;
 	}	
 	sort(suff, suff+len);
@@ -45,7 +44,7 @@ void SuffixArray(char str[], int len) {
 		}
 		for(int i = 0; i < len; ++i) {
 			int nxtIdx = suff[i].idx + k/2;
-			suff[i].rank.second = (nxtIdx < len) ? suff[idxToRank[nxtIdx]].rank.first:-1;
+			suff[i].rank.second = (nxtIdx < len) ? suff[idxToRank[nxtIdx]].rank.first:'~';
 		}
 		sort(suff, suff+len);
 	}
@@ -84,22 +83,19 @@ void pgen() {
 
 void gen(int len) {
 	memset(cum, 0, sizeof cum);
-	for(int i = 0; i < len-1; ++i) {
+	for(int i = 0; i < len; ++i) {
 		int idx = suff[i].idx;
-		int r = len - idx - 1;
+		int r = len - idx;
 
-		//cout << i << " -> " << r-lcp[idx] << " " << r << endl;
 		if(r-lcp[idx] > 0) {
 			cum[1] += 1;
 			cum[r-lcp[idx]+1] -= 1;
-		}
-	}
+	}}
 
 	ll x = 0;
 	for(int i = 1; i <= len+1; ++i) {
 		x += cum[i];
 		cum[i] = (x + cum[i-1] + MOD)%MOD;
-		//printf("%d -> %lld\n", i, cum[i]);
 	}
 }
 
@@ -112,9 +108,6 @@ int main() {
 		scanf("%s", s);
 
 		int len = strlen(s);
-		s[len++] = '~';
-		s[len] = '\0';
-
 		SuffixArray(s, len);
 		Kasai(s, len);
 		gen(len);
@@ -129,7 +122,9 @@ int main() {
 		while(q--) {
 			scanf("%d%d", &l, &r);
 			ll ans = (p[r] - p[l-1] + MOD)%MOD;
-			ans = (ans - (cum[r] - cum[l-1] + MOD)%MOD + MOD)%MOD;
+			ll ans_sub = (cum[r] - cum[l-1] + MOD)%MOD;
+			printf("%lld %lld\n", ans, ans);
+			ans = (ans - ans_sub + MOD)%MOD;
 			printf("%lld\n", ans);
 		}
 	}
