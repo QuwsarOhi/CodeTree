@@ -17,8 +17,7 @@ int order(char x) {
 
 int idxToRank[MAX];                                 // index to position mapping
 suffix suff[MAX];
-
-// Add a '~' after the string
+// Adding a '~' after the string takes the longer lenth higher of the SA
 void SuffixArray(int len, char str[]) {             // First initial 1st and 2nd ranks for all suffix and sort once
     for(int i = 0, j = 1; i < len; ++i, ++j) {
         suff[i].idx = i;
@@ -53,13 +52,10 @@ void SuffixArray(int len, char str[]) {             // First initial 1st and 2nd
         idxToRank[suff[i].idx] = i;
 }
 
-
 // Suffix Array
 // Complexity : N log(N)
-
 int o[2][MAX], t[2][MAX];
 int idxToRank[MAX], rankToIdx[MAX], A[MAX], B[MAX], C[MAX], D[MAX];
-
 void SuffixArray(char str[], int len, int maxAscii = 256) {     // use ~ as a distinguishing charachter
     int x = 0;
     memset(A, 0, sizeof A);
@@ -67,7 +63,6 @@ void SuffixArray(char str[], int len, int maxAscii = 256) {     // use ~ as a di
     memset(D, 0, sizeof D);
     memset(o, 0, sizeof o);
     memset(t, 0, sizeof t);
-
     for(int i = 0; i < len; ++i) A[(str[i]-'a')] = 1;
     for(int i = 1; i < maxAscii; ++i) A[i] += A[i-1];
     for(int i = 0; i < len; ++i) o[0][i] = A[(int)(str[i]-'a')];

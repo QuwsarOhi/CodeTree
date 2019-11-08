@@ -1,97 +1,149 @@
-#include <bits/stdc++.h>
-#define MAX 10100
-using namespace std;
-typedef long long ll;
-
-struct suffix {
-    int idx;
-    pair<int, int> rank;
-    bool operator < (suffix x) {
-        return rank < x.rank;
-}} suff[MAX];
-
-int order(char x) {
-	return x;
-}
+ #include <bits/stdc++.h>
  
-int idxToRank[MAX];
-void SuffixArray(char s[], int len) {
-	for(int i = 0, j = 1; i < len; ++i, ++j) {
-		suff[i].idx = i;
-		suff[i].rank.first = order(s[i]);
-		suff[i].rank.second = (j < len) ? order(s[j]):'~';
-		idxToRank[i] = 0;
-	}
-	sort(suff, suff+len);
-	for(int k = 4; k < (2*len); k *= 2) {
-		int rank = 0;
-		int prevRank = suff[0].rank.first;
-		suff[0].rank.first = 0;
-		idxToRank[suff[0].idx] = 0;
-		
-		for(int i = 1; i < len; ++i) {
-			prevRank = suff[i].rank.first;
-			if(suff[i].rank == make_pair(prevRank, suff[i-1].rank.second))
-				suff[i].rank.first = rank;
-			else
-				suff[i].rank.first = ++rank;
-			idxToRank[suff[i].idx] = i;
-		} 
-		for(int i = 0; i < len; ++i) {
-			int nxtIdx = suff[i].idx + k/2;
-			suff[i].rank.second = (nxtIdx < len) ? suff[idxToRank[nxtIdx]].rank.first:'~';
-		}
-		sort(suff, suff+len);
-	}
-	for(int i = 0; i < len; ++i)
-		idxToRank[suff[i].idx] = i;
+#define vpii vector< pair<int,int> >
+#define vi vector<int>
+ 
+#define for0(i,a) for(int i=0;i<a;i++)
+#define pii              pair <int,int>
+#define pll              pair <long long,long long>
+#define sc               scanf
+#define pf               printf
+#define Pi               2*acos(0.0)
+#define ms(a,b)          memset(a, b, sizeof(a))
+#define pb(a)            push_back(a)
+#define MP               make_pair
+#define db               double
+#define ll               long long
+#define ull              unsigned long long
+#define f                first
+#define s                second
+#define sqr(x)           (x)*(x)
+#define VI               vector <int>
+#define DBG              pf("Hi\n")
+#define MOD              1000000007
+#define SZ(a)            (int)a.size()
+#define sf(a)            scanf("%d",&a)
+#define sfl(a)           scanf("%lld",&a)
+#define sff(a,b)         scanf("%d %d",&a,&b)
+#define sffl(a,b)        scanf("%lld %lld",&a,&b)
+#define sfff(a,b,c)      scanf("%d %d %d",&a,&b,&c)
+#define sfffl(a,b,c)     scanf("%lld %lld %lld",&a,&b,&c)
+#define loop(i,n)        for(int i=0;i<n;i++)
+#define loop1(i,n)       for(int i=1;i<=n;i++)
+#define REP(i,a,b)       for(int i=a;i<b;i++)
+#define RREP(i,a,b)      for(int i=a;i>=b;i--)
+#define intlim           2147483648
+#define ull              unsigned long long
+#define gcd(a, b)        __gcd(a, b)
+#define lcm(a, b)        ((a)*((b)/gcd(a,b)))
+#define mk(x1,y1) make_pair(x1, y1)
+#define maxl 2020
+#define psz 20
+#define Fin      freopen("input.txt","r",stdin)
+#define Fout     freopen("output.txt","w",stdout)
+ 
+#define maxp 3
+#define p1 31
+#define p2 51
+using namespace std;
+
+long long power[maxp + 2];
+long long mod1 = 1e9+9,mod2=1e9+7;
+ll cum[maxl +2][maxl + 2];
+int r1, c1, r2, c2;
+
+void Power_generate()
+{
+    power[0]=1;
+    for(long long i=1; i<=maxp; i++)
+    {
+        power[i]= ((power[i-1])*p1 )%mod1;
+    }
+}
+
+long long Hashing(string s[maxl + 2], int r, int c) {
+    memset(cum, 0, sizeof cum);
+    for(int i = 0; i < r; i++){
+        ll value = 0;
+        for(int j = 0; j < c; j++){
+            int temp = (s[i][j] - 'a') + 1;
+            value = (value + (temp * power[i])) % mod1;
+            cum[i + 1][j + 1] = value;
+        }
+    }
+    for(int j = 0; j < c; j++) {
+        ll value = 0;
+        for(int i = 0; i < r; i++){
+            int temp = cum[i + 1][j + 1];
+            value = ( value + (temp * power[i]) ) % mod1;
+            cum[i + 1][j + 1] = value;
+        }
+    }
+    return cum[r][c];
 }
 
 
-int lcp[MAX];
-void Kasai(char s[], int len) {
-	int match = 0;
-	memset(lcp, 0, sizeof lcp);
-	for(int i = 0; i < len; ++i) {
-		if(idxToRank[i] == len-1) {
-			match = 0;
-			continue;
-		}
-		int nxtRankIdx = suff[idxToRank[i]+1].idx;
-		while(i+match < len and nxtRankIdx+match < len and s[i+match] == s[nxtRankIdx+match])
-			++match;
-		lcp[nxtRankIdx] = match;
-		match -= match>0;
-}}
+bool Check(int si, int sj, int ei, int ej, ll value){
 
+  //  cout<<"S  "<<si<<"  "<<sj<<"  "<<ei<<"  "<<ej<<"   "<<value<<"   "<<cum[ei][ej]<<endl;
 
-char s[MAX];
-int main() {
-	int t, l, r;
-	scanf("%d", &t);
+    ll ans = ( (cum[ei][ej] - cum[ei - r1][ej] - cum[ei][ej - c1] + cum[ei - r1][ej - c1] ) + mod1 ) % mod1;
 
-	for(int Case = 1; Case <= t; ++Case) {
-		scanf("%s%d%d", s, &l, &r);
-		if(l > r)
-			swap(l, r);
+  //  cout<<"CC   "<<cum[ei - r1][ej] <<"   "<<cum[ei][ej - c1] <<"      "<<cum[si - 1][sj - 1]<<endl;
+    ans = (ans + mod1) % mod1;
+     
+    // cout<<"W  "<<ans<<endl;
+    ll po = ( maxp - (si - 1) );
+    ll po1 = ( maxp - (sj - 1) );
 
-		int len = strlen(s);
-		SuffixArray(s, len);
-		Kasai(s, len);
+ //   cout<<"P  "<<po<<"  "<<po1<<endl;
+    ans = ( ans * power[po]) % mod1;
+    ans = ( ans * power[po]) % mod1;
 
-		for(int i = 0; i < len; ++i) {
-			printf("%d %d %s\n", suff[i].idx, lcp[suff[i].idx], s+suff[i].idx);
-		}
+  //  cout<<"A  "<<ans<<"  "<<value<<endl;
+    if(ans == value) return true;
+    return false;
+}
 
-		ll ans = 0;
-		for(int i = 0; i < len; ++i) {
-			int idx = suff[i].idx;
-			int tot = len - suff[i].idx - lcp[idx];
+int main()
+{
+    Power_generate();
+    string s1[maxl + 2];
+    cin >> r1 >> c1;
 
-			cout << i << " " << idx << " " << tot << " -> " << min(tot-l, r-l+1) << endl;
-			ans += max(min(tot-l, r-l+1), 0);
-		}
-	}
+    for(int i = 0; i < r1; i++){
+        cin >> s1[i];
+    }
 
-	return 0;
+    ll pattern = Hashing(s1, r1, c1);
+   // cout<<"P "<<pattern<<endl;
+    pattern = (pattern * power[maxp]) % mod1;
+    pattern = (pattern * power[maxp]) % mod1;
+
+    cin >> r2 >> c2;
+
+    for(int i = 0; i < r2; i++){
+        cin >> s1[i];
+    }
+    Hashing(s1, r2, c2);
+    vector<pii>v;
+
+    for(int i = 1; i <= r2; i++){
+        for(int j = 1; j <= c2; j++){
+
+            if(i >= r1 && j >= c1){
+
+                if(Check(i - r1 + 1, j - c1 + 1, i, j, pattern)){
+                    v.pb(mk(i - r1 + 1, j - c1 + 1));
+                }
+            }
+
+        }
+    }
+
+    for(int i = 0; i < v.size(); i++){
+        cout<<"("<<v[i].f<<","<<v[i].s<<")"<<endl;
+    }
+
+    return 0;
 }

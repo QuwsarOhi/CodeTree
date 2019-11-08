@@ -1,176 +1,80 @@
-#include "bits/stdc++.h"  
-using namespace std;  
-  
-#define ll            long long int  
-#define endl          '\n'  
-  
-static const int maxn = 1e6 + 5;  
-static const ll mod = 1e9 + 7;  
-static const int Max = 1e6 + 7;  
-  
-int N;  
-ll Tree[maxn];  
-  
-ll add(ll a, ll b)  
-{  
-      a = (a + b + mod) % mod;  
-      return a;  
-}  
-  
-void update(int pos, ll val)  
-{  
-      while (pos <= N)  
-      {  
-            Tree[pos] = add(Tree[pos], val);  
-            pos += (pos & -pos);  
-      }  
-}  
-  
-void rangeUpdate(int l, int r, ll val)  
-{  
-      update(l, val);  
-      update(r + 1, -val);  
-}  
-  
-ll query(int pos)  
-{  
-      ll sum = 0;  
-      while (pos > 0)  
-      {  
-            sum = add(sum, Tree[pos]);  
-            pos -= (pos & -pos);  
-      }  
-      return sum;  
-}  
-  
-struct state  
-{  
-      int len, link;  
-      map <char, int> next;  
-} st[Max * 2];  
-  
-int sz, last;  
-  
-void init()  
-{  
-      sz = last = 0;  
-      st[0].len = 0;  
-      st[0].link = -1;  
-      st[0].next.clear();  
-      for (int i = 1; i < Max * 2; i++)  
-      {  
-            st[i].len = 0;  
-            st[i].link = 0;  
-            st[i].next.clear();  
-      }  
-      ++sz;  
-}  
-  
-void szExtend(char c)  
-{  
-      int l, r;  
-      int cur = sz++;  
-      st[cur].len = st[last].len + 1;  
-      int p;  
-      for (p = last; p != -1 && !st[p].next.count(c); p = st[p].link)  
-      {  
-            st[p].next[c] = cur;  
-      }  
-      if (p == -1)  
-      {  
-            st[cur].link = 0;  
-      }  
-      else  
-      {  
-            int q = st[p].next[c];  
-            if (st[p].len + 1 == st[q].len)  
-            {  
-                  st[cur].link = q;  
-            }  
-            else  
-            {  
-                  int clone = sz++;  
-                  st[clone].len = st[p].len + 1;  
-                  st[clone].next = st[q].next;  
-                  st[clone].link = st[q].link;  
-                  for ( ; p != -1 && st[p].next[c] == q; p = st[p].link)  
-                  {  
-                        st[p].next[c] = clone;  
-                  }  
-                  l = st[ st[q].link ].len;  
-                  r = st[q].len;  
-                  assert(l+1 <= r);  
-                  rangeUpdate(l+1, r, -1);  
-                  st[q].link = st[cur].link = clone;  
-                  l = st[ st[q].link ].len;  
-                  r = st[q].len;  
-                  assert(l+1 <= r);  
-                  rangeUpdate(l+1, r, 1);  
-                  l = st[ st[clone].link ].len;  
-                  r = st[clone].len;  
-                  assert(l+1 <= r);  
-                  rangeUpdate(l+1, r, 1);  
-            }  
-      }  
-      l = st[ st[cur].link ].len;  
-      r = st[cur].len;  
-      assert(l+1 <= r);  
-      rangeUpdate(l+1, r, 1);  
-      last = cur;  
-}  
-  
-ll power[Max];  
-ll powerSum[Max];  
-ll sum[Max];  
-ll cumsum[Max];  
-  
-int main()  
-{  
-      ios_base::sync_with_stdio(false);  
-      cin.tie(nullptr);  
-      cout.tie(nullptr);  
-      cout << fixed << setprecision(12);  
-  
-//      #ifndef ONLINE_JUDGE  
-//            freopen("in.txt", "r", stdin);  
-//      #endif // ONLINE_JUDGE  
-  
-      power[0] = 1LL;  
-      powerSum[0] = 0LL;  
-      for (int i = 1; i < Max; i++)  
-      {  
-            power[i] = (power[i-1] * 26) % mod;  
-            powerSum[i] = (powerSum[i-1] + power[i]) % mod;  
-      }  
-  
-      int tc;  
-      cin >> tc;  
-      for (int tcase = 1; tcase <= tc; tcase++)  
-      {  
-            string s;  
-            cin >> s;  
-            int len = s.size();  
-            N = len;  
-            init();  
-            for (char ch : s) szExtend(ch);  
-            for (int i = 1; i <= len; i++)  
-            {  
-                  sum[i] = query(i);  
-                  cumsum[i] = add(cumsum[i-1], sum[i]);  
-            }  
-            cout << "Case " << tcase << ":" << endl;  
-            int q;  
-            cin >> q;  
-            while (q--)  
-            {  
-                  int l, r;  
-                  cin >> l >> r;  
-                  ll tsub = (powerSum[r] - powerSum[l-1] + mod) % mod;  
-                  ll dsub = (cumsum[r] - cumsum[l-1] + mod) % mod;
-                  cout << tsub << " " << dsub << endl;
-                  ll ans = (tsub - dsub + mod) % mod;  
-                  cout << ans << endl;  
-            }  
-            for (int i = 0; i <= N; i++) Tree[i] = 0;  
-      }  
-}  
+// SPOJ
+// BEADS - Glass Beads
+// Suffix Array
+
+#include <bits/stdc++.h>
+#define MAX 200100
+using namespace std;
+typedef long long ll;
+typedef unsigned long long ull;
+
+int o[2][MAX], t[2][MAX];
+int idxToRank[MAX], rankToIdx[MAX], A[MAX], B[MAX], C[MAX], D[MAX];
+void SuffixArray(char str[], int len, int maxAscii = 256) {     // use ~ as a distinguishing charachter
+    int x = 0;
+    memset(A, 0, sizeof A);
+    memset(C, 0, sizeof C);
+    memset(D, 0, sizeof D);
+    memset(o, 0, sizeof o);
+    memset(t, 0, sizeof t);
+
+    for(int i = 0; i < len; ++i) A[(str[i]-'a')] = 1;
+    for(int i = 1; i < maxAscii; ++i) A[i] += A[i-1];
+    for(int i = 0; i < len; ++i) o[0][i] = A[(int)(str[i]-'a')];
+ 
+    for (int j = 0, jj = 1, k = 0; jj < len && k < len; ++j, jj <<= 1) {
+        memset(A, 0, sizeof A);
+        memset(B, 0, sizeof B);
+        for(int i = 0; i < len; ++i) {
+            ++A[ t[0][i] = o[x][i] ];
+            ++B[ t[1][i] = (i+jj<len) ? o[x][i+jj] : 0 ];
+        }
+        for(int i = 1; i <= len; ++i) {
+            A[i] += A[i-1];
+            B[i] += B[i-1];
+        }
+        for(int i = len-1; i >= 0; --i)
+            C[--B[t[1][i]]] = i;
+        for(int i = len-1; i >= 0; --i)
+            D[--A[t[0][C[i]]]] = C[i];
+        x^=1;
+        o[x][D[0]] = k = 1;
+        for(int i = 1; i < len; ++i)
+            o[x][D[i]]= (k += (t[0][D[i]] != t[0][D[i-1]] || t[1][D[i]] != t[1][D[i-1]]));
+    }
+    for(int i = 0; i < len; i++) {
+        idxToRank[i] = o[x][i]-1;
+        rankToIdx[o[x][i]-1] = i;
+	}
+}
+
+char s[MAX];
+
+int main() {
+	int t;
+	scanf("%d", &t);
+
+	while(t--) {
+		scanf("%s", s);
+		int len = strlen(s);
+
+		for(int i = len, j = 0; j < len; ++i, ++j)
+			s[i] = s[j];
+		
+		int dlen = 2*len;
+		s[dlen++] = '~';
+		SuffixArray(s, dlen);
+
+		//for(int i = 0; i < dlen; ++i)
+		//	printf("%3d %3d %3d   %s\n", i, dlen-rankToIdx[i], rankToIdx[i], s+rankToIdx[i]);
+
+		int minRank = dlen;
+		for(int idx = 0; idx < len; ++idx) {
+			int rank = idxToRank[idx];
+			minRank = min(minRank, rank);
+		}
+
+		printf("%d\n", rankToIdx[minRank]+1);
+	}
+	return 0;
+}
