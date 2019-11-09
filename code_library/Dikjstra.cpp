@@ -33,10 +33,9 @@ void dikjstra(int u, int destination, int nodes) {
                 pq.push({-dist[v], -v});
 }}}}
 
-// Kth Path Using Modified Dikjstra
-// Complexity : O(K*(V*logV + E))
-// http://codeforces.com/blog/entry/16821
-
+/* Kth Path Using Modified Dikjstra
+   Complexity : O(K*(V*logV + E))
+   http://codeforces.com/blog/entry/16821 */
 vector<int>G[MAX], W[MAX], dist[MAX];
 int KthDikjstra(int Start, int End, int Kth) {      // Kth Shortest Path (Visits Edge Only Once)
     for(int i = 0; i < MAX; ++i)
