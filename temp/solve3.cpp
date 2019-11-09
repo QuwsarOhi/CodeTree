@@ -1,149 +1,149 @@
- #include <bits/stdc++.h>
- 
-#define vpii vector< pair<int,int> >
-#define vi vector<int>
- 
-#define for0(i,a) for(int i=0;i<a;i++)
-#define pii              pair <int,int>
-#define pll              pair <long long,long long>
-#define sc               scanf
-#define pf               printf
-#define Pi               2*acos(0.0)
-#define ms(a,b)          memset(a, b, sizeof(a))
-#define pb(a)            push_back(a)
-#define MP               make_pair
-#define db               double
-#define ll               long long
-#define ull              unsigned long long
-#define f                first
-#define s                second
-#define sqr(x)           (x)*(x)
-#define VI               vector <int>
-#define DBG              pf("Hi\n")
-#define MOD              1000000007
-#define SZ(a)            (int)a.size()
-#define sf(a)            scanf("%d",&a)
-#define sfl(a)           scanf("%lld",&a)
-#define sff(a,b)         scanf("%d %d",&a,&b)
-#define sffl(a,b)        scanf("%lld %lld",&a,&b)
-#define sfff(a,b,c)      scanf("%d %d %d",&a,&b,&c)
-#define sfffl(a,b,c)     scanf("%lld %lld %lld",&a,&b,&c)
-#define loop(i,n)        for(int i=0;i<n;i++)
-#define loop1(i,n)       for(int i=1;i<=n;i++)
-#define REP(i,a,b)       for(int i=a;i<b;i++)
-#define RREP(i,a,b)      for(int i=a;i>=b;i--)
-#define intlim           2147483648
-#define ull              unsigned long long
-#define gcd(a, b)        __gcd(a, b)
-#define lcm(a, b)        ((a)*((b)/gcd(a,b)))
-#define mk(x1,y1) make_pair(x1, y1)
-#define maxl 2020
-#define psz 20
-#define Fin      freopen("input.txt","r",stdin)
-#define Fout     freopen("output.txt","w",stdout)
- 
-#define maxp 3
-#define p1 31
-#define p2 51
+// UVa
+// 11402 - Ahoy, Pirates!
+// Segment Tree (Propagation)
+
+#include <bits/stdc++.h>
+#define MAX 1024000
 using namespace std;
 
-long long power[maxp + 2];
-long long mod1 = 1e9+9,mod2=1e9+7;
-ll cum[maxl +2][maxl + 2];
-int r1, c1, r2, c2;
-
-void Power_generate()
-{
-    power[0]=1;
-    for(long long i=1; i<=maxp; i++)
-    {
-        power[i]= ((power[i-1])*p1 )%mod1;
-    }
-}
-
-long long Hashing(string s[maxl + 2], int r, int c) {
-    memset(cum, 0, sizeof cum);
-    for(int i = 0; i < r; i++){
-        ll value = 0;
-        for(int j = 0; j < c; j++){
-            int temp = (s[i][j] - 'a') + 1;
-            value = (value + (temp * power[i])) % mod1;
-            cum[i + 1][j + 1] = value;
+// Segment Tree Range Bit flip, set, reset and Query
+// propataion tags:
+// 0 - no change, 1 - all set to one, 2 - all set to zero, 3 - all need to be flipped
+struct RangeBitQuery {
+    vector<pair<int, int> >tree;
+    RangeBitQuery() { tree.resize(MAX*4); }
+    
+    void init(int pos, int L, int R, string &s) {
+        tree[pos].second = 0;
+        if(L == R) {
+            tree[pos].first = (s[L] == '1');
+            return;
         }
+        int mid = (L+R)>>1;
+        init(pos<<1, L, mid, s);
+        init(pos<<1|1, mid+1, R, s);
+        tree[pos].first = tree[pos<<1].first + tree[pos<<1|1].first;
     }
-    for(int j = 0; j < c; j++) {
-        ll value = 0;
-        for(int i = 0; i < r; i++){
-            int temp = cum[i + 1][j + 1];
-            value = ( value + (temp * power[i]) ) % mod1;
-            cum[i + 1][j + 1] = value;
+
+    int Convert(int tag) {          // This function generates output tag of child node if the parent node is set to 3 (fipped)
+        if(tag == 1) return 2;
+        if(tag == 2) return 1;
+        if(tag == 3) return 0;
+        return 3;
+    }
+
+    // On every layer of update or query, this Propagation func should be called to pre-process previous left off operations
+    void Propagate(int L, int R, int parent) {      // Propagate parent node to child nodes (left and right)
+        if(tree[parent].second == 0 or L == R) return;        // and sets parent node's propagation tag to 0
+        int mid = (L+R)>>1;
+        int lft = parent<<1, rht = parent<<1|1;
+        if(tree[parent].second == 1) {
+            tree[lft].first = mid-L+1;
+            tree[rht].first = R-mid;
         }
-    }
-    return cum[r][c];
-}
-
-
-bool Check(int si, int sj, int ei, int ej, ll value){
-
-  //  cout<<"S  "<<si<<"  "<<sj<<"  "<<ei<<"  "<<ej<<"   "<<value<<"   "<<cum[ei][ej]<<endl;
-
-    ll ans = ( (cum[ei][ej] - cum[ei - r1][ej] - cum[ei][ej - c1] + cum[ei - r1][ej - c1] ) + mod1 ) % mod1;
-
-  //  cout<<"CC   "<<cum[ei - r1][ej] <<"   "<<cum[ei][ej - c1] <<"      "<<cum[si - 1][sj - 1]<<endl;
-    ans = (ans + mod1) % mod1;
-     
-    // cout<<"W  "<<ans<<endl;
-    ll po = ( maxp - (si - 1) );
-    ll po1 = ( maxp - (sj - 1) );
-
- //   cout<<"P  "<<po<<"  "<<po1<<endl;
-    ans = ( ans * power[po]) % mod1;
-    ans = ( ans * power[po]) % mod1;
-
-  //  cout<<"A  "<<ans<<"  "<<value<<endl;
-    if(ans == value) return true;
-    return false;
-}
-
-int main()
-{
-    Power_generate();
-    string s1[maxl + 2];
-    cin >> r1 >> c1;
-
-    for(int i = 0; i < r1; i++){
-        cin >> s1[i];
-    }
-
-    ll pattern = Hashing(s1, r1, c1);
-   // cout<<"P "<<pattern<<endl;
-    pattern = (pattern * power[maxp]) % mod1;
-    pattern = (pattern * power[maxp]) % mod1;
-
-    cin >> r2 >> c2;
-
-    for(int i = 0; i < r2; i++){
-        cin >> s1[i];
-    }
-    Hashing(s1, r2, c2);
-    vector<pii>v;
-
-    for(int i = 1; i <= r2; i++){
-        for(int j = 1; j <= c2; j++){
-
-            if(i >= r1 && j >= c1){
-
-                if(Check(i - r1 + 1, j - c1 + 1, i, j, pattern)){
-                    v.pb(mk(i - r1 + 1, j - c1 + 1));
-                }
-            }
-
+        else if(tree[parent].second == 2)
+            tree[lft].first = tree[rht].first = 0;
+        else if(tree[parent].second == 3) {
+            tree[lft].first = (mid-L+1) - tree[lft].first;
+            tree[rht].first = (R-mid) - tree[rht].first;
         }
+        if(L != R) {                                // If the child nodes also contain propagate tag (and the childs are not leaf node)
+            if(tree[parent].second == 1 || tree[parent].second == 2)
+                tree[lft].second = tree[rht].second = tree[parent].second;
+            else {
+                tree[lft].second = Convert(tree[lft].second);
+                tree[rht].second = Convert(tree[rht].second);
+        }}
+        tree[parent].second = 0;                                            // Parent node's prop tag set to zero
+        //if(L!=R) tree[parent].first = tree[lft].first + tree[rht].first;    // If this is not the leaf node, calculate child node's sum
     }
 
-    for(int i = 0; i < v.size(); i++){
-        cout<<"("<<v[i].f<<","<<v[i].s<<")"<<endl;
+    void updateOn(int pos, int L, int R, int l, int r) {                // Turn on bits in range [l, r]
+        if(r < L || R < l || L > R) return;
+        Propagate(L, R, pos);
+        if(l <= L && R <= r) {
+            tree[pos].first = (R-L+1);
+            tree[pos].second = 1;
+            return;
+        }
+        int mid = (L+R)>>1;
+        updateOn(pos<<1, L, mid, l, r);
+        updateOn(pos<<1|1, mid+1, R, l, r);
+        tree[pos].first = tree[pos<<1].first + tree[pos<<1|1].first;
     }
 
+    void updateOff(int pos, int L, int R, int l, int r) {               // Turn off bits in range [l, r]
+        if(r < L || R < l || L > R) return;
+        Propagate(L, R, pos);
+        if(l <= L && R <= r) {
+            tree[pos].first = 0;
+            tree[pos].second = 2;
+            return;
+        }
+        int mid = (L+R)>>1;
+        updateOff(pos<<1, L, mid, l, r);
+        updateOff(pos<<1|1, mid+1, R, l, r);
+        tree[pos].first = tree[pos<<1].first + tree[pos<<1|1].first;
+    }
+
+    void updateFlip(int pos, int L, int R, int l, int r) {              // Flip bits in range [l, r]
+        if(r < L || R < l || L > R) return;
+        Propagate(L, R, pos);
+        if(l <= L && R <= r) {
+            tree[pos].first = abs(R-L+1 - tree[pos].first);
+            tree[pos].second = 3;
+            return;
+        }
+        int mid = (L+R)>>1;
+        updateFlip(pos<<1, L, mid, l, r);
+        updateFlip(pos<<1|1, mid+1, R, l, r);
+        tree[pos].first = tree[pos<<1].first + tree[pos<<1|1].first;
+    }
+
+    int querySum(int pos, int L, int R, int l, int r) {                 // Returns number of set bit in range [l, r]
+        if(r < L || R < l || L > R) return 0;
+        Propagate(L, R, pos);
+        if(l <= L && R <= r) return tree[pos].first;
+        int mid = (L+R)>>1;
+        return querySum(pos<<1, L, mid, l, r) + querySum(pos<<1|1, mid+1, R, l, r);
+}};
+
+string s;
+RangeBitQuery ST;
+
+int main() {
+    int t, l, r, x, y, q;
+    char s1[100], c;
+    //tree.resize(1024000*4 +1000, {0, 0});
+    scanf("%d", &t);
+    
+    for(int Case = 1; Case <= t; ++Case) {
+        scanf("%d", &x);
+        s.clear();
+        s = " ";
+        while(x--) {
+            scanf("%d", &y);
+            scanf(" %s", s1);
+            while(y--)
+                s += string(s1);
+        }
+        
+        ST.init(1, 1, (int)s.size()-1, s);
+        printf("Case %d:\n", Case);
+        scanf("%d", &q);
+        int Query = 1;
+        while(q--) {
+            scanf(" %c %d %d", &c, &l, &r);
+            ++l, ++r;
+            if(c == 'F')
+                ST.updateOn(1, 1, (int)s.size()-1, l, r);
+            else if(c == 'E')
+                ST.updateOff(1, 1, (int)s.size()-1, l, r);
+            else if(c == 'I')
+               ST.updateFlip(1, 1, (int)s.size()-1, l, r);
+            else {
+                printf("Q%d: ", Query++);
+                printf("%d\n", ST.querySum(1, 1, (int)s.size()-1, l, r));
+    }}}
     return 0;
 }

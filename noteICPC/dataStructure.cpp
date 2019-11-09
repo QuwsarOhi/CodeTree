@@ -4,8 +4,18 @@ Data Structure:
  * Trie : Dynamic Trie, Static Trie
  * Sparse Table : Implemented in LCA and Suffix Array
  * Square Root Decomposition : Block Decomposition
-
- * MOs Algorithm (Need TO edit)
+ * MOs Offline Decomposition :  MOs on array 
+                                MOs on tree parent node
+                                MOs on tree path
+ * Fenwick Tree: Point Query Range Update + Range Update Point Query
+                 Inverse Cumulative sum [Csum from 1 to idx, instead of idx to MaxVal]
+                 2D, 3D Fenwick Tree
+ * Segment Tree: Range Sum with propagation
+                 Find Kth value and insert/erase [can be done in Policy Based DS]
+                 Merge Sort Tree
+                 Maximum cumulative sum from all possible range in a segment
+                 Valid bracket sequence check in range and single pos update
+                 Longest valid bracket sequence in range
 
 #include <bits/stdc++.h>
 #include <ext/pb_ds/assoc_container.hpp>
@@ -255,28 +265,21 @@ int Query(int l, int r) {                          // Query in range l -- r
 }
 
 
-// MO's Algo
-// Complexity : (N+Q)*sqrt(N)
-
+/* ------------------------------------- MO's on array ------------------------------------- 
+ Complexity : (N+Q)*sqrt(N)*InsertEraseConstant + (Q*QueryProcessingConstant)
+*/
 struct query {
     int l, r, id;
-};
-
-// block must be declared as const, as compilers do fast division with const values
-const int block = 320;          // For 100000
-query q[MAX];
-int ans[MAX];
-
-// MO's Tree Ordering
-bool cmp(query &a,query &b){                       // Faster Comparison function
+} q[MAX];
+const int block = 320;                  // For N = 100000, sqrt(N) = 320, always use as const
+// MO's tree ordering with only query processing
+bool cmp(query &a,query &b){                                    // Faster Comparison function
     if(a.l/block !=b.l/block)   return a.l < b.l;
-    if((a.l/block)&1)           return a.r < b.r;
+    if((a.l/block)&1)           return a.r < b.r;               // Even-Odd sorting
     return a.r > b.r;
-}
-
-void add(int x) {}       // Add x'th value in range 
-void remove(int x) {}    // Remove x'th value from range   
-
+}                                                // MOs might work fast for a larger block size
+void add(int x) {}                                  // Add x'th value in range 
+void remove(int x) {}                               // Remove x'th value from range   
 void MOs() {  
     sort(q, q+Q, cmp);
     int l = 0, r = -1;
@@ -285,56 +288,47 @@ void MOs() {
         while(r < q[i].r)   add(++r);
         while(l < q[i].l)   remove(l++);
         while(r > q[i].r)   remove(r--);
-        ans[q[i].id] =                      // Add Constraints
+        ans[q[i].id] =                              // Add Constraints
 }}
 
-/* MOs on Tree [Subtree] */
-
+/* ----------------------------------- MO's on SubTree -----------------------------------  
+ Sort subtree parents according to l = in[u] and r = out[u], ID[timer] = node
+ Iterate over the dfs timer and apply MOs in the [l, r] range, add/remove is same as above
+*/
 int timer = -1;
-void dfs(int u, int p = 0) {        // MO's Sub-Tree DFS Timing
+void dfs(int u, int p = 0) {                                        // MO's Sub-Tree DFS Timing
     in[u] = ++timer;
     ID[timer] = u;
     for(auto v : G[u])
         if(v != p) dfs(v, u);
     out[u] = timer;
-    ID[timer] = u;
 }
-// Sort subtree parents according to l = in[u] and r = out[u]
-// Apply MOs in the [l, r] range, adding and removing is same as above
 
-
-/* MOs on Tree [Tree Path] */
-
+/* ----------------------------------- MO's on Tree Path ----------------------------------  
+   Perform Query operation from path u to v, iterate over dfs-time */
 struct query {
     int id, ut, vt, lca;        // timing of node u, node v and lca of (u & v)
 } q[MAX];
-
 int timer = -1;
-void dfs(int u, int p = 0) {    // DFS timing
-    in[u] = ++timer;            // Also need to calculate LCA
+void dfs(int u, int p = 0) {
+    in[u] = ++timer;
     ID[timer] = u;
     for(auto v : G[u])
         if(v != p) dfs(v, u);
     out[u] = ++timer;
-    ID[timer] = u;
 }
-
 bitset<MAX> proc;
-void process(int ut) {          
-    if(proc[ID[ut]]) {}     // if proc = 0, then add the node and set proc = 1
-    else             {}     // else remove the node and set proc = 0
+void process(int ut) {      // ADD and REMOVE in same function
+    if(proc[ID[ut]]) {}     // ADD:    if proc = 0, then add the node and set proc = 1
+    else             {}     // REMOVE: else remove the node and set proc = 0
 }
-
 void MOs_Tree() {
     for(int i = 0, j = 0; j < Q; ++i, ++j) {        // Input Processing
         scanf("%d%d", &u, &v);
         q[i].id = i, q[i].lca = LCA(u, v);
-        if(in[u] > in[v]) swap(u, v);
-        
-        if(q[i].lca == u)
-            q[i].ut = in[u], q[i].vt = in[v];
-        else
-            q[i].ut = out[u], q[i].vt = in[v];
+        if(in[u] > in[v])       swap(u, v);
+        if(q[i].lca == u)       q[i].ut = in[u], q[i].vt = in[v];
+        else                    q[i].ut = out[u], q[i].vt = in[v];
     }
     sort(q, q+Q, cmp);
     int l = 0, r = -1;
@@ -343,9 +337,490 @@ void MOs_Tree() {
         while(r < q[i].vt)   proccess(++r);
         while(l < q[i].ut)   proccess(l++);
         while(r > q[i].vt)   proccess(r--);
-
         u = ID[l], v = ID[r];
         if(q[i].lca != u and q[i].lca != v) proccess(in[q[i].lca]);
         ans[q[i].id] =      // Calculate the answer
         if(q[i].lca != u and q[i].lca != v) proccess(in[q[i].lca]);
 }}
+
+
+// 1D Fenwick Tree
+
+struct BIT {
+    ll tree[MAX];
+    int MaxVal;
+    void init(int sz=1e7) {
+        memset(tree, 0, sizeof tree);
+        MaxVal = sz+1;
+    }
+    void update(int idx, ll val) {
+        for( ;idx <= MaxVal; idx += (idx & -idx))   tree[idx] += val; 
+    }
+    void update(int l, int r, ll val) {
+        if(l > r) swap(l, r);
+        update(l, val), update(r+1, -val); 
+    }
+    ll read(int idx) {
+        ll sum = 0;
+        for( ;idx > 0; idx -= (idx & -idx))         sum += tree[idx];
+        return sum;
+    }
+    ll read(int l, int r) {
+        ll ret = read(r) - read(l-1);
+        return ret;
+    }
+    ll readSingle(int idx) {                        // Point read in log(n), haven't used often
+        ll sum = tree[idx];
+        if(idx > 0) {
+            int z = idx - (idx & -idx);
+            --idx;
+            while(idx != z) {
+                sum -= tree[idx];
+                idx -= (idx & -idx);
+        }}   
+        return sum;
+    }
+    int search(int cSum) {                  
+        int pos = -1, lo = 1, hi = MaxVal, mid;
+        while(lo <= hi) {                   
+            mid = (lo+hi)/2;
+            if(read(mid) >= cSum)   pos = mid, hi = mid-1;  
+            else                    lo = mid+1;     // read(mid) >= cSum : lowest index of cSum
+        }                                          // read(mid) == cSum : highest index of cSum
+        return pos;
+    }
+    ll size() { return read(MaxVal); }
+    // Modified BIT, this section can be used to add/remove/read 1 to all elements from 1 to pos
+    // all of the inverse functions must be used, for any manipulation
+    ll invRead(int idx) { return read(MaxVal-idx); }           // gives summation from 1 to idx
+    void invInsert(int idx) { update(MaxVal-idx, 1); }     // adds 1 to all index less than idx
+    void invRemove(int idx) { update(MaxVal-idx, -1); }    // removes 1 from idx
+    void invUpdate(int idx, ll val) { update(MaxVal-idx, val); }
+};
+
+/* --------------------------- 2D Fenwick Tree -------------------------
+  /\|   (x1,y2) -------- (x2,y2)
+  | |          |       |
+  y |          ---------
+    |   (x1,y1)         (x2, y1)
+    |___________________________
+(0, 0)                     x-->        */
+struct FTree2D {
+    ll tree[MAX][MAX] = {0};
+    int xMax, yMax;
+    void init(int xx, int yy) { xMax = xx, yMax = yy; }
+    void update(int x, int y, int val) {
+        for(int x1 = x; x1 <= xMax; x1 += x1 & -x1)
+            for(int y1 = y; y1 <= yMax; y1 += y1 & -y)
+                tree[x1][y1] += val; 
+    }
+    ll read(int x, int y) {
+        ll sum = 0;
+        for(int x1 = x; x1 > 0; x1 -= x1 & -x1)
+            for(int y1 = y; y1 > 0; y1 -= y1 & -y1)
+                sum += tree[x1][y1];
+        return sum;
+    }
+    ll readSingle(int x, int y) {
+        return read(x, y) - read(x-1, y) - read(x, y-1) + read(x-1, y-1);
+    }
+    void updateSquare(int x1, int y1, int x2, int y2, int val) {
+        update(x1, y1, val),    update(x1, y2+1, -val);
+        update(x2+1, y1, -val), update(x2+1, y2+1, val);
+    }                                                               // p1 : lower left point
+    ll readSquare(int x1, int y1, int x2, int y2) {                 // p2 : upper right point
+        return  read(x2, y2) - read(x1-1, y2) - read(x2, y1-1) + read(x1-1, y1-1);
+}};
+
+/* --------------------------- 3D Fenwick Tree ------------------------- */
+
+ll xMax = 100, yMax = 100, zMax = 100, tree[105][105][105];
+void update(int x, int y, int z, ll val) {
+    int y1, z1;
+    while(x <= xMax) {
+        y1 = y;
+        while(y1 <= yMax) {
+            z1 = z;
+            while(z1 <= zMax) {
+                tree[x][y1][z1] += val;
+                z1 += (z1 & -z1);
+            }
+            y1 += (y1 & -y1);
+        }
+        x += (x & -x); 
+}}
+ll read(int x, int y, int z) {
+    ll sum = 0, y1, z1;
+    while(x > 0) {
+        y1 = y;
+        while(y1 > 0) {
+            z1 = z;
+            while(z1 > 0) {
+                sum += tree[x][y1][z1];
+                z1 -= (z1 & -z1);
+            }
+            y1 -= (y1 & -y1);
+        }
+        x -= (x & -x);
+    }
+    return sum;
+}
+ll readRange(ll x1, ll y1, ll z1, ll x2, ll y2, ll z2) {
+    --x1, --y1, --z1;
+    return  read(x2, y2, z2) - read(x1, y2, z2)
+          - read(x2, y1, z2) - read(x2, y2, z1)
+          + read(x1, y1, z2) + read(x1, y2, z1)
+          + read(x2, y1, z1) - read(x1, y1, z1);
+}
+// Pattens to built BIT update read: always starts with first(starting point), take (1 to n) 
+// elements from ending point with all combination add it to staring point, add (-1)^n * val
+void updateRange(int x1, int y1, int z1, int x2, int y2, int z2) {      // Not tested yet!!!!!
+    update(x1, y1, z1, val),     update(x2+1, y1, z1, -val);
+    update(x1, y2+1, z1, -val),  update(x1, y1, z2+1, -val);
+    update(x2+1, y2+1, z1, val), update(x1, y2+1, z2+1, val);
+    update(x2+1, y1, z2+1, val), update(x2+1, y2+1, z2+1, -val);
+}
+
+
+// Segment Tree
+
+// Only Supports Range Value SET (NOT UPDATE) and Point Query
+struct SegTreeSetVal {
+    vector<int>tree;
+    vector<bool>prop;
+    
+    void Resize(int n) {
+        tree.resize(n*5);
+        prop.resize(n*5);
+    }
+    
+    void propagate(int pos, int l, int r) {
+        if(!prop[pos] || l == r) return;
+        tree[pos<<1|1] = tree[pos<<1] = tree[pos];
+        prop[pos<<1|1] = prop[pos<<1] = 1;
+        prop[pos] = 0;
+    }
+    
+    void SetVal(int pos, int l, int r, int L, int R, int val) {     // Set value val in range [L, R]
+        if(r < L || R < l) return;
+        propagate(pos, l, r);
+        if(L <= l && r <= R) {
+            tree[pos] = val;
+            prop[pos] = 1;
+            return;
+        }
+        int mid = (l+r)>>1;
+        SetVal(pos<<1, l, mid, L, R, val);
+        SetVal(pos<<1|1, mid+1, r, L, R, val);
+    }
+    
+    int query(int pos, int l, int r, int idx) {             // Can be modified to range query
+        if(l == r) return tree[pos];
+        propagate(pos, l, r);
+        int mid = (l+r)>>1;
+        if(idx <= mid)  return query(pos<<1, l, mid, idx);
+        else            return query(pos<<1|1, mid+1, r, idx);
+}};
+
+/* ------------------------------------- Segment Tree ------------------------------------- */
+
+// Segment Tree Range Sum : Lazy with Propagation (MOD used)
+struct SegTreeRSQ {
+    vector<ll>sum, prop;
+    void Resize(int n)      { sum.resize(5*n), prop.resize(5*n); }
+    void init(int pos, int l, int r, ll val[]) {
+        sum[pos] = prop[pos] = 0;
+        if(l == r) { sum[pos] = val[l]%MOD; return; }
+        int mid = (l+r)>>1;
+        init(pos<<1, l, mid, val), init(pos<<1|1, mid+1, r, val);
+        sum[pos] = (sum[pos<<1] + sum[pos<<1|1])%MOD;
+    }
+    void propagate(int pos, int l, int r) {
+        if(prop[pos] == 0 || l == r) return;
+        int mid = (l+r)>>1;
+        sum[pos<<1] = (sum[pos<<1] + prop[pos]*(mid-l+1))%MOD;
+        sum[pos<<1|1] = (sum[pos<<1|1] + prop[pos]*(r-mid))%MOD;
+        prop[pos<<1] = (prop[pos<<1] + prop[pos])%MOD;
+        prop[pos<<1|1] = (prop[pos<<1|1] + prop[pos])%MOD;
+        prop[pos] = 0;
+    }
+    void update(int pos, int l, int r, int L, int R, ll val) {           // Range [L, R] Update
+        if(r < L || R < l) return;
+        propagate(pos, l, r);
+        if(L <= l && r <= R) {
+            sum[pos] = (sum[pos] + val*(r-l+1))%MOD;
+            prop[pos] = (prop[pos] + val)%MOD;
+            return;
+        }
+        int mid = (l+r)>>1;
+        update(pos<<1, l, mid, L, R, val), update(pos<<1|1, mid+1, r, L, R, val);
+        sum[pos] = (sum[pos<<1] + sum[pos<<1|1])%MOD;
+    }
+    ll query(int pos, int l, int r, int L, int R) {                       // Range [L, R] Query
+        if(r < L || R < l) return 0;
+        propagate(pos, l, r);
+        if(L <= l && r <= R) return sum[pos];
+        int mid = (l+r)>>1;
+        return (query(pos<<1, l, mid, L, R) + query(pos<<1|1, mid+1, r, L, R))%MOD;
+}};
+
+// Segment Tree Insert/Remove value, Find K'th Value
+struct KthValueInsertErase {                     // Finds/Deletes K'th value from array/SegTree
+    int tree[MAX*4];
+    void init(int pos, int L, int R) {
+        if(L == R) { tree[pos] = 1; return; }
+        int mid = (L+R)>>1;
+        init(pos<<1, L, mid), init(pos<<1|1, mid+1, R);
+        tree[pos] = tree[pos<<1]+tree[pos<<1|1];
+    }
+    int SearchVal(int pos, int L, int R, int I, bool removeVal = 0) {      // removeVal=1 
+        if(L == R) { tree[pos] = (removeVal ? 0:1); return L; }            // removes the value
+        int mid = (L+R)>>1;
+        if(I <= tree[pos<<1]) {
+            int idx = SearchVal(pos<<1, L, mid, I, removeVal);
+            if(removeVal) tree[pos] = tree[pos<<1] + tree[pos<<1|1];
+            return idx;
+        } else {
+            int idx = SearchVal(pos<<1|1, mid+1, R, I-tree[pos<<1], removeVal);
+            if(removeVal) tree[pos] = tree[pos<<1] + tree[pos<<1|1];
+            return idx;
+}}};
+
+// Segment Tree Range Bit [set, reset, flip]                  [Problem: UVA 11402 Ahoy Pirates]
+struct RangeBitQuery {
+    vector<pair<int, int> >tree;                       // number of set bits, propagation state
+    RangeBitQuery() { tree.resize(MAX*4); }
+    void init(int pos, int L, int R, string &s) {
+        tree[pos].second = 0;
+        if(L == R) { tree[pos].first = (s[L] == '1'); return; }
+        int mid = (L+R)>>1;
+        init(pos<<1, L, mid, s), init(pos<<1|1, mid+1, R, s);
+        tree[pos].first = tree[pos<<1].first + tree[pos<<1|1].first;
+    }
+    int Convert(int parentState) {                // Generates child state w.r.t parent's state
+        if(parentState == 1) return 2;            // 2 : all set to zero
+        if(parentState == 2) return 1;            // 1 : all set to one
+        if(parentState == 3) return 0;            // 0 : no change
+        return 3; }                               // 3 : all need to be flipped
+    void Propagate(int L, int R, int parent) {
+        if(tree[parent].second == 0 or L == R) return;
+        int mid = (L+R)>>1, lft = parent<<1, rht = parent<<1|1;
+        if(tree[parent].second == 1)        tree[lft].first = mid-L+1, tree[rht].first = R-mid;
+        else if(tree[parent].second == 2)   tree[lft].first = tree[rht].first = 0;
+        else if(tree[parent].second == 3) { tree[lft].first = (mid-L+1) - tree[lft].first;
+                                            tree[rht].first = (R-mid) - tree[rht].first; }
+        if(tree[parent].second == 1 || tree[parent].second == 2)
+            tree[lft].second = tree[rht].second = tree[parent].second;
+        else {
+            tree[lft].second = Convert(tree[lft].second);
+            tree[rht].second = Convert(tree[rht].second); }
+        tree[parent].second = 0;                                // Clear parent node prop state
+    }
+    void updateOn(int pos, int L, int R, int l, int r) {        // Turn on bits in range [l, r]
+        if(r < L || R < l || L > R) return;
+        Propagate(L, R, pos);
+        if(l <= L && R <= r) { tree[pos].first = (R-L+1), tree[pos].second = 1; return; }
+        int mid = (L+R)>>1;
+        updateOn(pos<<1, L, mid, l, r), updateOn(pos<<1|1, mid+1, R, l, r);
+        tree[pos].first = tree[pos<<1].first + tree[pos<<1|1].first;
+    }
+    void updateOff(int pos, int L, int R, int l, int r) {      // Turn off bits in range [l, r]
+        if(r < L || R < l || L > R) return;
+        Propagate(L, R, pos);
+        if(l <= L && R <= r) { tree[pos].first = 0, tree[pos].second = 2; return; }
+        int mid = (L+R)>>1;
+        updateOff(pos<<1, L, mid, l, r), updateOff(pos<<1|1, mid+1, R, l, r);
+        tree[pos].first = tree[pos<<1].first + tree[pos<<1|1].first;
+    }
+    void updateFlip(int pos, int L, int R, int l, int r) {         // Flip bits in range [l, r]
+        if(r < L || R < l || L > R) return;
+        Propagate(L, R, pos);
+        if(l <= L && R <= r) {
+            tree[pos].first = abs(R-L+1 - tree[pos].first), tree[pos].second = 3;
+            return;
+        }
+        int mid = (L+R)>>1;
+        updateFlip(pos<<1, L, mid, l, r), updateFlip(pos<<1|1, mid+1, R, l, r);
+        tree[pos].first = tree[pos<<1].first + tree[pos<<1|1].first;
+    }
+    int querySum(int pos, int L, int R, int l, int r) {                 // Returns number of set bit in range [l, r]
+        if(r < L || R < l || L > R) return 0;
+        Propagate(L, R, pos);
+        if(l <= L && R <= r) return tree[pos].first;
+        int mid = (L+R)>>1;
+        return querySum(pos<<1, L, mid, l, r) + querySum(pos<<1|1, mid+1, R, l, r);
+}};
+
+// Merge Sort Tree
+struct MergeSortTree {
+    vector<int>tree[MAX*4];
+    void init(int pos, int l, int r, ll val[]) {
+        tree[pos].clear();                                               // Clears past values
+        if(l == r) { tree[pos].push_back(val[l]); return; }
+        int mid = (l+r)>>1;
+        init(pos<<1, l, mid, val), init(pos<<1|1, mid+1, r, val);
+        merge(tree[pos<<1].begin(), tree[pos<<1].end(), tree[pos<<1|1].begin(), 
+              tree[pos<<1|1].end(), back_inserter(tree[pos]));
+    }
+    int query(int pos, int l, int r, int L, int R, int k) {
+        if(r < L || R < l) return 0;
+        if(L <= l && r <= R) {                                                  // Query Part
+            return (int)tree[pos].size() - (upper_bound(tree[pos].begin(), tree[pos].end(), k) 
+            - tree[pos].begin()); }        
+        int mid = (l+r)>>1;
+        return query(pos<<1, l, mid, L, R, k) + query(pos<<1|1, mid+1, r, L, R, k);
+}};
+
+// Maximum cumulative sum from all possible range in a segment
+struct RangeMaxSumNode {                // Range maximum sum node is coded
+    ll sum, prefix, suffix, ans;        // seg sum, max prefix sum, max suffix sum, max sum
+    node(ll val = 0) { sum = prefix = suffix = ans = val; }
+    void merge(node left, node right) {
+        sum    =    left.sum + right.sum;
+        prefix =    max(left.prefix, left.sum+right.prefix);
+        suffix =    max(right.suffix, right.sum+left.suffix);
+        ans    =    max(left.ans, max(right.ans, left.suffix+right.prefix));
+}};
+
+// Bracket segment validity check and update single position bracket
+struct BracketTreeNode {                // Only node merge is coded in note
+    int BrcStart, BrcEnd;               // number of start bracket, number of end bracket
+    bool isOk = 0;                      // is the sequence valid
+    node(int a = 0, int b = 0) {
+        BrcStart = a, BrcEnd = b, isOk = (BrcStart == 0 && BrcEnd == 0);
+    }
+    node(char c) {
+        if(c == '(')    BrcStart = 1, BrcEnd = 0;
+        else            BrcStart = 0, BrcEnd = 1;
+    }
+    void mergeNode(node lft, node rht) {
+        if(lft.isOk && rht.isOk)
+            BrcStart = 0, BrcEnd = 0, isOk = 1;
+        else {
+            int match = min(lft.BrcStart, rht.BrcEnd);
+            BrcStart = lft.BrcStart - match + rht.BrcStart;
+            BrcEnd = lft.BrcEnd + rht.BrcEnd - match;
+            (BrcStart == 0 && BrcEnd == 0) ? isOk = 1: isOk = 0;
+}}};
+
+// Outputs longest balanced bracket sequence in range [L, R]
+struct node {
+    ll lftBracket, rhtBracket, Max;
+    node(ll lft=0, ll rht=0, ll Max=0) {      // Call: ( = node(1, 0, 0),   ) = node(0, 1, 0)
+        this->lftBracket = lft;                     // number of left brackets
+        this->rhtBracket = rht;                     // number of right brackets
+        this->Max = Max;                            // The max len of bracket, output Max*2
+    }
+    void Merge(node lft, node rht) {
+        ll common = min(lft.lftBracket, rht.rhtBracket);
+        ll lftBracket = lft.lftBracket + rht.lftBracket - common;
+        ll rhtBracket = lft.rhtBracket + rht.rhtBracket - common;
+        return node(lftBracket, rhtBracket, lft.Max+rht.Max+common);
+}};
+
+// Path Compression
+void CompressPath(vector<int> &point) {                                 // point contains all left and right boundary and query boundaries
+    point.push_back(0);                                                 // push_back a minimum value which is lower than input values 
+    sort(point.begin(), point.end());                                   // so that the input values start from index 1
+    point.erase(unique(point.begin()+1, point.end()), point.end());     // Only unique points taken, this will be the compressed points
+}
+
+// Offline Processing   [this code finds unique values in range l-r]
+// The processing is done backwards, first we go to the right range r, then find ans in [l - r]
+struct OfflineProcessing {
+    int tree[4*MAX], v[MAX], IDX[MAX];      // IDX[x] keeps track of where x previously occured
+    map<int, vector<int> > QueryEnd;            // Contains start positions for a end pos r
+    map<pair<int, int>, int>Ans;                // Contains answer for ranges
+    vector<pair<int, int> > Query;              // Contains query ranges 
+    void ArrayInput(int arraySize) {  for(int i = 1; i <= SZ; ++i) scanf("%d", &v[i]); }
+    void QueryInput(int querySize) {
+        int l, r;
+        while(q--) {
+            scanf("%d %d", &l, &r);
+            Query.push_back(make_pair(l, r));
+            QueryEnd[r].push_back(l);                        // Used for sorting
+    }}
+    void Process(int arraySize) {
+        map<int, vi> :: iterator it;
+        int lPos = 0;
+        for(it = QueryEnd.begin(); it != QueryEnd.end(); ++it) {
+            while(lPos < it->first) {
+                lPos++;
+                if(IDX[v[lPos]] == -1) { IDX[v[lPos]] = lPos, update(1, 1, SZ, lPos, 1); }
+                else {
+                    int pastIDX = IDX[v[lPos]];
+                    IDX[v[lPos]] = lPos;
+                    update(1, 1, SZ, pastIDX, -1);      // Remove count from past-left index
+                    update(1, 1, SZ, lPos, 1);          // Add count to the latest index
+            }}
+            for(int i = 0; i < (int)(it->second).size(); ++i)
+                Ans[make_pair(it->second[i], it->first)] = 
+                                    query(1, 1, SZ, it->second[i], it->first);       
+    }}
+    void PrintAns() {
+        for(int i = 0; i < (int)Query.size(); ++i)           // Output according to input query
+            printf("%d\n", Ans[mp(Query[i].first, Query[i].second)]);
+}};
+
+struct HashTree {
+    vector<ll>sum, propSum, propMul;
+    ll mod, len;
+    void resize(int n, ll _mod, ll arr[]) {
+        sum.resize(4*n), propSum.resize(4*n);
+        propMul.resize(4*n), mod = _mod, len = n;
+    }
+    inline ll add(ll a, ll b) { return (a+b)%mod; }
+    inline ll mul(ll a, ll b) { return (a*b)%mod; }
+    void pushDown(int child, int par) {                            // just push down the values
+        propSum[child] = mul(propSum[child], propMul[par]);
+        propSum[child] = add(propSum[child], propSum[par]);
+        propMul[child] = mul(propMul[child], propMul[par]);
+    }
+    void init(int pos, int l, int r, ll arr[]) {                 // Call resize first!!!
+        sum[pos] = propSum[pos] = 0, propMul[pos] = 1;
+        if(l == r) { sum[pos] = arr[l]; return; }
+        int mid = (l+r)>>1;
+        init(pos<<1, l, mid, arr), init(pos<<1|1, mid+1, r, arr);
+        sum[pos] = add(sum[pos<<1], sum[pos<<1|1]);
+    }
+    void propagate(int pos, int l, int r) {                         // sets and pushes values to child
+        if(propMul[pos] == 1 and propSum[pos] == 0) return;
+        sum[pos] = add(mul(sum[pos], propMul[pos]), mul(r-l+1, propSum[pos]));
+        if(l == r) { propMul[pos] = 1, propSum[pos] = 0; return; }
+        pushDown(pos<<1, pos), pushDown(pos<<1|1, pos);
+        propMul[pos] = 1, propSum[pos] = 0;
+    }
+    void update(int pos, int l, int r, int L, int R, ll val, int type) {
+        propagate(pos, l, r);
+        if(r < L or R < l) return;
+        if(L <= l and r <= R) {
+            if(type == 0)                               // add val in [L, R]
+                propSum[pos] = add(propSum[pos], val);
+            else if(type == 1) {                        // multiply val in [L, R]
+                propSum[pos] = mul(propSum[pos], val);
+                propMul[pos] = mul(propMul[pos], val);
+            }
+            else if(type == 2)                          // set all value = val
+                propSum[pos] = val, propMul[pos] = 0;
+            propagate(pos, l, r);
+            return;
+        }
+        
+        int mid = (l+r)>>1;
+        update(pos<<1, l, mid, L, R, val, type);
+        update(pos<<1|1, mid+1, r, L, R, val, type);
+        sum[pos] = add(sum[pos<<1], sum[pos<<1|1]);
+    }
+    ll query(int pos, int l, int r, int L, int R) {
+        propagate(pos, l, r);
+        if(r < L || R < l) return 0;
+        if(L <= l && r <= R) return sum[pos];
+        int mid = (l+r)>>1;
+        return add(query(pos<<1, l, mid, L, R), query(pos<<1|1, mid+1, r, L, R));
+    }
+    
+    ll query(int l, int r)              { return query(1, 1, len, l, r); }
+    void add(int l, int r, ll val)      { update(1, 1, len, l, r, val, 0); }
+    void mul(int l, int r, ll val)      { update(1, 1, len, l, r, val, 1); }
+    void set(int l, int r, ll val)      { update(1, 1, len, l, r, val, 2); }   
+};
