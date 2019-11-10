@@ -18,6 +18,7 @@ Data Structure:
                  Longest valid bracket sequence in range
                  Compression
                  Offline Processing
+ * Persistant Segment Tree
 
 #include <bits/stdc++.h>
 #include <ext/pb_ds/assoc_container.hpp>
@@ -63,7 +64,6 @@ struct DSU {
     bool isRootContainsMany(int x)  { return (isRoot(x) && (u_list[x] > 1)); }
     bool isSameSet(int a, int b)    { return (unionRoot(a) == unionRoot(b));
 }};
-
 // Bipartite DSU (Tested)
 struct BipartiteDSU {
     vector<int>u_list, u_set, u_color;                      // u_color : color of nodes
@@ -99,7 +99,6 @@ struct BipartiteDSU {
         for(int i = 0; i <= len+3; i++)
             u_set[i] = i, u_list[i] = 1, u_color[i] = 0, missmatch[i] = 0;
 }};
-
 // Dynamic Weighted DSU  ------ Not Tested !!!!!!!!!!!!
 struct WeightedDSU {
     vector<int>u_list, u_set, u_weight, weight;
@@ -208,7 +207,6 @@ struct Trie {
 }};
 
 /* ---------------------------------- Sqrt Decompose ---------------------------------- */
-
 int BlockSize, seg[1010];                        // BlockSize is the size of each Block
 void SqrtDecompose(int v[], int len) {           // Builds Sqrt segments
     int idx, pos, val = 0;
@@ -235,10 +233,8 @@ void SqrtDecompose(int v[], int len) {           // Builds Sqrt segments
         ++l;
     } return Count;
 }
-
 /* ------------------------------------- MO's on array ------------------------------------- 
- Complexity : (N+Q)*sqrt(N)*InsertEraseConstant + (Q*QueryProcessingConstant)
-*/
+ Complexity : (N+Q)*sqrt(N)*InsertEraseConstant + (Q*QueryProcessingConstant) */
 struct query {
     int l, r, id;
 } q[MAX];
@@ -261,7 +257,6 @@ void MOs() {
         while(r > q[i].r)   remove(r--);
         ans[q[i].id] =                              // Add Constraints
 }}
-
 /* ----------------------------------- MO's on SubTree -----------------------------------  
  Sort subtree parents according to l = in[u] and r = out[u], ID[timer] = node
  Iterate over the dfs timer and apply MOs in the [l, r] range, add/remove is same as above
@@ -311,7 +306,6 @@ void process(int ut) {      // ADD and REMOVE in same function
 }}
 
 /* ------------------------------------ 1D Fenwick Tree ------------------------------------ */
-
 struct BIT {
     ll tree[MAX], MaxVal;
     void init(int sz=1e7) {
@@ -353,7 +347,6 @@ struct BIT {
     void invRemove(int idx) { update(MaxVal-idx, -1); }    // removes 1 from idx
     void invUpdate(int idx, ll val) { update(MaxVal-idx, val); }
 };
-
 /* --------------------------- 2D Fenwick Tree -------------------------
   /\|   (x1,y2) -------- (x2,y2)
   | |          |       |
@@ -385,7 +378,6 @@ struct FTree2D {
 }};
 
 /* --------------------------- 3D Fenwick Tree ------------------------- */
-
 ll xMax = 100, yMax = 100, zMax = 100, tree[105][105][105];
 void update(int x, int y, int z, ll val) {
     int y1, z1;
@@ -429,7 +421,6 @@ void updateRange(int x1, int y1, int z1, int x2, int y2, int z2) {      // Not t
 }
 
 /* -------------------------------------- Segment Tree ------------------------------------- */
-
 // Segment Tree Range Sum : Lazy with Propagation (MOD used)
 struct SegTreeRSQ {
     vector<ll>sum, prop;
@@ -464,7 +455,6 @@ struct SegTreeRSQ {
         int mid = (l+r)>>1;
         return (query(pos<<1, l, mid, L, R) + query(pos<<1|1, mid+1, r, L, R));
 }};
-
 // Segment Tree Insert/Remove value, Find K'th Value
 struct KthValueInsertErase {                     // Finds/Deletes K'th value from array/SegTree
     int tree[MAX*4];
@@ -485,7 +475,6 @@ struct KthValueInsertErase {                     // Finds/Deletes K'th value fro
             if(removeVal) tree[pos] = tree[pos<<1] + tree[pos<<1|1];
             return idx;
 }}};
-
 // Segment Tree Range Bit [set, reset, flip]                  [Problem: UVA 11402 Ahoy Pirates]
 struct RangeBitQuery {
     vector<pair<int, int> >tree;                       // number of set bits, propagation state
@@ -544,7 +533,6 @@ struct RangeBitQuery {
         int mid = (L+R)>>1;
         return querySum(pos<<1, L, mid, l, r) + querySum(pos<<1|1, mid+1, R, l, r);
 }};
-
 // Merge Sort Tree
 struct MergeSortTree {
     vector<int>tree[MAX*4];
@@ -563,7 +551,6 @@ struct MergeSortTree {
         int mid = (l+r)>>1;
         return query(pos<<1, l, mid, L, R, k) + query(pos<<1|1, mid+1, r, L, R, k);
 }};
-
 // Maximum cumulative sum from all possible range in a segment
 struct RangeMaxSumNode {                // Range maximum sum node is coded
     ll sum, prefix, suffix, ans;        // seg sum, max prefix sum, max suffix sum, max sum
@@ -574,7 +561,6 @@ struct RangeMaxSumNode {                // Range maximum sum node is coded
         suffix =    max(right.suffix, right.sum+left.suffix);
         ans    =    max(left.ans, max(right.ans, left.suffix+right.prefix));
 }};
-
 // Bracket segment validity check and update single position bracket
 struct BracketTreeNode {                // Only node merge is coded in note
     int BrcStart, BrcEnd;               // number of start bracket, number of end bracket
@@ -593,7 +579,6 @@ struct BracketTreeNode {                // Only node merge is coded in note
             BrcEnd = lft.BrcEnd + rht.BrcEnd - match;
             (BrcStart == 0 && BrcEnd == 0) ? isOk = 1: isOk = 0;
 }}};
-
 // Outputs longest balanced bracket sequence in range [L, R]
 struct node {
     ll lftBracket, rhtBracket, Max;
@@ -607,14 +592,12 @@ struct node {
         ll rhtBracket = lft.rhtBracket + rht.rhtBracket - common;
         return node(lftBracket, rhtBracket, lft.Max+rht.Max+common);
 }};
-
 // Path Compression
-void CompressPath(vector<int> &point) {                                 // point contains all left and right boundary and query boundaries
-    point.push_back(0);                                                 // push_back a minimum value which is lower than input values 
-    sort(point.begin(), point.end());                                   // so that the input values start from index 1
-    point.erase(unique(point.begin()+1, point.end()), point.end());     // Only unique points taken, this will be the compressed points
+void CompressPath(vector<int> &point) {                           
+    point.push_back(0);                                                
+    sort(point.begin(), point.end());                                  
+    point.erase(unique(point.begin()+1, point.end()), point.end());
 }
-
 // Offline Processing   [this code finds unique values in range l-r]
 // The processing is done backwards, first we go to the right range r, then find ans in [l - r]
 struct OfflineProcessing {
@@ -649,3 +632,45 @@ struct OfflineProcessing {
         for(int i = 0; i < (int)Query.size(); ++i)           // Output according to input query
             printf("%d\n", Ans[mp(Query[i].first, Query[i].second)]);
 }};
+/* ---------------------------- Persistant/Dynamic Segment Tree -----------------------------*/
+struct node {
+    ll val;
+    node *lft, *rht;    
+    node(node *L = NULL, node *R = NULL, ll v = 0) {
+        lft = L, rht = R, val = v;
+}};
+node *persis[101000], *null = new node();
+node *nCopy(node *x) {
+    node *tmp = new node();
+    if(x) { tmp->val = x->val, tmp->lft = x->lft, tmp->rht = x->rht; }
+    return tmp;
+} void init(node *pos, ll l, ll r) {
+    if(l == r) { pos->val = val[l], pos->lft = pos->rht = null; return; }
+    ll mid = (l+r)>>1;
+    pos->lft = new node(), pos->rht = new node();
+    init(pos->lft, l, mid), init(pos->rht, mid+1, r);
+    pos->val = pos->lft->val + pos->rht->val;
+} void update(node *pos, ll l, ll r, ll L, ll R, ll val) {                 // Range [L, R] update
+    if(r < L || R < l) return;
+    if(L <= l && r <= R)            { pos->prop += val, pos->val += (r-l+1)*val; return; }
+    ll mid = (l+r)>>1;
+    pos->lft = nCopy(pos->lft), pos->rht = nCopy(pos->rht);
+    update(pos->lft, l, mid, L, R, val), update(pos->rht, mid+1, r, L, R, val);
+    pos->val = pos->lft->val + pos->rht->val + (r-l+1)*pos->prop;
+} ll query(node *pos, ll l, ll r, ll L, ll R) {                       // Range [L, R] Sum Query
+    if(r < L || R < l || pos == NULL)   return 0;
+    if(L <= l && r <= R)                return pos->val;
+    ll mid = (l+r)/2LL;
+    ll x = query(pos->lft, l, mid, L, R), y = query(pos->rht, mid+1, r, L, R);
+    return x+y;
+} void ClearTree(node *pos) {                   // Erasing A segment tree call: ClearTree(root)
+    if(pos == NULL) { delete pos; return; }
+    ClearTree(pos->lft), ClearTree(pos->rht);
+    delete pos;
+} int main() {
+    null->lft = null->rht = null;               // MUST BE INITIALIZED
+    for(int i = 1; i <= 10; ++i) {
+        persis[i] = nCopy(persis[i-1]);
+        update(persis[i], 1, n, idx, val);
+    } return 0;
+}
