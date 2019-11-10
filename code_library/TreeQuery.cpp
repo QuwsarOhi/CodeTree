@@ -27,8 +27,8 @@ vector<int> G[MAX];
 int sTime[MAX], eTime[MAX], level[MAX], cst[MAX], timer;
 BIT EvenNode, OddNode;
 
-/* sTime : starting time of node n
-   eTime : finishing time of node n
+/* sTime/in  : starting time of node n
+   eTime/out : finishing time of node n
      1   
     / \
    5   6
@@ -37,10 +37,9 @@ BIT EvenNode, OddNode;
         / \
        2   3
 discover nodes : {1, 5, 6, 7, 4, 2, 3}
-sTime[] = {1, 6, 7, 5, 2, 3, 4}    index starts from 1, i'th index contains start time of i'th node
-eTime[] = {7, 6, 7, 7, 2, 7, 4}
-
-calculate child : 
+sTime[] = {1, 6, 7, 5, 2, 3, 4}                 index starts from 1, 
+eTime[] = {7, 6, 7, 7, 2, 7, 4}                 i'th index contains start time of i'th node
+Calculate Child : 
 for node 6 : childs are in range sTime[6] - eTime[6] : 3 - 7
 so child nodes are : 6, 7, 4, 2, 3 (discover node index range)
 we don't need discover time vector to calculate distance

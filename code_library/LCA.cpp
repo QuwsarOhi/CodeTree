@@ -24,6 +24,10 @@ int LCA(int u, int v) {
         if(par[u][p] != par[v][p])
             u = par[u][p], v = par[v][p];
     return par[u][0];
+} 
+
+int dist(int a, int b, int lca) {
+    return lvl[a]+lvl[b]-2*lvl[lca];
 }
 
 // LCA if the root changes, [first dfs is done with root 1 or any other fixed node]
