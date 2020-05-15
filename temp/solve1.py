@@ -1,34 +1,61 @@
+from sys import *
+#from bisect import *
+#from collections import *
+#from itertools import *
+#from fractions import *
+#from datetime import *
 
-def compress(x):
-    ret = []
-    for i in range(100):
-        c = x.count(i)
-        if c%2 > 0:
-            ret.append(i)
-    return ret
+Input = []
 
-def f(x):
-    ret = []
-    for i in range(1, len(x)):
-        ret.append(compress(x[i-1]+x[i]))
-    return ret
+#stdin = open('in', 'r')
+#stdout = open('out', 'w')
 
-def brute(x):
-    y = []
-    for xx in x:
-        y.append([xx])
-    while len(y) > 1:
-        print(y)
-        y = f(y)
-    print(y)
-    return y
+## for i, val in enumerate(array, start_i_value)
+
+def Out(x):
+    stdout.write(str(x) + '\n')
+
+def In():
+    return stdin.readline().strip()
+
+def inputGrab():
+    for line in stdin:
+        Input.extend(map(str, line.strip().split()))
+
+inputIDX = 0
+def hasNext():
+    global inputIDX
+    return (inputIDX < len(Input))
+
+def nextInt():
+    global inputIDX
+    inputIDX += 1
+    return int(Input[inputIDX-1])
+
+def nextString():
+    global inputIDX
+    inputIDX += 1
+    return Input[inputIDX-1]
+
+'''--------------------------------------------------------------------------------'''
 
 
-def test():
-    for i in range(1, 36):
-        print('For I =', i)
-        brute([j for j in range(1, i+1)])
-        print()
+def main():
+    inputGrab()     # Grabs input from inputstream, so that newline spaces doesn't causes runtime errors
+    
+    tc = nextInt()
+
+    for i in range(tc):
+        a = nextInt()
+        b = nextInt()
+        c = nextInt()
+        n = nextInt()
+
+        if b-a == c-b:
+            print('Case %d: %d'%(i+1, a+(n-1)*(b-a)))
+        else:
+            print('Case %d: Error'%(i+1))
 
 if __name__ == '__main__':
-    test()
+    main()
+

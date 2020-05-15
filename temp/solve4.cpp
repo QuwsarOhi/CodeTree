@@ -1,5 +1,9 @@
 #include <bits/stdc++.h>
-using namespace std;
+#define MAX 5100
 typedef long long ll;
+using namespace std;
 
 
+int main() {
+		
+}
