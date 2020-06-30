@@ -1,0 +1,6 @@
+60 is even
+-50 is less than zero
+after adding,a+b is equal to 110
+after adding 60 -50 sum is equal to 120
+THE ULTIMATE RESULT = 600
+I wanna be a national contestant and I can write long code

@@ -1,0 +1,7 @@
+10 is even
+-10 is less than zero
+after adding,a+b is equal to 0
+after adding 10 -10 sum is equal to 20
+the result after multiplying sum = 200
+THE ULTIMATE RESULT = 1000
+I wanna be a national contestant and I can write long code
