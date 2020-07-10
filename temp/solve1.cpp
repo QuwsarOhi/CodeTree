@@ -1,66 +1,66 @@
 #include <bits/stdc++.h>
+#define MAX 200010
 using namespace std;
+typedef long long ll;
+
+// 0 : l->r
+// 1 : r->l 
+vector<ll> G[2][MAX], h, w;
+ll idx, n, root[2];
+
+void dfs_insert(int u, int p, int d) {
+	cout << "AT " << u << endl;
+	while(idx < n and idx > -1) {
+		if(h[u] >= h[idx]) {
+			cout << u << " -> " << idx << endl;
+			G[p][u].push_back(idx);
+			idx += d;
+			dfs_insert(idx-d, p, d);
+		}
+		else if(u == root[p]) {
+			idx += d;
+		}
+		else
+			return;
+	}
+}
+
+void dfs(int u, int p) {
+	for(auto v : G[p][u]) {
+		cout << u << " -> " << v << endl;
+		dfs(v, p);
+	}
+}
+
 
 
 int main() {
-	long long a, b, sum = 0;
-	// 1
-	cin >> a >> b;
+	ll q, x;
+	scanf("%lld%lld", &n, &q);
 
-	//2 3
-	if(a%2 == 0) {
-		cout << a << " is even\n";
-		sum += a;
-	}
-	else {
-		cout << a << " is odd\n";
-		sum -= a;
+	for(int i = 0; i < n; ++i) {
+		scanf("%lld", &x);
+		h.push_back(x);
 	}
 
-
-	// 4 5 6
-	if(b > 0) {
-		cout << b << " is greater than zero\n";
-		sum += b;
+	for(int i = 0; i < n; ++i) {
+		scanf("%lld", &x);
+		w.push_back(x);
 	}
-	else if(b < 0) {
-		cout << b << " is less than zero\n";
-		sum -= b;
-	}
-	else {
-		cout << b << " is equal to zero\n";
-		sum *= b;
-	}
+ 				
+ 	cout << "PUSH DONE\n";
+ 	idx = 1;
+ 	root[0] = 0;
+	dfs_insert(0, 0, 1);
+	cout << "Graph 0 done\n";
+	idx = n-2;
+	root[1] = n-1;
+	dfs_insert(n-1, 1, -1);
+	cout << "Graph 1 done\n";
 
-	// 7
-	cout << "after adding,a+b is equal to " << a+b << "\n";
-
-
-	// 8 9
-	if((a+b)%2 == 0) {
-		sum += a;
-		sum += b;
-		cout << "after adding " << a << " " << b << " sum is equal to " << sum << "\n";
-	}
-	else {
-		sum -= a;
-		sum -= b;
-		cout << "after removing " << a << " " << b << " b sum is equal to " << sum << "\n";
-	}
-
-	// 10
-	if(a+b == 0) {
-		sum *= 10;
-		cout << "the result after multiplying sum = " << sum << "\n";
-	}
-
-	// 11
-	sum *= 5;
-
-	// 12
-	cout << "THE ULTIMATE RESULT = " << sum << "\n";
-	// 13
-	cout << "I wanna be a national contestant and I can write long code\n";
+	dfs(0, 0);
+	cout << "------------------\n";
+	dfs(n-1, 1);
 
 	return 0;
 }
