@@ -6,7 +6,8 @@ from sys import stdin, stdout
 #print(getrecursionlimit())
 
 def input(): 
-    return stdin.readline()
+    # remove strip() if new-line is needed
+    return stdin.readline().strip()
 
 
 # use f-string
