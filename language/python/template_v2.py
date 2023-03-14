@@ -16,7 +16,7 @@ def print(inp, end='\n'):
 
 
 # for genearing all possible & all permutation solution
-def gen_comb(N: int, permute:bool=False):
+def gen_subset(N: int, permute:bool=False):
     from itertools import permutations as permutations
     for i in range(1 << N):
         p = []
@@ -25,7 +25,8 @@ def gen_comb(N: int, permute:bool=False):
             if i & (1 << j) > 0:
                 p.append(j)
         
-        if len(p) == 0: continue
+        # considering no change
+        #if len(p) == 0: continue
 
         for perm in permutations(p):
             yield perm
