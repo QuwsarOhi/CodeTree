@@ -36,6 +36,7 @@ void dfs(int u) {
 }
 
 /*---------------- DFS Timing + Child Finding ----------------*/
+// Only works on tree
 
 int startTime[MAX], endTime[MAX], Time = 1;
 void dfsTiming(int u = 1, int par = -1) {
