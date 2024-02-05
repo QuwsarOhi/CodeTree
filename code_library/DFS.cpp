@@ -1,6 +1,6 @@
 // Cycle in Directed graph
 // http://codeforces.com/contest/915/problem/D
-
+// Time complexity: O(V(V+E))
 vi G[550];
 int color[550], Cycle = 0;      // Cycle will contain the number of cycles found in graph
 void dfs(int u) {
