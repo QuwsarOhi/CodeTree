@@ -1,5 +1,24 @@
 // Segment Tree
 
+// Basic Range minimum query
+int arr[100010], tree[400010];
+int segtree_init(int pos, int L, int R) {
+    if(L == R) return tree[pos] = arr[L-1];
+    int mid = (L+R)/2;
+    int left_max = segment_init(pos*2, L, mid);
+    int right_max = segment_init(pos*2 + 1, mid+1, R);
+    return tree[pos] = min(left_max, right_max);
+}
+// [L, R] - current position window, [l, r] - query window
+int query(int pos, int L, int R, int l, int r) {
+    if(l <= L && R <= r) return tree[pos];
+    if(R < l || r < L)   return INF;
+    int mid = (L+R)/2;
+    int left_max = query(pos*2, L, mid, l, r);
+    int right_max = query(pos*2 + 1, mid+1, R, l, r);
+    return min(left_max, right_max);
+}
+
 // Only Supports Range Value SET (NOT UPDATE) and Point Query
 struct SegTreeSetVal {
     vector<int>tree;
